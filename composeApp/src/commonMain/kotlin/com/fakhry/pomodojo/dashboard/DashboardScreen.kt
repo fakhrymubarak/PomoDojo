@@ -47,6 +47,7 @@ import com.fakhry.pomodojo.dashboard.model.DashboardState
 import com.fakhry.pomodojo.dashboard.model.contributionColorMap
 import com.fakhry.pomodojo.dashboard.model.intensityLevelForMinutes
 import com.fakhry.pomodojo.dashboard.model.previewDashboardState
+import com.fakhry.pomodojo.ui.theme.*
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -64,7 +65,7 @@ fun DashboardScreen(
     val scrollState = rememberScrollState()
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = Color(0xFF1A1A1A), // Dark background from specs
+        color = DarkBackground,
     ) {
         Column(
             modifier = Modifier
@@ -103,7 +104,7 @@ private fun WavyHeader(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF7BB35D)) // Green from theme specs
+            .background(SecondaryGreen)
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         androidx.compose.foundation.layout.Row(
@@ -115,7 +116,7 @@ private fun WavyHeader(
                 text = "PomoDojo",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = TextWhite,
                 ),
                 modifier = Modifier.semantics { contentDescription = "PomoDojo Dashboard" },
             )
@@ -126,7 +127,7 @@ private fun WavyHeader(
                 Icon(
                     imageVector = Icons.Rounded.Settings,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = TextWhite,
                 )
             }
         }
@@ -158,11 +159,11 @@ private fun TimerCard(
                 modifier = Modifier.size(220.dp)
             ) {
                 drawCircle(
-                    color = Color(0xFF3A3A3A), // Dark background circle
+                    color = DarkCircleBackground,
                     radius = size.minDimension / 2,
                 )
                 drawCircle(
-                    color = Color(0xFFFF6C6C), // Coral/red ring from specs
+                    color = Primary,
                     radius = size.minDimension / 2,
                     style = androidx.compose.ui.graphics.drawscope.Stroke(width = 8.dp.toPx())
                 )
@@ -174,7 +175,7 @@ private fun TimerCard(
                 style = MaterialTheme.typography.displayLarge.copy(
                     fontSize = 56.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = TextWhite,
                 ),
                 modifier = Modifier.semantics {
                     contentDescription = "Timer set to $timerMinutes minutes"
@@ -188,8 +189,8 @@ private fun TimerCard(
             onClick = onStartPomodoro,
             modifier = Modifier.semantics { contentDescription = "Start Pomodoro" },
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFF6C6C), // Coral/red from specs
-                contentColor = Color.White,
+                containerColor = ButtonPrimary,
+                contentColor = TextWhite,
             ),
             shape = RoundedCornerShape(24.dp),
         ) {
@@ -206,18 +207,18 @@ private fun TimerCard(
 private fun DecorativeDots() {
     val dots = remember {
         listOf(
-            Pair(0.15f, 0.15f) to Color(0xFFFF6C6C), // red
-            Pair(0.25f, 0.85f) to Color(0xFF7BB35D), // green
-            Pair(0.85f, 0.25f) to Color(0xFF7BB35D), // green
-            Pair(0.75f, 0.75f) to Color(0xFFFF6C6C), // red
-            Pair(0.1f, 0.5f) to Color(0xFFFF6C6C), // red
-            Pair(0.9f, 0.5f) to Color(0xFF7BB35D), // green
-            Pair(0.5f, 0.1f) to Color(0xFF7BB35D), // green
-            Pair(0.5f, 0.9f) to Color(0xFFFF6C6C), // red
-            Pair(0.2f, 0.35f) to Color(0xFF7BB35D), // green
-            Pair(0.8f, 0.65f) to Color(0xFFFF6C6C), // red
-            Pair(0.35f, 0.2f) to Color(0xFFFF6C6C), // red
-            Pair(0.65f, 0.8f) to Color(0xFF7BB35D), // green
+            Pair(0.15f, 0.15f) to Primary,
+            Pair(0.25f, 0.85f) to SecondaryGreen,
+            Pair(0.85f, 0.25f) to SecondaryGreen,
+            Pair(0.75f, 0.75f) to Primary,
+            Pair(0.1f, 0.5f) to Primary,
+            Pair(0.9f, 0.5f) to SecondaryGreen,
+            Pair(0.5f, 0.1f) to SecondaryGreen,
+            Pair(0.5f, 0.9f) to Primary,
+            Pair(0.2f, 0.35f) to SecondaryGreen,
+            Pair(0.8f, 0.65f) to Primary,
+            Pair(0.35f, 0.2f) to Primary,
+            Pair(0.65f, 0.8f) to SecondaryGreen,
         )
     }
 
@@ -240,7 +241,7 @@ private fun StatisticsCard(totalMinutes: Int) {
     Text(
         text = "$totalMinutes minutes of focus in the last year",
         style = MaterialTheme.typography.bodyMedium.copy(
-            color = Color(0xFFCCCCCC), // Light gray from specs
+            color = TextLightGray,
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -278,7 +279,7 @@ private fun YearFilter(
             Box(
                 modifier = Modifier
                     .background(
-                        color = if (year == selectedYear) Color(0xFF7BB35D) else Color.Transparent,
+                        color = if (year == selectedYear) SecondaryGreen else ButtonSecondary,
                         shape = RoundedCornerShape(16.dp)
                     )
                     .clickable { onSelectYear(year) }
@@ -296,7 +297,7 @@ private fun YearFilter(
                     text = year.toString(),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = if (year == selectedYear) FontWeight.Bold else FontWeight.Normal,
-                        color = if (year == selectedYear) Color.White else Color(0xFFCCCCCC),
+                        color = if (year == selectedYear) TextWhite else TextLightGray,
                     ),
                 )
             }
@@ -333,7 +334,7 @@ private fun ContributionCard(
                 Text(
                     text = day,
                     style = MaterialTheme.typography.labelSmall.copy(
-                        color = Color(0xFFCCCCCC),
+                        color = TextLightGray,
                         fontSize = 8.sp,
                     ),
                     modifier = Modifier.weight(1f),
@@ -360,7 +361,7 @@ private fun ContributionCard(
                     Text(
                         text = monthLabel,
                         style = MaterialTheme.typography.labelSmall.copy(
-                            color = Color(0xFFCCCCCC),
+                            color = TextLightGray,
                             fontSize = 8.sp,
                         ),
                         modifier = Modifier.height(16.dp),
@@ -397,11 +398,11 @@ private fun ContributionCard(
 @Composable
 private fun ContributionCellItem(cell: ContributionCell) {
     val color = contributionColorMap[cell.intensityLevel]?.let { Color(it) }
-        ?: Color(0xFFD9D9D9) // Default gray from specs
+        ?: GraphLevel0
     val textDescription = remember(cell) { formatCellDescription(cell) }
     Box(
         modifier = Modifier
-            .size(12.dp) // Smaller cells to fit better
+            .size(12.dp)
             .background(
                 color = color,
                 shape = RoundedCornerShape(2.dp)
@@ -538,7 +539,7 @@ private fun DashboardPreview() {
             generatePreviewCells(previewDashboardState.selectedYear),
         ),
     )
-    MaterialTheme {
+    PomoDojoTheme {
         DashboardScreen(
             state = previewState,
             onStartPomodoro = {},

@@ -1,6 +1,5 @@
 package com.fakhry.pomodojo
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,6 +10,7 @@ import com.fakhry.pomodojo.dashboard.model.ContributionCell
 import com.fakhry.pomodojo.dashboard.DashboardScreen
 import com.fakhry.pomodojo.dashboard.model.DashboardState
 import com.fakhry.pomodojo.dashboard.model.intensityLevelForMinutes
+import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
@@ -18,7 +18,7 @@ import kotlinx.datetime.plus
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    PomoDojoTheme {
         val sampleData = remember { buildSampleDashboardData() }
         var selectedYear by remember { mutableStateOf(sampleData.defaultYear) }
         val cells = sampleData.cellsForYear(selectedYear)
