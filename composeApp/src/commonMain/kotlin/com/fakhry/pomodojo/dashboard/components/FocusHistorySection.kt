@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,14 +35,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fakhry.pomodojo.dashboard.model.ContributionCell
 import com.fakhry.pomodojo.dashboard.model.contributionColorMap
+import com.fakhry.pomodojo.dashboard.model.intensityLevelForMinutes
+import com.fakhry.pomodojo.dashboard.model.previewDashboardState
 import com.fakhry.pomodojo.ui.theme.ButtonSecondary
 import com.fakhry.pomodojo.ui.theme.GraphLevel0
+import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.SecondaryGreen
 import com.fakhry.pomodojo.ui.theme.TextLightGray
 import com.fakhry.pomodojo.ui.theme.TextWhite
 import com.fakhry.pomodojo.utils.ensureYearCells
 import com.fakhry.pomodojo.utils.extractMonthLabels
 import com.fakhry.pomodojo.utils.formatCellDescription
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Focus History Section
@@ -53,38 +61,33 @@ fun FocusHistorySection(
     selectedYear: Int,
     availableYears: List<Int>,
     cells: List<ContributionCell>,
-    onSelectYear: (Int) -> Unit,
+    onSelectYear: (Int) -> Unit = {},
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        // Section Title
-        Text(
-            text = "Focus History",
-            style = MaterialTheme.typography.headlineMedium.copy(
-                color = TextWhite,
-            ),
-            modifier = Modifier.semantics { contentDescription = "Focus History Section" },
-        )
-
         // Statistics
         StatisticsCard(totalMinutes = totalMinutes)
 
-        // Year Filter
-        YearFilterRow(
-            years = availableYears,
-            selectedYear = selectedYear,
-            onSelectYear = onSelectYear,
-        )
-
-        // Focus History Graph
-        FocusHistoryGraph(
-            selectedYear = selectedYear,
-            cells = remember(selectedYear, cells) {
-                ensureYearCells(selectedYear, cells)
-            },
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Focus History Graph
+            FocusHistoryGraph(
+                modifier = Modifier.weight(1f),
+                selectedYear = selectedYear,
+                cells = remember(selectedYear, cells) {
+                    ensureYearCells(selectedYear, cells)
+                },
+            )
+            // Year Filter
+            YearFilters(
+                years = availableYears,
+                selectedYear = selectedYear,
+                onSelectYear = onSelectYear,
+            )
+        }
     }
 }
 
@@ -105,21 +108,7 @@ private fun StatisticsCard(totalMinutes: Int) {
 }
 
 @Composable
-private fun YearFilterRow(
-    years: List<Int>,
-    selectedYear: Int,
-    onSelectYear: (Int) -> Unit,
-) {
-    YearFilter(
-        years = years,
-        selectedYear = selectedYear,
-        onSelectYear = onSelectYear,
-    )
-}
-
-
-@Composable
-private fun YearFilter(
+private fun YearFilters(
     years: List<Int>,
     selectedYear: Int,
     onSelectYear: (Int) -> Unit,
@@ -127,7 +116,6 @@ private fun YearFilter(
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.End,
-        modifier = Modifier.fillMaxWidth(),
     ) {
         years.forEach { year ->
             Box(
@@ -159,10 +147,10 @@ private fun YearFilter(
     }
 }
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FocusHistoryGraph(
+    modifier: Modifier,
     selectedYear: Int,
     cells: List<ContributionCell>,
 ) {
@@ -171,16 +159,14 @@ private fun FocusHistoryGraph(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .semantics {
                 role = Role.Image
                 contentDescription = semanticDescription
             },
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // Day labels (Mon, Thu, Fri, Sun shown in design)
-        androidx.compose.foundation.layout.Row(
+        Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
@@ -198,7 +184,7 @@ private fun FocusHistoryGraph(
         }
 
         // Graph with month labels and cells
-        androidx.compose.foundation.layout.Row(
+        Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -264,4 +250,51 @@ private fun FocusHistoryCellItem(cell: ContributionCell) {
             .focusable()
             .semantics { contentDescription = textDescription },
     )
+}
+
+private fun generatePreviewCells(year: Int): List<ContributionCell> {
+    val start = LocalDate(year, 1, 1)
+    val result = mutableListOf<ContributionCell>()
+    var cursor = start
+    var bucket = 0
+    while (bucket < 35) { // generate enough days for preview variety
+        val totalMinutes = when (bucket % 6) {
+            0 -> 0
+            1 -> 15
+            2 -> 25
+            3 -> 50
+            4 -> 75
+            else -> 85
+        }
+        result += ContributionCell(
+            date = cursor.toString(),
+            totalMinutes = totalMinutes,
+            intensityLevel = intensityLevelForMinutes(totalMinutes),
+        )
+        cursor = cursor.plus(DatePeriod(days = 1))
+        bucket += 1
+    }
+    return result
+}
+
+
+@Preview
+@Composable
+fun FocusHistorySectionPreview() {
+
+    val previewState = previewDashboardState.copy(
+        cells = ensureYearCells(
+            previewDashboardState.selectedYear,
+            generatePreviewCells(previewDashboardState.selectedYear),
+        ),
+    )
+    PomoDojoTheme {
+        FocusHistorySection(
+            totalMinutes = previewState.focusMinutesThisYear,
+            selectedYear = previewState.selectedYear,
+            availableYears = previewState.availableYears,
+            cells = previewState.cells,
+
+            )
+    }
 }

@@ -58,7 +58,7 @@ fun generateEmptyYear(year: Int): List<ContributionCell> {
 
 fun formatCellDescription(cell: ContributionCell): String {
     val localDate = runCatching { LocalDate.parse(cell.date) }.getOrNull()
-    val baseDate = localDate?.let { "${monthDisplayName(it.month)} ${it.day}, ${it.year}" }
+    val baseDate = localDate?.let { "${monthDisplayName(it.month)} ${it.dayOfMonth}, ${it.year}" }
         ?: cell.date
     val minuteDescription = if (cell.totalMinutes == 1) {
         "1 minute of focus"
