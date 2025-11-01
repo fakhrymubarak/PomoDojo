@@ -17,10 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -29,25 +27,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.dashboard.components.FocusHistorySection
 import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
-import com.fakhry.pomodojo.dashboard.model.DashboardState
-import com.fakhry.pomodojo.dashboard.model.previewDashboardState
+import com.fakhry.pomodojo.dashboard.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.ui.theme.DarkBackground
 import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextWhite
+import org.koin.compose.koinInject
 
 @Composable
 fun DashboardScreen(
     onStartPomodoro: () -> Unit,
     onOpenSettings: () -> Unit,
+    viewModel: DashboardViewModel = koinInject(),
 ) {
-    var selectedYear by remember { mutableStateOf(2025) }
-    val state = DashboardState(
-        timerMinutes = 25,
-        focusMinutesThisYear = 189,
-        selectedYear = selectedYear,
-        availableYears = listOf(2025, 2024),
-        cells = previewDashboardState.cells,
-    )
+    val state by viewModel.state.collectAsState()
 
     val scrollState = rememberScrollState()
     Surface(
@@ -77,7 +69,7 @@ fun DashboardScreen(
                     selectedYear = state.selectedYear,
                     availableYears = state.availableYears,
                     cells = state.cells,
-                    onSelectYear = { selectedYear = it },
+                    onSelectYear = viewModel::selectYear,
                 )
             }
         }

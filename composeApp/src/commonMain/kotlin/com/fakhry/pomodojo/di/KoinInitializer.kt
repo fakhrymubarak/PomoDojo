@@ -1,12 +1,8 @@
 package com.fakhry.pomodojo.di
 
-import org.koin.core.context.startKoin
-import org.koin.dsl.KoinAppDeclaration
+import com.fakhry.pomodojo.dashboard.di.dashboardModule
+import org.koin.core.module.Module
 
-fun initKoin(
-    appDeclaration: KoinAppDeclaration = {},
-) {
-    startKoin {
-        appDeclaration()
-    }
-}
+internal val composeAppModules: List<Module> = listOf(
+    dashboardModule,
+)
