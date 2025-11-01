@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -25,31 +27,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.dashboard.components.FocusHistorySection
 import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
-import com.fakhry.pomodojo.dashboard.model.ContributionCell
-import com.fakhry.pomodojo.dashboard.model.DashboardState
-import com.fakhry.pomodojo.dashboard.model.intensityLevelForMinutes
-import com.fakhry.pomodojo.dashboard.model.previewDashboardState
+import com.fakhry.pomodojo.dashboard.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.ui.theme.DarkBackground
-import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
-import com.fakhry.pomodojo.ui.theme.SecondaryGreen
+import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextWhite
-import com.fakhry.pomodojo.utils.ensureYearCells
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 
 @Composable
 fun DashboardScreen(
-    state: DashboardState,
-    modifier: Modifier = Modifier,
     onStartPomodoro: () -> Unit,
     onOpenSettings: () -> Unit,
-    onSelectYear: (Int) -> Unit,
+    viewModel: DashboardViewModel = koinInject(),
 ) {
+    val state by viewModel.state.collectAsState()
+
     val scrollState = rememberScrollState()
     Surface(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         color = DarkBackground,
     ) {
         Column(
@@ -75,7 +69,7 @@ fun DashboardScreen(
                     selectedYear = state.selectedYear,
                     availableYears = state.availableYears,
                     cells = state.cells,
-                    onSelectYear = onSelectYear,
+                    onSelectYear = viewModel::selectYear,
                 )
             }
         }
@@ -89,7 +83,7 @@ private fun WavyHeader(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SecondaryGreen)
+            .background(Secondary)
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         androidx.compose.foundation.layout.Row(
@@ -117,54 +111,4 @@ private fun WavyHeader(
             }
         }
     }
-}
-
-
-// ============================================================================
-// FOCUS HISTORY SECTION
-// ============================================================================
-
-
-@Preview
-@Composable
-private fun DashboardPreview() {
-    val previewState = previewDashboardState.copy(
-        cells = ensureYearCells(
-            previewDashboardState.selectedYear,
-            generatePreviewCells(previewDashboardState.selectedYear),
-        ),
-    )
-    PomoDojoTheme {
-        DashboardScreen(
-            state = previewState,
-            onStartPomodoro = {},
-            onOpenSettings = {},
-            onSelectYear = {},
-        )
-    }
-}
-
-private fun generatePreviewCells(year: Int): List<ContributionCell> {
-    val start = LocalDate(year, 1, 1)
-    val result = mutableListOf<ContributionCell>()
-    var cursor = start
-    var bucket = 0
-    while (bucket < 35) { // generate enough days for preview variety
-        val totalMinutes = when (bucket % 6) {
-            0 -> 0
-            1 -> 15
-            2 -> 25
-            3 -> 50
-            4 -> 75
-            else -> 85
-        }
-        result += ContributionCell(
-            date = cursor.toString(),
-            totalMinutes = totalMinutes,
-            intensityLevel = intensityLevelForMinutes(totalMinutes),
-        )
-        cursor = cursor.plus(DatePeriod(days = 1))
-        bucket += 1
-    }
-    return result
 }

@@ -1,5 +1,14 @@
 package com.fakhry.pomodojo.dashboard.model
 
+import com.fakhry.pomodojo.ui.theme.GraphLevel0
+import com.fakhry.pomodojo.ui.theme.GraphLevel1
+import com.fakhry.pomodojo.ui.theme.GraphLevel2
+import com.fakhry.pomodojo.ui.theme.GraphLevel3
+import com.fakhry.pomodojo.ui.theme.GraphLevel4
+import com.fakhry.pomodojo.ui.theme.GraphLevel5
+import com.fakhry.pomodojo.ui.theme.GraphLevel6
+import kotlin.random.Random
+
 /**
  * Dashboard level state that the UI consumes.
  */
@@ -8,47 +17,30 @@ data class DashboardState(
     val focusMinutesThisYear: Int,
     val selectedYear: Int,
     val availableYears: List<Int>,
-    val cells: List<ContributionCell>,
+    val cells: List<List<HistoryCell>>,
 )
 
-/**
- * Contribution cell representing one day in the activity grid.
- */
-data class ContributionCell(
-    val date: String, // ISO-8601 formatted date (YYYY-MM-DD)
-    val totalMinutes: Int,
-    val intensityLevel: Int,
-)
-
-/**
- * Snapshot used for previews and when backend data is not yet wired.
- */
-val previewDashboardState = DashboardState(
-    timerMinutes = 25,
-    focusMinutesThisYear = 512,
-    selectedYear = 2025,
-    availableYears = listOf(2025, 2024, 2023),
-    cells = listOf(
-        ContributionCell("2025-01-01", 0, 0),
-        ContributionCell("2025-01-02", 15, 1),
-        ContributionCell("2025-01-03", 25, 2),
-        ContributionCell("2025-01-04", 50, 3),
-        ContributionCell("2025-01-05", 75, 4),
-        ContributionCell("2025-01-06", 85, 6),
-    ),
-)
+sealed class HistoryCell {
+    data class Text(val text: String) : HistoryCell()
+    data object Empty : HistoryCell()
+    data class GraphLevel(
+        val intensityLevel: Int,
+        val focusMinutes: Int,
+        val breakMinutes: Int,
+    ) : HistoryCell()
+}
 
 /**
  * Mapping from intensity level to color hex encoded in the specification.
  */
 val contributionColorMap = mapOf(
-    0 to 0xFFD9D9D9,
-    1 to 0xFF7BB35D,
-    2 to 0xFF6FA054,
-    3 to 0xFF638E49,
-    4 to 0xFF577D41,
-    5 to 0xFF496B38,
-    6 to 0xFF3E5A2F,
+    0 to GraphLevel0,
+    1 to GraphLevel1,
+    2 to GraphLevel2,
+    3 to GraphLevel3,
+    4 to GraphLevel4,
+    5 to GraphLevel5,
+    6 to GraphLevel6,
 )
 
 /**
@@ -63,3 +55,180 @@ fun intensityLevelForMinutes(totalMinutes: Int): Int = when {
     totalMinutes in 68..84 -> 5
     else -> 6
 }
+
+
+/**
+ * Snapshot used for previews and when backend data is not yet wired.
+ */
+val previewDashboardState = DashboardState(
+    timerMinutes = 25,
+    focusMinutesThisYear = 512,
+    selectedYear = 2025,
+    availableYears = listOf(2025, 2024, 2023),
+    cells = listOf(
+        listOf(
+            HistoryCell.Empty,
+            HistoryCell.Text("Mon"),
+            HistoryCell.Empty,
+            HistoryCell.Text("Wed"),
+            HistoryCell.Empty,
+            HistoryCell.Text("Fri"),
+            HistoryCell.Empty,
+            HistoryCell.Text("Sun"),
+        ),
+        listOf(
+            HistoryCell.Text("Nov"),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(5, 500, 50),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(6, 600, 60),
+            HistoryCell.GraphLevel(0, 0, 0),
+            HistoryCell.Empty
+        ),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        listOf(
+            HistoryCell.Text("Oct"),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(5, 500, 50),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(0, 0, 0),
+        ),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        listOf(
+            HistoryCell.Text("Sep"),
+            HistoryCell.GraphLevel(1, 100, 10),
+            HistoryCell.GraphLevel(0, 0, 0),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(0, 0, 0),
+        ),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        listOf(
+            HistoryCell.Text("Aug"),
+            HistoryCell.GraphLevel(5, 500, 50),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(5, 500, 50),
+            HistoryCell.GraphLevel(6, 600, 60),
+            HistoryCell.GraphLevel(5, 500, 50),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(0, 0, 0),
+        ),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        listOf(
+            HistoryCell.Text("Jul"),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(1, 100, 10),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(1, 100, 10),
+            HistoryCell.GraphLevel(0, 0, 0),
+        ),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        listOf(
+            HistoryCell.Text("Jun"),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(5, 500, 50),
+            HistoryCell.GraphLevel(0, 0, 0),
+        ),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        listOf(
+            HistoryCell.Text("May"),
+            HistoryCell.GraphLevel(1, 100, 10),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(1, 100, 10),
+            HistoryCell.GraphLevel(0, 0, 0),
+            HistoryCell.GraphLevel(0, 0, 0),
+        ),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        listOf(
+            HistoryCell.Text("Apr"),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(5, 500, 50),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(1, 100, 10),
+            HistoryCell.GraphLevel(0, 0, 0),
+        ),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        listOf(
+            HistoryCell.Text("Mar"),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(1, 100, 10),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(0, 0, 0),
+        ),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        listOf(
+            HistoryCell.Text("Feb"),
+            HistoryCell.GraphLevel(1, 100, 10),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(1, 100, 10),
+            HistoryCell.GraphLevel(0, 0, 0),
+        ),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        generateDummyWeek(),
+        listOf(
+            HistoryCell.Text("Jan"),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(4, 400, 40),
+            HistoryCell.GraphLevel(5, 500, 50),
+            HistoryCell.GraphLevel(3, 300, 30),
+            HistoryCell.GraphLevel(2, 200, 20),
+            HistoryCell.GraphLevel(0, 0, 0),
+        ),
+    )
+)
+
+fun generateDummyWeek() = listOf(
+    HistoryCell.Empty,
+    Random.nextInt(0, 6).let { HistoryCell.GraphLevel(it, it * 100, it * 10)},
+    Random.nextInt(0, 6).let { HistoryCell.GraphLevel(it, it * 100, it * 10)},
+    Random.nextInt(0, 6).let { HistoryCell.GraphLevel(it, it * 100, it * 10)},
+    Random.nextInt(0, 6).let { HistoryCell.GraphLevel(it, it * 100, it * 10)},
+    Random.nextInt(0, 6).let { HistoryCell.GraphLevel(it, it * 100, it * 10)},
+    Random.nextInt(0, 6).let { HistoryCell.GraphLevel(it, it * 100, it * 10)},
+    Random.nextInt(0, 6).let { HistoryCell.GraphLevel(it, it * 100, it * 10)},
+)

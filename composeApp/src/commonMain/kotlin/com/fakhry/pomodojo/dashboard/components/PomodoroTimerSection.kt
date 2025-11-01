@@ -13,9 +13,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -23,11 +24,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fakhry.pomodojo.ui.theme.ButtonPrimary
-import com.fakhry.pomodojo.ui.theme.DarkCircleBackground
+import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Primary
-import com.fakhry.pomodojo.ui.theme.SecondaryGreen
+import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextWhite
 import com.fakhry.pomodojo.utils.formatTimerMinutes
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 /**
@@ -37,7 +42,7 @@ import com.fakhry.pomodojo.utils.formatTimerMinutes
 @Composable
 fun PomodoroTimerSection(
     timerMinutes: Int,
-    onStartPomodoro: () -> Unit,
+    onStartPomodoro: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -63,28 +68,12 @@ private fun TimerCard(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        // Timer with decorative dots
+        // Timer visuals with decorative dots
         Box(
             modifier = Modifier.size(280.dp),
             contentAlignment = Alignment.Center,
         ) {
-            // Decorative dots scattered around
-            DecorativeDots()
-
-            // Circular ring
-            Canvas(
-                modifier = Modifier.size(220.dp)
-            ) {
-                drawCircle(
-                    color = DarkCircleBackground,
-                    radius = size.minDimension / 2,
-                )
-                drawCircle(
-                    color = Primary,
-                    radius = size.minDimension / 2,
-                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 8.dp.toPx())
-                )
-            }
+            TimerDecorationCanvas()
 
             // Timer text
             Text(
@@ -123,34 +112,47 @@ private fun TimerCard(
 
 
 @Composable
-private fun DecorativeDots() {
-    val dots = remember {
-        listOf(
-            Pair(0.15f, 0.15f) to Primary,
-            Pair(0.25f, 0.85f) to SecondaryGreen,
-            Pair(0.85f, 0.25f) to SecondaryGreen,
-            Pair(0.75f, 0.75f) to Primary,
-            Pair(0.1f, 0.5f) to Primary,
-            Pair(0.9f, 0.5f) to SecondaryGreen,
-            Pair(0.5f, 0.1f) to SecondaryGreen,
-            Pair(0.5f, 0.9f) to Primary,
-            Pair(0.2f, 0.35f) to SecondaryGreen,
-            Pair(0.8f, 0.65f) to Primary,
-            Pair(0.35f, 0.2f) to Primary,
-            Pair(0.65f, 0.8f) to SecondaryGreen,
-        )
-    }
-
+private fun TimerDecorationCanvas() {
     Canvas(modifier = Modifier.fillMaxSize()) {
-        dots.forEach { (position, color) ->
+        val center = Offset(x = size.width / 2f, y = size.height / 2f)
+        val maxRadius = size.minDimension / 2f
+        val ringStrokeWidth = 8.dp.toPx()
+        val ringRadius = (maxRadius - 30.dp.toPx()).coerceAtLeast(ringStrokeWidth / 2f)
+
+        // Outer ring stroke
+        drawCircle(
+            color = Secondary,
+            radius = ringRadius,
+            center = center,
+            style = Stroke(width = ringStrokeWidth),
+        )
+
+        val dotRadius = 3.dp.toPx()
+        val dotCount = 12
+        val orbitRadius = (ringRadius + 16.dp.toPx()).coerceAtMost(maxRadius - dotRadius)
+
+        repeat(dotCount) { index ->
+            val angle = (2 * PI * index / dotCount) - (PI / 2)
+            val dotCenter = Offset(
+                x = center.x + orbitRadius * cos(angle).toFloat(),
+                y = center.y + orbitRadius * sin(angle).toFloat(),
+            )
             drawCircle(
-                color = color,
-                radius = 3.dp.toPx(),
-                center = androidx.compose.ui.geometry.Offset(
-                    x = size.width * position.first,
-                    y = size.height * position.second
-                )
+                color = Primary,
+                radius = dotRadius,
+                center = dotCenter,
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun PomodoroTimerSectionPreview() {
+    PomoDojoTheme {
+        PomodoroTimerSection(
+            timerMinutes = 25,
+
+        )
     }
 }
