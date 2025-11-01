@@ -3,6 +3,7 @@ package com.fakhry.pomodojo.dashboard.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,17 +23,30 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupPositionProvider
+import androidx.compose.ui.window.PopupProperties
 import com.fakhry.pomodojo.dashboard.model.HistoryCell
 import com.fakhry.pomodojo.dashboard.model.contributionColorMap
 import com.fakhry.pomodojo.dashboard.model.previewDashboardState
@@ -41,7 +56,10 @@ import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextLightGray
 import com.fakhry.pomodojo.ui.theme.TextWhite
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
+private val TooltipVerticalSpacing = 8.dp
 
 /**
  * Focus History Section
@@ -178,6 +196,7 @@ private fun FocusHistoryGraph(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FocusHistoryCellItem(
     cell: HistoryCell,
@@ -208,16 +227,111 @@ private fun FocusHistoryCellItem(
 
         is HistoryCell.GraphLevel -> {
             val color = contributionColorMap[cell.intensityLevel] ?: GraphLevel0
+            val tooltipText = remember(cell.focusMinutes, cell.breakMinutes) {
+                "${cell.focusMinutes} minutes focus with ${cell.breakMinutes} minutes break"
+            }
+            var showTooltip by remember(cell.focusMinutes, cell.breakMinutes) {
+                mutableStateOf(false)
+            }
+
+            // Hide the tooltip automatically so it does not stick around indefinitely.
+            LaunchedEffect(showTooltip) {
+                if (showTooltip) {
+                    delay(2000)
+                    showTooltip = false
+                }
+            }
+
             Box(
                 modifier = Modifier
                     .size(cellSize)
-                    .background(
-                        color = color,
-                        shape = RoundedCornerShape(2.dp),
+                    .combinedClickable(
+                        onClick = { showTooltip = false },
+                        onLongClick = {
+                            showTooltip = false
+                            showTooltip = true
+                        },
                     )
+                    .semantics { contentDescription = tooltipText }
                     .focusable()
-            )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            color = color,
+                            shape = RoundedCornerShape(2.dp),
+                        ),
+                )
+
+                if (showTooltip) {
+                    val density = LocalDensity.current
+                    val positionProvider = remember(density) {
+                        TooltipPositionProvider(density)
+                    }
+
+                    Popup(
+                        popupPositionProvider = positionProvider,
+                        onDismissRequest = { showTooltip = false },
+                        properties = PopupProperties(
+                            focusable = false,
+                            dismissOnBackPress = false,
+                            dismissOnClickOutside = true,
+                        ),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(6.dp),
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                        ) {
+                            Text(
+                                text = tooltipText,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+            }
         }
+    }
+}
+
+private class TooltipPositionProvider(
+    private val density: Density,
+) : PopupPositionProvider {
+
+    override fun calculatePosition(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        layoutDirection: LayoutDirection,
+        popupContentSize: IntSize,
+    ): IntOffset {
+        val spacing = with(density) { TooltipVerticalSpacing.roundToPx() }
+        val anchorStart = when (layoutDirection) {
+            LayoutDirection.Ltr -> anchorBounds.left
+            LayoutDirection.Rtl -> anchorBounds.right - anchorBounds.width
+        }
+        val preferredX = anchorStart + (anchorBounds.width - popupContentSize.width) / 2
+        val maxX = windowSize.width - popupContentSize.width
+        val resolvedX = when {
+            maxX <= 0 -> 0
+            else -> preferredX.coerceIn(0, maxX)
+        }
+
+        val preferredY = anchorBounds.top - popupContentSize.height - spacing
+        val fallbackY = anchorBounds.bottom + spacing
+        val candidateY = if (preferredY >= 0) preferredY else fallbackY
+        val maxY = windowSize.height - popupContentSize.height
+        val resolvedY = when {
+            maxY <= 0 -> candidateY.coerceAtLeast(0)
+            else -> candidateY.coerceIn(0, maxY)
+        }
+
+        return IntOffset(resolvedX, resolvedY)
     }
 }
 
