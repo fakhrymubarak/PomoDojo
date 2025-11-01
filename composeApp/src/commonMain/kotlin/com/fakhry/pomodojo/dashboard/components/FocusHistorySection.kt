@@ -246,11 +246,7 @@ private fun FocusHistoryCellItem(
                 modifier = Modifier
                     .size(cellSize)
                     .combinedClickable(
-                        onClick = { showTooltip = false },
-                        onLongClick = {
-                            showTooltip = false
-                            showTooltip = true
-                        },
+                        onClick = { showTooltip = true },
                     )
                     .semantics { contentDescription = tooltipText }
                     .focusable()
