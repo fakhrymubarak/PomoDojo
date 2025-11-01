@@ -15,8 +15,8 @@ val DarkSurface = Color(0xFF1A1A1A) // Dark background
 val Primary = Color(0xFFFF6C6C)
 
 // Secondary Color (Green)
-val Secondary = Color(0xFFE9F9F9)
-val SecondaryGreen = Color(0xFF7BB35D)
+val Secondary = Color(0xFF7BB35D)
+val OnSecondary = Color(0xFFE9F9F9)
 
 // Background Colors
 val DarkBackground = Color(0xFF1A1A1A)
@@ -44,12 +44,12 @@ val BorderDark = Color(0xFF333333)
 
 // Toggle/Slider Colors
 val SliderTrack = Color(0xFF333333)
-val SliderActive = SecondaryGreen
+val SliderActive = Secondary
 val ToggleActive = Primary
 val ToggleInactive = Color(0xFF333333)
 
 // Overlay Colors
-val PausedOverlay = SecondaryGreen.copy(alpha = 0.7f)
+val PausedOverlay = Secondary.copy(alpha = 0.7f)
 
 // Dialog/Modal Colors
 val DialogBackground = Color(0xFF2A2A2A)

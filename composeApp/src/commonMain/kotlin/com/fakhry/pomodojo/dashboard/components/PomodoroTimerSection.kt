@@ -24,10 +24,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fakhry.pomodojo.ui.theme.ButtonPrimary
-import com.fakhry.pomodojo.ui.theme.DarkCircleBackground
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Primary
-import com.fakhry.pomodojo.ui.theme.SecondaryGreen
+import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextWhite
 import com.fakhry.pomodojo.utils.formatTimerMinutes
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -120,16 +119,9 @@ private fun TimerDecorationCanvas() {
         val ringStrokeWidth = 8.dp.toPx()
         val ringRadius = (maxRadius - 30.dp.toPx()).coerceAtLeast(ringStrokeWidth / 2f)
 
-        // Fill the inner circle
-        drawCircle(
-            color = DarkCircleBackground,
-            radius = ringRadius,
-            center = center,
-        )
-
         // Outer ring stroke
         drawCircle(
-            color = Primary,
+            color = Secondary,
             radius = ringRadius,
             center = center,
             style = Stroke(width = ringStrokeWidth),
@@ -146,7 +138,7 @@ private fun TimerDecorationCanvas() {
                 y = center.y + orbitRadius * sin(angle).toFloat(),
             )
             drawCircle(
-                color = SecondaryGreen,
+                color = Primary,
                 radius = dotRadius,
                 center = dotCenter,
             )

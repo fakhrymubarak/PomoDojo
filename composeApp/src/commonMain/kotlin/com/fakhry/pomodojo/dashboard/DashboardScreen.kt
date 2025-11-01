@@ -17,6 +17,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -25,31 +29,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.dashboard.components.FocusHistorySection
 import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
-import com.fakhry.pomodojo.dashboard.model.ContributionCell
 import com.fakhry.pomodojo.dashboard.model.DashboardState
-import com.fakhry.pomodojo.dashboard.model.intensityLevelForMinutes
 import com.fakhry.pomodojo.dashboard.model.previewDashboardState
 import com.fakhry.pomodojo.ui.theme.DarkBackground
-import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
-import com.fakhry.pomodojo.ui.theme.SecondaryGreen
+import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextWhite
-import com.fakhry.pomodojo.utils.ensureYearCells
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DashboardScreen(
-    state: DashboardState,
-    modifier: Modifier = Modifier,
     onStartPomodoro: () -> Unit,
     onOpenSettings: () -> Unit,
-    onSelectYear: (Int) -> Unit,
 ) {
+    var selectedYear by remember { mutableStateOf(2025) }
+    val state = DashboardState(
+        timerMinutes = 25,
+        focusMinutesThisYear = 189,
+        selectedYear = selectedYear,
+        availableYears = listOf(2025, 2024),
+        cells = previewDashboardState.cells,
+    )
+
     val scrollState = rememberScrollState()
     Surface(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         color = DarkBackground,
     ) {
         Column(
@@ -75,7 +77,7 @@ fun DashboardScreen(
                     selectedYear = state.selectedYear,
                     availableYears = state.availableYears,
                     cells = state.cells,
-                    onSelectYear = onSelectYear,
+                    onSelectYear = { selectedYear = it },
                 )
             }
         }
@@ -89,7 +91,7 @@ private fun WavyHeader(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SecondaryGreen)
+            .background(Secondary)
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         androidx.compose.foundation.layout.Row(
