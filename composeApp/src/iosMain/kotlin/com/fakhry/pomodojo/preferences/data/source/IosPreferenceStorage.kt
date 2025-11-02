@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.preferences
+package com.fakhry.pomodojo.preferences.data.source
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
@@ -8,17 +8,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import okio.Path
 import okio.Path.Companion.toPath
-import java.io.File
+import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSSearchPathForDirectoriesInDomains
+import platform.Foundation.NSUserDomainMask
 
 internal actual fun provideDataStore(): DataStore<Preferences> {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    val home = System.getProperty("user.home") ?: "."
-    val directory = File(home, ".pomodojo").apply {
-        if (!exists()) {
-            mkdirs()
-        }
-    }
-    val path: Path = File(directory, PREFERENCES_FILE_NAME).absolutePath.toPath()
+    val directory = NSSearchPathForDirectoriesInDomains(
+        directory = NSDocumentDirectory,
+        domainMask = NSUserDomainMask,
+        expandTilde = true,
+    ).firstOrNull() as? String ?: error("Unable to locate Documents directory for DataStore.")
+
+    val path: Path = directory
+        .plus("/")
+        .plus(PREFERENCES_FILE_NAME)
+        .toPath()
+
     return PreferenceDataStoreFactory.createWithPath(
         scope = scope,
         produceFile = { path },

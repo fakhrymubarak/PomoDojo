@@ -8,7 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.fakhry.pomodojo.dashboard.DashboardScreen
-import com.fakhry.pomodojo.preferences.PreferencesScreen
+import com.fakhry.pomodojo.preferences.ui.PreferencesScreen
 import kotlinx.serialization.Serializable
 
 object AppDestination {

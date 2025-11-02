@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.preferences
+package com.fakhry.pomodojo.preferences.domain
 
 data class PomodoroPreferences(
     val repeatCount: Int = DEFAULT_REPEAT_COUNT,

@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.preferences
+package com.fakhry.pomodojo.preferences.ui.model
 
 sealed class TimelineSegment(open val durationMinutes: Int) {
     data class Focus(override val durationMinutes: Int) : TimelineSegment(durationMinutes)

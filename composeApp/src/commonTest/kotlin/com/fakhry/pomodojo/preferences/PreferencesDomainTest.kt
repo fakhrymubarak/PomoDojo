@@ -1,5 +1,10 @@
 package com.fakhry.pomodojo.preferences
 
+import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
+import com.fakhry.pomodojo.preferences.domain.PreferenceCascadeResolver
+import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
+import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
+import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

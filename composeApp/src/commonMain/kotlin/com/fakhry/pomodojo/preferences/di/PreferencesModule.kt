@@ -1,10 +1,10 @@
 package com.fakhry.pomodojo.preferences.di
 
-import com.fakhry.pomodojo.preferences.PreferenceCascadeResolver
-import com.fakhry.pomodojo.preferences.PreferencesRepository
-import com.fakhry.pomodojo.preferences.PreferencesValidator
-import com.fakhry.pomodojo.preferences.PreferencesViewModel
-import com.fakhry.pomodojo.preferences.TimelinePreviewBuilder
+import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
+import com.fakhry.pomodojo.preferences.domain.PreferenceCascadeResolver
+import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
+import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
+import com.fakhry.pomodojo.preferences.ui.PreferencesViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf

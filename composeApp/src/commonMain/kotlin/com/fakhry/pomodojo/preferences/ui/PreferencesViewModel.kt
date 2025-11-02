@@ -1,7 +1,13 @@
-package com.fakhry.pomodojo.preferences
+package com.fakhry.pomodojo.preferences.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
+import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
+import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
+import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
+import com.fakhry.pomodojo.preferences.ui.state.PreferenceOption
+import com.fakhry.pomodojo.preferences.ui.state.PreferencesState
 import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

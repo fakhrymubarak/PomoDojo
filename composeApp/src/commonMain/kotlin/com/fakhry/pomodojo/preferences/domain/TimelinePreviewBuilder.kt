@@ -1,4 +1,6 @@
-package com.fakhry.pomodojo.preferences
+package com.fakhry.pomodojo.preferences.domain
+
+import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
 
 class TimelinePreviewBuilder {
 

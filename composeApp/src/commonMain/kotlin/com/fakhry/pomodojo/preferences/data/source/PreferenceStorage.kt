@@ -1,5 +1,6 @@
-package com.fakhry.pomodojo.preferences
+package com.fakhry.pomodojo.preferences.data.source
 
+import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface PreferenceStorage {

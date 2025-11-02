@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.preferences
+package com.fakhry.pomodojo.preferences.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
@@ -66,6 +66,11 @@ import com.fakhry.pomodojo.generated.resources.preferences_timeline_focus_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_preview_title
 import com.fakhry.pomodojo.generated.resources.preferences_title
 import com.fakhry.pomodojo.preferences.components.WheelNumbers
+import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
+import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
+import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
+import com.fakhry.pomodojo.preferences.ui.state.PreferenceOption
+import com.fakhry.pomodojo.preferences.ui.state.PreferencesState
 import com.fakhry.pomodojo.ui.theme.DarkBackground
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Primary

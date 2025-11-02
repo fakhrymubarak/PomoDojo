@@ -1,10 +1,10 @@
 package com.fakhry.pomodojo.di
 
 import com.fakhry.pomodojo.dashboard.di.dashboardModule
-import com.fakhry.pomodojo.preferences.DataStorePreferenceStorage
-import com.fakhry.pomodojo.preferences.PreferenceStorage
+import com.fakhry.pomodojo.preferences.data.source.DataStorePreferenceStorage
+import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
+import com.fakhry.pomodojo.preferences.data.source.provideDataStore
 import com.fakhry.pomodojo.preferences.di.preferencesModule
-import com.fakhry.pomodojo.preferences.provideDataStore
 import com.fakhry.pomodojo.utils.DispatcherProvider
 import org.koin.core.module.Module
 import org.koin.dsl.module

@@ -1,4 +1,7 @@
-package com.fakhry.pomodojo.preferences
+package com.fakhry.pomodojo.preferences.ui.state
+
+import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
+import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
 
 data class PreferenceOption<T>(
     val label: String,
@@ -8,7 +11,7 @@ data class PreferenceOption<T>(
 )
 
 data class PreferencesState(
-    val repeatCount: Int = PomodoroPreferences.DEFAULT_REPEAT_COUNT,
+    val repeatCount: Int = PomodoroPreferences.Companion.DEFAULT_REPEAT_COUNT,
     val repeatRange: IntRange = DEFAULT_REPEAT_RANGE,
     val focusOptions: List<PreferenceOption<Int>> = emptyList(),
     val breakOptions: List<PreferenceOption<Int>> = emptyList(),

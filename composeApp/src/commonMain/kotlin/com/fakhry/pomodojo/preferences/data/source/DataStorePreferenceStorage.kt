@@ -1,9 +1,13 @@
-package com.fakhry.pomodojo.preferences
+package com.fakhry.pomodojo.preferences.data.source
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
+import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -31,25 +35,25 @@ class DataStorePreferenceStorage(
     private fun Preferences.toDomain(): PomodoroPreferences {
         val repeatCount = this[PreferenceKeys.REPEAT_COUNT]
             ?.takeIf(PreferencesValidator::isValidRepeatCount)
-            ?: PomodoroPreferences.DEFAULT_REPEAT_COUNT
+            ?: PomodoroPreferences.Companion.DEFAULT_REPEAT_COUNT
 
         val focusMinutes = this[PreferenceKeys.FOCUS_MINUTES]
             ?.takeIf(PreferencesValidator::isValidFocusMinutes)
-            ?: PomodoroPreferences.DEFAULT_FOCUS_MINUTES
+            ?: PomodoroPreferences.Companion.DEFAULT_FOCUS_MINUTES
 
         val breakMinutes = this[PreferenceKeys.BREAK_MINUTES]
             ?.takeIf(PreferencesValidator::isValidBreakMinutes)
-            ?: PomodoroPreferences.DEFAULT_BREAK_MINUTES
+            ?: PomodoroPreferences.Companion.DEFAULT_BREAK_MINUTES
 
         val longBreakEnabled = this[PreferenceKeys.LONG_BREAK_ENABLED] ?: true
 
         val longBreakAfter = this[PreferenceKeys.LONG_BREAK_AFTER_COUNT]
             ?.takeIf(PreferencesValidator::isValidLongBreakAfter)
-            ?: PomodoroPreferences.DEFAULT_LONG_BREAK_AFTER
+            ?: PomodoroPreferences.Companion.DEFAULT_LONG_BREAK_AFTER
 
         val longBreakMinutes = this[PreferenceKeys.LONG_BREAK_MINUTES]
             ?.takeIf(PreferencesValidator::isValidLongBreakMinutes)
-            ?: PomodoroPreferences.DEFAULT_LONG_BREAK_MINUTES
+            ?: PomodoroPreferences.Companion.DEFAULT_LONG_BREAK_MINUTES
 
         return PomodoroPreferences(
             repeatCount = repeatCount,
@@ -69,4 +73,13 @@ class DataStorePreferenceStorage(
         this[PreferenceKeys.LONG_BREAK_AFTER_COUNT] = preferences.longBreakAfter
         this[PreferenceKeys.LONG_BREAK_MINUTES] = preferences.longBreakMinutes
     }
+}
+
+object PreferenceKeys {
+    val REPEAT_COUNT = intPreferencesKey("repeat_count")
+    val FOCUS_MINUTES = intPreferencesKey("focus_timer_minutes")
+    val BREAK_MINUTES = intPreferencesKey("break_timer_minutes")
+    val LONG_BREAK_ENABLED = booleanPreferencesKey("long_break_enabled")
+    val LONG_BREAK_AFTER_COUNT = intPreferencesKey("long_break_after_count")
+    val LONG_BREAK_MINUTES = intPreferencesKey("long_break_minutes")
 }

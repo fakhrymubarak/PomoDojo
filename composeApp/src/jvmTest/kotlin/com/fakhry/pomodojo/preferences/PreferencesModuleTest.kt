@@ -1,6 +1,7 @@
 package com.fakhry.pomodojo.preferences
 
 import com.fakhry.pomodojo.di.composeAppModules
+import com.fakhry.pomodojo.preferences.ui.PreferencesViewModel
 import org.junit.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
