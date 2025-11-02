@@ -2,7 +2,7 @@ package com.fakhry.pomodojo.preferences
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
+import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,16 +11,13 @@ import kotlinx.coroutines.launch
 class PreferencesViewModel(
     private val repository: PreferencesRepository,
     private val timelineBuilder: TimelinePreviewBuilder,
-    scope: CoroutineScope? = null,
+    private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
-
-    private val coroutineScope = scope ?: viewModelScope
-
     private val _state = MutableStateFlow(PreferencesState())
     val state: StateFlow<PreferencesState> = _state.asStateFlow()
 
     init {
-        coroutineScope.launch {
+        viewModelScope.launch(dispatcher.io) {
             repository.preferences.collect { preferences ->
                 _state.value = mapToState(preferences)
             }
@@ -32,7 +29,7 @@ class PreferencesViewModel(
             count == _state.value.repeatCount
         ) return
 
-        coroutineScope.launch {
+        viewModelScope.launch(dispatcher.io) {
             repository.updateRepeatCount(count)
         }
     }
@@ -42,7 +39,7 @@ class PreferencesViewModel(
             _state.value.focusOptions.firstOrNull { it.selected }?.value == minutes
         ) return
 
-        coroutineScope.launch {
+        viewModelScope.launch(dispatcher.io) {
             repository.updateFocusMinutes(minutes)
         }
     }
@@ -52,7 +49,7 @@ class PreferencesViewModel(
             _state.value.breakOptions.firstOrNull { it.selected }?.value == minutes
         ) return
 
-        coroutineScope.launch {
+        viewModelScope.launch(dispatcher.io) {
             repository.updateBreakMinutes(minutes)
         }
     }
@@ -60,7 +57,7 @@ class PreferencesViewModel(
     fun onLongBreakEnabledToggled(enabled: Boolean) {
         if (_state.value.isLongBreakEnabled == enabled) return
 
-        coroutineScope.launch {
+        viewModelScope.launch(dispatcher.io) {
             repository.updateLongBreakEnabled(enabled)
         }
     }
@@ -70,7 +67,7 @@ class PreferencesViewModel(
             _state.value.longBreakAfterOptions.firstOrNull { it.selected }?.value == count
         ) return
 
-        coroutineScope.launch {
+        viewModelScope.launch(dispatcher.io) {
             repository.updateLongBreakAfter(count)
         }
     }
@@ -80,7 +77,7 @@ class PreferencesViewModel(
             _state.value.longBreakOptions.firstOrNull { it.selected }?.value == minutes
         ) return
 
-        coroutineScope.launch {
+        viewModelScope.launch(dispatcher.io) {
             repository.updateLongBreakMinutes(minutes)
         }
     }

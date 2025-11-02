@@ -1,11 +1,10 @@
 package com.fakhry.pomodojo.preferences
 
+import com.fakhry.pomodojo.utils.DispatcherProvider
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -24,11 +23,11 @@ class PreferencesViewModelTest {
             cascadeResolver = PreferenceCascadeResolver(),
             validator = PreferencesValidator,
         )
-        val scope = TestScope(StandardTestDispatcher(testScheduler))
+        val testDispatcher = Dispatchers.Unconfined
         val viewModel = PreferencesViewModel(
             repository = repository,
             timelineBuilder = TimelinePreviewBuilder(),
-            scope = scope,
+            dispatcher = DispatcherProvider(testDispatcher),
         )
 
         advanceUntilIdle()
@@ -39,7 +38,6 @@ class PreferencesViewModelTest {
         assertEquals(PomodoroPreferences.DEFAULT_REPEAT_COUNT, state.repeatCount)
         assertTrue(state.focusOptions.first { it.value == 25 }.selected)
         assertEquals(8, state.timelineSegments.size) // 4 focus + 3 short breaks + 1 long break
-        scope.cancel()
     }
 
     @Test
@@ -50,11 +48,11 @@ class PreferencesViewModelTest {
             cascadeResolver = PreferenceCascadeResolver(),
             validator = PreferencesValidator,
         )
-        val scope = TestScope(StandardTestDispatcher(testScheduler))
+        val testDispatcher = Dispatchers.Unconfined
         val viewModel = PreferencesViewModel(
             repository = repository,
             timelineBuilder = TimelinePreviewBuilder(),
-            scope = scope,
+            dispatcher = DispatcherProvider(testDispatcher),
         )
 
         advanceUntilIdle()
@@ -69,7 +67,6 @@ class PreferencesViewModelTest {
         assertTrue(state.longBreakAfterOptions.first { it.value == 2 }.selected)
         assertTrue(state.longBreakOptions.first { it.value == 20 }.selected)
         assertEquals(2, state.timelineSegments.count { it is TimelineSegment.LongBreak })
-        scope.cancel()
     }
 
     private class FakePreferenceStorage : PreferenceStorage {

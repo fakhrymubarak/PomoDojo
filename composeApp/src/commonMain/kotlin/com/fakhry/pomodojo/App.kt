@@ -15,6 +15,7 @@ import org.koin.compose.KoinApplication
 @Composable
 @Preview
 fun App() {
+    PlatformKoinInitializer()
     KoinApplication(application = {
         modules(composeAppModules)
     }) {
@@ -38,3 +39,6 @@ private enum class AppScreen {
     Dashboard,
     Preferences,
 }
+
+@Composable
+internal expect fun PlatformKoinInitializer()
