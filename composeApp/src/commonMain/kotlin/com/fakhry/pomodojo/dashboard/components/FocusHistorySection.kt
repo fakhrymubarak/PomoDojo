@@ -52,6 +52,12 @@ import androidx.compose.ui.window.PopupProperties
 import com.fakhry.pomodojo.dashboard.model.HistoryCell
 import com.fakhry.pomodojo.dashboard.model.contributionColorMap
 import com.fakhry.pomodojo.dashboard.model.previewDashboardState
+import com.fakhry.pomodojo.generated.resources.Res
+import com.fakhry.pomodojo.generated.resources.focus_history_cell_tooltip
+import com.fakhry.pomodojo.generated.resources.focus_history_graph_content_description
+import com.fakhry.pomodojo.generated.resources.focus_history_selected_year_description
+import com.fakhry.pomodojo.generated.resources.focus_history_switch_year_description
+import com.fakhry.pomodojo.generated.resources.focus_history_total_minutes
 import com.fakhry.pomodojo.ui.theme.ButtonSecondary
 import com.fakhry.pomodojo.ui.theme.GraphLevel0
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
@@ -59,6 +65,7 @@ import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextLightGray
 import com.fakhry.pomodojo.ui.theme.TextWhite
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val TooltipVerticalSpacing = 8.dp
@@ -107,14 +114,17 @@ fun FocusHistorySection(
 
 @Composable
 private fun StatisticsCard(totalMinutes: Int) {
+    val totalMinutesText = stringResource(Res.string.focus_history_total_minutes, totalMinutes)
     Text(
-        text = "$totalMinutes minutes of focus in the last year",
+        text = totalMinutesText,
         style = MaterialTheme.typography.bodyMedium.copy(
             color = TextLightGray,
         ),
-        modifier = Modifier.fillMaxWidth().semantics {
-            contentDescription = "$totalMinutes minutes of focus this year"
-        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics {
+                contentDescription = totalMinutesText
+            },
     )
 }
 
@@ -129,6 +139,10 @@ private fun YearFilters(
         horizontalAlignment = Alignment.End,
     ) {
         years.forEach { year ->
+            val selectedDescription =
+                stringResource(Res.string.focus_history_selected_year_description, year)
+            val switchDescription =
+                stringResource(Res.string.focus_history_switch_year_description, year)
             Box(
                 modifier = Modifier.background(
                     color = if (year == selectedYear) Secondary else ButtonSecondary,
@@ -137,9 +151,9 @@ private fun YearFilters(
                     .semantics {
                         role = Role.Button
                         contentDescription = if (year == selectedYear) {
-                            "Viewing activity for $year"
+                            selectedDescription
                         } else {
-                            "Switch to activity from $year"
+                            switchDescription
                         }
                     }) {
                 Text(
@@ -161,9 +175,8 @@ private fun FocusHistoryGraph(
     selectedYear: Int,
     cells: List<List<HistoryCell>>,
 ) {
-    val semanticDescription = remember(selectedYear) {
-        "Focus history activity graph for $selectedYear"
-    }
+    val semanticDescription =
+        stringResource(Res.string.focus_history_graph_content_description, selectedYear)
 
     val columns = 8
     val cellSize = 24.dp
@@ -231,9 +244,11 @@ private fun FocusHistoryCellItem(
 
         is HistoryCell.GraphLevel -> {
             val color = contributionColorMap[cell.intensityLevel] ?: GraphLevel0
-            val tooltipText = remember(cell.focusMinutes, cell.breakMinutes) {
-                "${cell.focusMinutes} minutes focus with ${cell.breakMinutes} minutes break"
-            }
+            val tooltipText = stringResource(
+                Res.string.focus_history_cell_tooltip,
+                cell.focusMinutes,
+                cell.breakMinutes,
+            )
             var showTooltip by remember(cell.focusMinutes, cell.breakMinutes) {
                 mutableStateOf(false)
             }

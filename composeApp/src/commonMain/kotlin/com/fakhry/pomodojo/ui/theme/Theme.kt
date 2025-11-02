@@ -40,13 +40,13 @@ private val DarkColorScheme = darkColorScheme(
 @Composable
 fun PomoDojoTheme(
     darkTheme: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = DarkColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = PomoDojoTypography,
+        typography = pomoDojoTypography(),
         content = content
     )
 }
