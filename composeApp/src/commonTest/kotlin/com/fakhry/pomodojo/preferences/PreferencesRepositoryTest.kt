@@ -23,7 +23,7 @@ class PreferencesRepositoryTest {
     fun `update focus minutes cascades dependent values`() = runTest {
         repository.updateFocusMinutes(50)
 
-        val updated = storage.data.first()
+        val updated = storage.preferences.first()
         assertEquals(50, updated.focusMinutes)
         assertEquals(10, updated.breakMinutes)
         assertEquals(2, updated.longBreakAfter)
@@ -34,7 +34,7 @@ class PreferencesRepositoryTest {
     fun `update break minutes cascades long break minutes`() = runTest {
         repository.updateBreakMinutes(2)
 
-        val updated = storage.data.first()
+        val updated = storage.preferences.first()
         assertEquals(2, updated.breakMinutes)
         assertEquals(4, updated.longBreakMinutes)
     }
@@ -43,11 +43,11 @@ class PreferencesRepositoryTest {
     fun `toggle long break persists state`() = runTest {
         repository.updateLongBreakEnabled(false)
 
-        val updated = storage.data.first()
+        val updated = storage.preferences.first()
         assertFalse(updated.longBreakEnabled)
 
         repository.updateLongBreakEnabled(true)
-        val restored = storage.data.first()
+        val restored = storage.preferences.first()
         assertTrue(restored.longBreakEnabled)
     }
 
@@ -56,12 +56,12 @@ class PreferencesRepositoryTest {
         var thrown = false
         try {
             repository.updateRepeatCount(1)
-        } catch (ex: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             thrown = true
         }
 
         assertTrue(thrown)
-        val current = storage.data.first()
+        val current = storage.preferences.first()
         assertEquals(PomodoroPreferences.DEFAULT_REPEAT_COUNT, current.repeatCount)
     }
 
@@ -70,7 +70,7 @@ class PreferencesRepositoryTest {
 
         private val state = MutableStateFlow(PomodoroPreferences())
 
-        override val data: Flow<PomodoroPreferences> = state
+        override val preferences: Flow<PomodoroPreferences> = state
 
         override suspend fun update(transform: (PomodoroPreferences) -> PomodoroPreferences) {
             state.update(transform)

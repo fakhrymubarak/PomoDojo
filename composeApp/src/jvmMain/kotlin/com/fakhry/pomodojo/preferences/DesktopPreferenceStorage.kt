@@ -18,7 +18,7 @@ internal actual fun provideDataStore(): DataStore<Preferences> {
             mkdirs()
         }
     }
-    val path: Path = File(directory, preferencesFileName()).absolutePath.toPath()
+    val path: Path = File(directory, PREFERENCES_FILE_NAME).absolutePath.toPath()
     return PreferenceDataStoreFactory.createWithPath(
         scope = scope,
         produceFile = { path },

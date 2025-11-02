@@ -8,13 +8,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-private const val PREFERENCES_FILE_NAME = "pomodojo.preferences_pb"
+const val PREFERENCES_FILE_NAME = "pomodojo.preferences_pb"
+
+internal expect fun provideDataStore(): DataStore<Preferences>
 
 class DataStorePreferenceStorage(
     private val dataStore: DataStore<Preferences>,
 ) : PreferenceStorage {
 
-    override val data: Flow<PomodoroPreferences> = dataStore.data
+    override val preferences: Flow<PomodoroPreferences> = dataStore.data
         .map { it.toDomain() }
         .distinctUntilChanged()
 
@@ -68,10 +70,3 @@ class DataStorePreferenceStorage(
         this[PreferenceKeys.LONG_BREAK_MINUTES] = preferences.longBreakMinutes
     }
 }
-
-internal expect fun provideDataStore(): DataStore<Preferences>
-
-fun createPreferenceStorage(): PreferenceStorage =
-    DataStorePreferenceStorage(provideDataStore())
-
-internal fun preferencesFileName(): String = PREFERENCES_FILE_NAME

@@ -123,6 +123,12 @@ class PreferencesViewModel(
         )
     }
 
+
+    override fun onCleared() {
+        println("PreferencesViewModel onCleared")
+        super.onCleared()
+    }
+
     companion object {
         private val FOCUS_OPTIONS = listOf(10, 25, 50)
         private val BREAK_OPTIONS = listOf(2, 5, 10)

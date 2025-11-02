@@ -28,7 +28,7 @@ private object AndroidPreferencesDataStoreProvider {
         PreferenceDataStoreFactory.createWithPath(
             scope = scope,
             produceFile = {
-                appContext.filesDir.resolve(preferencesFileName()).absolutePath.toPath()
+                appContext.filesDir.resolve(PREFERENCES_FILE_NAME).absolutePath.toPath()
             },
         )
     }

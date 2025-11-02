@@ -9,7 +9,7 @@ class PreferencesRepository(
     private val validator: PreferencesValidator = PreferencesValidator,
 ) {
 
-    val preferences: Flow<PomodoroPreferences> = storage.data
+    val preferences: Flow<PomodoroPreferences> = storage.preferences
         .distinctUntilChanged()
 
     suspend fun updateRepeatCount(value: Int) {

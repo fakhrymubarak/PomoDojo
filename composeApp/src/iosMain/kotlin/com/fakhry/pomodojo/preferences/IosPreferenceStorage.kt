@@ -22,7 +22,7 @@ internal actual fun provideDataStore(): DataStore<Preferences> {
 
     val path: Path = directory
         .plus("/")
-        .plus(preferencesFileName())
+        .plus(PREFERENCES_FILE_NAME)
         .toPath()
 
     return PreferenceDataStoreFactory.createWithPath(

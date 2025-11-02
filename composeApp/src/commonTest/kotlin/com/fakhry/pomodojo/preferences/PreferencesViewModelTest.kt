@@ -72,7 +72,7 @@ class PreferencesViewModelTest {
     private class FakePreferenceStorage : PreferenceStorage {
         private val state = MutableStateFlow(PomodoroPreferences())
 
-        override val data = state
+        override val preferences = state
 
         override suspend fun update(transform: (PomodoroPreferences) -> PomodoroPreferences) {
             state.update(transform)
