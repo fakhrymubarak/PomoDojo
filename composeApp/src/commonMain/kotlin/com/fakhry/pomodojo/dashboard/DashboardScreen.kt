@@ -28,9 +28,14 @@ import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.dashboard.components.FocusHistorySection
 import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
 import com.fakhry.pomodojo.dashboard.viewmodel.DashboardViewModel
+import com.fakhry.pomodojo.generated.resources.Res
+import com.fakhry.pomodojo.generated.resources.dashboard_header_content_description
+import com.fakhry.pomodojo.generated.resources.dashboard_header_title
+import com.fakhry.pomodojo.generated.resources.dashboard_open_settings_content_description
 import com.fakhry.pomodojo.ui.theme.DarkBackground
 import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextWhite
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -80,6 +85,11 @@ fun DashboardScreen(
 private fun WavyHeader(
     onOpenSettings: () -> Unit,
 ) {
+    val headerTitle = stringResource(Res.string.dashboard_header_title)
+    val headerContentDescription = stringResource(Res.string.dashboard_header_content_description)
+    val openSettingsContentDescription =
+        stringResource(Res.string.dashboard_open_settings_content_description)
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -92,16 +102,18 @@ private fun WavyHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "PomoDojo",
+                text = headerTitle,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
                     color = TextWhite,
                 ),
-                modifier = Modifier.semantics { contentDescription = "PomoDojo Dashboard" },
+                modifier = Modifier.semantics { contentDescription = headerContentDescription },
             )
             IconButton(
                 onClick = onOpenSettings,
-                modifier = Modifier.semantics { contentDescription = "Open settings" },
+                modifier = Modifier.semantics {
+                    contentDescription = openSettingsContentDescription
+                },
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Settings,

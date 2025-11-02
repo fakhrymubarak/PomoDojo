@@ -1,4 +1,11 @@
 <resources>
+
+    <!-- Dashboard Screen -->
+    <string name="dashboard_header_title">PomoDojo</string>
+    <string name="dashboard_header_content_description">PomoDojo Dashboard</string>
+    <string name="dashboard_open_settings_content_description">Open settings</string>
+
+    <!-- Preferences Screen -->
     <string name="preferences_back_content_description">Go back</string>
     <string name="preferences_title">Preferences</string>
     <string name="preferences_focus_timer_title">Focus Timer</string>
