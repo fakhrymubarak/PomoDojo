@@ -1,5 +1,10 @@
 package com.fakhry.pomodojo.preferences
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -122,6 +128,7 @@ private fun PreferencesContent(
     onLongBreakMinutesSelected: (Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
+    val visibilityLongBreakSection = remember { MutableTransitionState(state.isLongBreakEnabled) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -149,20 +156,35 @@ private fun PreferencesContent(
 
         LongBreakToggle(
             enabled = state.isLongBreakEnabled,
-            onToggle = onToggleLongBreak,
+            onToggle = {
+                onToggleLongBreak(it)
+                visibilityLongBreakSection.targetState = it
+            },
         )
 
-        PreferenceOptionsSection(
-            title = "Long Break After",
-            options = state.longBreakAfterOptions,
-            onOptionSelected = onLongBreakAfterSelected,
-        )
+        AnimatedVisibility(
+            visibleState = visibilityLongBreakSection,
+            enter = expandVertically(
+                animationSpec = tween()
+            ),
+            exit = shrinkVertically(
+                animationSpec = tween()
+            ),
+        ) {
+            Column {
+                PreferenceOptionsSection(
+                    title = "Long Break After",
+                    options = state.longBreakAfterOptions,
+                    onOptionSelected = onLongBreakAfterSelected,
+                )
 
-        PreferenceOptionsSection(
-            title = "Long Break Timer",
-            options = state.longBreakOptions,
-            onOptionSelected = onLongBreakMinutesSelected,
-        )
+                PreferenceOptionsSection(
+                    title = "Long Break Timer",
+                    options = state.longBreakOptions,
+                    onOptionSelected = onLongBreakMinutesSelected,
+                )
+            }
+        }
 
         TimelinePreview(
             segments = state.timelineSegments,

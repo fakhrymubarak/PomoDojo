@@ -42,6 +42,7 @@ class PreferencesRepository(
         storage.update {
             it.copy(
                 breakMinutes = value,
+                longBreakAfter = cascade.longBreakAfterCount,
                 longBreakMinutes = cascade.longBreakMinutes,
             )
         }

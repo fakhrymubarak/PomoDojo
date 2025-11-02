@@ -7,6 +7,7 @@ data class FocusCascade(
 )
 
 data class BreakCascade(
+    val longBreakAfterCount: Int,
     val longBreakMinutes: Int,
 )
 
@@ -32,9 +33,9 @@ class PreferenceCascadeResolver {
     }
 
     fun resolveForBreak(minutes: Int): BreakCascade = when (minutes) {
-        2 -> BreakCascade(longBreakMinutes = 4)
-        5 -> BreakCascade(longBreakMinutes = 10)
-        10 -> BreakCascade(longBreakMinutes = 20)
+        2 -> BreakCascade(longBreakAfterCount = 6, longBreakMinutes = 4)
+        5 -> BreakCascade(longBreakAfterCount = 4, longBreakMinutes = 10)
+        10 -> BreakCascade(longBreakAfterCount = 2, longBreakMinutes = 20)
         else -> throw IllegalArgumentException("Unsupported break value: $minutes")
     }
 }
