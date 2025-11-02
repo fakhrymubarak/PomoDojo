@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -44,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.generated.resources.Res
@@ -60,11 +62,13 @@ import com.fakhry.pomodojo.generated.resources.preferences_timeline_preview_titl
 import com.fakhry.pomodojo.generated.resources.preferences_title
 import com.fakhry.pomodojo.preferences.components.WheelNumbers
 import com.fakhry.pomodojo.ui.theme.DarkBackground
+import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextLightGray
 import com.fakhry.pomodojo.ui.theme.TextWhite
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
 @Composable
@@ -133,12 +137,12 @@ private fun PreferencesTopBar(onNavigateBack: () -> Unit) {
 @Composable
 private fun PreferencesContent(
     state: PreferencesState,
-    onRepeatCountChanged: (Int) -> Unit,
-    onFocusSelected: (Int) -> Unit,
-    onBreakSelected: (Int) -> Unit,
-    onToggleLongBreak: (Boolean) -> Unit,
-    onLongBreakAfterSelected: (Int) -> Unit,
-    onLongBreakMinutesSelected: (Int) -> Unit,
+    onRepeatCountChanged: (Int) -> Unit = {},
+    onFocusSelected: (Int) -> Unit = {},
+    onBreakSelected: (Int) -> Unit = {},
+    onToggleLongBreak: (Boolean) -> Unit = {},
+    onLongBreakAfterSelected: (Int) -> Unit = {},
+    onLongBreakMinutesSelected: (Int) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val visibilityLongBreakSection = remember { MutableTransitionState(state.isLongBreakEnabled) }
@@ -151,6 +155,10 @@ private fun PreferencesContent(
             .padding(horizontal = 24.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp),
     ) {
+        TimelinePreview(
+            segments = state.timelineSegments,
+        )
+
         RepeatSection(
             repeatCount = state.repeatCount,
             range = state.repeatRange,
@@ -209,10 +217,6 @@ private fun PreferencesContent(
                 )
             }
         }
-
-        TimelinePreview(
-            segments = state.timelineSegments,
-        )
     }
 }
 
@@ -305,6 +309,11 @@ private fun LongBreakToggle(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .toggleable(
+                    value = enabled,
+                    role = Role.Switch,
+                    onValueChange = onToggle,
+                )
                 .padding(horizontal = 20.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -315,7 +324,7 @@ private fun LongBreakToggle(
             )
             Switch(
                 checked = enabled,
-                onCheckedChange = onToggle,
+                onCheckedChange = null,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
                     checkedTrackColor = Primary,
@@ -328,7 +337,10 @@ private fun LongBreakToggle(
 
 @Composable
 private fun TimelinePreview(segments: List<TimelineSegment>) {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         Text(
             text = stringResource(Res.string.preferences_timeline_preview_title),
             style = MaterialTheme.typography.titleMedium.copy(color = TextWhite),
@@ -384,5 +396,67 @@ private fun LegendDot(color: Color) {
             .size(12.dp)
             .clip(RoundedCornerShape(6.dp))
             .background(color),
+    )
+}
+
+@Preview
+@Composable
+fun PreferencesContentPreview() {
+    val previewPreferences = PomodoroPreferences(
+        repeatCount = 4,
+        focusMinutes = 25,
+        breakMinutes = 5,
+        longBreakEnabled = true,
+        longBreakAfter = 4,
+        longBreakMinutes = 10,
+    )
+
+    PomoDojoTheme {
+        PreferencesContent(previewPreferencesState(previewPreferences))
+    }
+}
+
+private fun previewPreferencesState(preferences: PomodoroPreferences): PreferencesState {
+    val focusOptions = listOf(10, 25, 50).map { minutes ->
+        PreferenceOption(
+            label = "$minutes mins",
+            value = minutes,
+            selected = minutes == preferences.focusMinutes,
+        )
+    }
+    val breakOptions = listOf(2, 5, 10).map { minutes ->
+        PreferenceOption(
+            label = "$minutes mins",
+            value = minutes,
+            selected = minutes == preferences.breakMinutes,
+        )
+    }
+    val longBreakEnabled = preferences.longBreakEnabled
+    val longBreakAfterOptions = listOf(6, 4, 2).map { count ->
+        PreferenceOption(
+            label = "$count focuses",
+            value = count,
+            selected = count == preferences.longBreakAfter,
+            enabled = longBreakEnabled,
+        )
+    }
+    val longBreakOptions = listOf(4, 10, 20).map { minutes ->
+        PreferenceOption(
+            label = "$minutes mins",
+            value = minutes,
+            selected = minutes == preferences.longBreakMinutes,
+            enabled = longBreakEnabled,
+        )
+    }
+
+    return PreferencesState(
+        repeatCount = preferences.repeatCount,
+        focusOptions = focusOptions,
+        breakOptions = breakOptions,
+        isLongBreakEnabled = longBreakEnabled,
+        longBreakAfterOptions = longBreakAfterOptions,
+        longBreakOptions = longBreakOptions,
+        timelineSegments = TimelinePreviewBuilder().build(preferences),
+        isLoading = false,
     )
 }
