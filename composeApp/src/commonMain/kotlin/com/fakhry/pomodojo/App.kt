@@ -1,10 +1,9 @@
 package com.fakhry.pomodojo
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.fakhry.pomodojo.dashboard.DashboardScreen
 import com.fakhry.pomodojo.di.composeAppModules
 import com.fakhry.pomodojo.preferences.PreferencesScreen
@@ -20,24 +19,32 @@ fun App() {
         modules(composeAppModules)
     }) {
         PomoDojoTheme {
-            var currentScreen by remember { mutableStateOf(AppScreen.Dashboard) }
-
-            when (currentScreen) {
-                AppScreen.Dashboard -> DashboardScreen(
-                    onStartPomodoro = { /* TODO: connect to timer screen */ },
-                    onOpenSettings = { currentScreen = AppScreen.Preferences },
-                )
-                AppScreen.Preferences -> PreferencesScreen(
-                    onNavigateBack = { currentScreen = AppScreen.Dashboard },
-                )
+            val navController = rememberNavController()
+            NavHost(
+                navController = navController,
+                startDestination = AppScreen.Dashboard.route,
+            ) {
+                composable(AppScreen.Dashboard.route) {
+                    DashboardScreen(
+                        onStartPomodoro = { /* TODO: connect to timer screen */ },
+                        onOpenSettings = {
+                            navController.navigate(AppScreen.Preferences.route)
+                        },
+                    )
+                }
+                composable(AppScreen.Preferences.route) {
+                    PreferencesScreen(
+                        onNavigateBack = { navController.popBackStack() },
+                    )
+                }
             }
         }
     }
 }
 
-private enum class AppScreen {
-    Dashboard,
-    Preferences,
+private enum class AppScreen(val route: String) {
+    Dashboard("dashboard"),
+    Preferences("preferences"),
 }
 
 @Composable
