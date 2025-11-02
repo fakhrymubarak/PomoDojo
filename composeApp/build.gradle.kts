@@ -110,3 +110,7 @@ compose.desktop {
         }
     }
 }
+
+compose.resources {
+    packageOfResClass = "com.fakhry.pomodojo.generated.resources"
+}

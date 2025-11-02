@@ -1,0 +1,13 @@
+<resources>
+    <string name="preferences_back_content_description">Go back</string>
+    <string name="preferences_title">Preferences</string>
+    <string name="preferences_focus_timer_title">Focus Timer</string>
+    <string name="preferences_break_timer_title">Break Timer</string>
+    <string name="preferences_long_break_after_title">Long Break After</string>
+    <string name="preferences_long_break_timer_title">Long Break Timer</string>
+    <string name="preferences_repeat_title">Repeat</string>
+    <string name="preferences_enable_long_break">Enable Long Break</string>
+    <string name="preferences_timeline_preview_title">Your focus timeline will look like this:</string>
+    <string name="preferences_timeline_focus_label">Focus</string>
+    <string name="preferences_timeline_break_label">Break</string>
+</resources>

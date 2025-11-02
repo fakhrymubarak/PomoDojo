@@ -46,11 +46,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.generated.resources.Res
+import com.fakhry.pomodojo.generated.resources.preferences_back_content_description
+import com.fakhry.pomodojo.generated.resources.preferences_break_timer_title
+import com.fakhry.pomodojo.generated.resources.preferences_enable_long_break
+import com.fakhry.pomodojo.generated.resources.preferences_focus_timer_title
+import com.fakhry.pomodojo.generated.resources.preferences_long_break_after_title
+import com.fakhry.pomodojo.generated.resources.preferences_long_break_timer_title
+import com.fakhry.pomodojo.generated.resources.preferences_repeat_title
+import com.fakhry.pomodojo.generated.resources.preferences_timeline_break_label
+import com.fakhry.pomodojo.generated.resources.preferences_timeline_focus_label
+import com.fakhry.pomodojo.generated.resources.preferences_timeline_preview_title
+import com.fakhry.pomodojo.generated.resources.preferences_title
 import com.fakhry.pomodojo.ui.theme.DarkBackground
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextLightGray
 import com.fakhry.pomodojo.ui.theme.TextWhite
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
@@ -103,12 +116,12 @@ private fun PreferencesTopBar(onNavigateBack: () -> Unit) {
         IconButton(onClick = onNavigateBack) {
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                contentDescription = "Go back",
+                contentDescription = stringResource(Res.string.preferences_back_content_description),
                 tint = TextWhite,
             )
         }
         Text(
-            text = "Preferences",
+            text = stringResource(Res.string.preferences_title),
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold,
                 color = TextWhite,
@@ -143,13 +156,13 @@ private fun PreferencesContent(
         )
 
         PreferenceOptionsSection(
-            title = "Focus Timer",
+            title = stringResource(Res.string.preferences_focus_timer_title),
             options = state.focusOptions,
             onOptionSelected = onFocusSelected,
         )
 
         PreferenceOptionsSection(
-            title = "Break Timer",
+            title = stringResource(Res.string.preferences_break_timer_title),
             options = state.breakOptions,
             onOptionSelected = onBreakSelected,
         )
@@ -173,13 +186,13 @@ private fun PreferencesContent(
         ) {
             Column {
                 PreferenceOptionsSection(
-                    title = "Long Break After",
+                    title = stringResource(Res.string.preferences_long_break_after_title),
                     options = state.longBreakAfterOptions,
                     onOptionSelected = onLongBreakAfterSelected,
                 )
 
                 PreferenceOptionsSection(
-                    title = "Long Break Timer",
+                    title = stringResource(Res.string.preferences_long_break_timer_title),
                     options = state.longBreakOptions,
                     onOptionSelected = onLongBreakMinutesSelected,
                 )
@@ -200,7 +213,7 @@ private fun RepeatSection(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
-            text = "Repeat",
+            text = stringResource(Res.string.preferences_repeat_title),
             style = MaterialTheme.typography.titleMedium.copy(color = TextWhite),
         )
         Slider(
@@ -307,7 +320,7 @@ private fun LongBreakToggle(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Enable Long Break",
+                text = stringResource(Res.string.preferences_enable_long_break),
                 style = MaterialTheme.typography.titleMedium.copy(color = TextWhite),
             )
             Switch(
@@ -327,7 +340,7 @@ private fun LongBreakToggle(
 private fun TimelinePreview(segments: List<TimelineSegment>) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
-            text = "Your focus timeline will look like this:",
+            text = stringResource(Res.string.preferences_timeline_preview_title),
             style = MaterialTheme.typography.titleMedium.copy(color = TextWhite),
         )
         val totalMinutes = segments.sumOf { it.durationMinutes }.coerceAtLeast(1)
@@ -362,12 +375,12 @@ private fun TimelinePreview(segments: List<TimelineSegment>) {
         ) {
             LegendDot(color = Secondary)
             Text(
-                text = "Focus",
+                text = stringResource(Res.string.preferences_timeline_focus_label),
                 style = MaterialTheme.typography.bodySmall.copy(color = TextLightGray),
             )
             LegendDot(color = Primary)
             Text(
-                text = "Break",
+                text = stringResource(Res.string.preferences_timeline_break_label),
                 style = MaterialTheme.typography.bodySmall.copy(color = TextLightGray),
             )
         }
