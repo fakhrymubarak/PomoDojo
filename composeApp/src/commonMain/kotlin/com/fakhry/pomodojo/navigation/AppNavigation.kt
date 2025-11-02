@@ -53,7 +53,11 @@ fun AppNavHost(
         composable<AppDestination.Dashboard> {
             DashboardScreen(
                 onStartPomodoro = { /* TODO: connect to timer screen */ },
-                onOpenSettings = { navController.navigate(AppDestination.Preferences) },
+                onOpenSettings = {
+                    navController.navigate(AppDestination.Preferences) {
+                        launchSingleTop = true
+                    }
+                },
             )
         }
         composable<AppDestination.Preferences> {

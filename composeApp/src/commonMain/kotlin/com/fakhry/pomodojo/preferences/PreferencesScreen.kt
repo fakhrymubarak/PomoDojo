@@ -40,7 +40,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -112,6 +114,7 @@ fun PreferencesScreen(
 
 @Composable
 private fun PreferencesTopBar(onNavigateBack: () -> Unit) {
+    var isNavigatingBack by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -121,7 +124,14 @@ private fun PreferencesTopBar(onNavigateBack: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        IconButton(onClick = onNavigateBack) {
+        IconButton(
+            onClick = {
+                if (!isNavigatingBack) {
+                    onNavigateBack()
+                    isNavigatingBack = true
+                }
+            }
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                 contentDescription = stringResource(Res.string.preferences_back_content_description),
