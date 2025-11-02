@@ -30,7 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -202,6 +204,8 @@ private fun FocusHistoryCellItem(
     cell: HistoryCell,
     cellSize: Dp,
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     when (cell) {
         HistoryCell.Empty -> {
             Box(modifier = Modifier.size(cellSize))
@@ -246,7 +250,9 @@ private fun FocusHistoryCellItem(
                 modifier = Modifier
                     .size(cellSize)
                     .combinedClickable(
-                        onClick = { showTooltip = true },
+                        onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                            showTooltip = true },
                     )
                     .semantics { contentDescription = tooltipText }
                     .focusable()

@@ -29,8 +29,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -44,6 +42,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.generated.resources.Res
@@ -58,6 +58,7 @@ import com.fakhry.pomodojo.generated.resources.preferences_timeline_break_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_focus_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_preview_title
 import com.fakhry.pomodojo.generated.resources.preferences_title
+import com.fakhry.pomodojo.preferences.components.WheelNumbers
 import com.fakhry.pomodojo.ui.theme.DarkBackground
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
@@ -65,7 +66,6 @@ import com.fakhry.pomodojo.ui.theme.TextLightGray
 import com.fakhry.pomodojo.ui.theme.TextWhite
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import kotlin.math.roundToInt
 
 @Composable
 fun PreferencesScreen(
@@ -142,6 +142,8 @@ private fun PreferencesContent(
 ) {
     val scrollState = rememberScrollState()
     val visibilityLongBreakSection = remember { MutableTransitionState(state.isLongBreakEnabled) }
+    val hapticFeedback = LocalHapticFeedback.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -158,19 +160,28 @@ private fun PreferencesContent(
         PreferenceOptionsSection(
             title = stringResource(Res.string.preferences_focus_timer_title),
             options = state.focusOptions,
-            onOptionSelected = onFocusSelected,
+            onOptionSelected = {
+                onFocusSelected(it)
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
+            },
         )
 
         PreferenceOptionsSection(
             title = stringResource(Res.string.preferences_break_timer_title),
             options = state.breakOptions,
-            onOptionSelected = onBreakSelected,
+            onOptionSelected = {
+                onBreakSelected(it)
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
+            },
         )
 
         LongBreakToggle(
             enabled = state.isLongBreakEnabled,
             onToggle = {
                 onToggleLongBreak(it)
+                val hapticType =
+                    if (it) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff
+                hapticFeedback.performHapticFeedback(hapticType)
                 visibilityLongBreakSection.targetState = it
             },
         )
@@ -216,33 +227,12 @@ private fun RepeatSection(
             text = stringResource(Res.string.preferences_repeat_title),
             style = MaterialTheme.typography.titleMedium.copy(color = TextWhite),
         )
-        Slider(
-            value = repeatCount.toFloat(),
-            onValueChange = { value ->
-                val newValue = value.roundToInt().coerceIn(range)
-                onRepeatCountChanged(newValue)
-            },
-            valueRange = range.first.toFloat()..range.last.toFloat(),
-            steps = range.last - range.first - 1,
-            colors = SliderDefaults.colors(
-                thumbColor = Secondary,
-                activeTrackColor = Secondary,
-                inactiveTrackColor = Color(0xFF333333),
-            ),
+        WheelNumbers(
+            start = range.first,
+            end = range.last,
+            selectedValue = repeatCount,
+            onValueChange = onRepeatCountChanged,
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            range.forEach { value ->
-                Text(
-                    text = value.toString(),
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        color = if (value == repeatCount) Secondary else TextLightGray,
-                    ),
-                )
-            }
-        }
     }
 }
 
