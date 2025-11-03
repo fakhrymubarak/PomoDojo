@@ -3,6 +3,7 @@ package com.fakhry.pomodojo.dashboard.viewmodel
 import androidx.lifecycle.ViewModel
 import com.fakhry.pomodojo.dashboard.model.DashboardState
 import com.fakhry.pomodojo.dashboard.model.previewDashboardState
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +15,7 @@ class DashboardViewModel : ViewModel() {
         timerMinutes = 25,
         focusMinutesThisYear = 189,
         selectedYear = 2025,
-        availableYears = listOf(2025, 2024),
+        availableYears = persistentListOf(2025, 2024),
         cells = previewDashboardState.cells,
     )
 

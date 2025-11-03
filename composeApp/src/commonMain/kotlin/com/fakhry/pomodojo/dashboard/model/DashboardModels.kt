@@ -7,6 +7,8 @@ import com.fakhry.pomodojo.ui.theme.GraphLevel3
 import com.fakhry.pomodojo.ui.theme.GraphLevel4
 import com.fakhry.pomodojo.ui.theme.GraphLevel5
 import com.fakhry.pomodojo.ui.theme.GraphLevel6
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlin.random.Random
 
 /**
@@ -16,8 +18,8 @@ data class DashboardState(
     val timerMinutes: Int,
     val focusMinutesThisYear: Int,
     val selectedYear: Int,
-    val availableYears: List<Int>,
-    val cells: List<List<HistoryCell>>,
+    val availableYears: ImmutableList<Int>,
+    val cells: ImmutableList<ImmutableList<HistoryCell>>,
 )
 
 sealed class HistoryCell {
@@ -64,9 +66,9 @@ val previewDashboardState = DashboardState(
     timerMinutes = 25,
     focusMinutesThisYear = 512,
     selectedYear = 2025,
-    availableYears = listOf(2025, 2024, 2023),
-    cells = listOf(
-        listOf(
+    availableYears = persistentListOf(2025, 2024, 2023),
+    cells = persistentListOf(
+        persistentListOf(
             HistoryCell.Empty,
             HistoryCell.Text("Mon"),
             HistoryCell.Empty,
@@ -76,7 +78,7 @@ val previewDashboardState = DashboardState(
             HistoryCell.Empty,
             HistoryCell.Text("Sun"),
         ),
-        listOf(
+        persistentListOf(
             HistoryCell.Text("Nov"),
             HistoryCell.GraphLevel(4, 400, 40),
             HistoryCell.GraphLevel(4, 400, 40),
@@ -89,7 +91,7 @@ val previewDashboardState = DashboardState(
         generateDummyWeek(),
         generateDummyWeek(),
         generateDummyWeek(),
-        listOf(
+        persistentListOf(
             HistoryCell.Text("Oct"),
             HistoryCell.GraphLevel(3, 300, 30),
             HistoryCell.GraphLevel(2, 200, 20),
@@ -102,7 +104,7 @@ val previewDashboardState = DashboardState(
         generateDummyWeek(),
         generateDummyWeek(),
         generateDummyWeek(),
-        listOf(
+        persistentListOf(
             HistoryCell.Text("Sep"),
             HistoryCell.GraphLevel(1, 100, 10),
             HistoryCell.GraphLevel(0, 0, 0),
@@ -115,7 +117,7 @@ val previewDashboardState = DashboardState(
         generateDummyWeek(),
         generateDummyWeek(),
         generateDummyWeek(),
-        listOf(
+        persistentListOf(
             HistoryCell.Text("Aug"),
             HistoryCell.GraphLevel(5, 500, 50),
             HistoryCell.GraphLevel(4, 400, 40),
@@ -128,7 +130,7 @@ val previewDashboardState = DashboardState(
         generateDummyWeek(),
         generateDummyWeek(),
         generateDummyWeek(),
-        listOf(
+        persistentListOf(
             HistoryCell.Text("Jul"),
             HistoryCell.GraphLevel(2, 200, 20),
             HistoryCell.GraphLevel(1, 100, 10),
@@ -141,7 +143,7 @@ val previewDashboardState = DashboardState(
         generateDummyWeek(),
         generateDummyWeek(),
         generateDummyWeek(),
-        listOf(
+        persistentListOf(
             HistoryCell.Text("Jun"),
             HistoryCell.GraphLevel(4, 400, 40),
             HistoryCell.GraphLevel(3, 300, 30),
@@ -154,7 +156,7 @@ val previewDashboardState = DashboardState(
         generateDummyWeek(),
         generateDummyWeek(),
         generateDummyWeek(),
-        listOf(
+        persistentListOf(
             HistoryCell.Text("May"),
             HistoryCell.GraphLevel(1, 100, 10),
             HistoryCell.GraphLevel(2, 200, 20),
@@ -167,7 +169,7 @@ val previewDashboardState = DashboardState(
         generateDummyWeek(),
         generateDummyWeek(),
         generateDummyWeek(),
-        listOf(
+        persistentListOf(
             HistoryCell.Text("Apr"),
             HistoryCell.GraphLevel(2, 200, 20),
             HistoryCell.GraphLevel(3, 300, 30),
@@ -181,7 +183,7 @@ val previewDashboardState = DashboardState(
         generateDummyWeek(),
         generateDummyWeek(),
         generateDummyWeek(),
-        listOf(
+        persistentListOf(
             HistoryCell.Text("Mar"),
             HistoryCell.GraphLevel(3, 300, 30),
             HistoryCell.GraphLevel(2, 200, 20),
@@ -195,7 +197,7 @@ val previewDashboardState = DashboardState(
         generateDummyWeek(),
         generateDummyWeek(),
         generateDummyWeek(),
-        listOf(
+        persistentListOf(
             HistoryCell.Text("Feb"),
             HistoryCell.GraphLevel(1, 100, 10),
             HistoryCell.GraphLevel(2, 200, 20),
@@ -209,7 +211,7 @@ val previewDashboardState = DashboardState(
         generateDummyWeek(),
         generateDummyWeek(),
         generateDummyWeek(),
-        listOf(
+        persistentListOf(
             HistoryCell.Text("Jan"),
             HistoryCell.GraphLevel(2, 200, 20),
             HistoryCell.GraphLevel(3, 300, 30),
@@ -222,7 +224,7 @@ val previewDashboardState = DashboardState(
     )
 )
 
-fun generateDummyWeek() = listOf(
+fun generateDummyWeek() = persistentListOf(
     HistoryCell.Empty,
     Random.nextInt(0, 6).let { HistoryCell.GraphLevel(it, it * 100, it * 10)},
     Random.nextInt(0, 6).let { HistoryCell.GraphLevel(it, it * 100, it * 10)},

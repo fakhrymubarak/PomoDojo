@@ -1,8 +1,12 @@
 package com.fakhry.pomodojo.preferences.ui.state
 
+import androidx.compose.runtime.Immutable
 import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
+@Immutable
 data class PreferenceOption<T>(
     val label: String,
     val value: T,
@@ -10,15 +14,16 @@ data class PreferenceOption<T>(
     val enabled: Boolean = true,
 )
 
+@Immutable
 data class PreferencesState(
     val repeatCount: Int = PomodoroPreferences.Companion.DEFAULT_REPEAT_COUNT,
     val repeatRange: IntRange = DEFAULT_REPEAT_RANGE,
-    val focusOptions: List<PreferenceOption<Int>> = emptyList(),
-    val breakOptions: List<PreferenceOption<Int>> = emptyList(),
+    val focusOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),
+    val breakOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),
     val isLongBreakEnabled: Boolean = true,
-    val longBreakAfterOptions: List<PreferenceOption<Int>> = emptyList(),
-    val longBreakOptions: List<PreferenceOption<Int>> = emptyList(),
-    val timelineSegments: List<TimelineSegment> = emptyList(),
+    val longBreakAfterOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),
+    val longBreakOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),
+    val timelineSegments: ImmutableList<TimelineSegment> = persistentListOf(),
     val isLoading: Boolean = true,
 ) {
     companion object {

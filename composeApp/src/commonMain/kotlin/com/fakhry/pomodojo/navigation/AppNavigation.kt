@@ -21,6 +21,7 @@ object AppDestination {
 
 private const val ANIMATION_DURATION = 500
 
+@Suppress("NonSkippableComposable")
 @Composable
 fun AppNavHost(
     navController: NavHostController,

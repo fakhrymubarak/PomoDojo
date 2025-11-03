@@ -1,10 +1,12 @@
 package com.fakhry.pomodojo.preferences.domain
 
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 class TimelinePreviewBuilder {
 
-    fun build(preferences: PomodoroPreferences): List<TimelineSegment> {
+    fun build(preferences: PomodoroPreferences): ImmutableList<TimelineSegment> {
         val segments = mutableListOf<TimelineSegment>()
 
         for (cycle in 1..preferences.repeatCount) {
@@ -22,6 +24,6 @@ class TimelinePreviewBuilder {
             }
         }
 
-        return segments
+        return segments.toPersistentList()
     }
 }

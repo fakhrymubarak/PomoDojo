@@ -64,6 +64,7 @@ import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextLightGray
 import com.fakhry.pomodojo.ui.theme.TextWhite
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -78,8 +79,8 @@ private val TooltipVerticalSpacing = 8.dp
 fun FocusHistorySection(
     totalMinutes: Int,
     selectedYear: Int,
-    availableYears: List<Int>,
-    cells: List<List<HistoryCell>>,
+    availableYears: ImmutableList<Int>,
+    cells: ImmutableList<ImmutableList<HistoryCell>>,
     onSelectYear: (Int) -> Unit = {},
 ) {
     Column(
@@ -130,7 +131,7 @@ private fun StatisticsCard(totalMinutes: Int) {
 
 @Composable
 private fun YearFilters(
-    years: List<Int>,
+    years: ImmutableList<Int>,
     selectedYear: Int,
     onSelectYear: (Int) -> Unit,
 ) {
@@ -168,12 +169,11 @@ private fun YearFilters(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FocusHistoryGraph(
     modifier: Modifier = Modifier,
     selectedYear: Int,
-    cells: List<List<HistoryCell>>,
+    cells: ImmutableList<ImmutableList<HistoryCell>>,
 ) {
     val semanticDescription =
         stringResource(Res.string.focus_history_graph_content_description, selectedYear)

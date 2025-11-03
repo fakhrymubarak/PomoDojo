@@ -77,10 +77,13 @@ import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
 import com.fakhry.pomodojo.ui.theme.TextLightGray
 import com.fakhry.pomodojo.ui.theme.TextWhite
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
+@Suppress("NonSkippableComposable")
 @Composable
 fun PreferencesScreen(
     onNavigateBack: () -> Unit,
@@ -145,7 +148,7 @@ private fun PreferencesTopBar(onNavigateBack: () -> Unit) {
         }
         Text(
             text = stringResource(Res.string.preferences_title),
-            style = MaterialTheme.typography.headlineSmall.copy(
+            style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight.Bold,
                 color = TextWhite,
             ),
@@ -262,7 +265,7 @@ private fun RepeatSection(
 @Composable
 private fun PreferenceOptionsSection(
     title: String,
-    options: List<PreferenceOption<Int>>,
+    options: ImmutableList<PreferenceOption<Int>>,
     onOptionSelected: (Int) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -355,7 +358,7 @@ private fun LongBreakToggle(
 }
 
 @Composable
-private fun TimelinePreview(segments: List<TimelineSegment>) {
+private fun TimelinePreview(segments: ImmutableList<TimelineSegment>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -442,14 +445,14 @@ private fun previewPreferencesState(preferences: PomodoroPreferences): Preferenc
             value = minutes,
             selected = minutes == preferences.focusMinutes,
         )
-    }
+    }.toPersistentList()
     val breakOptions = listOf(2, 5, 10).map { minutes ->
         PreferenceOption(
             label = "$minutes mins",
             value = minutes,
             selected = minutes == preferences.breakMinutes,
         )
-    }
+    }.toPersistentList()
     val longBreakEnabled = preferences.longBreakEnabled
     val longBreakAfterOptions = listOf(6, 4, 2).map { count ->
         PreferenceOption(
@@ -458,7 +461,7 @@ private fun previewPreferencesState(preferences: PomodoroPreferences): Preferenc
             selected = count == preferences.longBreakAfter,
             enabled = longBreakEnabled,
         )
-    }
+    }.toPersistentList()
     val longBreakOptions = listOf(4, 10, 20).map { minutes ->
         PreferenceOption(
             label = "$minutes mins",
@@ -466,7 +469,7 @@ private fun previewPreferencesState(preferences: PomodoroPreferences): Preferenc
             selected = minutes == preferences.longBreakMinutes,
             enabled = longBreakEnabled,
         )
-    }
+    }.toPersistentList()
 
     return PreferencesState(
         repeatCount = preferences.repeatCount,

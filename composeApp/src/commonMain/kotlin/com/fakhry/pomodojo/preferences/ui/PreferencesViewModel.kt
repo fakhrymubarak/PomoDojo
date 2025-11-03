@@ -9,6 +9,7 @@ import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
 import com.fakhry.pomodojo.preferences.ui.state.PreferenceOption
 import com.fakhry.pomodojo.preferences.ui.state.PreferencesState
 import com.fakhry.pomodojo.utils.DispatcherProvider
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -99,14 +100,14 @@ class PreferencesViewModel(
                     value = minutes,
                     selected = preferences.focusMinutes == minutes,
                 )
-            },
+            }.toPersistentList(),
             breakOptions = BREAK_OPTIONS.map { minutes ->
                 PreferenceOption(
                     label = "$minutes mins",
                     value = minutes,
                     selected = preferences.breakMinutes == minutes,
                 )
-            },
+            }.toPersistentList(),
             isLongBreakEnabled = longBreakEnabled,
             longBreakAfterOptions = LONG_BREAK_AFTER.map { count ->
                 PreferenceOption(
@@ -115,7 +116,7 @@ class PreferencesViewModel(
                     selected = preferences.longBreakAfter == count,
                     enabled = longBreakEnabled,
                 )
-            },
+            }.toPersistentList(),
             longBreakOptions = LONG_BREAK_MINUTES.map { minutes ->
                 PreferenceOption(
                     label = "$minutes mins",
@@ -123,7 +124,7 @@ class PreferencesViewModel(
                     selected = preferences.longBreakMinutes == minutes,
                     enabled = longBreakEnabled,
                 )
-            },
+            }.toPersistentList(),
             timelineSegments = timelineBuilder.build(preferences),
             isLoading = false,
         )

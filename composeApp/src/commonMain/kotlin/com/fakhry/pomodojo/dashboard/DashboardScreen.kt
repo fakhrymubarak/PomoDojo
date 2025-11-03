@@ -41,6 +41,7 @@ import com.fakhry.pomodojo.ui.theme.TextWhite
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
+@Suppress("NonSkippableComposable")
 @Composable
 fun DashboardScreen(
     onStartPomodoro: () -> Unit,
