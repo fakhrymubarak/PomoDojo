@@ -11,11 +11,11 @@ import androidx.compose.ui.graphics.Color
 val LightSurface = Color(0xFFFF6C6C)
 val DarkSurface = Color(0xFF1A1A1A) // Dark background
 
-// Primary Color (Coral/Red)
-val Primary = Color(0xFFFF6C6C)
+// Primary Color (Tomato/Red)
+val Primary = Color(0xFFBF4A35)
 
 // Secondary Color (Green)
-val Secondary = Color(0xFF7BB35D)
+val Secondary = Color(0xFF567D41)
 val OnSecondary = Color(0xFFE9F9F9)
 
 // Background Colors
@@ -23,12 +23,12 @@ val DarkBackground = Color(0xFF1A1A1A)
 val DarkCircleBackground = Color(0xFF3A3A3A)
 
 // Text Colors
-val TextWhite = Color(0xFFFFFFFF)
+val TextWhite = Color(0xFFE9F9F9)
 val TextLightGray = Color(0xFFCCCCCC)
 val TextDarkGray = Color(0xFF333333)
 
 // Graph Color Levels (7-level intensity system)
-val GraphLevel0 = Color(0xFFD9D9D9) // No activity (light gray)
+val GraphLevel0 = Color(0xffb9b9b9) // No activity (light gray)
 val GraphLevel1 = Color(0xFF7BB35D) // 1-16 minutes
 val GraphLevel2 = Color(0xFF6FA054) // 17-33 minutes
 val GraphLevel3 = Color(0xFF638E49) // 34-50 minutes
