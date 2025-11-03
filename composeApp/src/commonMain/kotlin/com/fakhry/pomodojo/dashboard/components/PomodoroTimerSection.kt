@@ -26,11 +26,9 @@ import androidx.compose.ui.unit.sp
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.pomodoro_timer_content_description
 import com.fakhry.pomodojo.generated.resources.pomodoro_timer_start
-import com.fakhry.pomodojo.ui.theme.ButtonPrimary
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
-import com.fakhry.pomodojo.ui.theme.TextWhite
 import com.fakhry.pomodojo.utils.formatTimerMinutes
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -89,7 +87,7 @@ private fun TimerCard(
                 style = MaterialTheme.typography.displayLarge.copy(
                     fontSize = 56.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextWhite,
+                    color = MaterialTheme.colorScheme.onBackground,
                 ),
                 modifier = Modifier.semantics {
                     contentDescription = timerContentDescription
@@ -103,8 +101,8 @@ private fun TimerCard(
             onClick = onStartPomodoro,
             modifier = Modifier.semantics { contentDescription = startLabel },
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = ButtonPrimary,
-                contentColor = TextWhite,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
             ),
             shape = RoundedCornerShape(24.dp),
         ) {

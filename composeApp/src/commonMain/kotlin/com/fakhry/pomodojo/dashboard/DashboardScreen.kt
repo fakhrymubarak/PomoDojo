@@ -35,9 +35,6 @@ import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.dashboard_header_content_description
 import com.fakhry.pomodojo.generated.resources.dashboard_header_title
 import com.fakhry.pomodojo.generated.resources.dashboard_open_settings_content_description
-import com.fakhry.pomodojo.ui.theme.DarkBackground
-import com.fakhry.pomodojo.ui.theme.Secondary
-import com.fakhry.pomodojo.ui.theme.TextWhite
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -53,7 +50,7 @@ fun DashboardScreen(
     val scrollState = rememberScrollState()
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = DarkBackground,
+        color = MaterialTheme.colorScheme.background,
     ) {
         Column(
             modifier = Modifier
@@ -97,7 +94,7 @@ private fun WavyHeader(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Secondary)
+            .background(MaterialTheme.colorScheme.secondary)
             .windowInsetsPadding(WindowInsets.systemBars)
             .padding(horizontal = 16.dp)
     ) {
@@ -110,7 +107,7 @@ private fun WavyHeader(
                 text = headerTitle,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = TextWhite,
+                    color = MaterialTheme.colorScheme.onSecondary,
                 ),
                 modifier = Modifier.semantics { contentDescription = headerContentDescription },
             )
@@ -123,7 +120,7 @@ private fun WavyHeader(
                 Icon(
                     imageVector = Icons.Rounded.Settings,
                     contentDescription = null,
-                    tint = TextWhite,
+                    tint = MaterialTheme.colorScheme.onSecondary,
                 )
             }
         }

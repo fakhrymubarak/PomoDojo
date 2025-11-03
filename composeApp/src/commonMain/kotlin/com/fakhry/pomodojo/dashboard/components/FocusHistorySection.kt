@@ -58,12 +58,8 @@ import com.fakhry.pomodojo.generated.resources.focus_history_graph_content_descr
 import com.fakhry.pomodojo.generated.resources.focus_history_selected_year_description
 import com.fakhry.pomodojo.generated.resources.focus_history_switch_year_description
 import com.fakhry.pomodojo.generated.resources.focus_history_total_minutes
-import com.fakhry.pomodojo.ui.theme.ButtonSecondary
 import com.fakhry.pomodojo.ui.theme.GraphLevel0
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
-import com.fakhry.pomodojo.ui.theme.Secondary
-import com.fakhry.pomodojo.ui.theme.TextLightGray
-import com.fakhry.pomodojo.ui.theme.TextWhite
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
@@ -119,7 +115,7 @@ private fun StatisticsCard(totalMinutes: Int) {
     Text(
         text = totalMinutesText,
         style = MaterialTheme.typography.bodyMedium.copy(
-            color = TextLightGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -144,14 +140,19 @@ private fun YearFilters(
                 stringResource(Res.string.focus_history_selected_year_description, year)
             val switchDescription =
                 stringResource(Res.string.focus_history_switch_year_description, year)
+            val isSelected = year == selectedYear
             Box(
                 modifier = Modifier.background(
-                    color = if (year == selectedYear) Secondary else ButtonSecondary,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.secondary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    },
                     shape = RoundedCornerShape(16.dp)
                 ).clickable { onSelectYear(year) }.padding(horizontal = 16.dp, vertical = 8.dp)
                     .semantics {
                         role = Role.Button
-                        contentDescription = if (year == selectedYear) {
+                        contentDescription = if (isSelected) {
                             selectedDescription
                         } else {
                             switchDescription
@@ -160,8 +161,12 @@ private fun YearFilters(
                 Text(
                     text = year.toString(),
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = if (year == selectedYear) FontWeight.Bold else FontWeight.Normal,
-                        color = if (year == selectedYear) TextWhite else TextLightGray,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isSelected) {
+                            MaterialTheme.colorScheme.onSecondary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
                     ),
                 )
             }
@@ -234,7 +239,7 @@ private fun FocusHistoryCellItem(
                 Text(
                     text = cell.text,
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        color = TextLightGray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     ),
                     textAlign = TextAlign.Center,
                     maxLines = 1,

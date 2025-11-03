@@ -71,12 +71,9 @@ import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
 import com.fakhry.pomodojo.preferences.ui.state.PreferenceOption
 import com.fakhry.pomodojo.preferences.ui.state.PreferencesState
-import com.fakhry.pomodojo.ui.theme.DarkBackground
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
-import com.fakhry.pomodojo.ui.theme.TextLightGray
-import com.fakhry.pomodojo.ui.theme.TextWhite
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
@@ -93,7 +90,7 @@ fun PreferencesScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = DarkBackground,
+        color = MaterialTheme.colorScheme.background,
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             PreferencesTopBar(onNavigateBack = onNavigateBack)
@@ -103,7 +100,7 @@ fun PreferencesScreen(
                         .fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    CircularProgressIndicator(color = Secondary)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
                 }
             } else {
                 PreferencesContent(
@@ -126,7 +123,7 @@ private fun PreferencesTopBar(onNavigateBack: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Secondary)
+            .background(MaterialTheme.colorScheme.secondary)
             .windowInsetsPadding(WindowInsets.systemBars)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -143,14 +140,14 @@ private fun PreferencesTopBar(onNavigateBack: () -> Unit) {
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                 contentDescription = stringResource(Res.string.preferences_back_content_description),
-                tint = TextWhite,
+                tint = MaterialTheme.colorScheme.onSecondary,
             )
         }
         Text(
             text = stringResource(Res.string.preferences_title),
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight.Bold,
-                color = TextWhite,
+                color = MaterialTheme.colorScheme.onSecondary,
             ),
         )
     }
@@ -251,7 +248,9 @@ private fun RepeatSection(
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = stringResource(Res.string.preferences_repeat_title),
-            style = MaterialTheme.typography.titleMedium.copy(color = TextWhite),
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+            ),
         )
         WheelNumbers(
             start = range.first,
@@ -271,7 +270,9 @@ private fun PreferenceOptionsSection(
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium.copy(color = TextWhite),
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+            ),
         )
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
@@ -294,9 +295,22 @@ private fun PreferenceOptionChip(
     onClick: () -> Unit,
 ) {
     val isSelected = option.selected
-    val backgroundColor = if (isSelected) Secondary else Color.Transparent
-    val borderColor = if (isSelected) Secondary else Color(0xFF404040)
-    val contentColor = if (isSelected) TextWhite else TextLightGray
+    val colorScheme = MaterialTheme.colorScheme
+    val backgroundColor = if (isSelected) {
+        colorScheme.secondary
+    } else {
+        colorScheme.surfaceVariant
+    }
+    val borderColor = if (isSelected) {
+        colorScheme.secondary
+    } else {
+        colorScheme.outline
+    }
+    val contentColor = if (isSelected) {
+        colorScheme.onSecondary
+    } else {
+        colorScheme.onSurface
+    }
     val alpha = if (option.enabled) 1f else 0.3f
 
     Surface(
@@ -324,9 +338,9 @@ private fun LongBreakToggle(
     onToggle: (Boolean) -> Unit,
 ) {
     Surface(
-        color = Color(0x33FF6C6C),
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, Primary.copy(alpha = 0.4f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
     ) {
         Row(
             modifier = Modifier
@@ -342,15 +356,17 @@ private fun LongBreakToggle(
         ) {
             Text(
                 text = stringResource(Res.string.preferences_enable_long_break),
-                style = MaterialTheme.typography.titleMedium.copy(color = TextWhite),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
             )
             Switch(
                 checked = enabled,
                 onCheckedChange = null,
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = Primary,
-                    uncheckedTrackColor = Color(0xFF3A3A3A),
+                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
+                    uncheckedTrackColor = MaterialTheme.colorScheme.outline,
                 ),
             )
         }
@@ -365,7 +381,9 @@ private fun TimelinePreview(segments: ImmutableList<TimelineSegment>) {
     ) {
         Text(
             text = stringResource(Res.string.preferences_timeline_preview_title),
-            style = MaterialTheme.typography.titleMedium.copy(color = TextWhite),
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+            ),
         )
         val totalMinutes = segments.sumOf { it.durationMinutes }.coerceAtLeast(1)
         Row(
@@ -400,12 +418,16 @@ private fun TimelinePreview(segments: ImmutableList<TimelineSegment>) {
             LegendDot(color = Secondary)
             Text(
                 text = stringResource(Res.string.preferences_timeline_focus_label),
-                style = MaterialTheme.typography.bodySmall.copy(color = TextLightGray),
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
             )
             LegendDot(color = Primary)
             Text(
                 text = stringResource(Res.string.preferences_timeline_break_label),
-                style = MaterialTheme.typography.bodySmall.copy(color = TextLightGray),
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
             )
         }
     }
