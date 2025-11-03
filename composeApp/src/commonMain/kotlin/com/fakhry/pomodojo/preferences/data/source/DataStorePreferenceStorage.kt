@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.fakhry.pomodojo.preferences.domain.AppTheme
 import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
 import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
 import kotlinx.coroutines.flow.Flow
@@ -55,7 +57,10 @@ class DataStorePreferenceStorage(
             ?.takeIf(PreferencesValidator::isValidLongBreakMinutes)
             ?: PomodoroPreferences.Companion.DEFAULT_LONG_BREAK_MINUTES
 
+        val appTheme = AppTheme.fromStorage(this[PreferenceKeys.APP_THEME])
+
         return PomodoroPreferences(
+            appTheme = appTheme,
             repeatCount = repeatCount,
             focusMinutes = focusMinutes,
             breakMinutes = breakMinutes,
@@ -72,6 +77,7 @@ class DataStorePreferenceStorage(
         this[PreferenceKeys.LONG_BREAK_ENABLED] = preferences.longBreakEnabled
         this[PreferenceKeys.LONG_BREAK_AFTER_COUNT] = preferences.longBreakAfter
         this[PreferenceKeys.LONG_BREAK_MINUTES] = preferences.longBreakMinutes
+        this[PreferenceKeys.APP_THEME] = preferences.appTheme.storageValue
     }
 }
 
@@ -82,4 +88,5 @@ object PreferenceKeys {
     val LONG_BREAK_ENABLED = booleanPreferencesKey("long_break_enabled")
     val LONG_BREAK_AFTER_COUNT = intPreferencesKey("long_break_after_count")
     val LONG_BREAK_MINUTES = intPreferencesKey("long_break_minutes")
+    val APP_THEME = stringPreferencesKey("app_theme")
 }

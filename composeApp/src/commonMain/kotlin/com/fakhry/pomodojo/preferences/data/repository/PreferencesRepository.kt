@@ -1,6 +1,7 @@
 package com.fakhry.pomodojo.preferences.data.repository
 
 import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
+import com.fakhry.pomodojo.preferences.domain.AppTheme
 import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
 import com.fakhry.pomodojo.preferences.domain.PreferenceCascadeResolver
 import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
@@ -68,5 +69,9 @@ class PreferencesRepository(
             "Invalid long break minutes: $value"
         }
         storage.update { it.copy(longBreakMinutes = value) }
+    }
+
+    suspend fun updateAppTheme(theme: AppTheme) {
+        storage.update { it.copy(appTheme = theme) }
     }
 }

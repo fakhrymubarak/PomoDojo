@@ -24,4 +24,5 @@
     <string name="preferences_timeline_preview_title">Your focus timeline will look like this:</string>
     <string name="preferences_timeline_focus_label">Focus</string>
     <string name="preferences_timeline_break_label">Break</string>
+    <string name="preferences_theme_title">Theme</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.fakhry.pomodojo.preferences.ui.state
 
 import androidx.compose.runtime.Immutable
+import com.fakhry.pomodojo.preferences.domain.AppTheme
 import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
 import kotlinx.collections.immutable.ImmutableList
@@ -16,6 +17,8 @@ data class PreferenceOption<T>(
 
 @Immutable
 data class PreferencesState(
+    val selectedTheme: AppTheme = AppTheme.DARK,
+    val themeOptions: ImmutableList<PreferenceOption<AppTheme>> = persistentListOf(),
     val repeatCount: Int = PomodoroPreferences.Companion.DEFAULT_REPEAT_COUNT,
     val repeatRange: IntRange = DEFAULT_REPEAT_RANGE,
     val focusOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),

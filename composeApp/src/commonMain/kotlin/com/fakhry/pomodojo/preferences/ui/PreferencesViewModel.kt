@@ -3,6 +3,7 @@ package com.fakhry.pomodojo.preferences.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
+import com.fakhry.pomodojo.preferences.domain.AppTheme
 import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
 import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
 import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
@@ -89,10 +90,27 @@ class PreferencesViewModel(
         }
     }
 
+    fun onThemeSelected(theme: AppTheme) {
+        if (_state.value.selectedTheme == theme) return
+
+        viewModelScope.launch(dispatcher.io) {
+            repository.updateAppTheme(theme)
+        }
+    }
+
     private fun mapToState(preferences: PomodoroPreferences): PreferencesState {
         val longBreakEnabled = preferences.longBreakEnabled
+        val themeOptions = AppTheme.entries.map { theme ->
+            PreferenceOption(
+                label = theme.displayName,
+                value = theme,
+                selected = preferences.appTheme == theme,
+            )
+        }.toPersistentList()
 
         return PreferencesState(
+            selectedTheme = preferences.appTheme,
+            themeOptions = themeOptions,
             repeatCount = preferences.repeatCount,
             focusOptions = FOCUS_OPTIONS.map { minutes ->
                 PreferenceOption(

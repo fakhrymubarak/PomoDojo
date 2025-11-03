@@ -64,8 +64,10 @@ import com.fakhry.pomodojo.generated.resources.preferences_repeat_title
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_break_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_focus_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_preview_title
+import com.fakhry.pomodojo.generated.resources.preferences_theme_title
 import com.fakhry.pomodojo.generated.resources.preferences_title
 import com.fakhry.pomodojo.preferences.components.WheelNumbers
+import com.fakhry.pomodojo.preferences.domain.AppTheme
 import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
 import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
@@ -105,6 +107,7 @@ fun PreferencesScreen(
             } else {
                 PreferencesContent(
                     state = state,
+                    onThemeSelected = viewModel::onThemeSelected,
                     onRepeatCountChanged = viewModel::onRepeatCountChanged,
                     onFocusSelected = viewModel::onFocusOptionSelected,
                     onBreakSelected = viewModel::onBreakOptionSelected,
@@ -156,6 +159,7 @@ private fun PreferencesTopBar(onNavigateBack: () -> Unit) {
 @Composable
 private fun PreferencesContent(
     state: PreferencesState,
+    onThemeSelected: (AppTheme) -> Unit = {},
     onRepeatCountChanged: (Int) -> Unit = {},
     onFocusSelected: (Int) -> Unit = {},
     onBreakSelected: (Int) -> Unit = {},
@@ -174,6 +178,12 @@ private fun PreferencesContent(
             .padding(horizontal = 24.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp),
     ) {
+        PreferenceOptionsSection(
+            title = stringResource(Res.string.preferences_theme_title),
+            options = state.themeOptions,
+            onOptionSelected = onThemeSelected,
+        )
+
         TimelinePreview(
             segments = state.timelineSegments,
         )
@@ -262,10 +272,10 @@ private fun RepeatSection(
 }
 
 @Composable
-private fun PreferenceOptionsSection(
+private fun <T> PreferenceOptionsSection(
     title: String,
-    options: ImmutableList<PreferenceOption<Int>>,
-    onOptionSelected: (Int) -> Unit,
+    options: ImmutableList<PreferenceOption<T>>,
+    onOptionSelected: (T) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
@@ -290,8 +300,8 @@ private fun PreferenceOptionsSection(
 }
 
 @Composable
-private fun PreferenceOptionChip(
-    option: PreferenceOption<Int>,
+private fun <T> PreferenceOptionChip(
+    option: PreferenceOption<T>,
     onClick: () -> Unit,
 ) {
     val isSelected = option.selected
@@ -492,8 +502,17 @@ private fun previewPreferencesState(preferences: PomodoroPreferences): Preferenc
             enabled = longBreakEnabled,
         )
     }.toPersistentList()
+    val themeOptions = AppTheme.entries.map { theme ->
+        PreferenceOption(
+            label = theme.displayName,
+            value = theme,
+            selected = theme == preferences.appTheme,
+        )
+    }.toPersistentList()
 
     return PreferencesState(
+        selectedTheme = preferences.appTheme,
+        themeOptions = themeOptions,
         repeatCount = preferences.repeatCount,
         focusOptions = focusOptions,
         breakOptions = breakOptions,

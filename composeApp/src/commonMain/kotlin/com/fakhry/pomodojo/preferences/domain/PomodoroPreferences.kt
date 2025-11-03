@@ -1,6 +1,7 @@
 package com.fakhry.pomodojo.preferences.domain
 
 data class PomodoroPreferences(
+    val appTheme: AppTheme = AppTheme.DARK,
     val repeatCount: Int = DEFAULT_REPEAT_COUNT,
     val focusMinutes: Int = DEFAULT_FOCUS_MINUTES,
     val breakMinutes: Int = DEFAULT_BREAK_MINUTES,
