@@ -63,6 +63,7 @@ import com.fakhry.pomodojo.generated.resources.preferences_long_break_timer_titl
 import com.fakhry.pomodojo.generated.resources.preferences_repeat_title
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_break_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_focus_label
+import com.fakhry.pomodojo.generated.resources.preferences_timeline_long_break_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_preview_title
 import com.fakhry.pomodojo.generated.resources.preferences_theme_title
 import com.fakhry.pomodojo.generated.resources.preferences_title
@@ -76,6 +77,7 @@ import com.fakhry.pomodojo.preferences.ui.state.PreferencesState
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
+import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
@@ -376,6 +378,7 @@ private fun LongBreakToggle(
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
                     checkedTrackColor = MaterialTheme.colorScheme.primary,
+                    uncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
                     uncheckedTrackColor = MaterialTheme.colorScheme.outline,
                 ),
             )
@@ -407,7 +410,7 @@ private fun TimelinePreview(segments: ImmutableList<TimelineSegment>) {
                 val color = when (segment) {
                     is TimelineSegment.Focus -> Secondary
                     is TimelineSegment.ShortBreak -> Primary
-                    is TimelineSegment.LongBreak -> Primary.copy(alpha = 0.8f)
+                    is TimelineSegment.LongBreak -> LongBreakHighlight
                 }
                 Box(
                     modifier = Modifier
@@ -439,6 +442,13 @@ private fun TimelinePreview(segments: ImmutableList<TimelineSegment>) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 ),
             )
+            LegendDot(color = LongBreakHighlight)
+            Text(
+                text = stringResource(Res.string.preferences_timeline_long_break_label),
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
+            )
         }
     }
 }
@@ -460,7 +470,7 @@ fun PreferencesContentPreview() {
         repeatCount = 4,
         focusMinutes = 25,
         breakMinutes = 5,
-        longBreakEnabled = true,
+        longBreakEnabled = false,
         longBreakAfter = 4,
         longBreakMinutes = 10,
     )

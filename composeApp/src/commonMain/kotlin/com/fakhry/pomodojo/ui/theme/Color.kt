@@ -47,3 +47,6 @@ val GraphLevel6 = Color(0xFF3E5A2F) // 85-100 minutes
 // Component Colors
 val ButtonSecondary = Color.Transparent
 val PausedOverlay = Secondary.copy(alpha = 0.7f)
+
+// Timeline colors
+val LongBreakHighlight = Color(0xFFFFC857)
