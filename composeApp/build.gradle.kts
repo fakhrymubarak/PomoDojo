@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -55,6 +57,11 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
+
+            // Room
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.sqlite.bundled)
+
             // DataStore library
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
@@ -67,6 +74,11 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.androidx.sqlite.bundled.jvm)
+        }
+        jvmTest.dependencies {
+            implementation(libs.kotlinx.datetime)
         }
     }
 }
@@ -100,7 +112,15 @@ android {
 
 dependencies {
     implementation(project.dependencies.platform(libs.koin.bom))
-    implementation(libs.koin.core)}
+    implementation(libs.koin.core)
+
+
+    // Room KSP
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+
+}
 
 compose.desktop {
     application {
@@ -116,4 +136,8 @@ compose.desktop {
 
 compose.resources {
     packageOfResClass = "com.fakhry.pomodojo.generated.resources"
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }

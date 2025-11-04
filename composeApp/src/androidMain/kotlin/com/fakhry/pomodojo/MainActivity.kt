@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.fakhry.pomodojo.focus.data.db.initAndroidFocusDatabase
 import com.fakhry.pomodojo.preferences.data.source.initAndroidPreferenceStorage
 
 class MainActivity : ComponentActivity() {
@@ -14,6 +15,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         initAndroidPreferenceStorage(applicationContext)
+        initAndroidFocusDatabase(applicationContext)
 
         setContent {
             App()

@@ -1,6 +1,7 @@
 package com.fakhry.pomodojo.di
 
 import com.fakhry.pomodojo.dashboard.di.dashboardModule
+import com.fakhry.pomodojo.focus.di.focusModule
 import com.fakhry.pomodojo.preferences.data.source.DataStorePreferenceStorage
 import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
 import com.fakhry.pomodojo.preferences.data.source.provideDataStore
@@ -18,4 +19,5 @@ internal val composeAppModules: List<Module> = listOf(
     appModule,
     dashboardModule,
     preferencesModule,
+    focusModule, // TODO : Move initialization to the focus screen
 )

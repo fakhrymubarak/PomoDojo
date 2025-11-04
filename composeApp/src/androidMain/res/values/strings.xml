@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PomoDojo</string>
+    <string name="focus_session_complete_title">Focus session complete</string>
+    <string name="focus_session_complete_body">Take a break and celebrate your progress!</string>
 </resources>
