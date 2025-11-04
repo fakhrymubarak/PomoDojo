@@ -1,0 +1,29 @@
+<resources>
+
+    <!-- Dashboard Screen -->
+    <string name="dashboard_header_title">PomoDojo</string>
+    <string name="dashboard_header_content_description">PomoDojo Dashboard</string>
+    <string name="dashboard_open_settings_content_description">Open settings</string>
+    <string name="focus_history_total_minutes">%1$d minutes of focus in the last year</string>
+    <string name="focus_history_selected_year_description">Viewing activity for %1$d</string>
+    <string name="focus_history_switch_year_description">Switch to activity from %1$d</string>
+    <string name="focus_history_graph_content_description">Focus history activity graph for %1$d</string>
+    <string name="focus_history_cell_tooltip">%1$d minutes focus with %2$d minutes break</string>
+    <string name="pomodoro_timer_content_description">Timer set to %1$d minutes</string>
+    <string name="pomodoro_timer_start">Start Pomodoro</string>
+
+    <!-- Preferences Screen -->
+    <string name="preferences_back_content_description">Go back</string>
+    <string name="preferences_title">Preferences</string>
+    <string name="preferences_focus_timer_title">Focus Timer</string>
+    <string name="preferences_break_timer_title">Break Timer</string>
+    <string name="preferences_long_break_after_title">Long Break After</string>
+    <string name="preferences_long_break_timer_title">Long Break Timer</string>
+    <string name="preferences_repeat_title">Repeat</string>
+    <string name="preferences_enable_long_break">Enable Long Break</string>
+    <string name="preferences_timeline_preview_title">Your focus timeline will look like this:</string>
+    <string name="preferences_timeline_focus_label">Focus</string>
+    <string name="preferences_timeline_break_label">Break</string>
+    <string name="preferences_timeline_long_break_label">Long Break</string>
+    <string name="preferences_theme_title">Theme</string>
+</resources>

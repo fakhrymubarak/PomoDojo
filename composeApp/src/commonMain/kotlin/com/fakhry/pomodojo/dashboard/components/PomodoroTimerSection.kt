@@ -23,12 +23,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.fakhry.pomodojo.ui.theme.ButtonPrimary
+import com.fakhry.pomodojo.generated.resources.Res
+import com.fakhry.pomodojo.generated.resources.pomodoro_timer_content_description
+import com.fakhry.pomodojo.generated.resources.pomodoro_timer_start
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
-import com.fakhry.pomodojo.ui.theme.TextWhite
 import com.fakhry.pomodojo.utils.formatTimerMinutes
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.PI
 import kotlin.math.cos
@@ -61,6 +63,10 @@ private fun TimerCard(
     timerMinutes: Int,
     onStartPomodoro: () -> Unit,
 ) {
+    val timerContentDescription =
+        stringResource(Res.string.pomodoro_timer_content_description, timerMinutes)
+    val startLabel = stringResource(Res.string.pomodoro_timer_start)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,10 +87,10 @@ private fun TimerCard(
                 style = MaterialTheme.typography.displayLarge.copy(
                     fontSize = 56.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextWhite,
+                    color = MaterialTheme.colorScheme.onBackground,
                 ),
                 modifier = Modifier.semantics {
-                    contentDescription = "Timer set to $timerMinutes minutes"
+                    contentDescription = timerContentDescription
                 },
                 textAlign = TextAlign.Center,
             )
@@ -93,15 +99,15 @@ private fun TimerCard(
         // Start button
         Button(
             onClick = onStartPomodoro,
-            modifier = Modifier.semantics { contentDescription = "Start Pomodoro" },
+            modifier = Modifier.semantics { contentDescription = startLabel },
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = ButtonPrimary,
-                contentColor = TextWhite,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
             ),
             shape = RoundedCornerShape(24.dp),
         ) {
             Text(
-                text = "Start Pomodoro",
+                text = startLabel,
                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )

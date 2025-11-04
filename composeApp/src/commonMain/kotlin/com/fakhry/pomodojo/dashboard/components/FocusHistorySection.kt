@@ -30,7 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -50,13 +52,17 @@ import androidx.compose.ui.window.PopupProperties
 import com.fakhry.pomodojo.dashboard.model.HistoryCell
 import com.fakhry.pomodojo.dashboard.model.contributionColorMap
 import com.fakhry.pomodojo.dashboard.model.previewDashboardState
-import com.fakhry.pomodojo.ui.theme.ButtonSecondary
+import com.fakhry.pomodojo.generated.resources.Res
+import com.fakhry.pomodojo.generated.resources.focus_history_cell_tooltip
+import com.fakhry.pomodojo.generated.resources.focus_history_graph_content_description
+import com.fakhry.pomodojo.generated.resources.focus_history_selected_year_description
+import com.fakhry.pomodojo.generated.resources.focus_history_switch_year_description
+import com.fakhry.pomodojo.generated.resources.focus_history_total_minutes
 import com.fakhry.pomodojo.ui.theme.GraphLevel0
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
-import com.fakhry.pomodojo.ui.theme.Secondary
-import com.fakhry.pomodojo.ui.theme.TextLightGray
-import com.fakhry.pomodojo.ui.theme.TextWhite
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val TooltipVerticalSpacing = 8.dp
@@ -69,8 +75,8 @@ private val TooltipVerticalSpacing = 8.dp
 fun FocusHistorySection(
     totalMinutes: Int,
     selectedYear: Int,
-    availableYears: List<Int>,
-    cells: List<List<HistoryCell>>,
+    availableYears: ImmutableList<Int>,
+    cells: ImmutableList<ImmutableList<HistoryCell>>,
     onSelectYear: (Int) -> Unit = {},
 ) {
     Column(
@@ -105,20 +111,23 @@ fun FocusHistorySection(
 
 @Composable
 private fun StatisticsCard(totalMinutes: Int) {
+    val totalMinutesText = stringResource(Res.string.focus_history_total_minutes, totalMinutes)
     Text(
-        text = "$totalMinutes minutes of focus in the last year",
+        text = totalMinutesText,
         style = MaterialTheme.typography.bodyMedium.copy(
-            color = TextLightGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
-        modifier = Modifier.fillMaxWidth().semantics {
-            contentDescription = "$totalMinutes minutes of focus this year"
-        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics {
+                contentDescription = totalMinutesText
+            },
     )
 }
 
 @Composable
 private fun YearFilters(
-    years: List<Int>,
+    years: ImmutableList<Int>,
     selectedYear: Int,
     onSelectYear: (Int) -> Unit,
 ) {
@@ -127,24 +136,37 @@ private fun YearFilters(
         horizontalAlignment = Alignment.End,
     ) {
         years.forEach { year ->
+            val selectedDescription =
+                stringResource(Res.string.focus_history_selected_year_description, year)
+            val switchDescription =
+                stringResource(Res.string.focus_history_switch_year_description, year)
+            val isSelected = year == selectedYear
             Box(
                 modifier = Modifier.background(
-                    color = if (year == selectedYear) Secondary else ButtonSecondary,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.secondary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    },
                     shape = RoundedCornerShape(16.dp)
                 ).clickable { onSelectYear(year) }.padding(horizontal = 16.dp, vertical = 8.dp)
                     .semantics {
                         role = Role.Button
-                        contentDescription = if (year == selectedYear) {
-                            "Viewing activity for $year"
+                        contentDescription = if (isSelected) {
+                            selectedDescription
                         } else {
-                            "Switch to activity from $year"
+                            switchDescription
                         }
                     }) {
                 Text(
                     text = year.toString(),
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = if (year == selectedYear) FontWeight.Bold else FontWeight.Normal,
-                        color = if (year == selectedYear) TextWhite else TextLightGray,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isSelected) {
+                            MaterialTheme.colorScheme.onSecondary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
                     ),
                 )
             }
@@ -152,16 +174,14 @@ private fun YearFilters(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FocusHistoryGraph(
     modifier: Modifier = Modifier,
     selectedYear: Int,
-    cells: List<List<HistoryCell>>,
+    cells: ImmutableList<ImmutableList<HistoryCell>>,
 ) {
-    val semanticDescription = remember(selectedYear) {
-        "Focus history activity graph for $selectedYear"
-    }
+    val semanticDescription =
+        stringResource(Res.string.focus_history_graph_content_description, selectedYear)
 
     val columns = 8
     val cellSize = 24.dp
@@ -202,6 +222,8 @@ private fun FocusHistoryCellItem(
     cell: HistoryCell,
     cellSize: Dp,
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     when (cell) {
         HistoryCell.Empty -> {
             Box(modifier = Modifier.size(cellSize))
@@ -217,7 +239,7 @@ private fun FocusHistoryCellItem(
                 Text(
                     text = cell.text,
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        color = TextLightGray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     ),
                     textAlign = TextAlign.Center,
                     maxLines = 1,
@@ -227,9 +249,11 @@ private fun FocusHistoryCellItem(
 
         is HistoryCell.GraphLevel -> {
             val color = contributionColorMap[cell.intensityLevel] ?: GraphLevel0
-            val tooltipText = remember(cell.focusMinutes, cell.breakMinutes) {
-                "${cell.focusMinutes} minutes focus with ${cell.breakMinutes} minutes break"
-            }
+            val tooltipText = stringResource(
+                Res.string.focus_history_cell_tooltip,
+                cell.focusMinutes,
+                cell.breakMinutes,
+            )
             var showTooltip by remember(cell.focusMinutes, cell.breakMinutes) {
                 mutableStateOf(false)
             }
@@ -246,7 +270,9 @@ private fun FocusHistoryCellItem(
                 modifier = Modifier
                     .size(cellSize)
                     .combinedClickable(
-                        onClick = { showTooltip = true },
+                        onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                            showTooltip = true },
                     )
                     .semantics { contentDescription = tooltipText }
                     .focusable()

@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -28,11 +31,14 @@ import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.dashboard.components.FocusHistorySection
 import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
 import com.fakhry.pomodojo.dashboard.viewmodel.DashboardViewModel
-import com.fakhry.pomodojo.ui.theme.DarkBackground
-import com.fakhry.pomodojo.ui.theme.Secondary
-import com.fakhry.pomodojo.ui.theme.TextWhite
+import com.fakhry.pomodojo.generated.resources.Res
+import com.fakhry.pomodojo.generated.resources.dashboard_header_content_description
+import com.fakhry.pomodojo.generated.resources.dashboard_header_title
+import com.fakhry.pomodojo.generated.resources.dashboard_open_settings_content_description
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
+@Suppress("NonSkippableComposable")
 @Composable
 fun DashboardScreen(
     onStartPomodoro: () -> Unit,
@@ -44,7 +50,7 @@ fun DashboardScreen(
     val scrollState = rememberScrollState()
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = DarkBackground,
+        color = MaterialTheme.colorScheme.background,
     ) {
         Column(
             modifier = Modifier
@@ -80,11 +86,17 @@ fun DashboardScreen(
 private fun WavyHeader(
     onOpenSettings: () -> Unit,
 ) {
+    val headerTitle = stringResource(Res.string.dashboard_header_title)
+    val headerContentDescription = stringResource(Res.string.dashboard_header_content_description)
+    val openSettingsContentDescription =
+        stringResource(Res.string.dashboard_open_settings_content_description)
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Secondary)
-            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .background(MaterialTheme.colorScheme.secondary)
+            .windowInsetsPadding(WindowInsets.systemBars)
+            .padding(horizontal = 16.dp)
     ) {
         androidx.compose.foundation.layout.Row(
             modifier = Modifier.fillMaxWidth(),
@@ -92,21 +104,23 @@ private fun WavyHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "PomoDojo",
+                text = headerTitle,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = TextWhite,
+                    color = MaterialTheme.colorScheme.onSecondary,
                 ),
-                modifier = Modifier.semantics { contentDescription = "PomoDojo Dashboard" },
+                modifier = Modifier.semantics { contentDescription = headerContentDescription },
             )
             IconButton(
                 onClick = onOpenSettings,
-                modifier = Modifier.semantics { contentDescription = "Open settings" },
+                modifier = Modifier.semantics {
+                    contentDescription = openSettingsContentDescription
+                },
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Settings,
                     contentDescription = null,
-                    tint = TextWhite,
+                    tint = MaterialTheme.colorScheme.onSecondary,
                 )
             }
         }
