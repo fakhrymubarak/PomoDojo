@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.preferences.components
+package com.fakhry.pomodojo.preferences.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background

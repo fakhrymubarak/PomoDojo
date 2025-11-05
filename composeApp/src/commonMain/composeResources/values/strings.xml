@@ -15,6 +15,7 @@
     <!-- Preferences Screen -->
     <string name="preferences_back_content_description">Go back</string>
     <string name="preferences_title">Preferences</string>
+    <string name="preferences_title_pomodoro_config_section">Pomodoro Config Section</string>
     <string name="preferences_focus_timer_title">Focus Timer</string>
     <string name="preferences_break_timer_title">Break Timer</string>
     <string name="preferences_long_break_after_title">Long Break After</string>
