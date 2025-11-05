@@ -51,78 +51,89 @@ fun ColumnScope.PomodoroConfigSection(
     onLongBreakMinutesSelected: (Int) -> Unit = {},
 ) = this.run {
     val visibilityLongBreakSection = remember { MutableTransitionState(state.isLongBreakEnabled) }
+    val colorScheme = MaterialTheme.colorScheme
 
     Text(
         text = stringResource(Res.string.preferences_title_pomodoro_config),
         style = MaterialTheme.typography.headlineMedium.copy(
-            color = MaterialTheme.colorScheme.onBackground,
+            color = colorScheme.onBackground,
         ),
     )
 
-    Spacer(modifier = Modifier.height(16.dp))
-
-    RepeatSection(
-        repeatCount = state.repeatCount,
-        range = state.repeatRange,
-        onRepeatCountChanged = onRepeatCountChanged,
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    PreferenceOptionsCompose(
-        title = stringResource(Res.string.preferences_focus_timer_title),
-        options = state.focusOptions,
-        onOptionSelected = {
-            onFocusSelected(it)
-        },
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    PreferenceOptionsCompose(
-        title = stringResource(Res.string.preferences_break_timer_title),
-        options = state.breakOptions,
-        onOptionSelected = {
-            onBreakSelected(it)
-        },
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    LongBreakToggle(
-        enabled = state.isLongBreakEnabled,
-        onToggle = {
-            onToggleLongBreak(it)
-            visibilityLongBreakSection.targetState = it
-        },
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    AnimatedVisibility(
-        visibleState = visibilityLongBreakSection,
-        enter = expandVertically(
-            animationSpec = tween()
-        ),
-        exit = shrinkVertically(
-            animationSpec = tween()
-        ),
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, colorScheme.outline),
+        color = colorScheme.surface,
+        modifier = Modifier.padding(top = 8.dp)
     ) {
-        Column {
-            PreferenceOptionsCompose(
-                title = stringResource(Res.string.preferences_long_break_after_title),
-                options = state.longBreakAfterOptions,
-                onOptionSelected = onLongBreakAfterSelected,
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            RepeatSection(
+                repeatCount = state.repeatCount,
+                range = state.repeatRange,
+                onRepeatCountChanged = onRepeatCountChanged,
             )
+
             Spacer(modifier = Modifier.height(16.dp))
 
             PreferenceOptionsCompose(
-                title = stringResource(Res.string.preferences_long_break_timer_title),
-                options = state.longBreakOptions,
-                onOptionSelected = onLongBreakMinutesSelected,
+                title = stringResource(Res.string.preferences_focus_timer_title),
+                options = state.focusOptions,
+                onOptionSelected = {
+                    onFocusSelected(it)
+                },
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            PreferenceOptionsCompose(
+                title = stringResource(Res.string.preferences_break_timer_title),
+                options = state.breakOptions,
+                onOptionSelected = {
+                    onBreakSelected(it)
+                },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LongBreakToggle(
+                enabled = state.isLongBreakEnabled,
+                onToggle = {
+                    onToggleLongBreak(it)
+                    visibilityLongBreakSection.targetState = it
+                },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AnimatedVisibility(
+                visibleState = visibilityLongBreakSection,
+                enter = expandVertically(
+                    animationSpec = tween()
+                ),
+                exit = shrinkVertically(
+                    animationSpec = tween()
+                ),
+            ) {
+                Column {
+                    PreferenceOptionsCompose(
+                        title = stringResource(Res.string.preferences_long_break_after_title),
+                        options = state.longBreakAfterOptions,
+                        onOptionSelected = onLongBreakAfterSelected,
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    PreferenceOptionsCompose(
+                        title = stringResource(Res.string.preferences_long_break_timer_title),
+                        options = state.longBreakOptions,
+                        onOptionSelected = onLongBreakMinutesSelected,
+                    )
+                }
+            }
         }
     }
+
 }
 
 @Composable
@@ -156,7 +167,7 @@ private fun LongBreakToggle(
 
     Surface(
         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
     ) {
         Row(
