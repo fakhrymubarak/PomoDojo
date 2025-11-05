@@ -20,6 +20,7 @@ data class PreferencesUiModel(
     val longBreakAfterOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),
     val longBreakOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),
     val timelineSegments: ImmutableList<TimelineSegmentUiModel> = persistentListOf(),
+    val timelineHourSplits: ImmutableList<Int> = persistentListOf(),
     val isLoading: Boolean = true,
 )
 

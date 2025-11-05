@@ -10,6 +10,7 @@ import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
 import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.utils.DispatcherProvider
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -144,6 +145,7 @@ class PreferencesViewModel(
                 )
             }.toPersistentList(),
             timelineSegments = timelineBuilder(preferences),
+            timelineHourSplits = persistentListOf(60, 60, 50),
             isLoading = false,
         )
     }

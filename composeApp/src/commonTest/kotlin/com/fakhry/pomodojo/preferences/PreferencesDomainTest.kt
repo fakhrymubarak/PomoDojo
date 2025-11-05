@@ -28,10 +28,33 @@ class PreferencesDomainTest {
 
         val segments = timelineBuilder(preferences)
 
+        val totalMinutes = segments.sumOf { it.duration }
+
         assertEquals(8, segments.size)
-        assertEquals(TimelineSegmentUiModel.Focus(duration = 25), segments.first())
-        assertEquals(TimelineSegmentUiModel.ShortBreak(duration = 5), segments[1])
-        assertEquals(TimelineSegmentUiModel.LongBreak(duration = 10), segments.last())
+
+        val firstFocus = segments.first() as TimelineSegmentUiModel.Focus
+        assertEquals(25, firstFocus.duration)
+        assertEquals(
+            expected = 25f / totalMinutes,
+            actual = firstFocus.weight,
+            absoluteTolerance = 0.0001f,
+        )
+
+        val firstBreak = segments[1] as TimelineSegmentUiModel.ShortBreak
+        assertEquals(5, firstBreak.duration)
+        assertEquals(
+            expected = 5f / totalMinutes,
+            actual = firstBreak.weight,
+            absoluteTolerance = 0.0001f,
+        )
+
+        val finalLongBreak = segments.last() as TimelineSegmentUiModel.LongBreak
+        assertEquals(10, finalLongBreak.duration)
+        assertEquals(
+            expected = 10f / totalMinutes,
+            actual = finalLongBreak.weight,
+            absoluteTolerance = 0.0001f,
+        )
     }
 
     @Test
@@ -47,10 +70,29 @@ class PreferencesDomainTest {
 
         val segments = timelineBuilder(preferences)
 
+        val totalMinutes = segments.sumOf { it.duration }
+
         assertEquals(7, segments.size)
-        assertEquals(TimelineSegmentUiModel.Focus(duration = 25), segments.first())
-        assertEquals(TimelineSegmentUiModel.ShortBreak(duration = 5), segments[1])
-        assertEquals(TimelineSegmentUiModel.Focus(duration = 25), segments.last())
+
+        val firstFocus = segments.first() as TimelineSegmentUiModel.Focus
+        assertEquals(25, firstFocus.duration)
+        assertEquals(
+            expected = 25f / totalMinutes,
+            actual = firstFocus.weight,
+            absoluteTolerance = 0.0001f,
+        )
+
+        val firstBreak = segments[1] as TimelineSegmentUiModel.ShortBreak
+        assertEquals(5, firstBreak.duration)
+        assertEquals(
+            expected = 5f / totalMinutes,
+            actual = firstBreak.weight,
+            absoluteTolerance = 0.0001f,
+        )
+
+        val lastFocus = segments.last() as TimelineSegmentUiModel.Focus
+        assertEquals(25, lastFocus.duration)
+
         assertEquals(3, segments.count { it is TimelineSegmentUiModel.ShortBreak })
         assertFalse(segments.any { it is TimelineSegmentUiModel.LongBreak })
     }
@@ -67,12 +109,28 @@ class PreferencesDomainTest {
         )
 
         val segments = timelineBuilder(preferences)
+        val totalMinutes = segments.sumOf { it.duration }
         val longBreakCount = segments.count { it is TimelineSegmentUiModel.LongBreak }
 
         assertEquals(3, longBreakCount) // after 2nd, 4th, and 6th focus
-        assertEquals(TimelineSegmentUiModel.LongBreak(20), segments[3])
-        assertEquals(TimelineSegmentUiModel.LongBreak(20), segments[7])
-        assertEquals(TimelineSegmentUiModel.LongBreak(20), segments.last())
+        assertEquals(20, (segments[3] as TimelineSegmentUiModel.LongBreak).duration)
+        assertEquals(
+            expected = 20f / totalMinutes,
+            actual = (segments[3] as TimelineSegmentUiModel.LongBreak).weight,
+            absoluteTolerance = 0.0001f,
+        )
+        assertEquals(20, (segments[7] as TimelineSegmentUiModel.LongBreak).duration)
+        assertEquals(
+            expected = 20f / totalMinutes,
+            actual = (segments[7] as TimelineSegmentUiModel.LongBreak).weight,
+            absoluteTolerance = 0.0001f,
+        )
+        assertEquals(20, (segments.last() as TimelineSegmentUiModel.LongBreak).duration)
+        assertEquals(
+            expected = 20f / totalMinutes,
+            actual = (segments.last() as TimelineSegmentUiModel.LongBreak).weight,
+            absoluteTolerance = 0.0001f,
+        )
     }
 
     @Test
