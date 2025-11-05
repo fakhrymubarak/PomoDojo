@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.preferences_break_timer_title
@@ -37,7 +36,7 @@ import com.fakhry.pomodojo.generated.resources.preferences_focus_timer_title
 import com.fakhry.pomodojo.generated.resources.preferences_long_break_after_title
 import com.fakhry.pomodojo.generated.resources.preferences_long_break_timer_title
 import com.fakhry.pomodojo.generated.resources.preferences_repeat_title
-import com.fakhry.pomodojo.generated.resources.preferences_title_pomodoro_config_section
+import com.fakhry.pomodojo.generated.resources.preferences_title_pomodoro_config
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import org.jetbrains.compose.resources.stringResource
 
@@ -54,9 +53,7 @@ fun ColumnScope.PomodoroConfigSection(
     val visibilityLongBreakSection = remember { MutableTransitionState(state.isLongBreakEnabled) }
 
     Text(
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center,
-        text = stringResource(Res.string.preferences_title_pomodoro_config_section),
+        text = stringResource(Res.string.preferences_title_pomodoro_config),
         style = MaterialTheme.typography.headlineMedium.copy(
             color = MaterialTheme.colorScheme.onBackground,
         ),
@@ -156,7 +153,7 @@ private fun LongBreakToggle(
     onToggle: (Boolean) -> Unit,
 ) {
     val hapticFeedback = LocalHapticFeedback.current
-    
+
     Surface(
         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
         shape = RoundedCornerShape(20.dp),
