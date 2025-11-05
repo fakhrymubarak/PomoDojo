@@ -7,9 +7,9 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.fakhry.pomodojo.preferences.domain.AppTheme
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
-import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
+import com.fakhry.pomodojo.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -22,11 +22,11 @@ class DataStorePreferenceStorage(
     private val dataStore: DataStore<Preferences>,
 ) : PreferenceStorage {
 
-    override val preferences: Flow<PomodoroPreferences> = dataStore.data
+    override val preferences: Flow<PreferencesDomain> = dataStore.data
         .map { it.toDomain() }
         .distinctUntilChanged()
 
-    override suspend fun update(transform: (PomodoroPreferences) -> PomodoroPreferences) {
+    override suspend fun update(transform: (PreferencesDomain) -> PreferencesDomain) {
         dataStore.edit { prefs ->
             val current = prefs.toDomain()
             val updated = transform(current)
@@ -34,32 +34,32 @@ class DataStorePreferenceStorage(
         }
     }
 
-    private fun Preferences.toDomain(): PomodoroPreferences {
+    private fun Preferences.toDomain(): PreferencesDomain {
         val repeatCount = this[PreferenceKeys.REPEAT_COUNT]
             ?.takeIf(PreferencesValidator::isValidRepeatCount)
-            ?: PomodoroPreferences.Companion.DEFAULT_REPEAT_COUNT
+            ?: PreferencesDomain.DEFAULT_REPEAT_COUNT
 
         val focusMinutes = this[PreferenceKeys.FOCUS_MINUTES]
             ?.takeIf(PreferencesValidator::isValidFocusMinutes)
-            ?: PomodoroPreferences.Companion.DEFAULT_FOCUS_MINUTES
+            ?: PreferencesDomain.DEFAULT_FOCUS_MINUTES
 
         val breakMinutes = this[PreferenceKeys.BREAK_MINUTES]
             ?.takeIf(PreferencesValidator::isValidBreakMinutes)
-            ?: PomodoroPreferences.Companion.DEFAULT_BREAK_MINUTES
+            ?: PreferencesDomain.DEFAULT_BREAK_MINUTES
 
         val longBreakEnabled = this[PreferenceKeys.LONG_BREAK_ENABLED] ?: true
 
         val longBreakAfter = this[PreferenceKeys.LONG_BREAK_AFTER_COUNT]
             ?.takeIf(PreferencesValidator::isValidLongBreakAfter)
-            ?: PomodoroPreferences.Companion.DEFAULT_LONG_BREAK_AFTER
+            ?: PreferencesDomain.DEFAULT_LONG_BREAK_AFTER
 
         val longBreakMinutes = this[PreferenceKeys.LONG_BREAK_MINUTES]
             ?.takeIf(PreferencesValidator::isValidLongBreakMinutes)
-            ?: PomodoroPreferences.Companion.DEFAULT_LONG_BREAK_MINUTES
+            ?: PreferencesDomain.DEFAULT_LONG_BREAK_MINUTES
 
         val appTheme = AppTheme.fromStorage(this[PreferenceKeys.APP_THEME])
 
-        return PomodoroPreferences(
+        return PreferencesDomain(
             appTheme = appTheme,
             repeatCount = repeatCount,
             focusMinutes = focusMinutes,
@@ -70,7 +70,7 @@ class DataStorePreferenceStorage(
         )
     }
 
-    private fun MutablePreferences.write(preferences: PomodoroPreferences) {
+    private fun MutablePreferences.write(preferences: PreferencesDomain) {
         this[PreferenceKeys.REPEAT_COUNT] = preferences.repeatCount
         this[PreferenceKeys.FOCUS_MINUTES] = preferences.focusMinutes
         this[PreferenceKeys.BREAK_MINUTES] = preferences.breakMinutes
@@ -81,7 +81,7 @@ class DataStorePreferenceStorage(
     }
 }
 
-object PreferenceKeys {
+internal object PreferenceKeys {
     val REPEAT_COUNT = intPreferencesKey("repeat_count")
     val FOCUS_MINUTES = intPreferencesKey("focus_timer_minutes")
     val BREAK_MINUTES = intPreferencesKey("break_timer_minutes")

@@ -2,12 +2,12 @@ package com.fakhry.pomodojo.preferences
 
 import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
 import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
-import com.fakhry.pomodojo.preferences.domain.PreferenceCascadeResolver
-import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
-import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
 import com.fakhry.pomodojo.preferences.ui.PreferencesViewModel
-import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
+import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUiModel
 import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,7 +34,7 @@ class PreferencesViewModelTest {
         val testDispatcher = Dispatchers.Unconfined
         val viewModel = PreferencesViewModel(
             repository = repository,
-            timelineBuilder = TimelinePreviewBuilder(),
+            timelineBuilder = BuildFocusTimelineUseCase(),
             dispatcher = DispatcherProvider(testDispatcher),
         )
 
@@ -43,9 +43,9 @@ class PreferencesViewModelTest {
         val state = viewModel.state.value
 
         assertFalse(state.isLoading)
-        assertEquals(PomodoroPreferences.DEFAULT_REPEAT_COUNT, state.repeatCount)
+        assertEquals(PreferencesDomain.DEFAULT_REPEAT_COUNT, state.repeatCount)
         assertTrue(state.focusOptions.first { it.value == 25 }.selected)
-        assertEquals(8, state.timelineSegments.size) // 4 focus + 3 short breaks + 1 long break
+        assertEquals(7, state.timelineSegments.size) // 4 focus + 3 short breaks
     }
 
     @Test
@@ -59,7 +59,7 @@ class PreferencesViewModelTest {
         val testDispatcher = Dispatchers.Unconfined
         val viewModel = PreferencesViewModel(
             repository = repository,
-            timelineBuilder = TimelinePreviewBuilder(),
+            timelineBuilder = BuildFocusTimelineUseCase(),
             dispatcher = DispatcherProvider(testDispatcher),
         )
 
@@ -74,15 +74,15 @@ class PreferencesViewModelTest {
         assertTrue(state.breakOptions.first { it.value == 10 }.selected)
         assertTrue(state.longBreakAfterOptions.first { it.value == 2 }.selected)
         assertTrue(state.longBreakOptions.first { it.value == 20 }.selected)
-        assertEquals(2, state.timelineSegments.count { it is TimelineSegment.LongBreak })
+        assertEquals(1, state.timelineSegments.count { it is TimelineSegmentUiModel.LongBreak })
     }
 
     private class FakePreferenceStorage : PreferenceStorage {
-        private val state = MutableStateFlow(PomodoroPreferences())
+        private val state = MutableStateFlow(PreferencesDomain())
 
         override val preferences = state
 
-        override suspend fun update(transform: (PomodoroPreferences) -> PomodoroPreferences) {
+        override suspend fun update(transform: (PreferencesDomain) -> PreferencesDomain) {
             state.update(transform)
         }
     }

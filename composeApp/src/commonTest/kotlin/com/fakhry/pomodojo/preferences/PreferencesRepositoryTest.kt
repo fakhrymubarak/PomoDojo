@@ -2,9 +2,9 @@ package com.fakhry.pomodojo.preferences
 
 import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
 import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
-import com.fakhry.pomodojo.preferences.domain.PreferenceCascadeResolver
-import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -67,17 +67,17 @@ class PreferencesRepositoryTest {
 
         assertTrue(thrown)
         val current = storage.preferences.first()
-        assertEquals(PomodoroPreferences.DEFAULT_REPEAT_COUNT, current.repeatCount)
+        assertEquals(PreferencesDomain.DEFAULT_REPEAT_COUNT, current.repeatCount)
     }
 
     private class FakePreferenceStorage :
         PreferenceStorage {
 
-        private val state = MutableStateFlow(PomodoroPreferences())
+        private val state = MutableStateFlow(PreferencesDomain())
 
-        override val preferences: Flow<PomodoroPreferences> = state
+        override val preferences: Flow<PreferencesDomain> = state
 
-        override suspend fun update(transform: (PomodoroPreferences) -> PomodoroPreferences) {
+        override suspend fun update(transform: (PreferencesDomain) -> PreferencesDomain) {
             state.update(transform)
         }
     }

@@ -1,15 +1,7 @@
-package com.fakhry.pomodojo.preferences.domain
+package com.fakhry.pomodojo.preferences.domain.usecase
 
-data class FocusCascade(
-    val breakMinutes: Int,
-    val longBreakAfterCount: Int,
-    val longBreakMinutes: Int,
-)
-
-data class BreakCascade(
-    val longBreakAfterCount: Int,
-    val longBreakMinutes: Int,
-)
+import com.fakhry.pomodojo.preferences.domain.model.BreakCascade
+import com.fakhry.pomodojo.preferences.domain.model.FocusCascade
 
 class PreferenceCascadeResolver {
 

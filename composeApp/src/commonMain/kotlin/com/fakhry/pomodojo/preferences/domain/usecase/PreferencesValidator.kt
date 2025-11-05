@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.preferences.domain
+package com.fakhry.pomodojo.preferences.domain.usecase
 
 object PreferencesValidator {
     private val repeatRange = 2..8

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.dashboard.model.DashboardState
 import com.fakhry.pomodojo.dashboard.model.previewDashboardState
 import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +18,7 @@ class DashboardViewModel(
 ) : ViewModel() {
 
     private val initialState = DashboardState(
-        timerMinutes = PomodoroPreferences.DEFAULT_FOCUS_MINUTES,
+        timerMinutes = PreferencesDomain.DEFAULT_FOCUS_MINUTES,
         focusMinutesThisYear = 189,
         selectedYear = 2025,
         availableYears = persistentListOf(2025, 2024),

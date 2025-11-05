@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.focus.domain.model
 
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -33,7 +33,7 @@ data class FocusSessionConfig(
     val autoStartBreaks: Boolean,
 ) {
     companion object {
-        fun fromPreferences(preferences: PomodoroPreferences): FocusSessionConfig = FocusSessionConfig(
+        fun fromPreferences(preferences: PreferencesDomain): FocusSessionConfig = FocusSessionConfig(
             focusDurationMinutes = preferences.focusMinutes,
             shortBreakMinutes = preferences.breakMinutes,
             longBreakMinutes = if (preferences.longBreakEnabled) {

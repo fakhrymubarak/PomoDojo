@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.preferences.domain
+package com.fakhry.pomodojo.preferences.domain.model
 
 /**
  * Supported application appearance themes.

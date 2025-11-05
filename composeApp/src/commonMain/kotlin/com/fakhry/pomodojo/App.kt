@@ -12,8 +12,8 @@ import com.fakhry.pomodojo.navigation.AppNavHost
 import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
 import com.fakhry.pomodojo.preferences.data.source.PreferenceKeys
 import com.fakhry.pomodojo.preferences.data.source.provideDataStore
-import com.fakhry.pomodojo.preferences.domain.AppTheme
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
+import com.fakhry.pomodojo.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -32,7 +32,7 @@ fun App() {
         return
     }
     val initialPreferences = remember(initialTheme) {
-        PomodoroPreferences(appTheme = initialTheme)
+        PreferencesDomain(appTheme = initialTheme)
     }
 
     KoinApplication(
