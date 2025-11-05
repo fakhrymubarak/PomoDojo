@@ -21,7 +21,7 @@ internal object AndroidFocusDatabaseHolder {
         Room.databaseBuilder(
             appContext,
             PomoDojoRoomDatabase::class.java,
-            DATABASE_NAME,
+            POMO_DOJO_DATABASE_NAME,
         ).build()
     }
 

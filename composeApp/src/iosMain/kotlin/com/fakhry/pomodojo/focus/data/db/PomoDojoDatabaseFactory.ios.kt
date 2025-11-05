@@ -13,10 +13,8 @@ import platform.Foundation.NSUserDomainMask
 actual fun createDatabase(): PomoDojoRoomDatabase = IosFocusDatabaseHolder.database
 
 private object IosFocusDatabaseHolder {
-    private const val DATABASE_NAME = "pomodojo.db"
-
     val database: PomoDojoRoomDatabase by lazy {
-        val dbFile = "${fileDirectory()}/$DATABASE_NAME"
+        val dbFile = "${fileDirectory()}/$POMO_DOJO_DATABASE_NAME"
         Room.databaseBuilder<PomoDojoRoomDatabase>(
                 name = dbFile,
             ).setDriver(BundledSQLiteDriver()).setQueryCoroutineContext(Dispatchers.IO).build()
