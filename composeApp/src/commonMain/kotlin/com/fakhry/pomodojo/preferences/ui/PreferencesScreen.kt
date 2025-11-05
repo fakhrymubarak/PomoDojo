@@ -45,6 +45,7 @@ import com.fakhry.pomodojo.preferences.ui.components.PreferenceAppearanceSection
 import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -139,6 +140,7 @@ private fun PreferencesContent(
 
         PomodoroTimelinePreviewSection(
             segments = state.timelineSegments,
+            hourSplits = state.timelineHourSplits,
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -215,6 +217,7 @@ private fun PreferencesContentPreview() {
             )
         }.toPersistentList(),
         timelineSegments = BuildFocusTimelineUseCase().invoke(preferences),
+        timelineHourSplits = persistentListOf(60, 60, 50),
         isLoading = false,
     )
 
