@@ -17,6 +17,7 @@
     <string name="preferences_title">Preferences</string>
     <string name="preferences_title_pomodoro_config">Pomodoro Config</string>
     <string name="preferences_title_pomodoro_timeline_preview">Pomodoro Timeline Preview</string>
+    <string name="preferences_title_pomodoro_appearance_config">Appearance Config</string>
     <string name="preferences_focus_timer_title">Focus Timer</string>
     <string name="preferences_break_timer_title">Break Timer</string>
     <string name="preferences_long_break_after_title">Long Break After</string>

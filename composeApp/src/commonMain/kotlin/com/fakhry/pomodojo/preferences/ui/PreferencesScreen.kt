@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -33,14 +35,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.preferences_back_content_description
-import com.fakhry.pomodojo.generated.resources.preferences_theme_title
 import com.fakhry.pomodojo.generated.resources.preferences_title
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.ui.components.PomodoroConfigSection
 import com.fakhry.pomodojo.preferences.ui.components.PomodoroTimelinePreviewSection
-import com.fakhry.pomodojo.preferences.ui.components.PreferenceOptionsCompose
+import com.fakhry.pomodojo.preferences.ui.components.PreferenceAppearanceSection
 import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
@@ -52,8 +53,8 @@ import org.koin.compose.koinInject
 @Suppress("NonSkippableComposable")
 @Composable
 fun PreferencesScreen(
-    onNavigateBack: () -> Unit,
     viewModel: PreferencesViewModel = koinInject(),
+    onNavigateBack: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -135,6 +136,14 @@ private fun PreferencesContent(
         modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
             .padding(horizontal = 24.dp, vertical = 24.dp),
     ) {
+
+        PomodoroTimelinePreviewSection(
+            segments = state.timelineSegments,
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+
         PomodoroConfigSection(
             state = state,
             onRepeatCountChanged = onRepeatCountChanged,
@@ -144,14 +153,10 @@ private fun PreferencesContent(
             onLongBreakAfterSelected = onLongBreakAfterSelected,
             onLongBreakMinutesSelected = onLongBreakMinutesSelected,
         )
+        Spacer(modifier = Modifier.height(32.dp))
 
-        PomodoroTimelinePreviewSection(
-            segments = state.timelineSegments,
-        )
-
-        PreferenceOptionsCompose(
-            title = stringResource(Res.string.preferences_theme_title),
-            options = state.themeOptions,
+        PreferenceAppearanceSection(
+            state = state,
             onOptionSelected = onThemeSelected,
         )
     }
@@ -159,7 +164,7 @@ private fun PreferencesContent(
 
 @Preview
 @Composable
-fun PreferencesContentPreview() {
+private fun PreferencesContentPreview() {
     val preferences = PreferencesDomain(
         repeatCount = 4,
         focusMinutes = 25,

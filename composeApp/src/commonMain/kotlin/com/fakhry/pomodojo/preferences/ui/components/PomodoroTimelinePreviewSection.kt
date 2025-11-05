@@ -37,8 +37,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ColumnScope.PomodoroTimelinePreviewSection(segments: ImmutableList<TimelineSegmentUiModel>) =
     this.run {
-        Spacer(modifier = Modifier.height(32.dp))
-
         Text(
             text = stringResource(Res.string.preferences_title_pomodoro_timeline_preview),
             style = MaterialTheme.typography.headlineMedium.copy(
