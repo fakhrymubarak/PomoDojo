@@ -12,7 +12,7 @@ private object DesktopFocusDatabaseHolder {
         val home = System.getProperty("user.home")
         val directory = Path.of(home, ".pomodojo")
         Files.createDirectories(directory)
-        directory.resolve("pomodojo.db")
+        directory.resolve(POMO_DOJO_DATABASE_NAME)
     }
 
     val database: PomoDojoRoomDatabase by lazy {
