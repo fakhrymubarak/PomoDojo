@@ -3,12 +3,12 @@ package com.fakhry.pomodojo.preferences.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
-import com.fakhry.pomodojo.preferences.domain.AppTheme
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
-import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
-import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
-import com.fakhry.pomodojo.preferences.ui.state.PreferenceOption
-import com.fakhry.pomodojo.preferences.ui.state.PreferencesState
+import com.fakhry.pomodojo.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
+import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
+import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,11 +18,11 @@ import kotlinx.coroutines.launch
 
 class PreferencesViewModel(
     private val repository: PreferencesRepository,
-    private val timelineBuilder: TimelinePreviewBuilder,
+    private val timelineBuilder: BuildFocusTimelineUseCase,
     private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(PreferencesState())
-    val state: StateFlow<PreferencesState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(PreferencesUiModel())
+    val state: StateFlow<PreferencesUiModel> = _state.asStateFlow()
 
     init {
         viewModelScope.launch(dispatcher.io) {
@@ -98,7 +98,7 @@ class PreferencesViewModel(
         }
     }
 
-    private fun mapToState(preferences: PomodoroPreferences): PreferencesState {
+    private fun mapToState(preferences: PreferencesDomain): PreferencesUiModel {
         val longBreakEnabled = preferences.longBreakEnabled
         val themeOptions = AppTheme.entries.map { theme ->
             PreferenceOption(
@@ -108,7 +108,7 @@ class PreferencesViewModel(
             )
         }.toPersistentList()
 
-        return PreferencesState(
+        return PreferencesUiModel(
             selectedTheme = preferences.appTheme,
             themeOptions = themeOptions,
             repeatCount = preferences.repeatCount,
@@ -143,7 +143,7 @@ class PreferencesViewModel(
                     enabled = longBreakEnabled,
                 )
             }.toPersistentList(),
-            timelineSegments = timelineBuilder.build(preferences),
+            timelineSegments = timelineBuilder(preferences),
             isLoading = false,
         )
     }

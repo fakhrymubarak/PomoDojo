@@ -61,23 +61,23 @@ import com.fakhry.pomodojo.generated.resources.preferences_focus_timer_title
 import com.fakhry.pomodojo.generated.resources.preferences_long_break_after_title
 import com.fakhry.pomodojo.generated.resources.preferences_long_break_timer_title
 import com.fakhry.pomodojo.generated.resources.preferences_repeat_title
+import com.fakhry.pomodojo.generated.resources.preferences_theme_title
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_break_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_focus_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_long_break_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_preview_title
-import com.fakhry.pomodojo.generated.resources.preferences_theme_title
 import com.fakhry.pomodojo.generated.resources.preferences_title
 import com.fakhry.pomodojo.preferences.components.WheelNumbers
-import com.fakhry.pomodojo.preferences.domain.AppTheme
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
-import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
-import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
-import com.fakhry.pomodojo.preferences.ui.state.PreferenceOption
-import com.fakhry.pomodojo.preferences.ui.state.PreferencesState
+import com.fakhry.pomodojo.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
+import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
+import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
+import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUiModel
+import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
-import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
@@ -160,7 +160,7 @@ private fun PreferencesTopBar(onNavigateBack: () -> Unit) {
 
 @Composable
 private fun PreferencesContent(
-    state: PreferencesState,
+    state: PreferencesUiModel,
     onThemeSelected: (AppTheme) -> Unit = {},
     onRepeatCountChanged: (Int) -> Unit = {},
     onFocusSelected: (Int) -> Unit = {},
@@ -387,7 +387,7 @@ private fun LongBreakToggle(
 }
 
 @Composable
-private fun TimelinePreview(segments: ImmutableList<TimelineSegment>) {
+private fun TimelinePreview(segments: ImmutableList<TimelineSegmentUiModel>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -398,7 +398,7 @@ private fun TimelinePreview(segments: ImmutableList<TimelineSegment>) {
                 color = MaterialTheme.colorScheme.onBackground,
             ),
         )
-        val totalMinutes = segments.sumOf { it.durationMinutes }.coerceAtLeast(1)
+        val totalMinutes = segments.sumOf { it.duration }.coerceAtLeast(1)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -406,11 +406,11 @@ private fun TimelinePreview(segments: ImmutableList<TimelineSegment>) {
                 .clip(RoundedCornerShape(8.dp)),
         ) {
             segments.forEachIndexed { index, segment ->
-                val weight = segment.durationMinutes / totalMinutes.toFloat()
+                val weight = segment.duration / totalMinutes.toFloat()
                 val color = when (segment) {
-                    is TimelineSegment.Focus -> Secondary
-                    is TimelineSegment.ShortBreak -> Primary
-                    is TimelineSegment.LongBreak -> LongBreakHighlight
+                    is TimelineSegmentUiModel.Focus -> Secondary
+                    is TimelineSegmentUiModel.ShortBreak -> Primary
+                    is TimelineSegmentUiModel.LongBreak -> LongBreakHighlight
                 }
                 Box(
                     modifier = Modifier
@@ -466,7 +466,7 @@ private fun LegendDot(color: Color) {
 @Preview
 @Composable
 fun PreferencesContentPreview() {
-    val previewPreferences = PomodoroPreferences(
+    val previewPreferences = PreferencesDomain(
         repeatCount = 4,
         focusMinutes = 25,
         breakMinutes = 5,
@@ -480,7 +480,7 @@ fun PreferencesContentPreview() {
     }
 }
 
-private fun previewPreferencesState(preferences: PomodoroPreferences): PreferencesState {
+private fun previewPreferencesState(preferences: PreferencesDomain): PreferencesUiModel {
     val focusOptions = listOf(10, 25, 50).map { minutes ->
         PreferenceOption(
             label = "$minutes mins",
@@ -520,7 +520,7 @@ private fun previewPreferencesState(preferences: PomodoroPreferences): Preferenc
         )
     }.toPersistentList()
 
-    return PreferencesState(
+    return PreferencesUiModel(
         selectedTheme = preferences.appTheme,
         themeOptions = themeOptions,
         repeatCount = preferences.repeatCount,
@@ -529,7 +529,7 @@ private fun previewPreferencesState(preferences: PomodoroPreferences): Preferenc
         isLongBreakEnabled = longBreakEnabled,
         longBreakAfterOptions = longBreakAfterOptions,
         longBreakOptions = longBreakOptions,
-        timelineSegments = TimelinePreviewBuilder().build(preferences),
+        timelineSegments = BuildFocusTimelineUseCase().invoke(preferences),
         isLoading = false,
     )
 }

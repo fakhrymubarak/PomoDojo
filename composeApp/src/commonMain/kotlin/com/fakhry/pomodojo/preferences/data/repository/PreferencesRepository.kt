@@ -1,10 +1,10 @@
 package com.fakhry.pomodojo.preferences.data.repository
 
 import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
-import com.fakhry.pomodojo.preferences.domain.AppTheme
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
-import com.fakhry.pomodojo.preferences.domain.PreferenceCascadeResolver
-import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
+import com.fakhry.pomodojo.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -14,7 +14,7 @@ class PreferencesRepository(
     private val validator: PreferencesValidator = PreferencesValidator,
 ) {
 
-    val preferences: Flow<PomodoroPreferences> = storage.preferences
+    val preferences: Flow<PreferencesDomain> = storage.preferences
         .distinctUntilChanged()
 
     suspend fun updateRepeatCount(value: Int) {

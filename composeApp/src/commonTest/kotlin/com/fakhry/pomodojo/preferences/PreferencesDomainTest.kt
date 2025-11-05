@@ -1,10 +1,10 @@
 package com.fakhry.pomodojo.preferences
 
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
-import com.fakhry.pomodojo.preferences.domain.PreferenceCascadeResolver
-import com.fakhry.pomodojo.preferences.domain.PreferencesValidator
-import com.fakhry.pomodojo.preferences.domain.TimelinePreviewBuilder
-import com.fakhry.pomodojo.preferences.ui.model.TimelineSegment
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
+import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUiModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -12,12 +12,12 @@ import kotlin.test.assertTrue
 
 class PreferencesDomainTest {
 
-    private val timelineBuilder = TimelinePreviewBuilder()
+    private val timelineBuilder = BuildFocusTimelineUseCase()
     private val cascadeResolver = PreferenceCascadeResolver()
 
     @Test
     fun `timeline builder includes long break when enabled`() {
-        val preferences = PomodoroPreferences(
+        val preferences = PreferencesDomain(
             repeatCount = 4,
             focusMinutes = 25,
             breakMinutes = 5,
@@ -26,17 +26,17 @@ class PreferencesDomainTest {
             longBreakMinutes = 10,
         )
 
-        val segments = timelineBuilder.build(preferences)
+        val segments = timelineBuilder(preferences)
 
         assertEquals(8, segments.size)
-        assertEquals(TimelineSegment.Focus(durationMinutes = 25), segments.first())
-        assertEquals(TimelineSegment.ShortBreak(durationMinutes = 5), segments[1])
-        assertEquals(TimelineSegment.LongBreak(durationMinutes = 10), segments.last())
+        assertEquals(TimelineSegmentUiModel.Focus(duration = 25), segments.first())
+        assertEquals(TimelineSegmentUiModel.ShortBreak(duration = 5), segments[1])
+        assertEquals(TimelineSegmentUiModel.LongBreak(duration = 10), segments.last())
     }
 
     @Test
     fun `timeline builder omits long break when disabled`() {
-        val preferences = PomodoroPreferences(
+        val preferences = PreferencesDomain(
             repeatCount = 4,
             focusMinutes = 25,
             breakMinutes = 5,
@@ -45,19 +45,19 @@ class PreferencesDomainTest {
             longBreakMinutes = 10,
         )
 
-        val segments = timelineBuilder.build(preferences)
+        val segments = timelineBuilder(preferences)
 
         assertEquals(7, segments.size)
-        assertEquals(TimelineSegment.Focus(durationMinutes = 25), segments.first())
-        assertEquals(TimelineSegment.ShortBreak(durationMinutes = 5), segments[1])
-        assertEquals(TimelineSegment.Focus(durationMinutes = 25), segments.last())
-        assertEquals(3, segments.count { it is TimelineSegment.ShortBreak })
-        assertFalse(segments.any { it is TimelineSegment.LongBreak })
+        assertEquals(TimelineSegmentUiModel.Focus(duration = 25), segments.first())
+        assertEquals(TimelineSegmentUiModel.ShortBreak(duration = 5), segments[1])
+        assertEquals(TimelineSegmentUiModel.Focus(duration = 25), segments.last())
+        assertEquals(3, segments.count { it is TimelineSegmentUiModel.ShortBreak })
+        assertFalse(segments.any { it is TimelineSegmentUiModel.LongBreak })
     }
 
     @Test
     fun `timeline builder inserts long breaks at configured interval`() {
-        val preferences = PomodoroPreferences(
+        val preferences = PreferencesDomain(
             repeatCount = 6,
             focusMinutes = 50,
             breakMinutes = 10,
@@ -66,13 +66,13 @@ class PreferencesDomainTest {
             longBreakMinutes = 20,
         )
 
-        val segments = timelineBuilder.build(preferences)
-        val longBreakCount = segments.count { it is TimelineSegment.LongBreak }
+        val segments = timelineBuilder(preferences)
+        val longBreakCount = segments.count { it is TimelineSegmentUiModel.LongBreak }
 
         assertEquals(3, longBreakCount) // after 2nd, 4th, and 6th focus
-        assertEquals(TimelineSegment.LongBreak(20), segments[3])
-        assertEquals(TimelineSegment.LongBreak(20), segments[7])
-        assertEquals(TimelineSegment.LongBreak(20), segments.last())
+        assertEquals(TimelineSegmentUiModel.LongBreak(20), segments[3])
+        assertEquals(TimelineSegmentUiModel.LongBreak(20), segments[7])
+        assertEquals(TimelineSegmentUiModel.LongBreak(20), segments.last())
     }
 
     @Test

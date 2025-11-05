@@ -2,18 +2,18 @@ package com.fakhry.pomodojo.focus.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.model.FocusPhase
 import com.fakhry.pomodojo.focus.domain.model.FocusSessionConfig
-import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
-import com.fakhry.pomodojo.focus.domain.repository.FocusSessionRepository
 import com.fakhry.pomodojo.focus.domain.model.FocusSessionSnapshot
 import com.fakhry.pomodojo.focus.domain.model.FocusTimerStatus
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
-import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.focus.domain.model.SessionIdGenerator
+import com.fakhry.pomodojo.focus.domain.repository.FocusSessionRepository
+import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
+import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
+import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.focus.domain.usecase.SystemCurrentTimeProvider
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,7 +72,7 @@ class FocusPomodoroViewModel(
         _state.value = snapshot.toActiveUiState()
     }
 
-    suspend fun startFromPreferences(preferences: PomodoroPreferences) {
+    suspend fun startFromPreferences(preferences: PreferencesDomain) {
         val config = FocusSessionConfig.fromPreferences(preferences)
         startNewSession(config)
     }

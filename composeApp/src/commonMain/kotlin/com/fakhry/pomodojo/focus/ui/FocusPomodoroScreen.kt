@@ -63,7 +63,7 @@ import com.fakhry.pomodojo.generated.resources.focus_session_phase_long_break
 import com.fakhry.pomodojo.generated.resources.focus_session_quote_content_description
 import com.fakhry.pomodojo.generated.resources.focus_session_resume_content_description
 import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
-import com.fakhry.pomodojo.preferences.domain.PomodoroPreferences
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -77,7 +77,7 @@ fun FocusPomodoroScreen(
     viewModel: FocusPomodoroViewModel = koinViewModel(),
 ) {
     val preferencesRepository: PreferencesRepository = koinInject()
-    val preferences by preferencesRepository.preferences.collectAsState(initial = PomodoroPreferences())
+    val preferences by preferencesRepository.preferences.collectAsState(initial = PreferencesDomain())
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(state) {
