@@ -25,13 +25,14 @@ import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun <T> PreferenceOptionsCompose(
+    modifier: Modifier = Modifier,
     title: String,
     options: ImmutableList<PreferenceOption<T>>,
     onOptionSelected: (T) -> Unit,
 ) {
     val hapticFeedback = LocalHapticFeedback.current
 
-    Column {
+    Column(modifier) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium.copy(
@@ -84,7 +85,7 @@ private fun <T> PreferenceOptionChip(
 
     Surface(
         onClick = { if (option.enabled) onClick() },
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, borderColor),
         color = backgroundColor,
         modifier = Modifier.alpha(alpha),

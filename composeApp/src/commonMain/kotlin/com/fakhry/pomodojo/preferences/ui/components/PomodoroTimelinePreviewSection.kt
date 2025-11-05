@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.preferences.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,10 +11,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,16 +40,28 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ColumnScope.PomodoroTimelinePreviewSection(segments: ImmutableList<TimelineSegmentUiModel>) =
     this.run {
+        val colorScheme = MaterialTheme.colorScheme
+
         Text(
             text = stringResource(Res.string.preferences_title_pomodoro_timeline_preview),
             style = MaterialTheme.typography.headlineMedium.copy(
-                color = MaterialTheme.colorScheme.onBackground,
+                color = colorScheme.onBackground,
             ),
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            border = BorderStroke(1.dp, colorScheme.outline),
+            color = colorScheme.surface,
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
 
-        TimelinePreview(segments)
+                TimelinePreview(segments)
+            }
+        }
     }
 
 @Composable
@@ -61,12 +76,11 @@ private fun TimelinePreview(segments: ImmutableList<TimelineSegmentUiModel>) {
                 color = MaterialTheme.colorScheme.onBackground,
             ),
         )
-        val totalMinutes = segments.sumOf { it.duration }.coerceAtLeast(1)
         Row(
-            modifier = Modifier.fillMaxWidth().height(16.dp).clip(RoundedCornerShape(8.dp)),
+            modifier = Modifier.fillMaxWidth().height(16.dp).clip(RoundedCornerShape(4.dp)),
         ) {
             segments.forEachIndexed { index, segment ->
-                val weight = segment.duration / totalMinutes.toFloat()
+                val weight = segment.weight
                 val color = when (segment) {
                     is TimelineSegmentUiModel.Focus -> Secondary
                     is TimelineSegmentUiModel.ShortBreak -> Primary
