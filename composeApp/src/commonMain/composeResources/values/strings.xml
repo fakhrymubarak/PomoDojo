@@ -38,6 +38,10 @@
         <item quantity="other">%1$d mins</item>
     </plurals>
     <!-- Focus Pomodoro Screen -->
+    <string name="focus_session_header_title">Focus Session</string>
+    <string name="focus_session_header_preparing">Preparing your pomodoro</string>
+    <string name="focus_session_header_cycle_count">Cycle %1$d of %2$d</string>
+    <string name="focus_session_timeline_title">Session timeline</string>
     <string name="focus_session_paused_label">Paused</string>
     <string name="focus_session_confirm_end_title">End Focus?</string>
     <string name="focus_session_confirm_end_message">Are you sure you want to end this pomodoro?</string>
