@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,6 +11,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    id("jacoco")
 }
 
 kotlin {
@@ -141,4 +143,34 @@ compose.resources {
 
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+val kotlinExt = extensions.getByType<KotlinMultiplatformExtension>()
+
+tasks.withType<Test>().configureEach {
+    extensions.configure(JacocoTaskExtension::class) {
+        isIncludeNoLocationClasses = true
+        excludes = listOf("jdk.internal.*")
+    }
+}
+
+val jacocoJvmExec = layout.buildDirectory.file("jacoco/jvmTest.exec")
+
+tasks.register<JacocoReport>("jacocoJvmTestReport") {
+    dependsOn("jvmTest")
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jvmTest"))
+    }
+
+    val jvmMainCompilation = kotlinExt.targets.getByName("jvm").compilations.getByName("main")
+    val jvmSourceDirs = jvmMainCompilation.allKotlinSourceSets
+        .flatMap { it.kotlin.sourceDirectories.files }
+
+    sourceDirectories.setFrom(files(jvmSourceDirs))
+    classDirectories.setFrom(jvmMainCompilation.output.classesDirs)
+    executionData.setFrom(jacocoJvmExec)
 }
