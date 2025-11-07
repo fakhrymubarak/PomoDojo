@@ -39,16 +39,13 @@ data class PreferenceOption<T>(
  * @property duration The duration of the timeline segment in MINUTES.
  */
 @Immutable
-sealed class TimelineSegmentUiModel(open val duration: Int, open val weight: Float) {
+sealed class TimelineSegmentUiModel(open val duration: Int) {
     @Immutable
-    data class Focus(override val duration: Int, override val weight: Float) :
-        TimelineSegmentUiModel(duration, weight)
+    data class Focus(override val duration: Int) : TimelineSegmentUiModel(duration)
 
     @Immutable
-    data class ShortBreak(override val duration: Int, override val weight: Float) :
-        TimelineSegmentUiModel(duration, weight)
+    data class ShortBreak(override val duration: Int) : TimelineSegmentUiModel(duration)
 
     @Immutable
-    data class LongBreak(override val duration: Int, override val weight: Float) :
-        TimelineSegmentUiModel(duration, weight)
+    data class LongBreak(override val duration: Int) : TimelineSegmentUiModel(duration)
 }

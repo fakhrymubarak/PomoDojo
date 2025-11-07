@@ -4,14 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
+import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
-import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
+import com.fakhry.pomodojo.preferences.ui.mapper.mapToUiModel
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.utils.DispatcherProvider
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +18,7 @@ import kotlinx.coroutines.launch
 class PreferencesViewModel(
     private val repository: PreferencesRepository,
     private val timelineBuilder: BuildFocusTimelineUseCase,
+    private val hourSplitter: BuildHourSplitTimelineUseCase,
     private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
     private val _state = MutableStateFlow(PreferencesUiModel())
@@ -28,7 +27,10 @@ class PreferencesViewModel(
     init {
         viewModelScope.launch(dispatcher.io) {
             repository.preferences.collect { preferences ->
-                _state.value = mapToState(preferences)
+                _state.value = preferences.mapToUiModel(
+                    timelineBuilder = timelineBuilder::invoke,
+                    hourSplitter = hourSplitter::invoke,
+                )
             }
         }
     }
@@ -99,67 +101,9 @@ class PreferencesViewModel(
         }
     }
 
-    private fun mapToState(preferences: PreferencesDomain): PreferencesUiModel {
-        val longBreakEnabled = preferences.longBreakEnabled
-        val themeOptions = AppTheme.entries.map { theme ->
-            PreferenceOption(
-                label = theme.displayName,
-                value = theme,
-                selected = preferences.appTheme == theme,
-            )
-        }.toPersistentList()
-
-        return PreferencesUiModel(
-            selectedTheme = preferences.appTheme,
-            themeOptions = themeOptions,
-            repeatCount = preferences.repeatCount,
-            focusOptions = FOCUS_OPTIONS.map { minutes ->
-                PreferenceOption(
-                    label = "$minutes mins",
-                    value = minutes,
-                    selected = preferences.focusMinutes == minutes,
-                )
-            }.toPersistentList(),
-            breakOptions = BREAK_OPTIONS.map { minutes ->
-                PreferenceOption(
-                    label = "$minutes mins",
-                    value = minutes,
-                    selected = preferences.breakMinutes == minutes,
-                )
-            }.toPersistentList(),
-            isLongBreakEnabled = longBreakEnabled,
-            longBreakAfterOptions = LONG_BREAK_AFTER.map { count ->
-                PreferenceOption(
-                    label = "$count focuses",
-                    value = count,
-                    selected = preferences.longBreakAfter == count,
-                    enabled = longBreakEnabled,
-                )
-            }.toPersistentList(),
-            longBreakOptions = LONG_BREAK_MINUTES.map { minutes ->
-                PreferenceOption(
-                    label = "$minutes mins",
-                    value = minutes,
-                    selected = preferences.longBreakMinutes == minutes,
-                    enabled = longBreakEnabled,
-                )
-            }.toPersistentList(),
-            timelineSegments = timelineBuilder(preferences),
-            timelineHourSplits = persistentListOf(60, 60, 50),
-            isLoading = false,
-        )
-    }
-
-
     override fun onCleared() {
         println("PreferencesViewModel onCleared")
         super.onCleared()
     }
 
-    companion object {
-        private val FOCUS_OPTIONS = listOf(10, 25, 50)
-        private val BREAK_OPTIONS = listOf(2, 5, 10)
-        private val LONG_BREAK_AFTER = listOf(6, 4, 2)
-        private val LONG_BREAK_MINUTES = listOf(4, 10, 20)
-    }
 }

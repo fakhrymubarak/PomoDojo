@@ -39,13 +39,14 @@ import com.fakhry.pomodojo.generated.resources.preferences_title
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
+import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.preferences.ui.components.PomodoroConfigSection
 import com.fakhry.pomodojo.preferences.ui.components.PomodoroTimelinePreviewSection
 import com.fakhry.pomodojo.preferences.ui.components.PreferenceAppearanceSection
+import com.fakhry.pomodojo.preferences.ui.mapper.mapToTimelineSegmentsUi
 import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -216,8 +217,9 @@ private fun PreferencesContentPreview() {
                 enabled = preferences.longBreakEnabled,
             )
         }.toPersistentList(),
-        timelineSegments = BuildFocusTimelineUseCase().invoke(preferences),
-        timelineHourSplits = persistentListOf(60, 60, 50),
+        timelineSegments = BuildFocusTimelineUseCase().invoke(preferences)
+            .mapToTimelineSegmentsUi(),
+        timelineHourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
         isLoading = false,
     )
 
