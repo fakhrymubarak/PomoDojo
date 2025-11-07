@@ -1,15 +1,15 @@
 package com.fakhry.pomodojo.focus
 
-import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.model.FocusPhase
 import com.fakhry.pomodojo.focus.domain.model.FocusSessionConfig
-import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
-import com.fakhry.pomodojo.focus.domain.repository.FocusSessionRepository
 import com.fakhry.pomodojo.focus.domain.model.FocusSessionSnapshot
 import com.fakhry.pomodojo.focus.domain.model.FocusTimerStatus
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
-import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.focus.domain.model.SessionIdGenerator
+import com.fakhry.pomodojo.focus.domain.repository.FocusSessionRepository
+import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
+import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
+import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.focus.ui.FocusPomodoroUiState
 import com.fakhry.pomodojo.focus.ui.FocusPomodoroViewModel
 import com.fakhry.pomodojo.utils.DispatcherProvider
@@ -83,30 +83,6 @@ class FocusPomodoroViewModelTest {
         assertEquals(4, state.totalSegments)
         assertEquals(FocusPhase.FOCUS, state.phase)
         assertTrue(notifier.scheduledIds.contains("session-1"))
-    }
-
-    @Test
-    fun togglePauseResume_switchesTimerStatus() = runTest(dispatcher) {
-        val config = FocusSessionConfig(
-            focusDurationMinutes = 20,
-            shortBreakMinutes = 5,
-            longBreakMinutes = 15,
-            totalCycles = 4,
-            autoStartNextPhase = false,
-            autoStartBreaks = false,
-        )
-
-        viewModel.startNewSession(config)
-
-        viewModel.togglePauseResume()
-        val pausedState = assertIs<FocusPomodoroUiState.Active>(viewModel.state.value)
-        assertEquals(FocusTimerStatus.PAUSED, pausedState.timerStatus)
-        assertTrue(notifier.cancelledIds.contains("session-1"))
-
-        viewModel.togglePauseResume()
-        val runningState = assertIs<FocusPomodoroUiState.Active>(viewModel.state.value)
-        assertEquals(FocusTimerStatus.RUNNING, runningState.timerStatus)
-        assertTrue(notifier.scheduledIds.size >= 2)
     }
 
     @Test

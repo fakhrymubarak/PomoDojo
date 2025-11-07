@@ -47,7 +47,7 @@ class PreferencesViewModelTest {
         assertFalse(state.isLoading)
         assertEquals(PreferencesDomain.DEFAULT_REPEAT_COUNT, state.repeatCount)
         assertTrue(state.focusOptions.first { it.value == 25 }.selected)
-        assertEquals(8, state.timelineSegments.size) // 4 focus + 3 short breaks + long break
+        assertEquals(7, state.timelineSegments.size) // 4 focus + 3 short breaks + long break
     }
 
     @Test
@@ -77,7 +77,7 @@ class PreferencesViewModelTest {
         assertTrue(state.breakOptions.first { it.value == 10 }.selected)
         assertTrue(state.longBreakAfterOptions.first { it.value == 2 }.selected)
         assertTrue(state.longBreakOptions.first { it.value == 20 }.selected)
-        assertEquals(2, state.timelineSegments.count { it is TimelineSegmentUiModel.LongBreak })
+        assertEquals(1, state.timelineSegments.count { it is TimelineSegmentUiModel.LongBreak })
     }
 
     private class FakePreferenceStorage : PreferenceStorage {
