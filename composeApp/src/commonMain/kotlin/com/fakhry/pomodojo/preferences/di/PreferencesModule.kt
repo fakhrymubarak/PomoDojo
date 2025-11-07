@@ -4,7 +4,6 @@ import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
 import com.fakhry.pomodojo.preferences.ui.PreferencesViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -17,5 +16,4 @@ val preferencesModule = module {
     factoryOf(::BuildFocusTimelineUseCase)
     factoryOf(::BuildHourSplitTimelineUseCase)
     singleOf(::PreferencesRepository)
-    factory<PreferencesValidator> { PreferencesValidator }
 }

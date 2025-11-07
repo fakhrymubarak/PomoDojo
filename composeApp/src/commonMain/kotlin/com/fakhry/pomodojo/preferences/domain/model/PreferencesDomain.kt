@@ -9,7 +9,7 @@ data class PreferencesDomain(
     val longBreakAfter: Int = DEFAULT_LONG_BREAK_AFTER,
     val longBreakMinutes: Int = DEFAULT_LONG_BREAK_MINUTES,
 ) {
-    companion object Companion {
+    companion object {
         const val DEFAULT_REPEAT_COUNT = 4
         const val DEFAULT_FOCUS_MINUTES = 25
         const val DEFAULT_BREAK_MINUTES = 5

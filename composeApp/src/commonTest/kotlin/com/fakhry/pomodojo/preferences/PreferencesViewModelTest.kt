@@ -6,7 +6,6 @@ import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
 import com.fakhry.pomodojo.preferences.ui.PreferencesViewModel
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUiModel
 import com.fakhry.pomodojo.utils.DispatcherProvider
@@ -30,7 +29,6 @@ class PreferencesViewModelTest {
         val repository = PreferencesRepository(
             storage = storage,
             cascadeResolver = PreferenceCascadeResolver(),
-            validator = PreferencesValidator,
         )
         val testDispatcher = Dispatchers.Unconfined
         val viewModel = PreferencesViewModel(
@@ -56,7 +54,6 @@ class PreferencesViewModelTest {
         val repository = PreferencesRepository(
             storage = storage,
             cascadeResolver = PreferenceCascadeResolver(),
-            validator = PreferencesValidator,
         )
         val testDispatcher = Dispatchers.Unconfined
         val viewModel = PreferencesViewModel(

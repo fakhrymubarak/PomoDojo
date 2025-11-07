@@ -6,7 +6,6 @@ import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
 import com.fakhry.pomodojo.preferences.ui.mapper.mapToUiModel
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.utils.DispatcherProvider
@@ -36,30 +35,18 @@ class PreferencesViewModel(
     }
 
     fun onRepeatCountChanged(count: Int) {
-        if (!PreferencesValidator.isValidRepeatCount(count) ||
-            count == _state.value.repeatCount
-        ) return
-
         viewModelScope.launch(dispatcher.io) {
             repository.updateRepeatCount(count)
         }
     }
 
     fun onFocusOptionSelected(minutes: Int) {
-        if (!PreferencesValidator.isValidFocusMinutes(minutes) ||
-            _state.value.focusOptions.firstOrNull { it.selected }?.value == minutes
-        ) return
-
         viewModelScope.launch(dispatcher.io) {
             repository.updateFocusMinutes(minutes)
         }
     }
 
     fun onBreakOptionSelected(minutes: Int) {
-        if (!PreferencesValidator.isValidBreakMinutes(minutes) ||
-            _state.value.breakOptions.firstOrNull { it.selected }?.value == minutes
-        ) return
-
         viewModelScope.launch(dispatcher.io) {
             repository.updateBreakMinutes(minutes)
         }
@@ -74,28 +61,18 @@ class PreferencesViewModel(
     }
 
     fun onLongBreakAfterSelected(count: Int) {
-        if (!PreferencesValidator.isValidLongBreakAfter(count) ||
-            _state.value.longBreakAfterOptions.firstOrNull { it.selected }?.value == count
-        ) return
-
         viewModelScope.launch(dispatcher.io) {
             repository.updateLongBreakAfter(count)
         }
     }
 
     fun onLongBreakMinutesSelected(minutes: Int) {
-        if (!PreferencesValidator.isValidLongBreakMinutes(minutes) ||
-            _state.value.longBreakOptions.firstOrNull { it.selected }?.value == minutes
-        ) return
-
         viewModelScope.launch(dispatcher.io) {
             repository.updateLongBreakMinutes(minutes)
         }
     }
 
     fun onThemeSelected(theme: AppTheme) {
-        if (_state.value.selectedTheme == theme) return
-
         viewModelScope.launch(dispatcher.io) {
             repository.updateAppTheme(theme)
         }

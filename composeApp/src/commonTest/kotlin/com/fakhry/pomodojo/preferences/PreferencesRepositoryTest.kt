@@ -4,7 +4,6 @@ import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
 import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -21,7 +20,6 @@ class PreferencesRepositoryTest {
     private val repository = PreferencesRepository(
         storage = storage,
         cascadeResolver = PreferenceCascadeResolver(),
-        validator = PreferencesValidator,
     )
 
     @Test
@@ -54,20 +52,6 @@ class PreferencesRepositoryTest {
         repository.updateLongBreakEnabled(true)
         val restored = storage.preferences.first()
         assertTrue(restored.longBreakEnabled)
-    }
-
-    @Test
-    fun `invalid repeat count throws`() = runTest {
-        var thrown = false
-        try {
-            repository.updateRepeatCount(1)
-        } catch (_: IllegalArgumentException) {
-            thrown = true
-        }
-
-        assertTrue(thrown)
-        val current = storage.preferences.first()
-        assertEquals(PreferencesDomain.DEFAULT_REPEAT_COUNT, current.repeatCount)
     }
 
     private class FakePreferenceStorage :
