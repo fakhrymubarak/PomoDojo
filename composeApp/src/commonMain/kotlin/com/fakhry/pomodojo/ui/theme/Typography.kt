@@ -84,6 +84,14 @@ fun pomoDojoTypography(): Typography {
             lineHeight = 16.sp,
         ),
 
+        // Body Small - Small body text (Regular10)
+        bodySmall = TextStyle(
+            fontFamily = plusJakartaFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 10.sp,
+            lineHeight = 16.sp,
+        ),
+
         // Label Small - Small labels, graph labels (Regular8)
         labelSmall = TextStyle(
             fontFamily = plusJakartaFamily,

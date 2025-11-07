@@ -29,7 +29,14 @@
     <string name="preferences_timeline_break_label">Break</string>
     <string name="preferences_timeline_long_break_label">Long Break</string>
     <string name="preferences_theme_title">Theme</string>
-
+    <plurals name="hours">
+        <item quantity="one">%1$d hr</item>
+        <item quantity="other">%1$d hrs</item>
+    </plurals>
+    <plurals name="minutes">
+        <item quantity="one">%1$d min</item>
+        <item quantity="other">%1$d mins</item>
+    </plurals>
     <!-- Focus Pomodoro Screen -->
     <string name="focus_session_paused_label">Paused</string>
     <string name="focus_session_confirm_end_title">End Focus?</string>

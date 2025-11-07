@@ -23,8 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.generated.resources.Res
+import com.fakhry.pomodojo.generated.resources.minutes
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_break_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_focus_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_long_break_label
@@ -35,6 +38,7 @@ import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -60,10 +64,11 @@ fun ColumnScope.PomodoroTimelinePreviewSection(
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             TimelinePreview(segments)
+            Spacer(modifier = Modifier.height(4.dp))
             TimelineHoursSplit(hourSplits)
+            Spacer(modifier = Modifier.height(12.dp))
             TimelineLegends()
         }
     }
@@ -79,18 +84,19 @@ private fun ColumnScope.TimelinePreview(
             color = MaterialTheme.colorScheme.onBackground,
         ),
     )
+    Spacer(modifier = Modifier.height(12.dp))
     Row(
         modifier = Modifier.fillMaxWidth().height(16.dp).clip(RoundedCornerShape(4.dp)),
     ) {
         segments.forEachIndexed { index, segment ->
-            val weight = segment.weight
             val color = when (segment) {
                 is TimelineSegmentUiModel.Focus -> Secondary
                 is TimelineSegmentUiModel.ShortBreak -> Primary
                 is TimelineSegmentUiModel.LongBreak -> LongBreakHighlight
             }
             Box(
-                modifier = Modifier.fillMaxHeight().weight(weight).background(color),
+                modifier = Modifier.fillMaxHeight().weight(segment.duration.toFloat())
+                    .background(color),
             )
             if (index != segments.lastIndex) {
                 Spacer(modifier = Modifier.width(2.dp))
@@ -101,21 +107,34 @@ private fun ColumnScope.TimelinePreview(
 
 @Composable
 fun TimelineHoursSplit(hourSplits: ImmutableList<Int>) {
-
     Row(
-        modifier = Modifier.fillMaxWidth().height(1.dp),
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        // TODO HANDLE WEIGHT ALGORITHM FOR SPLITTING HOURS.
         hourSplits.forEachIndexed { index, duration ->
-            Box(
-                modifier = Modifier.fillMaxHeight().background(
-                    MaterialTheme.colorScheme.primary
-                ).weight(duration.toFloat()),
-            )
+            Column(
+                modifier = Modifier.weight(duration.toFloat()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Box(
+                    modifier = Modifier.height(1.dp).fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.primary),
+                )
+                Text(
+                    text = pluralStringResource(Res.plurals.minutes, duration, duration),
+                    maxLines = 2,
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
+                )
+            }
 
             if (index != hourSplits.lastIndex) {
-                Spacer(modifier = Modifier.width(2.dp))
+                Spacer(modifier = Modifier.width(4.dp))
             }
+
         }
     }
 }
@@ -124,24 +143,32 @@ fun TimelineHoursSplit(hourSplits: ImmutableList<Int>) {
 @Composable
 private fun ColumnScope.TimelineLegends() = this.run {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         LegendDot(color = Secondary)
+        Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = stringResource(Res.string.preferences_timeline_focus_label),
             style = MaterialTheme.typography.bodySmall.copy(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             ),
         )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
         LegendDot(color = Primary)
+        Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = stringResource(Res.string.preferences_timeline_break_label),
             style = MaterialTheme.typography.bodySmall.copy(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             ),
         )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
         LegendDot(color = LongBreakHighlight)
+        Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = stringResource(Res.string.preferences_timeline_long_break_label),
             style = MaterialTheme.typography.bodySmall.copy(
