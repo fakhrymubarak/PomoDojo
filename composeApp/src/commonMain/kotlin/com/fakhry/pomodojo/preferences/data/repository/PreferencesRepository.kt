@@ -4,30 +4,22 @@ import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 class PreferencesRepository(
     private val storage: PreferenceStorage,
     private val cascadeResolver: PreferenceCascadeResolver,
-    private val validator: PreferencesValidator = PreferencesValidator,
 ) {
 
     val preferences: Flow<PreferencesDomain> = storage.preferences
         .distinctUntilChanged()
 
     suspend fun updateRepeatCount(value: Int) {
-        require(validator.isValidRepeatCount(value)) {
-            "Invalid repeat count: $value"
-        }
         storage.update { it.copy(repeatCount = value) }
     }
 
     suspend fun updateFocusMinutes(value: Int) {
-        require(validator.isValidFocusMinutes(value)) {
-            "Invalid focus minutes: $value"
-        }
         val cascade = cascadeResolver.resolveForFocus(value)
         storage.update {
             it.copy(
@@ -40,9 +32,6 @@ class PreferencesRepository(
     }
 
     suspend fun updateBreakMinutes(value: Int) {
-        require(validator.isValidBreakMinutes(value)) {
-            "Invalid break minutes: $value"
-        }
         val cascade = cascadeResolver.resolveForBreak(value)
         storage.update {
             it.copy(
@@ -58,16 +47,10 @@ class PreferencesRepository(
     }
 
     suspend fun updateLongBreakAfter(value: Int) {
-        require(validator.isValidLongBreakAfter(value)) {
-            "Invalid long break after count: $value"
-        }
         storage.update { it.copy(longBreakAfter = value) }
     }
 
     suspend fun updateLongBreakMinutes(value: Int) {
-        require(validator.isValidLongBreakMinutes(value)) {
-            "Invalid long break minutes: $value"
-        }
         storage.update { it.copy(longBreakMinutes = value) }
     }
 

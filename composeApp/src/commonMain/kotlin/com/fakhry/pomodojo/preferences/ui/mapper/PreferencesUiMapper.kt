@@ -11,6 +11,7 @@ private val FOCUS_OPTIONS = listOf(10, 25, 50)
 private val BREAK_OPTIONS = listOf(2, 5, 10)
 private val LONG_BREAK_AFTER = listOf(6, 4, 2)
 private val LONG_BREAK_MINUTES = listOf(4, 10, 20)
+val DEFAULT_REPEAT_RANGE = 2..8
 
 fun PreferencesDomain.mapToUiModel(
     timelineBuilder: (PreferencesDomain) -> List<TimelineSegmentDomain>,

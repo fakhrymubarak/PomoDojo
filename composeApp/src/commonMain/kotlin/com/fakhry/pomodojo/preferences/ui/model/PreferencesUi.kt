@@ -3,10 +3,9 @@ package com.fakhry.pomodojo.preferences.ui.model
 import androidx.compose.runtime.Immutable
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain.Companion.DEFAULT_REPEAT_COUNT
+import com.fakhry.pomodojo.preferences.ui.mapper.DEFAULT_REPEAT_RANGE
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-
-private val DEFAULT_REPEAT_RANGE = 2..8
 
 @Immutable
 data class PreferencesUiModel(
