@@ -1,13 +1,13 @@
 package com.fakhry.pomodojo.dashboard
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -24,18 +24,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.dashboard.components.FocusHistorySection
 import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
 import com.fakhry.pomodojo.dashboard.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.generated.resources.Res
-import com.fakhry.pomodojo.generated.resources.dashboard_header_content_description
 import com.fakhry.pomodojo.generated.resources.dashboard_header_title
-import com.fakhry.pomodojo.generated.resources.dashboard_open_settings_content_description
+import com.fakhry.pomodojo.ui.components.BgHeaderCanvas
+import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
 @Suppress("NonSkippableComposable")
@@ -53,14 +51,11 @@ fun DashboardScreen(
         color = MaterialTheme.colorScheme.background,
     ) {
         Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .fillMaxSize(),
+            modifier = Modifier.verticalScroll(scrollState).fillMaxSize(),
         ) {
-            WavyHeader(onOpenSettings = onOpenSettings)
+            DashboardHeader(onOpenSettings = onOpenSettings)
             Column(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
+                modifier = Modifier.padding(horizontal = 24.dp)
                     .padding(top = 24.dp, bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(32.dp),
             ) {
@@ -82,40 +77,28 @@ fun DashboardScreen(
     }
 }
 
-@Composable
-private fun WavyHeader(
-    onOpenSettings: () -> Unit,
-) {
-    val headerTitle = stringResource(Res.string.dashboard_header_title)
-    val headerContentDescription = stringResource(Res.string.dashboard_header_content_description)
-    val openSettingsContentDescription =
-        stringResource(Res.string.dashboard_open_settings_content_description)
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.secondary)
-            .windowInsetsPadding(WindowInsets.systemBars)
-            .padding(horizontal = 16.dp)
-    ) {
-        androidx.compose.foundation.layout.Row(
-            modifier = Modifier.fillMaxWidth(),
+@Composable
+private fun DashboardHeader(
+    onOpenSettings: () -> Unit = {},
+) {
+    BgHeaderCanvas {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.systemBars)
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = headerTitle,
+                text = stringResource(Res.string.dashboard_header_title),
                 style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSecondary,
                 ),
-                modifier = Modifier.semantics { contentDescription = headerContentDescription },
             )
             IconButton(
+                modifier = Modifier.size(24.dp),
                 onClick = onOpenSettings,
-                modifier = Modifier.semantics {
-                    contentDescription = openSettingsContentDescription
-                },
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Settings,
@@ -124,5 +107,13 @@ private fun WavyHeader(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun WavyHeaderPreview() {
+    PomoDojoTheme {
+        DashboardHeader()
     }
 }

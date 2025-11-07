@@ -1,6 +1,5 @@
 package com.fakhry.pomodojo.preferences.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -46,6 +46,7 @@ import com.fakhry.pomodojo.preferences.ui.components.PreferenceAppearanceSection
 import com.fakhry.pomodojo.preferences.ui.mapper.mapToTimelineSegmentsUi
 import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
+import com.fakhry.pomodojo.ui.components.BgHeaderCanvas
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
@@ -65,7 +66,7 @@ fun PreferencesScreen(
         color = MaterialTheme.colorScheme.background,
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            PreferencesTopBar(onNavigateBack = onNavigateBack)
+            PreferencesHeader(onNavigateBack = onNavigateBack)
             if (state.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -90,34 +91,38 @@ fun PreferencesScreen(
 }
 
 @Composable
-private fun PreferencesTopBar(onNavigateBack: () -> Unit) {
+private fun PreferencesHeader(onNavigateBack: () -> Unit) {
     var isNavigatingBack by remember { mutableStateOf(false) }
-    Row(
-        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.secondary)
-            .windowInsetsPadding(WindowInsets.systemBars).padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        IconButton(
-            onClick = {
-                if (!isNavigatingBack) {
-                    onNavigateBack()
-                    isNavigatingBack = true
-                }
-            }) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                contentDescription = stringResource(Res.string.preferences_back_content_description),
-                tint = MaterialTheme.colorScheme.onSecondary,
+    BgHeaderCanvas {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.systemBars)
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            IconButton(
+                modifier = Modifier.size(24.dp),
+                onClick = {
+                    if (!isNavigatingBack) {
+                        onNavigateBack()
+                        isNavigatingBack = true
+                    }
+                }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = stringResource(Res.string.preferences_back_content_description),
+                    tint = MaterialTheme.colorScheme.onSecondary,
+                )
+            }
+            Text(
+                text = stringResource(Res.string.preferences_title),
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSecondary,
+                ),
             )
         }
-        Text(
-            text = stringResource(Res.string.preferences_title),
-            style = MaterialTheme.typography.headlineMedium.copy(
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSecondary,
-            ),
-        )
     }
 }
 
@@ -162,6 +167,14 @@ private fun PreferencesContent(
             state = state,
             onOptionSelected = onThemeSelected,
         )
+    }
+}
+
+@Preview
+@Composable
+private fun PreferencesHeaderPreview() {
+    PomoDojoTheme {
+        PreferencesHeader { }
     }
 }
 
