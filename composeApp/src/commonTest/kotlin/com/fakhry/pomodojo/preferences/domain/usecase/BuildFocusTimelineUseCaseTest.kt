@@ -1,22 +1,18 @@
-package com.fakhry.pomodojo.preferences
+package com.fakhry.pomodojo.preferences.domain.usecase
 
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimelineSegmentDomain
-import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesValidator
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class PreferencesDomainTest {
+class BuildFocusTimelineUseCaseTest {
 
     private val timelineBuilder = BuildFocusTimelineUseCase()
-    private val cascadeResolver = PreferenceCascadeResolver()
 
     @Test
-    fun `timeline builder inserts long break before subsequent focus`() {
+    fun `inserts long break before subsequent focus`() {
         val preferences = PreferencesDomain(
             repeatCount = 5,
             focusMinutes = 25,
@@ -41,7 +37,7 @@ class PreferencesDomainTest {
     }
 
     @Test
-    fun `timeline builder omits long break when disabled`() {
+    fun `omits long break when disabled`() {
         val preferences = PreferencesDomain(
             repeatCount = 4,
             focusMinutes = 25,
@@ -68,7 +64,7 @@ class PreferencesDomainTest {
     }
 
     @Test
-    fun `timeline builder inserts long breaks at configured interval`() {
+    fun `inserts long breaks at configured interval`() {
         val preferences = PreferencesDomain(
             repeatCount = 6,
             focusMinutes = 50,
@@ -86,36 +82,9 @@ class PreferencesDomainTest {
         assertEquals(listOf(3, 7), longBreaks) // after 2nd and 4th focus
         assertEquals(20, (segments[3] as TimelineSegmentDomain.LongBreak).duration)
         assertEquals(20, (segments[7] as TimelineSegmentDomain.LongBreak).duration)
-        assertEquals(preferences.repeatCount * 2 - 1, segments.size) // focus blocks + breaks between them
-    }
-
-    @Test
-    fun `focus cascade sets dependent timers according to spec`() {
-        val cascade = cascadeResolver.resolveForFocus(minutes = 50)
-
-        assertEquals(10, cascade.breakMinutes)
-        assertEquals(2, cascade.longBreakAfterCount)
-        assertEquals(20, cascade.longBreakMinutes)
-    }
-
-    @Test
-    fun `break cascade sets long break duration`() {
-        val cascade = cascadeResolver.resolveForBreak(minutes = 2)
-
-        assertEquals(4, cascade.longBreakMinutes)
-    }
-
-    @Test
-    fun `preferences validator enforces allowed values`() {
-        assertTrue(PreferencesValidator.isValidRepeatCount(4))
-        assertFalse(PreferencesValidator.isValidRepeatCount(1))
-        assertTrue(PreferencesValidator.isValidFocusMinutes(25))
-        assertFalse(PreferencesValidator.isValidFocusMinutes(30))
-        assertTrue(PreferencesValidator.isValidBreakMinutes(5))
-        assertFalse(PreferencesValidator.isValidBreakMinutes(7))
-        assertTrue(PreferencesValidator.isValidLongBreakAfter(6))
-        assertFalse(PreferencesValidator.isValidLongBreakAfter(3))
-        assertTrue(PreferencesValidator.isValidLongBreakMinutes(20))
-        assertFalse(PreferencesValidator.isValidLongBreakMinutes(15))
+        assertEquals(
+            preferences.repeatCount * 2 - 1,
+            segments.size
+        ) // focus blocks + breaks between them
     }
 }
