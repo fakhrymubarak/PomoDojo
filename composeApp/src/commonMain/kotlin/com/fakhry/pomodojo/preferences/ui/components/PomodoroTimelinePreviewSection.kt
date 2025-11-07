@@ -122,6 +122,7 @@ fun TimelineHoursSplit(hourSplits: ImmutableList<Int>) {
                 )
                 Text(
                     text = pluralStringResource(Res.plurals.minutes, duration, duration),
+                    minLines = 2,
                     maxLines = 2,
                     textAlign = TextAlign.Center,
                     overflow = TextOverflow.Ellipsis,
