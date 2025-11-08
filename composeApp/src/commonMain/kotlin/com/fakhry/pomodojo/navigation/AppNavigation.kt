@@ -76,7 +76,6 @@ fun AppNavHost(
         }
         composable<AppDestination.Focus> {
             FocusPomodoroScreen(
-                onNavigateBack = { navController.popBackStack() },
                 onSessionCompleted = {
                     navController.popBackStack()
                 },

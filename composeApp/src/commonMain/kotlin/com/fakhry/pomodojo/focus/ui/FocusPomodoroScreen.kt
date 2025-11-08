@@ -100,10 +100,9 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
-@Suppress("NonSkippableComposable", "UNUSED_PARAMETER")
+@Suppress("NonSkippableComposable")
 @Composable
 fun FocusPomodoroScreen(
-    onNavigateBack: () -> Unit,
     onSessionCompleted: () -> Unit,
     viewModel: FocusPomodoroViewModel = koinViewModel(),
 ) {
@@ -193,7 +192,7 @@ private fun FocusActiveState(
 ) {
     LaunchedEffect(state.timerStatus, state.remainingSeconds) {
         if (state.timerStatus == FocusTimerStatus.RUNNING) {
-            delay(1_000)
+            delay(1)
             onTick()
         }
     }
