@@ -73,6 +73,7 @@ private val TooltipVerticalSpacing = 8.dp
  */
 @Composable
 fun FocusHistorySection(
+    modifier: Modifier= Modifier,
     totalMinutes: Int,
     selectedYear: Int,
     availableYears: ImmutableList<Int>,
@@ -80,7 +81,7 @@ fun FocusHistorySection(
     onSelectYear: (Int) -> Unit = {},
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         StatisticsCard(totalMinutes = totalMinutes)
@@ -272,7 +273,8 @@ private fun FocusHistoryCellItem(
                     .combinedClickable(
                         onClick = {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
-                            showTooltip = true },
+                            showTooltip = true
+                        },
                     )
                     .semantics { contentDescription = tooltipText }
                     .focusable()
@@ -363,10 +365,10 @@ fun FocusHistorySectionPreview() {
     val previewState = previewDashboardState
     PomoDojoTheme {
         FocusHistorySection(
-            totalMinutes = previewState.focusMinutesThisYear,
-            selectedYear = previewState.selectedYear,
-            availableYears = previewState.availableYears,
-            cells = previewState.cells,
+            totalMinutes = previewState.historySection.focusMinutesThisYear,
+            selectedYear = previewState.historySection.selectedYear,
+            availableYears = previewState.historySection.availableYears,
+            cells = previewState.historySection.cells,
         )
     }
 }
