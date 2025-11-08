@@ -12,9 +12,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.fakhry.pomodojo.focus.ui.PhaseType
 import com.fakhry.pomodojo.ui.components.PomodoroTimerDecoration
+import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
-import com.fakhry.pomodojo.utils.formatTimerMinutes
+import com.fakhry.pomodojo.ui.theme.Primary
+import com.fakhry.pomodojo.ui.theme.Secondary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -23,17 +26,28 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun PomodoroTimerSection(
-    timerMinutes: Int,
+    phaseType: PhaseType = PhaseType.FOCUS,
+    formattedTime: String = "00:00",
+    progress: Float = 0.5f,
 ) {
+    val color = when (phaseType) {
+        PhaseType.FOCUS -> Secondary
+        PhaseType.SHORT_BREAK -> Primary
+        PhaseType.LONG_BREAK -> LongBreakHighlight
+    }
+
     Box(
         modifier = Modifier.size(280.dp),
         contentAlignment = Alignment.Center,
     ) {
-        PomodoroTimerDecoration()
+        PomodoroTimerDecoration(
+            progressColor = color,
+            progress = progress,
+        )
 
         // Timer text
         Text(
-            text = formatTimerMinutes(timerMinutes),
+            text = formattedTime,
             style = MaterialTheme.typography.displayLarge.copy(
                 fontSize = 56.sp,
                 fontWeight = FontWeight.Bold,
@@ -46,11 +60,35 @@ fun PomodoroTimerSection(
 
 @Preview
 @Composable
-fun PomodoroTimerSectionPreview() {
+fun PomodoroTimerSectionFocusPreview() {
     PomoDojoTheme {
         Column {
             PomodoroTimerSection(
-                timerMinutes = 25,
+                phaseType = PhaseType.FOCUS,
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PomodoroTimerSectionBreakPreview() {
+    PomoDojoTheme {
+        Column {
+            PomodoroTimerSection(
+                phaseType = PhaseType.SHORT_BREAK,
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PomodoroTimerSectionLongBreakPreview() {
+    PomoDojoTheme {
+        Column {
+            PomodoroTimerSection(
+                phaseType = PhaseType.LONG_BREAK,
             )
         }
     }
