@@ -45,7 +45,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -97,6 +99,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Suppress("NonSkippableComposable", "UNUSED_PARAMETER")
 @Composable
 fun FocusPomodoroScreen(
@@ -132,6 +135,10 @@ fun FocusPomodoroScreen(
         if (state is FocusPomodoroUiState.Loading) {
             viewModel.startFromPreferences(preferences)
         }
+    }
+
+    BackHandler {
+        viewModel.onEndClicked()
     }
 
     Surface(
