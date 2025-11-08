@@ -65,6 +65,12 @@ fun ColumnScope.PomodoroTimelinePreviewSection(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Text(
+                text = stringResource(Res.string.preferences_timeline_preview_title),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
+            )
             TimelinePreview(timeline.segments)
             Spacer(modifier = Modifier.height(4.dp))
             TimelineHoursSplit(timeline.hourSplits)
@@ -75,15 +81,9 @@ fun ColumnScope.PomodoroTimelinePreviewSection(
 }
 
 @Composable
-private fun ColumnScope.TimelinePreview(
+fun ColumnScope.TimelinePreview(
     segments: ImmutableList<TimelineSegmentUiModel>,
 ) = this.run {
-    Text(
-        text = stringResource(Res.string.preferences_timeline_preview_title),
-        style = MaterialTheme.typography.titleMedium.copy(
-            color = MaterialTheme.colorScheme.onBackground,
-        ),
-    )
     Spacer(modifier = Modifier.height(12.dp))
     Row(
         modifier = Modifier.fillMaxWidth().height(16.dp).clip(RoundedCornerShape(4.dp)),
@@ -155,7 +155,7 @@ fun TimelineHoursSplit(hourSplits: ImmutableList<Int>) {
 
 
 @Composable
-private fun ColumnScope.TimelineLegends() = this.run {
+fun ColumnScope.TimelineLegends() = this.run {
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
