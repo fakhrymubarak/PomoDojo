@@ -1,12 +1,12 @@
 package com.fakhry.pomodojo.focus
 
+import com.fakhry.pomodojo.focus.domain.model.ActiveFocusSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.FocusPhase
 import com.fakhry.pomodojo.focus.domain.model.FocusSessionConfig
-import com.fakhry.pomodojo.focus.domain.model.FocusSessionSnapshot
 import com.fakhry.pomodojo.focus.domain.model.FocusTimerStatus
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.focus.domain.model.SessionIdGenerator
-import com.fakhry.pomodojo.focus.domain.repository.FocusSessionRepository
+import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
@@ -46,7 +46,7 @@ class FocusPomodoroViewModelTest {
         timeProvider = FakeCurrentTimeProvider()
         notifier = FakeFocusSessionNotifier()
         viewModel = FocusPomodoroViewModel(
-            sessionRepository = sessionRepository,
+            pomodoroSessionRepo = sessionRepository,
             quoteRepository = quoteRepository,
             dispatcherProvider = DispatcherProvider(dispatcher),
             sessionIdGenerator = SessionIdGenerator { "session-1" },
@@ -61,7 +61,7 @@ class FocusPomodoroViewModelTest {
     }
 
     @Test
-    fun startNewSession_selectsRandomQuoteAndEmitsRunningState() = runTest(dispatcher) {
+    fun startSession_selectsRandomQuoteAndEmitsRunningState() = runTest(dispatcher) {
         val config = FocusSessionConfig(
             focusDurationMinutes = 25,
             shortBreakMinutes = 5,
@@ -71,7 +71,7 @@ class FocusPomodoroViewModelTest {
             autoStartBreaks = false,
         )
 
-        viewModel.startNewSession(config)
+        viewModel.startPomodoroSession(config)
 
         val state = assertIs<FocusPomodoroUiState.Active>(viewModel.state.value)
         assertEquals(FocusTimerStatus.RUNNING, state.timerStatus)
@@ -96,7 +96,7 @@ class FocusPomodoroViewModelTest {
             autoStartBreaks = false,
         )
 
-        viewModel.startNewSession(config)
+        viewModel.startPomodoroSession(config)
 
         viewModel.onEndClicked()
         val confirmState = assertIs<FocusPomodoroUiState.Active>(viewModel.state.value)
@@ -127,7 +127,7 @@ class FocusPomodoroViewModelTest {
             autoStartBreaks = false,
         )
 
-        viewModel.startNewSession(config)
+        viewModel.startPomodoroSession(config)
         timeProvider.nowValue = 1L
 
         viewModel.decrementTimer()
@@ -145,7 +145,7 @@ class FocusPomodoroViewModelTest {
             sourceTitle = "Demon Slayer",
             metadata = "Season 1"
         )
-        sessionRepository.activeSession = FocusSessionSnapshot(
+        sessionRepository.activeSession = ActiveFocusSessionDomain(
             sessionId = "existing",
             status = FocusTimerStatus.RUNNING,
             focusDurationMinutes = 25,
@@ -167,7 +167,7 @@ class FocusPomodoroViewModelTest {
         timeProvider = FakeCurrentTimeProvider()
         notifier = FakeFocusSessionNotifier()
         viewModel = FocusPomodoroViewModel(
-            sessionRepository = sessionRepository,
+            pomodoroSessionRepo = sessionRepository,
             quoteRepository = quoteRepository,
             dispatcherProvider = DispatcherProvider(dispatcher),
             sessionIdGenerator = SessionIdGenerator { "session-3" },
@@ -194,7 +194,7 @@ class FocusPomodoroViewModelTest {
             sourceTitle = "My Hero Academia",
             metadata = null,
         )
-        sessionRepository.activeSession = FocusSessionSnapshot(
+        sessionRepository.activeSession = ActiveFocusSessionDomain(
             sessionId = "restore-running",
             status = FocusTimerStatus.RUNNING,
             focusDurationMinutes = 25,
@@ -216,7 +216,7 @@ class FocusPomodoroViewModelTest {
         timeProvider = FakeCurrentTimeProvider().apply { nowValue = 60_000L }
         notifier = FakeFocusSessionNotifier()
         viewModel = FocusPomodoroViewModel(
-            sessionRepository = sessionRepository,
+            pomodoroSessionRepo = sessionRepository,
             quoteRepository = quoteRepository,
             dispatcherProvider = DispatcherProvider(dispatcher),
             sessionIdGenerator = SessionIdGenerator { "session-restore" },
@@ -234,7 +234,7 @@ class FocusPomodoroViewModelTest {
 
     @Test
     fun restoreRunningSession_autoCompletesWhenExpired() = runTest(dispatcher) {
-        sessionRepository.activeSession = FocusSessionSnapshot(
+        sessionRepository.activeSession = ActiveFocusSessionDomain(
             sessionId = "restore-expired",
             status = FocusTimerStatus.RUNNING,
             focusDurationMinutes = 25,
@@ -256,7 +256,7 @@ class FocusPomodoroViewModelTest {
         timeProvider = FakeCurrentTimeProvider().apply { nowValue = 10_000L }
         notifier = FakeFocusSessionNotifier()
         viewModel = FocusPomodoroViewModel(
-            sessionRepository = sessionRepository,
+            pomodoroSessionRepo = sessionRepository,
             quoteRepository = quoteRepository,
             dispatcherProvider = DispatcherProvider(dispatcher),
             sessionIdGenerator = SessionIdGenerator { "session-expired" },
@@ -280,7 +280,7 @@ class FocusPomodoroViewModelTest {
             sourceTitle = "Demon Slayer",
             metadata = "Season 1"
         )
-        sessionRepository.activeSession = FocusSessionSnapshot(
+        sessionRepository.activeSession = ActiveFocusSessionDomain(
             sessionId = "existing",
             status = FocusTimerStatus.PAUSED,
             focusDurationMinutes = 25,
@@ -301,7 +301,7 @@ class FocusPomodoroViewModelTest {
 
         notifier = FakeFocusSessionNotifier()
         viewModel = FocusPomodoroViewModel(
-            sessionRepository = sessionRepository,
+            pomodoroSessionRepo = sessionRepository,
             quoteRepository = quoteRepository,
             dispatcherProvider = DispatcherProvider(dispatcher),
             sessionIdGenerator = SessionIdGenerator { "session-2" },
@@ -348,26 +348,26 @@ class FocusPomodoroViewModelTest {
         override fun now(): Long = nowValue
     }
 
-    private class FakeFocusSessionRepository : FocusSessionRepository {
-        var lastSaved: FocusSessionSnapshot? = null
-        var lastUpdated: FocusSessionSnapshot? = null
-        var completedSnapshot: FocusSessionSnapshot? = null
+    private class FakeFocusSessionRepository : PomodoroSessionRepository {
+        var lastSaved: ActiveFocusSessionDomain? = null
+        var lastUpdated: ActiveFocusSessionDomain? = null
+        var completedSnapshot: ActiveFocusSessionDomain? = null
         var completeCalled: Boolean = false
-        var activeSession: FocusSessionSnapshot? = null
+        var activeSession: ActiveFocusSessionDomain? = null
 
-        override suspend fun getActiveSession(): FocusSessionSnapshot? = activeSession
+        override suspend fun getActiveSession(): ActiveFocusSessionDomain? = activeSession
 
-        override suspend fun saveActiveSession(snapshot: FocusSessionSnapshot) {
+        override suspend fun saveActiveSession(snapshot: ActiveFocusSessionDomain) {
             activeSession = snapshot
             lastSaved = snapshot
         }
 
-        override suspend fun updateActiveSession(snapshot: FocusSessionSnapshot) {
+        override suspend fun updateActiveSession(snapshot: ActiveFocusSessionDomain) {
             activeSession = snapshot
             lastUpdated = snapshot
         }
 
-        override suspend fun completeSession(snapshot: FocusSessionSnapshot) {
+        override suspend fun completeSession(snapshot: ActiveFocusSessionDomain) {
             activeSession = null
             completeCalled = true
             completedSnapshot = snapshot
@@ -382,7 +382,7 @@ class FocusPomodoroViewModelTest {
         val scheduledIds = mutableListOf<String>()
         val cancelledIds = mutableListOf<String>()
 
-        override suspend fun schedule(snapshot: FocusSessionSnapshot) {
+        override suspend fun schedule(snapshot: ActiveFocusSessionDomain) {
             scheduledIds += snapshot.sessionId
         }
 

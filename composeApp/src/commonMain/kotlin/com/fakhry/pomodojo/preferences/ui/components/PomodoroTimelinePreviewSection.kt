@@ -34,6 +34,7 @@ import com.fakhry.pomodojo.generated.resources.preferences_timeline_long_break_l
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_preview_title
 import com.fakhry.pomodojo.generated.resources.preferences_title_pomodoro_timeline_preview
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUiModel
+import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
@@ -43,8 +44,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ColumnScope.PomodoroTimelinePreviewSection(
-    segments: ImmutableList<TimelineSegmentUiModel>,
-    hourSplits: ImmutableList<Int>,
+    timeline: TimelineUiModel,
 ) = this.run {
     val colorScheme = MaterialTheme.colorScheme
 
@@ -65,9 +65,9 @@ fun ColumnScope.PomodoroTimelinePreviewSection(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            TimelinePreview(segments)
+            TimelinePreview(timeline.segments)
             Spacer(modifier = Modifier.height(4.dp))
-            TimelineHoursSplit(hourSplits)
+            TimelineHoursSplit(timeline.hourSplits)
             Spacer(modifier = Modifier.height(12.dp))
             TimelineLegends()
         }
@@ -89,15 +89,28 @@ private fun ColumnScope.TimelinePreview(
         modifier = Modifier.fillMaxWidth().height(16.dp).clip(RoundedCornerShape(4.dp)),
     ) {
         segments.forEachIndexed { index, segment ->
+            val progress = segment.progress.coerceIn(0f, 1f)
             val color = when (segment) {
                 is TimelineSegmentUiModel.Focus -> Secondary
                 is TimelineSegmentUiModel.ShortBreak -> Primary
                 is TimelineSegmentUiModel.LongBreak -> LongBreakHighlight
             }
             Box(
-                modifier = Modifier.fillMaxHeight().weight(segment.duration.toFloat())
-                    .background(color),
-            )
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(segment.duration.toFloat())
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+            ) {
+                if (progress > 0f) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(progress)
+                            .background(color),
+                    )
+                }
+            }
             if (index != segments.lastIndex) {
                 Spacer(modifier = Modifier.width(2.dp))
             }

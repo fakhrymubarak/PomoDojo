@@ -8,7 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.fakhry.pomodojo.dashboard.DashboardScreen
-import com.fakhry.pomodojo.focus.ui.FocusPomodoroScreen
+import com.fakhry.pomodojo.focus.ui.PomodoroSessionScreen
 import com.fakhry.pomodojo.preferences.ui.PreferencesScreen
 import kotlinx.serialization.Serializable
 
@@ -20,7 +20,7 @@ object AppDestination {
     data object Preferences
 
     @Serializable
-    data object Focus
+    data object PomodoroSession
 }
 
 private const val ANIMATION_DURATION = 500
@@ -58,7 +58,7 @@ fun AppNavHost(
         composable<AppDestination.Dashboard> {
             DashboardScreen(
                 onStartPomodoro = {
-                    navController.navigate(AppDestination.Focus) {
+                    navController.navigate(AppDestination.PomodoroSession) {
                         launchSingleTop = true
                     }
                 },
@@ -74,11 +74,9 @@ fun AppNavHost(
                 onNavigateBack = { navController.popBackStack() },
             )
         }
-        composable<AppDestination.Focus> {
-            FocusPomodoroScreen(
-                onSessionCompleted = {
-                    navController.popBackStack()
-                },
+        composable<AppDestination.PomodoroSession> {
+            PomodoroSessionScreen(
+                onSessionCompleted = { navController.popBackStack() },
             )
         }
     }

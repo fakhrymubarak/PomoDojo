@@ -1,92 +1,36 @@
 package com.fakhry.pomodojo.focus.domain.model
 
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
-
-/**
- * Represents the current phase of a pomodoro cycle.
- */
-enum class FocusPhase {
-    FOCUS,
-    SHORT_BREAK,
-    LONG_BREAK,
-}
+import com.fakhry.pomodojo.preferences.domain.model.TimelineSegmentDomain
 
 /**
  * Timer status for an active focus session.
  */
 enum class FocusTimerStatus {
-    RUNNING,
-    PAUSED,
+    RUNNING, PAUSED, FINISHED
 }
-
-/**
- * Shared configuration needed to start a pomodoro session.
- */
-data class FocusSessionConfig(
-    val focusDurationMinutes: Int,
-    val shortBreakMinutes: Int,
-    val longBreakMinutes: Int,
-    val totalCycles: Int,
-    val autoStartNextPhase: Boolean,
-    val autoStartBreaks: Boolean,
-) {
-    companion object {
-        fun fromPreferences(preferences: PreferencesDomain): FocusSessionConfig = FocusSessionConfig(
-            focusDurationMinutes = preferences.focusMinutes,
-            shortBreakMinutes = preferences.breakMinutes,
-            longBreakMinutes = if (preferences.longBreakEnabled) {
-                preferences.longBreakMinutes
-            } else {
-                0
-            },
-            totalCycles = preferences.repeatCount,
-            autoStartNextPhase = false,
-            autoStartBreaks = false,
-        )
-    }
-}
-
-/**
- * Quote displayed during a focus session.
- */
-data class QuoteContent(
-    val id: String,
-    val text: String,
-    val character: String?,
-    val sourceTitle: String?,
-    val metadata: String?,
-)
 
 /**
  * Snapshot of the persisted active session used for restoration.
  */
-data class FocusSessionSnapshot(
-    val sessionId: String,
-    val status: FocusTimerStatus,
-    val focusDurationMinutes: Int,
-    val shortBreakMinutes: Int,
-    val longBreakMinutes: Int,
-    val autoStartNextPhase: Boolean,
-    val autoStartBreaks: Boolean,
-    val phaseRemainingSeconds: Int,
-    val currentPhaseTotalSeconds: Int,
-    val completedCycles: Int,
-    val totalCycles: Int,
-    val phase: FocusPhase,
-    val phaseStartedAtEpochMs: Long,
-    val quote: QuoteContent?,
-    val startedAtEpochMs: Long,
-    val updatedAtEpochMs: Long,
+data class ActiveFocusSessionDomain(
+    val sessionId: Long = 0L,
+    val startedAtEpochMs: Long = 0L,
+    val elapsedPauseEpochMs: Long = 0L,
+    val sessionStatus: FocusTimerStatus = FocusTimerStatus.RUNNING,
+    val repeatCount: Int = 0,
+    val focusMinutes: Int = 0,
+    val breakMinutes: Int = 0,
+    val longBreakEnabled: Boolean = true,
+    val longBreakAfter: Int = 0,
+    val longBreakMinutes: Int = 0,
+    val quoteId: String = "",
+    val timelines: List<TimelineSegmentDomain> = emptyList(),
 )
 
-fun interface SessionIdGenerator {
-    fun nextId(): String
-}
 
-@OptIn(ExperimentalTime::class)
-val DefaultSessionIdGenerator = SessionIdGenerator {
-    val timestamp = Clock.System.now().toEpochMilliseconds()
-    "session-$timestamp"
-}
+data class ActiveFocusSessionWithQuoteDomain(
+    val focusSession: ActiveFocusSessionDomain,
+    val quote: QuoteContent,
+    val preferences: PreferencesDomain,
+)

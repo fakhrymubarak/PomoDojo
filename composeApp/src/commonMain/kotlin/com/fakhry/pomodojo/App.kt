@@ -9,11 +9,11 @@ import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
 import com.fakhry.pomodojo.di.composeAppModules
 import com.fakhry.pomodojo.navigation.AppNavHost
-import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
 import com.fakhry.pomodojo.preferences.data.source.PreferenceKeys
 import com.fakhry.pomodojo.preferences.data.source.provideDataStore
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -38,7 +38,7 @@ fun App() {
     KoinApplication(
         application = { modules(composeAppModules) }
     ) {
-        val preferencesRepository: PreferencesRepository = koinInject()
+        val preferencesRepository = koinInject<PreferencesRepository>()
         val preferences by preferencesRepository.preferences.collectAsState(initial = initialPreferences)
         val useDarkTheme = preferences.appTheme == AppTheme.DARK
 

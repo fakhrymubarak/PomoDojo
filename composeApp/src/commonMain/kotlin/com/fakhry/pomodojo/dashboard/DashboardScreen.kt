@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,11 +37,16 @@ fun DashboardScreen(
     onOpenSettings: () -> Unit,
     viewModel: DashboardViewModel = koinInject(),
 ) {
+    val hasActiveSession by viewModel.hasActiveSession.collectAsState()
     val prefState by viewModel.prefState.collectAsState()
     val historyState by viewModel.historyState.collectAsState()
 
     val scrollState = rememberScrollState()
     val startLabel = stringResource(Res.string.pomodoro_timer_start)
+
+    LaunchedEffect(hasActiveSession) {
+        if (hasActiveSession) onStartPomodoro()
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),

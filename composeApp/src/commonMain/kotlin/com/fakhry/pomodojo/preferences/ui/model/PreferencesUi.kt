@@ -18,9 +18,14 @@ data class PreferencesUiModel(
     val isLongBreakEnabled: Boolean = true,
     val longBreakAfterOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),
     val longBreakOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),
-    val timelineSegments: ImmutableList<TimelineSegmentUiModel> = persistentListOf(),
-    val timelineHourSplits: ImmutableList<Int> = persistentListOf(),
+    val timeline: TimelineUiModel = TimelineUiModel(),
     val isLoading: Boolean = true,
+)
+
+@Immutable
+data class TimelineUiModel(
+    val segments: ImmutableList<TimelineSegmentUiModel> = persistentListOf(),
+    val hourSplits: ImmutableList<Int> = persistentListOf(),
 )
 
 @Immutable
@@ -36,15 +41,19 @@ data class PreferenceOption<T>(
  * Each segment has a specific type and duration.
  *
  * @property duration The duration of the timeline segment in MINUTES.
+ * @property duration The progress of the timeline segment from 0f to 1f.
  */
 @Immutable
-sealed class TimelineSegmentUiModel(open val duration: Int) {
+sealed class TimelineSegmentUiModel(open val duration: Int, open val progress: Float) {
     @Immutable
-    data class Focus(override val duration: Int) : TimelineSegmentUiModel(duration)
+    data class Focus(override val duration: Int, override val progress: Float) :
+        TimelineSegmentUiModel(duration, progress)
 
     @Immutable
-    data class ShortBreak(override val duration: Int) : TimelineSegmentUiModel(duration)
+    data class ShortBreak(override val duration: Int, override val progress: Float) :
+        TimelineSegmentUiModel(duration, progress)
 
     @Immutable
-    data class LongBreak(override val duration: Int) : TimelineSegmentUiModel(duration)
+    data class LongBreak(override val duration: Int, override val progress: Float) :
+        TimelineSegmentUiModel(duration, progress)
 }

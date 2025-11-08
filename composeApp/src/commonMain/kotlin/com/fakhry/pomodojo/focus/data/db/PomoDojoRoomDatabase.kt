@@ -5,16 +5,17 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionEntity
-import com.fakhry.pomodojo.focus.data.model.entities.FinishedSessionEntity
+import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
 
 @Database(
-    entities = [ActiveSessionEntity::class, FinishedSessionEntity::class],
+    entities = [ActiveSessionEntity::class, HistorySessionEntity::class],
     version = 1,
     exportSchema = true,
 )
 @ConstructedBy(PomoDojoRoomDatabaseConstructor::class)
 abstract class PomoDojoRoomDatabase : RoomDatabase() {
     abstract fun focusSessionDao(): FocusSessionDao
+    abstract fun historySessionDao(): HistorySessionDao
 }
 
 // The Room compiler generates the `actual` implementations.

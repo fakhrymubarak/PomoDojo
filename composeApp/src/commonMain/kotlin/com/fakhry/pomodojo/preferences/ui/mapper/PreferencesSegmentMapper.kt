@@ -6,8 +6,8 @@ import kotlinx.collections.immutable.toPersistentList
 
 fun List<TimelineSegmentDomain>.mapToTimelineSegmentsUi() = map {
     when (it) {
-        is TimelineSegmentDomain.Focus -> TimelineSegmentUiModel.Focus(it.duration)
-        is TimelineSegmentDomain.ShortBreak -> TimelineSegmentUiModel.ShortBreak(it.duration)
-        is TimelineSegmentDomain.LongBreak -> TimelineSegmentUiModel.LongBreak(it.duration)
+        is TimelineSegmentDomain.Focus -> TimelineSegmentUiModel.Focus(it.duration, 1f)
+        is TimelineSegmentDomain.ShortBreak -> TimelineSegmentUiModel.ShortBreak(it.duration, 1f)
+        is TimelineSegmentDomain.LongBreak -> TimelineSegmentUiModel.LongBreak(it.duration, 1f)
     }
 }.toPersistentList()

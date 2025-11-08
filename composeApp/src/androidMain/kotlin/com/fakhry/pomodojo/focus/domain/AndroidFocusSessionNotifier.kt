@@ -10,8 +10,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.fakhry.pomodojo.R
 import com.fakhry.pomodojo.focus.data.db.AndroidFocusDatabaseHolder
-import com.fakhry.pomodojo.focus.domain.model.FocusSessionSnapshot
-import com.fakhry.pomodojo.focus.domain.model.FocusTimerStatus
+import com.fakhry.pomodojo.focus.domain.model.ActiveFocusSessionDomain
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 
 private const val CHANNEL_ID = "focus_session_channel"
@@ -30,19 +29,19 @@ class AndroidFocusSessionNotifier(
 
     private val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    override suspend fun schedule(snapshot: FocusSessionSnapshot) {
-        if (snapshot.status != FocusTimerStatus.RUNNING) {
-            cancel(snapshot.sessionId)
-            return
-        }
-        ensureChannel()
-        val triggerAt = snapshot.updatedAtEpochMs + snapshot.phaseRemainingSeconds * 1_000L
-        val pendingIntent = buildPendingIntent(snapshot.sessionId)
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerAt,
-            pendingIntent,
-        )
+    override suspend fun schedule(snapshot: ActiveFocusSessionDomain) {
+//        if (snapshot.status != FocusTimerStatus.RUNNING) {
+//            cancel(snapshot.sessionId)
+//            return
+//        }
+//        ensureChannel()
+//        val triggerAt = snapshot.updatedAtEpochMs + snapshot.phaseRemainingSeconds * 1_000L
+//        val pendingIntent = buildPendingIntent(snapshot.sessionId)
+//        alarmManager.setExactAndAllowWhileIdle(
+//            AlarmManager.RTC_WAKEUP,
+//            triggerAt,
+//            pendingIntent,
+//        )
     }
 
     override suspend fun cancel(sessionId: String) {

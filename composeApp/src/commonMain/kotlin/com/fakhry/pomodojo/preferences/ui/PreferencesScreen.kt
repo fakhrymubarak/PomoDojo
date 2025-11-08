@@ -46,6 +46,7 @@ import com.fakhry.pomodojo.preferences.ui.components.PreferenceAppearanceSection
 import com.fakhry.pomodojo.preferences.ui.mapper.mapToTimelineSegmentsUi
 import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
+import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.ui.components.BgHeaderCanvas
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.collections.immutable.toPersistentList
@@ -95,15 +96,13 @@ private fun PreferencesHeader(onNavigateBack: () -> Unit) {
     var isNavigatingBack by remember { mutableStateOf(false) }
     BgHeaderCanvas {
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.systemBars)
+            modifier = Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.systemBars)
                 .padding(start = 16.dp, end = 16.dp, top = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             IconButton(
-                modifier = Modifier.size(24.dp),
-                onClick = {
+                modifier = Modifier.size(24.dp), onClick = {
                     if (!isNavigatingBack) {
                         onNavigateBack()
                         isNavigatingBack = true
@@ -144,13 +143,9 @@ private fun PreferencesContent(
             .padding(horizontal = 24.dp, vertical = 24.dp),
     ) {
 
-        PomodoroTimelinePreviewSection(
-            segments = state.timelineSegments,
-            hourSplits = state.timelineHourSplits,
-        )
+        PomodoroTimelinePreviewSection(timeline = state.timeline)
 
         Spacer(modifier = Modifier.height(32.dp))
-
 
         PomodoroConfigSection(
             state = state,
@@ -230,9 +225,10 @@ private fun PreferencesContentPreview() {
                 enabled = preferences.longBreakEnabled,
             )
         }.toPersistentList(),
-        timelineSegments = BuildFocusTimelineUseCase().invoke(preferences)
-            .mapToTimelineSegmentsUi(),
-        timelineHourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
+        timeline = TimelineUiModel(
+            segments = BuildFocusTimelineUseCase().invoke(preferences).mapToTimelineSegmentsUi(),
+            hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
+        ),
         isLoading = false,
     )
 
