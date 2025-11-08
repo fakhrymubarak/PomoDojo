@@ -7,16 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -41,13 +38,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.focus.ui.components.PomodoroSessionHeaderSection
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.focus_session_confirm_continue
 import com.fakhry.pomodojo.generated.resources.focus_session_confirm_end_message
 import com.fakhry.pomodojo.generated.resources.focus_session_confirm_end_title
 import com.fakhry.pomodojo.generated.resources.focus_session_confirm_finish
-import com.fakhry.pomodojo.generated.resources.focus_session_header_cycle_count
-import com.fakhry.pomodojo.generated.resources.focus_session_header_title
 import com.fakhry.pomodojo.generated.resources.focus_session_phase_break
 import com.fakhry.pomodojo.generated.resources.focus_session_phase_focus
 import com.fakhry.pomodojo.generated.resources.focus_session_phase_long_break
@@ -55,7 +51,6 @@ import com.fakhry.pomodojo.generated.resources.focus_session_quote_content_descr
 import com.fakhry.pomodojo.generated.resources.focus_session_timeline_title
 import com.fakhry.pomodojo.generated.resources.minutes
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUiModel
-import com.fakhry.pomodojo.ui.components.BgHeaderCanvas
 import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
@@ -88,7 +83,7 @@ fun PomodoroSessionScreen(
     ) {
         println("Trace currentState $state")
         Column(modifier = Modifier.fillMaxSize()) {
-            FocusSessionHeader(state = state)
+            PomodoroSessionHeaderSection(state = state)
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -590,43 +585,6 @@ private fun FocusConfirmDialog(
 }
 
 @Composable
-private fun FocusSessionHeader(state: PomodoroSessionUiState) {
-    val activePhase = state.activePhase
-    BgHeaderCanvas {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.systemBars)
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text(
-                text = stringResource(Res.string.focus_session_header_title),
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    fontWeight = FontWeight.Bold,
-                ),
-            )
-            val subtitle = state.let {
-                val phaseLabel = focusPhaseLabel(activePhase.type)
-                val cycleLabel = stringResource(
-                    Res.string.focus_session_header_cycle_count,
-                    activePhase.cycleNumber,
-                    it.totalCycle,
-                )
-                "$phaseLabel • $cycleLabel"
-            }
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.onSecondary,
-                ),
-            )
-        }
-    }
-}
-
-@Composable
 private fun FocusCompletedState(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
@@ -663,7 +621,7 @@ private fun FocusErrorState(
 }
 
 @Composable
-private fun focusPhaseLabel(phase: PhaseType): String = when (phase) {
+fun focusPhaseLabel(phase: PhaseType): String = when (phase) {
     PhaseType.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
     PhaseType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
     PhaseType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
