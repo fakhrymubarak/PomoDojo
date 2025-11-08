@@ -1,34 +1,44 @@
 package com.fakhry.pomodojo.focus.ui
 
 import androidx.compose.runtime.Immutable
-import com.fakhry.pomodojo.focus.domain.model.FocusPhase
-import com.fakhry.pomodojo.focus.domain.model.FocusTimerStatus
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
+import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
-sealed interface FocusPomodoroUiState {
-    @Immutable
-    data object Loading : FocusPomodoroUiState
-
-    @Immutable
-    data class Active(
-        val timerStatus: FocusTimerStatus,
-        val remainingSeconds: Int,
-        val totalSeconds: Int,
-        val formattedTime: String,
-        val progress: Float,
-        val completedSegments: Int,
-        val totalSegments: Int,
-        val quote: QuoteContent,
-        val phase: FocusPhase,
-        val showConfirmEndDialog: Boolean,
-    ) : FocusPomodoroUiState
-
-    @Immutable
-    data object Completing : FocusPomodoroUiState
-
-    @Immutable
-    data object Completed : FocusPomodoroUiState
-
-    @Immutable
-    data class Error(val message: String) : FocusPomodoroUiState
+@Immutable
+data class PomodoroSessionUiState(
+    val phases: ImmutableList<PhaseUi> = persistentListOf(),
+    val totalCycle: Int = 0,
+    val startedAtEpochMs: Long = 0L,
+    val elapsedPauseEpochMs: Long = 0L,
+    val formattedTime: String = "",
+    val timeline: TimelineUiModel = TimelineUiModel(),
+    val quote: QuoteContent = QuoteContent.DEFAULT_QUOTE,
+    val isShowConfirmEndDialog: Boolean = false,
+) {
+    val activePhase : PhaseUi
+        get() = phases.first { it.timerStatus == PhaseTimerStatus.RUNNING }
 }
+
+enum class PhaseType {
+    FOCUS,
+    SHORT_BREAK,
+    LONG_BREAK
+}
+
+enum class PhaseTimerStatus {
+    INITIAL, RUNNING, PAUSED, COMPLETED
+}
+
+@Immutable
+data class PhaseUi(
+    val type: PhaseType = PhaseType.FOCUS,
+    val cycleNumber: Int = 0,
+    val progress: Float = 0f,
+    val formattedTime: String = "00:00",
+    val timerStatus: PhaseTimerStatus = PhaseTimerStatus.INITIAL,
+)
+
+fun List<PhaseUi>.getCurrentCycle() =
+    this.indexOfFirst { it.timerStatus == PhaseTimerStatus.RUNNING }

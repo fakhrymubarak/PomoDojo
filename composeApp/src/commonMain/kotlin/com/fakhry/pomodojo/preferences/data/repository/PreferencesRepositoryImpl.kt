@@ -4,22 +4,23 @@ import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-class PreferencesRepository(
+class PreferencesRepositoryImpl(
     private val storage: PreferenceStorage,
     private val cascadeResolver: PreferenceCascadeResolver,
-) {
+) : PreferencesRepository {
 
-    val preferences: Flow<PreferencesDomain> = storage.preferences
+    override val preferences: Flow<PreferencesDomain> = storage.preferences
         .distinctUntilChanged()
 
-    suspend fun updateRepeatCount(value: Int) {
+    override suspend fun updateRepeatCount(value: Int) {
         storage.update { it.copy(repeatCount = value) }
     }
 
-    suspend fun updateFocusMinutes(value: Int) {
+    override suspend fun updateFocusMinutes(value: Int) {
         val cascade = cascadeResolver.resolveForFocus(value)
         storage.update {
             it.copy(
@@ -31,7 +32,7 @@ class PreferencesRepository(
         }
     }
 
-    suspend fun updateBreakMinutes(value: Int) {
+    override suspend fun updateBreakMinutes(value: Int) {
         val cascade = cascadeResolver.resolveForBreak(value)
         storage.update {
             it.copy(
@@ -42,19 +43,19 @@ class PreferencesRepository(
         }
     }
 
-    suspend fun updateLongBreakEnabled(enabled: Boolean) {
+    override suspend fun updateLongBreakEnabled(enabled: Boolean) {
         storage.update { it.copy(longBreakEnabled = enabled) }
     }
 
-    suspend fun updateLongBreakAfter(value: Int) {
+    override suspend fun updateLongBreakAfter(value: Int) {
         storage.update { it.copy(longBreakAfter = value) }
     }
 
-    suspend fun updateLongBreakMinutes(value: Int) {
+    override suspend fun updateLongBreakMinutes(value: Int) {
         storage.update { it.copy(longBreakMinutes = value) }
     }
 
-    suspend fun updateAppTheme(theme: AppTheme) {
+    override suspend fun updateAppTheme(theme: AppTheme) {
         storage.update { it.copy(appTheme = theme) }
     }
 }

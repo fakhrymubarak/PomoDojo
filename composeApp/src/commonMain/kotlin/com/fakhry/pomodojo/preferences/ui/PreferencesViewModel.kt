@@ -2,10 +2,10 @@ package com.fakhry.pomodojo.preferences.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.preferences.ui.mapper.mapToUiModel
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.utils.DispatcherProvider

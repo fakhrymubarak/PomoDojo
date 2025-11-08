@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.dashboard.model.HistorySectionUi
 import com.fakhry.pomodojo.dashboard.model.previewDashboardState
-import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
+import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,11 @@ import kotlinx.coroutines.launch
 
 class DashboardViewModel(
     private val repository: PreferencesRepository,
+    private val focusRepository: PomodoroSessionRepository,
 ) : ViewModel() {
+
+    private val _hasActiveSession = MutableStateFlow(false)
+    val hasActiveSession: StateFlow<Boolean> = _hasActiveSession.asStateFlow()
 
     private val _prefState = MutableStateFlow(PreferencesDomain())
     val prefState: StateFlow<PreferencesDomain> = _prefState.asStateFlow()
@@ -25,9 +30,15 @@ class DashboardViewModel(
 
     init {
         viewModelScope.launch {
+            async { checkHasActiveSession() }
             async { fetchPreferences() }
             async { fetchHistory() }
         }
+    }
+
+    suspend fun checkHasActiveSession() {
+        val hasActiveSession = focusRepository.hasActiveSession()
+        _hasActiveSession.value = hasActiveSession
     }
 
     suspend fun fetchPreferences() {

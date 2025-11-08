@@ -5,6 +5,7 @@ import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimelineSegmentDomain
 import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
+import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
 import kotlinx.collections.immutable.toPersistentList
 
 private val FOCUS_OPTIONS = listOf(10, 25, 50)
@@ -61,8 +62,10 @@ fun PreferencesDomain.mapToUiModel(
                 enabled = longBreakEnabled,
             )
         }.toPersistentList(),
-        timelineSegments = timelineBuilder(this).mapToTimelineSegmentsUi(),
-        timelineHourSplits = hourSplitter(this).toPersistentList(),
+        timeline = TimelineUiModel(
+            segments = timelineBuilder(this).mapToTimelineSegmentsUi(),
+            hourSplits = hourSplitter(this).toPersistentList(),
+        ),
         isLoading = false,
     )
 }
