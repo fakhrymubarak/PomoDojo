@@ -57,11 +57,9 @@ class FocusPomodoroViewModel(
     }
 
     private fun ActiveFocusSessionWithQuoteDomain.toNewPomodoroTimerUi(): PomodoroSessionUiState {
-        val remainingSeconds = focusSession.focusMinutes * 60
         return PomodoroSessionUiState(
             startedAtEpochMs = focusSession.startedAtEpochMs,
             elapsedPauseEpochMs = focusSession.elapsedPauseEpochMs,
-            formattedTime = formatDuration(remainingSeconds),
             timeline = TimelineUiModel(
                 segments = timelineBuilder(preferences).mapToTimelineSegmentsUi(),
                 hourSplits = hourSplitter(preferences).toPersistentList(),
@@ -69,6 +67,8 @@ class FocusPomodoroViewModel(
             quote = quote,
         )
     }
+
+
 
 
     private fun ActiveFocusSessionWithQuoteDomain.toPomodoroTimerUi(): PomodoroSessionUiState {

@@ -38,6 +38,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
 import com.fakhry.pomodojo.focus.ui.components.PomodoroSessionHeaderSection
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.focus_session_confirm_continue
@@ -52,11 +53,14 @@ import com.fakhry.pomodojo.generated.resources.focus_session_timeline_title
 import com.fakhry.pomodojo.generated.resources.minutes
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUiModel
 import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
+import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -77,22 +81,38 @@ fun PomodoroSessionScreen(
         if (isComplete) onSessionCompleted()
     }
 
+    PomodoroSessionContent(
+        state = state,
+        onEnd = viewModel::onEndClicked,
+    )
+}
+
+@Composable
+private fun PomodoroSessionContent(
+    state: PomodoroSessionUiState,
+    onEnd: () -> Unit,
+) {
+    val activePhase = state.activePhase
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
     ) {
-        println("Trace currentState $state")
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(32.dp),
+        ) {
             PomodoroSessionHeaderSection(state = state)
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-            ) {
-            }
+            PomodoroTimerSection(
+                phaseType = activePhase.type,
+                formattedTime = activePhase.formattedTime,
+                progress = activePhase.progress
+            )
+            FocusQuoteBlock(state)
         }
     }
 }
+
 
 //@Composable
 //private fun FocusActiveState(
@@ -307,9 +327,7 @@ private fun TimelineProgressRow(
     segmentProgress: ImmutableList<Float>,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(18.dp),
+        modifier = Modifier.fillMaxWidth().height(18.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         segments.forEachIndexed { index, segment ->
@@ -317,24 +335,17 @@ private fun TimelineProgressRow(
             val segmentColor = timelineSegmentColor(segment)
 
             Box(
-                modifier = Modifier
-                    .weight(segment.duration.coerceAtLeast(1).toFloat())
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(4.dp)),
+                modifier = Modifier.weight(segment.duration.coerceAtLeast(1).toFloat())
+                    .fillMaxHeight().clip(RoundedCornerShape(4.dp)),
             ) {
                 Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .clip(RoundedCornerShape(4.dp))
+                    modifier = Modifier.matchParentSize().clip(RoundedCornerShape(4.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                 )
                 if (progress > 0f) {
                     Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .fillMaxWidth(progress)
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(segmentColor),
+                        modifier = Modifier.fillMaxHeight().fillMaxWidth(progress)
+                            .clip(RoundedCornerShape(4.dp)).background(segmentColor),
                     )
                 }
             }
@@ -356,10 +367,7 @@ private fun TimelineHoursSplit(hourSplits: ImmutableList<Int>) {
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Box(
-                    modifier = Modifier
-                        .height(1.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(1.dp)),
+                    modifier = Modifier.height(1.dp).fillMaxWidth().clip(RoundedCornerShape(1.dp)),
                 ) {
                     Surface(
                         color = MaterialTheme.colorScheme.primary,
@@ -423,9 +431,7 @@ private fun TimelineLegend() {
 @Composable
 private fun LegendDot(color: Color) {
     Box(
-        modifier = Modifier
-            .size(12.dp)
-            .clip(CircleShape),
+        modifier = Modifier.size(12.dp).clip(CircleShape),
     ) {
         Surface(
             color = color,
@@ -449,9 +455,7 @@ private fun FocusQuoteBlock(state: PomodoroSessionUiState) {
         state.quote.text,
     )
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics { contentDescription = quoteDescription },
+        modifier = Modifier.fillMaxWidth().semantics { contentDescription = quoteDescription },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -464,10 +468,9 @@ private fun FocusQuoteBlock(state: PomodoroSessionUiState) {
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
         )
-        val attribution =
-            listOfNotNull(state.quote.character, state.quote.sourceTitle, state.quote.metadata)
-                .joinToString(separator = " — ")
-                .takeIf { it.isNotBlank() }
+        val attribution = listOfNotNull(
+            state.quote.character, state.quote.sourceTitle, state.quote.metadata
+        ).joinToString(separator = " — ").takeIf { it.isNotBlank() }
         if (attribution != null) {
             Text(
                 text = attribution,
@@ -528,9 +531,7 @@ private fun FocusCircularButton(
     contentColor: Color,
 ) {
     Surface(
-        modifier = Modifier
-            .size(64.dp)
-            .semantics { this.contentDescription = buttonDescription },
+        modifier = Modifier.size(64.dp).semantics { this.contentDescription = buttonDescription },
         shape = CircleShape,
         color = containerColor,
         onClick = onClick,
@@ -626,3 +627,21 @@ fun focusPhaseLabel(phase: PhaseType): String = when (phase) {
     PhaseType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
     PhaseType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
 }
+
+
+@Preview
+@Composable
+private fun PomodoroSessionContentPreview() {
+    val state = PomodoroSessionUiState(
+        phases = persistentListOf(
+            PhaseUi(
+                type = PhaseType.FOCUS, cycleNumber = 1, timerStatus = PhaseTimerStatus.RUNNING
+            )
+        ), totalCycle = 4
+    )
+
+    PomoDojoTheme {
+        PomodoroSessionContent(state = state, onEnd = {})
+    }
+}
+

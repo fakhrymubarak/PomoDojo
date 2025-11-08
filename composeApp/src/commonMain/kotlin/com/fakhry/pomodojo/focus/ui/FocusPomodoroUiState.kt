@@ -12,13 +12,12 @@ data class PomodoroSessionUiState(
     val totalCycle: Int = 0,
     val startedAtEpochMs: Long = 0L,
     val elapsedPauseEpochMs: Long = 0L,
-    val formattedTime: String = "",
     val timeline: TimelineUiModel = TimelineUiModel(),
     val quote: QuoteContent = QuoteContent.DEFAULT_QUOTE,
     val isShowConfirmEndDialog: Boolean = false,
 ) {
     val activePhase : PhaseUi
-        get() = phases.first { it.timerStatus == PhaseTimerStatus.RUNNING }
+        get() = phases.firstOrNull { it.timerStatus == PhaseTimerStatus.RUNNING } ?: phases.first()
 }
 
 enum class PhaseType {

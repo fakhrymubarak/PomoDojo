@@ -27,6 +27,7 @@ import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
 import com.fakhry.pomodojo.dashboard.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.pomodoro_timer_start
+import com.fakhry.pomodojo.utils.formatTimerMinutes
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -58,9 +59,7 @@ fun DashboardScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             DashboardHeader(onOpenSettings = onOpenSettings)
-            PomodoroTimerSection(
-                timerMinutes = prefState.focusMinutes,
-            )
+            PomodoroTimerSection(formattedTime = formatTimerMinutes(prefState.focusMinutes))
 
             // Start button
             Button(
