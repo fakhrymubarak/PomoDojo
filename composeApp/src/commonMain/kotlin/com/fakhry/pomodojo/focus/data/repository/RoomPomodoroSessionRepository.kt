@@ -8,7 +8,7 @@ import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
 import com.fakhry.pomodojo.focus.domain.model.ActiveFocusSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.FocusTimerStatus
 import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
-import com.fakhry.pomodojo.preferences.domain.model.TimelineSegmentDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -47,6 +47,7 @@ class RoomPomodoroSessionRepository(
     private fun ActiveFocusSessionDomain.toEntity(): ActiveSessionEntity = ActiveSessionEntity(
         startedAtEpochMs = startedAtEpochMs,
         elapsedPausedEpochMs = elapsedPauseEpochMs,
+        pauseStartedAtEpochMs = pauseStartedAtEpochMs,
         sessionStatus = sessionStatus.name,
         repeatCount = repeatCount,
         focusMinutes = focusMinutes,
@@ -62,9 +63,9 @@ class RoomPomodoroSessionRepository(
         var totalFocusMinutes = 0
         var totalBreakMinutes = 0
         timelines.forEach {
-            when (it) {
-                is TimelineSegmentDomain.Focus -> totalFocusMinutes += it.duration
-                else -> totalBreakMinutes += it.duration
+            when (it.type) {
+                TimerType.FOCUS -> totalFocusMinutes += (it.timerStatus.durationEpochMs / 60_000L).toInt()
+                else -> totalBreakMinutes += (it.timerStatus.durationEpochMs / 60_000L).toInt()
             }
         }
 
@@ -82,6 +83,7 @@ class RoomPomodoroSessionRepository(
             sessionId = sessionId,
             startedAtEpochMs = startedAtEpochMs,
             elapsedPauseEpochMs = elapsedPausedEpochMs,
+            pauseStartedAtEpochMs = pauseStartedAtEpochMs,
             sessionStatus = sessionStatus.toEnumSessionStatus(),
             repeatCount = repeatCount,
             focusMinutes = focusMinutes,
@@ -98,4 +100,3 @@ class RoomPomodoroSessionRepository(
         else -> FocusTimerStatus.RUNNING
     }
 }
-

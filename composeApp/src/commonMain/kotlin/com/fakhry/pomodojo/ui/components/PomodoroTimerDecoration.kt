@@ -35,10 +35,10 @@ fun PomodoroTimerDecoration(
     )
     val colorScheme = MaterialTheme.colorScheme
 
-    Canvas(modifier = Modifier.fillMaxSize()) {
+    Canvas(modifier = modifier.fillMaxSize()) {
         val center = Offset(x = size.width / 2f, y = size.height / 2f)
         val maxRadius = size.minDimension / 2f
-        val strokeWidth = 18.dp.toPx()
+        val strokeWidth = 12.dp.toPx()
         val ringRadius = (maxRadius - 30.dp.toPx()).coerceAtLeast(strokeWidth / 2f)
 
         drawCircle(
@@ -59,7 +59,7 @@ fun PomodoroTimerDecoration(
 
         val dotRadius = 4.dp.toPx()
         val dotCount = 12
-        val orbitRadius = (ringRadius + 16.dp.toPx()).coerceAtMost(maxRadius - dotRadius)
+        val orbitRadius = (ringRadius + 24.dp.toPx()).coerceAtMost(maxRadius - dotRadius)
 
         // Outer ring stroke
         repeat(dotCount) { index ->
@@ -75,39 +75,6 @@ fun PomodoroTimerDecoration(
             )
         }
     }
-
-
-//    Canvas(modifier = modifier.fillMaxSize()) {
-//        val center = Offset(x = size.width / 2f, y = size.height / 2f)
-//        val maxRadius = size.minDimension / 2f
-//        val ringStrokeWidth = 12.dp.toPx()
-//        val ringRadius = (maxRadius - 30.dp.toPx()).coerceAtLeast(ringStrokeWidth / 2f)
-//
-//        drawCircle(
-//            color = progressColor,
-//            radius = ringRadius,
-//            center = center,
-//            style = Stroke(width = ringStrokeWidth),
-//        )
-//
-//        val dotRadius = 3.dp.toPx()
-//        val dotCount = 12
-//        val orbitRadius = (ringRadius + 16.dp.toPx()).coerceAtMost(maxRadius - dotRadius)
-//
-//        // Outer ring stroke
-//        repeat(dotCount) { index ->
-//            val angle = (2 * PI * index / dotCount) - (PI / 2)
-//            val dotCenter = Offset(
-//                x = center.x + orbitRadius * cos(angle).toFloat(),
-//                y = center.y + orbitRadius * sin(angle).toFloat(),
-//            )
-//            drawCircle(
-//                color = Primary,
-//                radius = dotRadius,
-//                center = dotCenter,
-//            )
-//        }
-//    }
 }
 
 @Preview

@@ -3,6 +3,8 @@ package com.fakhry.pomodojo.preferences.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.preferences.domain.model.TimelineTimerDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
@@ -27,7 +29,9 @@ class PreferencesViewModel(
         viewModelScope.launch(dispatcher.io) {
             repository.preferences.collect { preferences ->
                 _state.value = preferences.mapToUiModel(
-                    timelineBuilder = timelineBuilder::invoke,
+                    timelineBuilder = {
+                        timelineBuilder(0L, it).toCompletedTimeline()
+                    },
                     hourSplitter = hourSplitter::invoke,
                 )
             }
@@ -76,6 +80,10 @@ class PreferencesViewModel(
         viewModelScope.launch(dispatcher.io) {
             repository.updateAppTheme(theme)
         }
+    }
+
+    private fun List<TimelineTimerDomain>.toCompletedTimeline() = map { segment ->
+        segment.copy(timerStatus = TimerStatusDomain.Completed())
     }
 
     override fun onCleared() {

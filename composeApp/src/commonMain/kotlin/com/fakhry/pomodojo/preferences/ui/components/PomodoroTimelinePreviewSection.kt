@@ -33,14 +33,19 @@ import com.fakhry.pomodojo.generated.resources.preferences_timeline_focus_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_long_break_label
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_preview_title
 import com.fakhry.pomodojo.generated.resources.preferences_title_pomodoro_timeline_preview
-import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUiModel
+import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerType
+import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
+import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.ui.theme.Primary
 import com.fakhry.pomodojo.ui.theme.Secondary
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ColumnScope.PomodoroTimelinePreviewSection(
@@ -82,31 +87,27 @@ fun ColumnScope.PomodoroTimelinePreviewSection(
 
 @Composable
 fun ColumnScope.TimelinePreview(
-    segments: ImmutableList<TimelineSegmentUiModel>,
+    segments: ImmutableList<TimelineSegmentUi>,
 ) = this.run {
     Spacer(modifier = Modifier.height(12.dp))
     Row(
         modifier = Modifier.fillMaxWidth().height(16.dp).clip(RoundedCornerShape(4.dp)),
     ) {
         segments.forEachIndexed { index, segment ->
-            val progress = segment.progress.coerceIn(0f, 1f)
-            val color = when (segment) {
-                is TimelineSegmentUiModel.Focus -> Secondary
-                is TimelineSegmentUiModel.ShortBreak -> Primary
-                is TimelineSegmentUiModel.LongBreak -> LongBreakHighlight
+            val progress = segment.timerStatus.progress.coerceIn(0f, 1f)
+            val color = when (segment.type) {
+                TimerType.FOCUS -> Secondary
+                TimerType.SHORT_BREAK -> Primary
+                TimerType.LONG_BREAK -> LongBreakHighlight
             }
             Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(segment.duration.toFloat())
+                modifier = Modifier.fillMaxHeight().weight(segment.timerStatus.durationEpochMs.toFloat())
                     .clip(RoundedCornerShape(2.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant),
             ) {
                 if (progress > 0f) {
                     Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .fillMaxWidth(progress)
+                        modifier = Modifier.fillMaxHeight().fillMaxWidth(progress)
                             .background(color),
                     )
                 }
@@ -198,4 +199,38 @@ private fun LegendDot(color: Color) {
     Box(
         modifier = Modifier.size(12.dp).clip(RoundedCornerShape(6.dp)).background(color),
     )
+}
+
+
+@Preview
+@Composable
+private fun PomodoroTimelinePreviewSectionPreview() {
+    val timeline = TimelineUiModel(
+        segments = persistentListOf(
+            TimelineSegmentUi(
+                timerStatus = TimerStatusDomain.Completed(),
+            ),
+            TimelineSegmentUi(
+                type = TimerType.SHORT_BREAK,
+                timerStatus = TimerStatusDomain.Completed(),
+            ),
+            TimelineSegmentUi(
+                timerStatus = TimerStatusDomain.Running(progress = 0.6f)
+            ),
+            TimelineSegmentUi(
+                type = TimerType.SHORT_BREAK,
+            ),
+            TimelineSegmentUi(),
+            TimelineSegmentUi(
+                type = TimerType.LONG_BREAK,
+            ),
+            TimelineSegmentUi(),
+        ),
+        hourSplits = persistentListOf(60, 55),
+    )
+    PomoDojoTheme {
+        Column {
+            PomodoroTimelinePreviewSection(timeline)
+        }
+    }
 }

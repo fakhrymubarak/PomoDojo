@@ -96,7 +96,8 @@ private fun PreferencesHeader(onNavigateBack: () -> Unit) {
     var isNavigatingBack by remember { mutableStateOf(false) }
     BgHeaderCanvas {
         Row(
-            modifier = Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.systemBars)
+            modifier = Modifier.fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.systemBars)
                 .padding(start = 16.dp, end = 16.dp, top = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -226,7 +227,7 @@ private fun PreferencesContentPreview() {
             )
         }.toPersistentList(),
         timeline = TimelineUiModel(
-            segments = BuildFocusTimelineUseCase().invoke(preferences).mapToTimelineSegmentsUi(),
+            segments = BuildFocusTimelineUseCase().invoke(0L, preferences).mapToTimelineSegmentsUi(),
             hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
         ),
         isLoading = false,

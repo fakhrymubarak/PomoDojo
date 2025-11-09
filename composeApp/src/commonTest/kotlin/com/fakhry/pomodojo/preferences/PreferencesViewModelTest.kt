@@ -1,13 +1,13 @@
 package com.fakhry.pomodojo.preferences
 
-import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
+import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepositoryImpl
 import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
 import com.fakhry.pomodojo.preferences.ui.PreferencesViewModel
-import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUiModel
+import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,7 +26,7 @@ class PreferencesViewModelTest {
     @Test
     fun `initial state mirrors stored preferences`() = runTest {
         val storage = FakePreferenceStorage()
-        val repository = PreferencesRepository(
+        val repository = PreferencesRepositoryImpl(
             storage = storage,
             cascadeResolver = PreferenceCascadeResolver(),
         )
@@ -45,13 +45,13 @@ class PreferencesViewModelTest {
         assertFalse(state.isLoading)
         assertEquals(PreferencesDomain.DEFAULT_REPEAT_COUNT, state.repeatCount)
         assertTrue(state.focusOptions.first { it.value == 25 }.selected)
-        assertEquals(7, state.timelineSegments.size) // 4 focus + 3 short breaks + long break
+        assertEquals(7, state.timeline.segments.size) // 4 focus + 3 short breaks + long break
     }
 
     @Test
     fun `selecting focus option cascades updates`() = runTest {
         val storage = FakePreferenceStorage()
-        val repository = PreferencesRepository(
+        val repository = PreferencesRepositoryImpl(
             storage = storage,
             cascadeResolver = PreferenceCascadeResolver(),
         )
@@ -74,7 +74,7 @@ class PreferencesViewModelTest {
         assertTrue(state.breakOptions.first { it.value == 10 }.selected)
         assertTrue(state.longBreakAfterOptions.first { it.value == 2 }.selected)
         assertTrue(state.longBreakOptions.first { it.value == 20 }.selected)
-        assertEquals(1, state.timelineSegments.count { it is TimelineSegmentUiModel.LongBreak })
+        assertEquals(1, state.timeline.segments.count { it is TimelineSegmentUi.LongBreak })
     }
 
     private class FakePreferenceStorage : PreferenceStorage {

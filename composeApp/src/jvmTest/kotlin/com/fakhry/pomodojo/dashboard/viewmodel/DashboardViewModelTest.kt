@@ -1,80 +1,132 @@
 package com.fakhry.pomodojo.dashboard.viewmodel
 
-import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
-import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
+import com.fakhry.pomodojo.focus.domain.model.ActiveFocusSessionDomain
+import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
+import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DashboardViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
 
-    @Before
-    fun setUp() {
+    @BeforeTest
+    fun setup() {
         Dispatchers.setMain(dispatcher)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
     }
 
     @Test
-    fun `initial state uses stored focus minutes`() = runTest {
-        val initialPreferences = PreferencesDomain(focusMinutes = 30)
-        val repository = createRepository(initialPreferences)
+    fun `pref state reflects initial preferences`() = runTest(dispatcher) {
+        val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 30))
+        val focusRepository = FakeFocusRepository(hasActive = false)
 
-        val viewModel = DashboardViewModel(repository)
-        dispatcher.scheduler.advanceUntilIdle()
+        val viewModel = DashboardViewModel(repository, focusRepository)
+        advanceUntilIdle()
 
-        assertEquals(30, viewModel.state.value.timerMinutes)
+        assertEquals(30, viewModel.prefState.value.focusMinutes)
+        assertFalse(viewModel.hasActiveSession.value)
     }
 
     @Test
-    fun `timer updates when focus minutes change`() = runTest {
-        val initialPreferences = PreferencesDomain(focusMinutes = 25)
-        val fakeStorage = FakePreferenceStorage(initialPreferences)
-        val repository = PreferencesRepository(fakeStorage, PreferenceCascadeResolver())
+    fun `pref state updates when repository emits new value`() = runTest(dispatcher) {
+        val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 25))
+        val focusRepository = FakeFocusRepository(hasActive = true)
 
-        val viewModel = DashboardViewModel(repository)
-        dispatcher.scheduler.advanceUntilIdle()
+        val viewModel = DashboardViewModel(repository, focusRepository)
+        advanceUntilIdle()
 
-        val updated = initialPreferences.copy(focusMinutes = 45)
-        fakeStorage.emit(updated)
-        dispatcher.scheduler.advanceUntilIdle()
+        repository.emit(repository.current.copy(focusMinutes = 45))
+        advanceUntilIdle()
 
-        assertEquals(45, viewModel.state.value.timerMinutes)
+        assertEquals(45, viewModel.prefState.value.focusMinutes)
+        assertTrue(viewModel.hasActiveSession.value)
     }
 
-    private fun createRepository(initialPreferences: PreferencesDomain): PreferencesRepository {
-        val storage = FakePreferenceStorage(initialPreferences)
-        return PreferencesRepository(storage, PreferenceCascadeResolver())
-    }
-
-    private class FakePreferenceStorage(initial: PreferencesDomain) : PreferenceStorage {
+    private class FakePreferencesRepository(
+        initial: PreferencesDomain,
+    ) : PreferencesRepository {
         private val state = MutableStateFlow(initial)
+        val current: PreferencesDomain get() = state.value
 
-        override val preferences = state.asStateFlow()
+        override val preferences: Flow<PreferencesDomain> = state.asStateFlow()
 
-        override suspend fun update(transform: (PreferencesDomain) -> PreferencesDomain) {
-            state.value = transform(state.value)
+        override suspend fun updateRepeatCount(value: Int) {
+            state.update { it.copy(repeatCount = value) }
+        }
+
+        override suspend fun updateFocusMinutes(value: Int) {
+            state.update { it.copy(focusMinutes = value) }
+        }
+
+        override suspend fun updateBreakMinutes(value: Int) {
+            state.update { it.copy(breakMinutes = value) }
+        }
+
+        override suspend fun updateLongBreakEnabled(enabled: Boolean) {
+            state.update { it.copy(longBreakEnabled = enabled) }
+        }
+
+        override suspend fun updateLongBreakAfter(value: Int) {
+            state.update { it.copy(longBreakAfter = value) }
+        }
+
+        override suspend fun updateLongBreakMinutes(value: Int) {
+            state.update { it.copy(longBreakMinutes = value) }
+        }
+
+        override suspend fun updateAppTheme(theme: AppTheme) {
+            state.update { it.copy(appTheme = theme) }
         }
 
         fun emit(preferences: PreferencesDomain) {
             state.value = preferences
+        }
+    }
+
+    private class FakeFocusRepository(
+        private var hasActive: Boolean,
+    ) : PomodoroSessionRepository {
+        override suspend fun hasActiveSession(): Boolean = hasActive
+
+        override suspend fun getActiveSession(): ActiveFocusSessionDomain = ActiveFocusSessionDomain()
+
+        override suspend fun saveActiveSession(snapshot: ActiveFocusSessionDomain) {
+            hasActive = true
+        }
+
+        override suspend fun updateActiveSession(snapshot: ActiveFocusSessionDomain) {
+            hasActive = snapshot.sessionStatus == com.fakhry.pomodojo.focus.domain.model.FocusTimerStatus.RUNNING
+        }
+
+        override suspend fun completeSession(snapshot: ActiveFocusSessionDomain) {
+            hasActive = false
+        }
+
+        override suspend fun clearActiveSession() {
+            hasActive = false
         }
     }
 }

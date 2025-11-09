@@ -2,7 +2,7 @@ package com.fakhry.pomodojo.preferences.ui.mapper
 
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimelineSegmentDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimelineTimerDomain
 import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
@@ -15,7 +15,7 @@ private val LONG_BREAK_MINUTES = listOf(4, 10, 20)
 val DEFAULT_REPEAT_RANGE = 2..8
 
 fun PreferencesDomain.mapToUiModel(
-    timelineBuilder: (PreferencesDomain) -> List<TimelineSegmentDomain>,
+    timelineBuilder: (PreferencesDomain) -> List<TimelineTimerDomain>,
     hourSplitter: (PreferencesDomain) -> List<Int>,
 ) = this.run {
     val longBreakEnabled = longBreakEnabled

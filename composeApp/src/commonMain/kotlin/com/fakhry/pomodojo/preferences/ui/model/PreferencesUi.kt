@@ -3,6 +3,8 @@ package com.fakhry.pomodojo.preferences.ui.model
 import androidx.compose.runtime.Immutable
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain.Companion.DEFAULT_REPEAT_COUNT
+import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.preferences.ui.mapper.DEFAULT_REPEAT_RANGE
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -24,7 +26,7 @@ data class PreferencesUiModel(
 
 @Immutable
 data class TimelineUiModel(
-    val segments: ImmutableList<TimelineSegmentUiModel> = persistentListOf(),
+    val segments: ImmutableList<TimelineSegmentUi> = persistentListOf(),
     val hourSplits: ImmutableList<Int> = persistentListOf(),
 )
 
@@ -41,19 +43,13 @@ data class PreferenceOption<T>(
  * Each segment has a specific type and duration.
  *
  * @property duration The duration of the timeline segment in MINUTES.
- * @property duration The progress of the timeline segment from 0f to 1f.
+ * @property progress The progress of the timeline segment from 0f to 1f.
  */
 @Immutable
-sealed class TimelineSegmentUiModel(open val duration: Int, open val progress: Float) {
-    @Immutable
-    data class Focus(override val duration: Int, override val progress: Float) :
-        TimelineSegmentUiModel(duration, progress)
-
-    @Immutable
-    data class ShortBreak(override val duration: Int, override val progress: Float) :
-        TimelineSegmentUiModel(duration, progress)
-
-    @Immutable
-    data class LongBreak(override val duration: Int, override val progress: Float) :
-        TimelineSegmentUiModel(duration, progress)
-}
+data class TimelineSegmentUi(
+    val type: TimerType = TimerType.FOCUS,
+    val startedAtEpochMs: Long = 0L,
+    val pauseStartedAtEpochMs: Long = 0L,
+    val cycleNumber: Int = 0,
+    val timerStatus: TimerStatusDomain = TimerStatusDomain.Initial(),
+)
