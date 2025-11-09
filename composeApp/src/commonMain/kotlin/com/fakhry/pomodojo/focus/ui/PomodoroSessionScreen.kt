@@ -66,7 +66,6 @@ import com.fakhry.pomodojo.preferences.ui.components.TimelineHoursSplit
 import com.fakhry.pomodojo.preferences.ui.components.TimelineLegends
 import com.fakhry.pomodojo.preferences.ui.components.TimelinePreview
 import com.fakhry.pomodojo.preferences.ui.mapper.mapToTimelineSegmentsUi
-import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.collections.immutable.toPersistentList
@@ -126,7 +125,11 @@ private fun PomodoroSessionContent(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            PomodoroSessionHeaderSection(state = state)
+            PomodoroSessionHeaderSection(
+                timerType = activeSegment.type,
+                cycleNumber = activeSegment.cycleNumber,
+                totalCycle = state.totalCycle
+            )
             Spacer(modifier = Modifier.height(32.dp))
             PomodoroTimerSection(
                 segmentType = activeSegment.type,
@@ -142,7 +145,7 @@ private fun PomodoroSessionContent(
             )
             Spacer(modifier = Modifier.height(32.dp))
             FocusControls(
-                activePhase = activeSegment,
+                isTimerRunning = activeSegment.timerStatus is TimerStatusDomain.Running,
                 onTogglePause = onTogglePause,
                 onEnd = onEnd,
             )
@@ -221,7 +224,7 @@ private fun FocusQuoteBlock(modifier: Modifier, quote: QuoteContent) {
 
 @Composable
 private fun FocusControls(
-    activePhase: TimelineSegmentUi,
+    isTimerRunning: Boolean,
     onTogglePause: () -> Unit = {},
     onEnd: () -> Unit = {},
 ) {
@@ -229,9 +232,8 @@ private fun FocusControls(
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        val isPause = activePhase.timerStatus is TimerStatusDomain.Paused
-        val icon = if (isPause) Icons.Rounded.Pause else Icons.Rounded.PlayArrow
-        val description = if (isPause) {
+        val icon = if (isTimerRunning) Icons.Rounded.Pause else Icons.Rounded.PlayArrow
+        val description = if (isTimerRunning) {
             stringResource(Res.string.focus_session_pause_content_description)
         } else {
             stringResource(Res.string.focus_session_resume_content_description)

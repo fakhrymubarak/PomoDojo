@@ -19,6 +19,12 @@ data class PomodoroSessionUiState(
     val isComplete: Boolean = false,
 )
 
+@Immutable
+data class PomodoroHeaderUiState(
+    val totalCycle: Int = 0,
+    val activeSegment: TimelineSegmentUi = TimelineSegmentUi(),
+)
+
 sealed class PomodoroSessionSideEffect {
     data class ShowEndSessionDialog(val isShown: Boolean) : PomodoroSessionSideEffect()
     object OnSessionComplete : PomodoroSessionSideEffect()
