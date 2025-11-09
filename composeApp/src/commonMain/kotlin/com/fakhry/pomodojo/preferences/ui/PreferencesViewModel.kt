@@ -3,10 +3,10 @@ package com.fakhry.pomodojo.preferences.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.preferences.domain.model.TimelineTimerDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.preferences.ui.mapper.mapToUiModel
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class PreferencesViewModel(
     private val repository: PreferencesRepository,
-    private val timelineBuilder: BuildFocusTimelineUseCase,
+    private val timelineBuilder: BuildTimerSegmentsUseCase,
     private val hourSplitter: BuildHourSplitTimelineUseCase,
     private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
@@ -82,8 +82,8 @@ class PreferencesViewModel(
         }
     }
 
-    private fun List<TimelineTimerDomain>.toCompletedTimeline() = map { segment ->
-        segment.copy(timerStatus = TimerStatusDomain.Completed())
+    private fun List<TimerSegmentsDomain>.toCompletedTimeline() = map { segment ->
+        segment.copy(timerStatus = TimerStatusDomain.Completed)
     }
 
     override fun onCleared() {

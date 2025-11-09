@@ -1,8 +1,8 @@
 package com.fakhry.pomodojo.preferences.di
 
 import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepositoryImpl
-import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.preferences.ui.PreferencesViewModel
@@ -15,7 +15,7 @@ import org.koin.dsl.module
 val preferencesModule = module {
     viewModelOf(::PreferencesViewModel)
     factoryOf(::PreferenceCascadeResolver)
-    factoryOf(::BuildFocusTimelineUseCase)
+    factoryOf(::BuildTimerSegmentsUseCase)
     factoryOf(::BuildHourSplitTimelineUseCase)
     singleOf(::PreferencesRepositoryImpl) bind PreferencesRepository::class
 }

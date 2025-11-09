@@ -60,8 +60,8 @@ import com.fakhry.pomodojo.generated.resources.focus_session_timeline_title
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
-import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.preferences.ui.components.TimelineHoursSplit
 import com.fakhry.pomodojo.preferences.ui.components.TimelineLegends
 import com.fakhry.pomodojo.preferences.ui.components.TimelinePreview
@@ -130,8 +130,8 @@ private fun PomodoroSessionContent(
             Spacer(modifier = Modifier.height(32.dp))
             PomodoroTimerSection(
                 segmentType = activeSegment.type,
-                formattedTime = activeSegment.timerStatus.formattedTime,
-                progress = activeSegment.timerStatus.progress,
+                formattedTime = activeSegment.timer.formattedTime,
+                progress = activeSegment.timer.progress,
             )
             Spacer(modifier = Modifier.height(32.dp))
             FocusQuoteBlock(modifier = Modifier.padding(horizontal = 16.dp), quote = state.quote)
@@ -343,11 +343,12 @@ fun focusPhaseLabel(phase: TimerType): String = when (phase) {
 @Composable
 private fun PomodoroSessionContentPreview() {
     val preferences = PreferencesDomain()
+    val timerSegments = BuildTimerSegmentsUseCase().invoke(0L, preferences).mapToTimelineSegmentsUi(1_000L)
     val state = PomodoroSessionUiState(
         totalCycle = 4,
+        activeSegment = timerSegments.first(),
         timeline = TimelineUiModel(
-            segments = BuildFocusTimelineUseCase().invoke(0L, preferences)
-                .mapToTimelineSegmentsUi(),
+            segments = timerSegments,
             hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
         ),
     )

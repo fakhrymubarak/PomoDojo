@@ -48,8 +48,15 @@ data class PreferenceOption<T>(
 @Immutable
 data class TimelineSegmentUi(
     val type: TimerType = TimerType.FOCUS,
-    val startedAtEpochMs: Long = 0L,
-    val pauseStartedAtEpochMs: Long = 0L,
     val cycleNumber: Int = 0,
-    val timerStatus: TimerStatusDomain = TimerStatusDomain.Initial(),
+    val timer: TimerUi = TimerUi(),
+    val timerStatus: TimerStatusDomain = TimerStatusDomain.Initial,
+)
+
+@Immutable
+data class TimerUi(
+    val progress: Float = 0f,
+    val durationEpochMs: Long = 0L,
+    val formattedTime: String = "00:00",
+    val finishedInMillis: Long = 0L,
 )

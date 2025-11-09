@@ -3,8 +3,8 @@ package com.fakhry.pomodojo.preferences
 import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepositoryImpl
 import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
-import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
 import com.fakhry.pomodojo.preferences.ui.PreferencesViewModel
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
@@ -33,7 +33,7 @@ class PreferencesViewModelTest {
         val testDispatcher = Dispatchers.Unconfined
         val viewModel = PreferencesViewModel(
             repository = repository,
-            timelineBuilder = BuildFocusTimelineUseCase(),
+            timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(testDispatcher),
         )
@@ -58,7 +58,7 @@ class PreferencesViewModelTest {
         val testDispatcher = Dispatchers.Unconfined
         val viewModel = PreferencesViewModel(
             repository = repository,
-            timelineBuilder = BuildFocusTimelineUseCase(),
+            timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(testDispatcher),
         )
