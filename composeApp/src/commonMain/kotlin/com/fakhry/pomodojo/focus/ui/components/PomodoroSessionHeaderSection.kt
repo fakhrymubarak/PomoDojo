@@ -18,14 +18,14 @@ import com.fakhry.pomodojo.focus.ui.focusPhaseLabel
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.focus_session_header_cycle_count
 import com.fakhry.pomodojo.generated.resources.focus_session_header_title
+import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.ui.components.BgHeaderCanvas
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun PomodoroSessionHeaderSection(state: PomodoroSessionUiState) {
-    val activePhase = state.activeSegment
+fun PomodoroSessionHeaderSection(timerType: TimerType, cycleNumber: Int, totalCycle: Int) {
     BgHeaderCanvas {
         Column(
             modifier = Modifier
@@ -41,15 +41,14 @@ fun PomodoroSessionHeaderSection(state: PomodoroSessionUiState) {
                     fontWeight = FontWeight.Bold,
                 ),
             )
-            val subtitle = state.let {
-                val phaseLabel = focusPhaseLabel(activePhase.type)
-                val cycleLabel = stringResource(
-                    Res.string.focus_session_header_cycle_count,
-                    activePhase.cycleNumber,
-                    it.totalCycle,
-                )
-                "$phaseLabel • $cycleLabel"
-            }
+
+            val phaseLabel = focusPhaseLabel(timerType)
+            val cycleLabel = stringResource(
+                Res.string.focus_session_header_cycle_count,
+                cycleNumber,
+                totalCycle,
+            )
+            val subtitle = "$phaseLabel • $cycleLabel"
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodyMedium.copy(
@@ -68,6 +67,6 @@ private fun PomodoroSessionHeaderSectionPreview() {
     )
 
     PomoDojoTheme {
-        PomodoroSessionHeaderSection(state)
+        PomodoroSessionHeaderSection(TimerType.FOCUS, 2, 4)
     }
 }
