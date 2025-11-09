@@ -38,8 +38,8 @@ import com.fakhry.pomodojo.generated.resources.preferences_back_content_descript
 import com.fakhry.pomodojo.generated.resources.preferences_title
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
-import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.preferences.ui.components.PomodoroConfigSection
 import com.fakhry.pomodojo.preferences.ui.components.PomodoroTimelinePreviewSection
 import com.fakhry.pomodojo.preferences.ui.components.PreferenceAppearanceSection
@@ -227,7 +227,7 @@ private fun PreferencesContentPreview() {
             )
         }.toPersistentList(),
         timeline = TimelineUiModel(
-            segments = BuildFocusTimelineUseCase().invoke(0L, preferences).mapToTimelineSegmentsUi(),
+            segments = BuildTimerSegmentsUseCase().invoke(0L, preferences).mapToTimelineSegmentsUi(),
             hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
         ),
         isLoading = false,

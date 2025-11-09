@@ -94,14 +94,15 @@ fun ColumnScope.TimelinePreview(
         modifier = Modifier.fillMaxWidth().height(16.dp).clip(RoundedCornerShape(4.dp)),
     ) {
         segments.forEachIndexed { index, segment ->
-            val progress = segment.timerStatus.progress.coerceIn(0f, 1f)
+            val progress = segment.timer.progress.coerceIn(0f, 1f)
             val color = when (segment.type) {
                 TimerType.FOCUS -> Secondary
                 TimerType.SHORT_BREAK -> Primary
                 TimerType.LONG_BREAK -> LongBreakHighlight
             }
             Box(
-                modifier = Modifier.fillMaxHeight().weight(segment.timerStatus.durationEpochMs.toFloat())
+                modifier = Modifier.fillMaxHeight()
+                    .weight(segment.timer.durationEpochMs.toFloat())
                     .clip(RoundedCornerShape(2.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant),
             ) {
@@ -208,14 +209,14 @@ private fun PomodoroTimelinePreviewSectionPreview() {
     val timeline = TimelineUiModel(
         segments = persistentListOf(
             TimelineSegmentUi(
-                timerStatus = TimerStatusDomain.Completed(),
+                timerStatus = TimerStatusDomain.Completed,
             ),
             TimelineSegmentUi(
                 type = TimerType.SHORT_BREAK,
-                timerStatus = TimerStatusDomain.Completed(),
+                timerStatus = TimerStatusDomain.Completed,
             ),
             TimelineSegmentUi(
-                timerStatus = TimerStatusDomain.Running(progress = 0.6f)
+                timerStatus = TimerStatusDomain.Running()
             ),
             TimelineSegmentUi(
                 type = TimerType.SHORT_BREAK,

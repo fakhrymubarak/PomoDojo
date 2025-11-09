@@ -64,8 +64,8 @@ class RoomPomodoroSessionRepository(
         var totalBreakMinutes = 0
         timelines.forEach {
             when (it.type) {
-                TimerType.FOCUS -> totalFocusMinutes += (it.timerStatus.durationEpochMs / 60_000L).toInt()
-                else -> totalBreakMinutes += (it.timerStatus.durationEpochMs / 60_000L).toInt()
+                TimerType.FOCUS -> totalFocusMinutes += (it.timer.durationEpochMs / 60_000L).toInt()
+                else -> totalBreakMinutes += (it.timer.durationEpochMs / 60_000L).toInt()
             }
         }
 

@@ -1,7 +1,7 @@
 package com.fakhry.pomodojo.focus.domain.model
 
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimelineTimerDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 
 /**
  * Timer status for an active focus session.
@@ -26,7 +26,7 @@ data class ActiveFocusSessionDomain(
     val longBreakAfter: Int = 0,
     val longBreakMinutes: Int = 0,
     val quoteId: String = "",
-    val timelines: List<TimelineTimerDomain> = emptyList(),
+    val timelines: List<TimerSegmentsDomain> = emptyList(),
 )
 
 data class PomodoroSessionDomain(
