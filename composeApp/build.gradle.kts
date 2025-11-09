@@ -69,10 +69,15 @@ kotlin {
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
 
+            // OrbitMVI
+            implementation(libs.orbit.core)
+            implementation(libs.orbit.viewmodel)
+            implementation(libs.orbit.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.orbit.test)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)

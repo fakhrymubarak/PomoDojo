@@ -12,14 +12,14 @@ import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.focus.domain.usecase.GetActivePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.SystemCurrentTimeProvider
-import com.fakhry.pomodojo.focus.ui.FocusPomodoroViewModel
+import com.fakhry.pomodojo.focus.ui.PomodoroSessionViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val focusModule = module {
-    viewModelOf(::FocusPomodoroViewModel)
+    viewModelOf(::PomodoroSessionViewModel)
     singleOf(::RoomPomodoroSessionRepository) bind PomodoroSessionRepository::class
     singleOf(::StaticQuoteRepository) bind QuoteRepository::class
     singleOf(::CreatePomodoroSessionUseCase)

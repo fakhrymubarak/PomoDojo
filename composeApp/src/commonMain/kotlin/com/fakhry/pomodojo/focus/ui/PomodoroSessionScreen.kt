@@ -27,9 +27,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -72,31 +73,42 @@ import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Suppress("NonSkippableComposable")
 @Composable
 fun PomodoroSessionScreen(
     onSessionCompleted: () -> Unit,
-    viewModel: FocusPomodoroViewModel = koinViewModel(),
+    viewModel: PomodoroSessionViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    var showEndDialog by rememberSaveable { mutableStateOf(false) }
+    val state = viewModel.collectAsState().value
 
     BackHandler {
         viewModel.onEndClicked()
     }
 
-    LaunchedEffect(state.isComplete) {
-        if (state.isComplete) onSessionCompleted()
+    viewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            PomodoroSessionSideEffect.OnSessionComplete -> onSessionCompleted()
+            is PomodoroSessionSideEffect.ShowEndSessionDialog -> showEndDialog = sideEffect.isShown
+        }
     }
 
     PomodoroSessionContent(
         state = state,
         onTogglePause = viewModel::togglePauseResume,
         onEnd = viewModel::onEndClicked,
-        onDismissConfirm = viewModel::onDismissConfirmEnd,
-        onConfirmFinish = viewModel::onConfirmFinish,
     )
+
+    if (showEndDialog) {
+        FocusConfirmDialog(
+            onConfirmFinish = viewModel::onConfirmFinish,
+            onDismiss = viewModel::onDismissConfirmEnd,
+        )
+    }
 }
 
 @Composable
@@ -104,8 +116,6 @@ private fun PomodoroSessionContent(
     state: PomodoroSessionUiState,
     onTogglePause: () -> Unit,
     onEnd: () -> Unit,
-    onDismissConfirm: () -> Unit,
-    onConfirmFinish: () -> Unit,
 ) {
     val activeSegment = state.activeSegment
     Surface(
@@ -136,12 +146,6 @@ private fun PomodoroSessionContent(
                 onTogglePause = onTogglePause,
                 onEnd = onEnd,
             )
-            if (state.isShowConfirmEndDialog) {
-                FocusConfirmDialog(
-                    onConfirmFinish = onConfirmFinish,
-                    onDismiss = onDismissConfirm,
-                )
-            }
         }
     }
 }
@@ -342,7 +346,8 @@ private fun PomodoroSessionContentPreview() {
     val state = PomodoroSessionUiState(
         totalCycle = 4,
         timeline = TimelineUiModel(
-            segments = BuildFocusTimelineUseCase().invoke(0L, preferences).mapToTimelineSegmentsUi(),
+            segments = BuildFocusTimelineUseCase().invoke(0L, preferences)
+                .mapToTimelineSegmentsUi(),
             hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
         ),
     )
@@ -352,8 +357,6 @@ private fun PomodoroSessionContentPreview() {
             state = state,
             onTogglePause = {},
             onEnd = {},
-            onDismissConfirm = {},
-            onConfirmFinish = {},
         )
     }
 }

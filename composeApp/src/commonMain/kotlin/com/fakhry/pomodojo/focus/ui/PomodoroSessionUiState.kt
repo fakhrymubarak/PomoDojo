@@ -24,6 +24,11 @@ data class PomodoroSessionUiState(
         } ?: TimelineSegmentUi()
 }
 
+sealed class PomodoroSessionSideEffect {
+    data class ShowEndSessionDialog(val isShown: Boolean) : PomodoroSessionSideEffect()
+    object OnSessionComplete : PomodoroSessionSideEffect()
+}
+
 fun PomodoroSessionDomain.toPomodoroUiSessionUi(): PomodoroSessionUiState {
     return PomodoroSessionUiState(
         totalCycle = totalCycle,
