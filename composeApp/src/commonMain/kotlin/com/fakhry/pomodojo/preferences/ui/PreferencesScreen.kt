@@ -45,8 +45,12 @@ import com.fakhry.pomodojo.preferences.ui.components.PomodoroTimelinePreviewSect
 import com.fakhry.pomodojo.preferences.ui.components.PreferenceAppearanceSection
 import com.fakhry.pomodojo.preferences.ui.mapper.mapToTimelineSegmentsUi
 import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
+import com.fakhry.pomodojo.preferences.ui.model.PreferencesAppearanceUiState
+import com.fakhry.pomodojo.preferences.ui.model.PreferencesConfigUiState
 import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
+import com.fakhry.pomodojo.preferences.ui.model.toAppearanceUiState
+import com.fakhry.pomodojo.preferences.ui.model.toConfigUiState
 import com.fakhry.pomodojo.ui.components.BgHeaderCanvas
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.collections.immutable.toPersistentList
@@ -56,19 +60,54 @@ import org.koin.compose.koinInject
 
 @Suppress("NonSkippableComposable")
 @Composable
-fun PreferencesScreen(
+fun PreferencesRoute(
     viewModel: PreferencesViewModel = koinInject(),
     onNavigateBack: () -> Unit = {},
 ) {
-    val state by viewModel.state.collectAsState()
+    val isLoading by viewModel.isLoadingState.collectAsState()
+    val timeline by viewModel.timelineState.collectAsState()
+    val configState by viewModel.configState.collectAsState()
+    val appearanceState by viewModel.appearanceState.collectAsState()
 
+    PreferencesScreen(
+        isLoading = isLoading,
+        timeline = timeline,
+        configState = configState,
+        appearanceState = appearanceState,
+        onNavigateBack = onNavigateBack,
+        onThemeSelected = viewModel::onThemeSelected,
+        onRepeatCountChanged = viewModel::onRepeatCountChanged,
+        onFocusSelected = viewModel::onFocusOptionSelected,
+        onBreakSelected = viewModel::onBreakOptionSelected,
+        onToggleLongBreak = viewModel::onLongBreakEnabledToggled,
+        onLongBreakAfterSelected = viewModel::onLongBreakAfterSelected,
+        onLongBreakMinutesSelected = viewModel::onLongBreakMinutesSelected,
+    )
+}
+
+@Composable
+fun PreferencesScreen(
+    isLoading: Boolean,
+    timeline: TimelineUiModel,
+    configState: PreferencesConfigUiState,
+    appearanceState: PreferencesAppearanceUiState,
+    onNavigateBack: () -> Unit = {},
+    onThemeSelected: (AppTheme) -> Unit = {},
+    onRepeatCountChanged: (Int) -> Unit = {},
+    onFocusSelected: (Int) -> Unit = {},
+    onBreakSelected: (Int) -> Unit = {},
+    onToggleLongBreak: (Boolean) -> Unit = {},
+    onLongBreakAfterSelected: (Int) -> Unit = {},
+    onLongBreakMinutesSelected: (Int) -> Unit = {},
+) {
+    TrackRecomposition(RecompositionTags.Screen)
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             PreferencesHeader(onNavigateBack = onNavigateBack)
-            if (state.isLoading) {
+            if (isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
@@ -77,14 +116,16 @@ fun PreferencesScreen(
                 }
             } else {
                 PreferencesContent(
-                    state = state,
-                    onThemeSelected = viewModel::onThemeSelected,
-                    onRepeatCountChanged = viewModel::onRepeatCountChanged,
-                    onFocusSelected = viewModel::onFocusOptionSelected,
-                    onBreakSelected = viewModel::onBreakOptionSelected,
-                    onToggleLongBreak = viewModel::onLongBreakEnabledToggled,
-                    onLongBreakAfterSelected = viewModel::onLongBreakAfterSelected,
-                    onLongBreakMinutesSelected = viewModel::onLongBreakMinutesSelected,
+                    timeline = timeline,
+                    configState = configState,
+                    appearanceState = appearanceState,
+                    onThemeSelected = onThemeSelected,
+                    onRepeatCountChanged = onRepeatCountChanged,
+                    onFocusSelected = onFocusSelected,
+                    onBreakSelected = onBreakSelected,
+                    onToggleLongBreak = onToggleLongBreak,
+                    onLongBreakAfterSelected = onLongBreakAfterSelected,
+                    onLongBreakMinutesSelected = onLongBreakMinutesSelected,
                 )
             }
         }
@@ -128,7 +169,9 @@ private fun PreferencesHeader(onNavigateBack: () -> Unit) {
 
 @Composable
 private fun PreferencesContent(
-    state: PreferencesUiModel,
+    timeline: TimelineUiModel,
+    configState: PreferencesConfigUiState,
+    appearanceState: PreferencesAppearanceUiState,
     onThemeSelected: (AppTheme) -> Unit = {},
     onRepeatCountChanged: (Int) -> Unit = {},
     onFocusSelected: (Int) -> Unit = {},
@@ -137,6 +180,7 @@ private fun PreferencesContent(
     onLongBreakAfterSelected: (Int) -> Unit = {},
     onLongBreakMinutesSelected: (Int) -> Unit = {},
 ) {
+    TrackRecomposition(RecompositionTags.Content)
     val scrollState = rememberScrollState()
 
     Column(
@@ -144,12 +188,18 @@ private fun PreferencesContent(
             .padding(horizontal = 24.dp, vertical = 24.dp),
     ) {
 
-        PomodoroTimelinePreviewSection(timeline = state.timeline)
+        PomodoroTimelinePreviewSection(timeline = timeline)
 
         Spacer(modifier = Modifier.height(32.dp))
 
         PomodoroConfigSection(
-            state = state,
+            repeatCount = configState.repeatCount,
+            repeatRange = configState.repeatRange,
+            focusOptions = configState.focusOptions,
+            breakOptions = configState.breakOptions,
+            isLongBreakEnabled = configState.isLongBreakEnabled,
+            longBreakAfterOptions = configState.longBreakAfterOptions,
+            longBreakOptions = configState.longBreakOptions,
             onRepeatCountChanged = onRepeatCountChanged,
             onFocusSelected = onFocusSelected,
             onBreakSelected = onBreakSelected,
@@ -160,7 +210,7 @@ private fun PreferencesContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         PreferenceAppearanceSection(
-            state = state,
+            themeOptions = appearanceState.themeOptions,
             onOptionSelected = onThemeSelected,
         )
     }
@@ -233,7 +283,13 @@ private fun PreferencesContentPreview() {
         isLoading = false,
     )
 
+    val configState = previewPreferencesState.toConfigUiState()
+    val appearanceState = previewPreferencesState.toAppearanceUiState()
     PomoDojoTheme {
-        PreferencesContent(previewPreferencesState)
+        PreferencesContent(
+            timeline = previewPreferencesState.timeline,
+            configState = configState,
+            appearanceState = appearanceState,
+        )
     }
 }

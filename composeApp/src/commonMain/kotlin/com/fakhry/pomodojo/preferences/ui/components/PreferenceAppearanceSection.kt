@@ -14,14 +14,18 @@ import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.preferences_theme_title
 import com.fakhry.pomodojo.generated.resources.preferences_title_pomodoro_appearance_config
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
+import com.fakhry.pomodojo.preferences.ui.RecompositionTags
+import com.fakhry.pomodojo.preferences.ui.TrackRecomposition
+import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ColumnScope.PreferenceAppearanceSection(
-    state: PreferencesUiModel,
+    themeOptions: ImmutableList<PreferenceOption<AppTheme>>,
     onOptionSelected: (AppTheme) -> Unit,
 ) = this.run {
+    TrackRecomposition(RecompositionTags.AppearanceSection)
     val colorScheme = MaterialTheme.colorScheme
 
     Text(
@@ -40,7 +44,7 @@ fun ColumnScope.PreferenceAppearanceSection(
         PreferenceOptionsCompose(
             modifier = Modifier.padding(16.dp),
             title = stringResource(Res.string.preferences_theme_title),
-            options = state.themeOptions,
+            options = themeOptions,
             onOptionSelected = onOptionSelected,
         )
     }

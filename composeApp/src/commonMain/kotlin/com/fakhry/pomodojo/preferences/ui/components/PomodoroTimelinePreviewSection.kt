@@ -35,6 +35,8 @@ import com.fakhry.pomodojo.generated.resources.preferences_timeline_preview_titl
 import com.fakhry.pomodojo.generated.resources.preferences_title_pomodoro_timeline_preview
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
+import com.fakhry.pomodojo.preferences.ui.RecompositionTags
+import com.fakhry.pomodojo.preferences.ui.TrackRecomposition
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
@@ -51,6 +53,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ColumnScope.PomodoroTimelinePreviewSection(
     timeline: TimelineUiModel,
 ) = this.run {
+    TrackRecomposition(RecompositionTags.TimelinePreview)
     val colorScheme = MaterialTheme.colorScheme
 
     Text(
