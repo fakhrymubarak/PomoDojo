@@ -12,10 +12,11 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val preferencesModule = module {
-    viewModelOf(::PreferencesViewModel)
-    factoryOf(::PreferenceCascadeResolver)
-    factoryOf(::BuildTimerSegmentsUseCase)
-    factoryOf(::BuildHourSplitTimelineUseCase)
-    singleOf(::PreferencesRepositoryImpl) bind PreferencesRepository::class
-}
+val preferencesModule =
+    module {
+        viewModelOf(::PreferencesViewModel)
+        factoryOf(::PreferenceCascadeResolver)
+        factoryOf(::BuildTimerSegmentsUseCase)
+        factoryOf(::BuildHourSplitTimelineUseCase)
+        singleOf(::PreferencesRepositoryImpl) bind PreferencesRepository::class
+    }

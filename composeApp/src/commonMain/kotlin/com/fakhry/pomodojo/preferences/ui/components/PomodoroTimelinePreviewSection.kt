@@ -50,78 +50,81 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ColumnScope.PomodoroTimelinePreviewSection(
-    timeline: TimelineUiModel,
-) = this.run {
-    TrackRecomposition(RecompositionTags.TimelinePreview)
-    val colorScheme = MaterialTheme.colorScheme
+fun ColumnScope.PomodoroTimelinePreviewSection(timeline: TimelineUiModel) =
+    this.run {
+        TrackRecomposition(RecompositionTags.TIMELINE_PREVIEW)
+        val colorScheme = MaterialTheme.colorScheme
 
-    Text(
-        text = stringResource(Res.string.preferences_title_pomodoro_timeline_preview),
-        style = MaterialTheme.typography.headlineMedium.copy(
-            color = colorScheme.onBackground,
-        ),
-    )
-
-    Surface(
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, colorScheme.outline),
-        color = colorScheme.surface,
-        modifier = Modifier.padding(top = 8.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = stringResource(Res.string.preferences_timeline_preview_title),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
+        Text(
+            text = stringResource(Res.string.preferences_title_pomodoro_timeline_preview),
+            style =
+                MaterialTheme.typography.headlineMedium.copy(
+                    color = colorScheme.onBackground,
                 ),
-            )
-            TimelinePreview(timeline.segments)
-            Spacer(modifier = Modifier.height(4.dp))
-            TimelineHoursSplit(timeline.hourSplits)
-            Spacer(modifier = Modifier.height(12.dp))
-            TimelineLegends()
+        )
+
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            border = BorderStroke(1.dp, colorScheme.outline),
+            color = colorScheme.surface,
+            modifier = Modifier.padding(top = 8.dp),
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = stringResource(Res.string.preferences_timeline_preview_title),
+                    style =
+                        MaterialTheme.typography.titleMedium.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                        ),
+                )
+                TimelinePreview(timeline.segments)
+                Spacer(modifier = Modifier.height(4.dp))
+                TimelineHoursSplit(timeline.hourSplits)
+                Spacer(modifier = Modifier.height(12.dp))
+                TimelineLegends()
+            }
         }
     }
-}
 
 @Composable
-fun ColumnScope.TimelinePreview(
-    segments: ImmutableList<TimelineSegmentUi>,
-) = this.run {
-    Spacer(modifier = Modifier.height(12.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth().height(16.dp).clip(RoundedCornerShape(4.dp)),
-    ) {
-        segments.forEachIndexed { index, segment ->
-            val progress = segment.timer.progress.coerceIn(0f, 1f)
-            val color = when (segment.type) {
-                TimerType.FOCUS -> Secondary
-                TimerType.SHORT_BREAK -> Primary
-                TimerType.LONG_BREAK -> LongBreakHighlight
-            }
-            Box(
-                modifier = Modifier.fillMaxHeight()
-                    .weight(segment.timer.durationEpochMs.toFloat())
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-            ) {
-                if (progress > 0f) {
-                    Box(
-                        modifier = Modifier.fillMaxHeight().fillMaxWidth(progress)
-                            .background(color),
-                    )
+fun ColumnScope.TimelinePreview(segments: ImmutableList<TimelineSegmentUi>) =
+    this.run {
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth().height(16.dp).clip(RoundedCornerShape(4.dp)),
+        ) {
+            segments.forEachIndexed { index, segment ->
+                val progress = segment.timer.progress.coerceIn(0f, 1f)
+                val color =
+                    when (segment.type) {
+                        TimerType.FOCUS -> Secondary
+                        TimerType.SHORT_BREAK -> Primary
+                        TimerType.LONG_BREAK -> LongBreakHighlight
+                    }
+                Box(
+                    modifier =
+                        Modifier.fillMaxHeight()
+                            .weight(segment.timer.durationEpochMs.toFloat())
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                ) {
+                    if (progress > 0f) {
+                        Box(
+                            modifier =
+                                Modifier.fillMaxHeight().fillMaxWidth(progress)
+                                    .background(color),
+                        )
+                    }
                 }
-            }
-            if (index != segments.lastIndex) {
-                Spacer(modifier = Modifier.width(2.dp))
+                if (index != segments.lastIndex) {
+                    Spacer(modifier = Modifier.width(2.dp))
+                }
             }
         }
     }
-}
 
 @Composable
 fun TimelineHoursSplit(hourSplits: ImmutableList<Int>) {
@@ -132,11 +135,12 @@ fun TimelineHoursSplit(hourSplits: ImmutableList<Int>) {
             Column(
                 modifier = Modifier.weight(duration.toFloat()),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Box(
-                    modifier = Modifier.height(1.dp).fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.primary),
+                    modifier =
+                        Modifier.height(1.dp).fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.primary),
                 )
                 Text(
                     text = pluralStringResource(Res.plurals.minutes, duration, duration),
@@ -144,59 +148,61 @@ fun TimelineHoursSplit(hourSplits: ImmutableList<Int>) {
                     maxLines = 2,
                     textAlign = TextAlign.Center,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ),
+                    style =
+                        MaterialTheme.typography.bodySmall.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        ),
                 )
             }
 
             if (index != hourSplits.lastIndex) {
                 Spacer(modifier = Modifier.width(4.dp))
             }
-
         }
     }
 }
 
-
 @Composable
-fun ColumnScope.TimelineLegends() = this.run {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        LegendDot(color = Secondary)
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(
-            text = stringResource(Res.string.preferences_timeline_focus_label),
-            style = MaterialTheme.typography.bodySmall.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            ),
-        )
+fun ColumnScope.TimelineLegends() =
+    this.run {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            LegendDot(color = Secondary)
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = stringResource(Res.string.preferences_timeline_focus_label),
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
+            )
 
-        Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-        LegendDot(color = Primary)
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(
-            text = stringResource(Res.string.preferences_timeline_break_label),
-            style = MaterialTheme.typography.bodySmall.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            ),
-        )
+            LegendDot(color = Primary)
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = stringResource(Res.string.preferences_timeline_break_label),
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
+            )
 
-        Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-        LegendDot(color = LongBreakHighlight)
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(
-            text = stringResource(Res.string.preferences_timeline_long_break_label),
-            style = MaterialTheme.typography.bodySmall.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            ),
-        )
+            LegendDot(color = LongBreakHighlight)
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = stringResource(Res.string.preferences_timeline_long_break_label),
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
+            )
+        }
     }
-}
-
 
 @Composable
 private fun LegendDot(color: Color) {
@@ -205,33 +211,34 @@ private fun LegendDot(color: Color) {
     )
 }
 
-
 @Preview
 @Composable
 private fun PomodoroTimelinePreviewSectionPreview() {
-    val timeline = TimelineUiModel(
-        segments = persistentListOf(
-            TimelineSegmentUi(
-                timerStatus = TimerStatusDomain.Completed,
-            ),
-            TimelineSegmentUi(
-                type = TimerType.SHORT_BREAK,
-                timerStatus = TimerStatusDomain.Completed,
-            ),
-            TimelineSegmentUi(
-                timerStatus = TimerStatusDomain.Running()
-            ),
-            TimelineSegmentUi(
-                type = TimerType.SHORT_BREAK,
-            ),
-            TimelineSegmentUi(),
-            TimelineSegmentUi(
-                type = TimerType.LONG_BREAK,
-            ),
-            TimelineSegmentUi(),
-        ),
-        hourSplits = persistentListOf(60, 55),
-    )
+    val timeline =
+        TimelineUiModel(
+            segments =
+                persistentListOf(
+                    TimelineSegmentUi(
+                        timerStatus = TimerStatusDomain.Completed,
+                    ),
+                    TimelineSegmentUi(
+                        type = TimerType.SHORT_BREAK,
+                        timerStatus = TimerStatusDomain.Completed,
+                    ),
+                    TimelineSegmentUi(
+                        timerStatus = TimerStatusDomain.Running(),
+                    ),
+                    TimelineSegmentUi(
+                        type = TimerType.SHORT_BREAK,
+                    ),
+                    TimelineSegmentUi(),
+                    TimelineSegmentUi(
+                        type = TimerType.LONG_BREAK,
+                    ),
+                    TimelineSegmentUi(),
+                ),
+            hourSplits = persistentListOf(60, 55),
+        )
     PomoDojoTheme {
         Column {
             PomodoroTimelinePreviewSection(timeline)

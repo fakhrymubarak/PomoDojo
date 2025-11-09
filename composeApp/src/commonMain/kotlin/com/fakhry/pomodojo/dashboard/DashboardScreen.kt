@@ -68,10 +68,11 @@ fun DashboardScreen(
             Button(
                 onClick = onStartPomodoro,
                 modifier = Modifier.semantics { contentDescription = startLabel },
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
+                colors =
+                    androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
                 shape = RoundedCornerShape(24.dp),
             ) {
                 Text(

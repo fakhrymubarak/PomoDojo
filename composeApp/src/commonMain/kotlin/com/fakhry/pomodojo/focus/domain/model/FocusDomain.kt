@@ -7,7 +7,9 @@ import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
  * Timer status for an active focus session.
  */
 enum class FocusTimerStatus {
-    RUNNING, PAUSED, FINISHED
+    RUNNING,
+    PAUSED,
+    FINISHED,
 }
 
 /**

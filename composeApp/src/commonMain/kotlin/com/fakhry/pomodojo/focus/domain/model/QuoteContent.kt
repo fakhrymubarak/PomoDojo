@@ -11,12 +11,13 @@ data class QuoteContent(
     val metadata: String? = null,
 ) {
     companion object {
-        val DEFAULT_QUOTE = QuoteContent(
-            id = "quote-naruto-01",
-            text = "Hard work is worthless for those that don't believe in themselves.",
-            character = "Naruto Uzumaki",
-            sourceTitle = "Naruto",
-            metadata = null,
-        )
+        val DEFAULT_QUOTE =
+            QuoteContent(
+                id = "quote-naruto-01",
+                text = "Hard work is worthless for those that don't believe in themselves.",
+                character = "Naruto Uzumaki",
+                sourceTitle = "Naruto",
+                metadata = null,
+            )
     }
 }

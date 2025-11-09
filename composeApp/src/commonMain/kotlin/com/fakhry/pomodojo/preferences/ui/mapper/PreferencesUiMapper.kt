@@ -19,53 +19,59 @@ fun PreferencesDomain.mapToUiModel(
     hourSplitter: (PreferencesDomain) -> List<Int>,
 ) = this.run {
     val longBreakEnabled = longBreakEnabled
-    val themeOptions = AppTheme.entries.map { theme ->
-        PreferenceOption(
-            label = theme.displayName,
-            value = theme,
-            selected = appTheme == theme,
-        )
-    }.toPersistentList()
+    val themeOptions =
+        AppTheme.entries.map { theme ->
+            PreferenceOption(
+                label = theme.displayName,
+                value = theme,
+                selected = appTheme == theme,
+            )
+        }.toPersistentList()
 
     return@run PreferencesUiModel(
         selectedTheme = appTheme,
         themeOptions = themeOptions,
         repeatCount = repeatCount,
-        focusOptions = FOCUS_OPTIONS.map { minutes ->
-            PreferenceOption(
-                label = "$minutes mins",
-                value = minutes,
-                selected = focusMinutes == minutes,
-            )
-        }.toPersistentList(),
-        breakOptions = BREAK_OPTIONS.map { minutes ->
-            PreferenceOption(
-                label = "$minutes mins",
-                value = minutes,
-                selected = breakMinutes == minutes,
-            )
-        }.toPersistentList(),
+        focusOptions =
+            FOCUS_OPTIONS.map { minutes ->
+                PreferenceOption(
+                    label = "$minutes mins",
+                    value = minutes,
+                    selected = focusMinutes == minutes,
+                )
+            }.toPersistentList(),
+        breakOptions =
+            BREAK_OPTIONS.map { minutes ->
+                PreferenceOption(
+                    label = "$minutes mins",
+                    value = minutes,
+                    selected = breakMinutes == minutes,
+                )
+            }.toPersistentList(),
         isLongBreakEnabled = longBreakEnabled,
-        longBreakAfterOptions = LONG_BREAK_AFTER.map { count ->
-            PreferenceOption(
-                label = "$count focuses",
-                value = count,
-                selected = longBreakAfter == count,
-                enabled = longBreakEnabled,
-            )
-        }.toPersistentList(),
-        longBreakOptions = LONG_BREAK_MINUTES.map { minutes ->
-            PreferenceOption(
-                label = "$minutes mins",
-                value = minutes,
-                selected = longBreakMinutes == minutes,
-                enabled = longBreakEnabled,
-            )
-        }.toPersistentList(),
-        timeline = TimelineUiModel(
-            segments = timelineBuilder(this).mapToTimelineSegmentsUi(),
-            hourSplits = hourSplitter(this).toPersistentList(),
-        ),
+        longBreakAfterOptions =
+            LONG_BREAK_AFTER.map { count ->
+                PreferenceOption(
+                    label = "$count focuses",
+                    value = count,
+                    selected = longBreakAfter == count,
+                    enabled = longBreakEnabled,
+                )
+            }.toPersistentList(),
+        longBreakOptions =
+            LONG_BREAK_MINUTES.map { minutes ->
+                PreferenceOption(
+                    label = "$minutes mins",
+                    value = minutes,
+                    selected = longBreakMinutes == minutes,
+                    enabled = longBreakEnabled,
+                )
+            }.toPersistentList(),
+        timeline =
+            TimelineUiModel(
+                segments = timelineBuilder(this).mapToTimelineSegmentsUi(),
+                hourSplits = hourSplitter(this).toPersistentList(),
+            ),
         isLoading = false,
     )
 }

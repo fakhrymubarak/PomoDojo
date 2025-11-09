@@ -25,21 +25,22 @@ fun ColumnScope.PreferenceAppearanceSection(
     themeOptions: ImmutableList<PreferenceOption<AppTheme>>,
     onOptionSelected: (AppTheme) -> Unit,
 ) = this.run {
-    TrackRecomposition(RecompositionTags.AppearanceSection)
+    TrackRecomposition(RecompositionTags.APPEARANCE_SECTION)
     val colorScheme = MaterialTheme.colorScheme
 
     Text(
         text = stringResource(Res.string.preferences_title_pomodoro_appearance_config),
-        style = MaterialTheme.typography.headlineMedium.copy(
-            color = colorScheme.onBackground,
-        ),
+        style =
+            MaterialTheme.typography.headlineMedium.copy(
+                color = colorScheme.onBackground,
+            ),
     )
 
     Surface(
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, colorScheme.outline),
         color = colorScheme.surface,
-        modifier = Modifier.padding(top = 8.dp)
+        modifier = Modifier.padding(top = 8.dp),
     ) {
         PreferenceOptionsCompose(
             modifier = Modifier.padding(16.dp),

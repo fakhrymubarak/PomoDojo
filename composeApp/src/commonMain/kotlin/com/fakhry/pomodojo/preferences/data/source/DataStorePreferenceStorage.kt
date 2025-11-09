@@ -20,10 +20,10 @@ internal expect fun provideDataStore(): DataStore<Preferences>
 class DataStorePreferenceStorage(
     private val dataStore: DataStore<Preferences>,
 ) : PreferenceStorage {
-
-    override val preferences: Flow<PreferencesDomain> = dataStore.data
-        .map { it.toDomain() }
-        .distinctUntilChanged()
+    override val preferences: Flow<PreferencesDomain> =
+        dataStore.data
+            .map { it.toDomain() }
+            .distinctUntilChanged()
 
     override suspend fun update(transform: (PreferencesDomain) -> PreferencesDomain) {
         dataStore.edit { prefs ->

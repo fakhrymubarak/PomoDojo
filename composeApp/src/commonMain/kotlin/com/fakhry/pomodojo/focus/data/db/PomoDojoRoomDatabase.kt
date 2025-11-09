@@ -15,6 +15,7 @@ import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
 @ConstructedBy(PomoDojoRoomDatabaseConstructor::class)
 abstract class PomoDojoRoomDatabase : RoomDatabase() {
     abstract fun focusSessionDao(): FocusSessionDao
+
     abstract fun historySessionDao(): HistorySessionDao
 }
 

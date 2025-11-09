@@ -2,7 +2,7 @@ package com.fakhry.pomodojo.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-/**
+/*
  * PomoDojo color system tokens used to build light and dark schemes.
  */
 

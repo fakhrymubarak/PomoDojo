@@ -27,25 +27,27 @@ private const val ANIMATION_DURATION = 500
 
 @Suppress("NonSkippableComposable")
 @Composable
-fun AppNavHost(
-    navController: NavHostController,
-) {
-    val enterTransition = slideInHorizontally(
-        initialOffsetX = { it },
-        animationSpec = tween(ANIMATION_DURATION),
-    )
-    val exitTransition = slideOutHorizontally(
-        targetOffsetX = { -it },
-        animationSpec = tween(ANIMATION_DURATION),
-    )
-    val popEnterTransition = slideInHorizontally(
-        initialOffsetX = { -it },
-        animationSpec = tween(ANIMATION_DURATION),
-    )
-    val popExitTransition = slideOutHorizontally(
-        targetOffsetX = { it },
-        animationSpec = tween(ANIMATION_DURATION),
-    )
+fun AppNavHost(navController: NavHostController) {
+    val enterTransition =
+        slideInHorizontally(
+            initialOffsetX = { it },
+            animationSpec = tween(ANIMATION_DURATION),
+        )
+    val exitTransition =
+        slideOutHorizontally(
+            targetOffsetX = { -it },
+            animationSpec = tween(ANIMATION_DURATION),
+        )
+    val popEnterTransition =
+        slideInHorizontally(
+            initialOffsetX = { -it },
+            animationSpec = tween(ANIMATION_DURATION),
+        )
+    val popExitTransition =
+        slideOutHorizontally(
+            targetOffsetX = { it },
+            animationSpec = tween(ANIMATION_DURATION),
+        )
 
     NavHost(
         navController = navController,

@@ -17,10 +17,10 @@ interface HistorySessionDao {
         WHERE date_finished >= :startInclusive
           AND date_finished < :endExclusive
         ORDER BY date_finished DESC
-    """
+    """,
     )
     suspend fun getByYear(
         startInclusive: Long,
         endExclusive: Long,
-    ) : List<HistorySessionEntity>
+    ): List<HistorySessionEntity>
 }

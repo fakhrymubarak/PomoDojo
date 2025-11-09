@@ -16,20 +16,21 @@ private object IosFocusDatabaseHolder {
     val database: PomoDojoRoomDatabase by lazy {
         val dbFile = "${fileDirectory()}/$POMO_DOJO_DATABASE_NAME"
         Room.databaseBuilder<PomoDojoRoomDatabase>(
-                name = dbFile,
-            ).addMigrations(*FocusMigrations)
+            name = dbFile,
+        ).addMigrations(*FocusMigrations)
             .setDriver(BundledSQLiteDriver()).setQueryCoroutineContext(Dispatchers.IO).build()
     }
 
     @OptIn(ExperimentalForeignApi::class)
     private fun fileDirectory(): String {
-        val documentDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(
-            directory = NSDocumentDirectory,
-            inDomain = NSUserDomainMask,
-            appropriateForURL = null,
-            create = false,
-            error = null,
-        )
+        val documentDirectory: NSURL? =
+            NSFileManager.defaultManager.URLForDirectory(
+                directory = NSDocumentDirectory,
+                inDomain = NSUserDomainMask,
+                appropriateForURL = null,
+                create = false,
+                error = null,
+            )
         return requireNotNull(documentDirectory).path!!
     }
 }

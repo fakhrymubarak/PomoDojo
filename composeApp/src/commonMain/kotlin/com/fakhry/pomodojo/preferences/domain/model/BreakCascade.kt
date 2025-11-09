@@ -4,4 +4,3 @@ data class BreakCascade(
     val longBreakAfterCount: Int,
     val longBreakMinutes: Int,
 )
-

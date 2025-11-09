@@ -41,7 +41,7 @@ fun BgHeaderCanvas(
             val scaleFactorX = size.width / vw
             val scaleFactorY = size.height / vh
 
-            // Oval size 
+            // Oval size
             val cx = 195.5f * scaleFactorX
             val rx = 253.5f * scaleFactorX
             val cy = -50f * scaleFactorY
@@ -52,7 +52,7 @@ fun BgHeaderCanvas(
                 drawOval(
                     color = colorScheme.secondary,
                     topLeft = Offset(cx - rx, cy - ry),
-                    size = Size(rx * 2, ry * 2)
+                    size = Size(rx * 2, ry * 2),
                 )
             }
         }
@@ -67,9 +67,10 @@ fun BgHeaderCanvasPreview() {
             Text(
                 modifier = Modifier.padding(16.dp),
                 text = stringResource(Res.string.dashboard_header_title),
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    color = MaterialTheme.colorScheme.onSecondary,
-                ),
+                style =
+                    MaterialTheme.typography.headlineMedium.copy(
+                        color = MaterialTheme.colorScheme.onSecondary,
+                    ),
             )
         }
     }

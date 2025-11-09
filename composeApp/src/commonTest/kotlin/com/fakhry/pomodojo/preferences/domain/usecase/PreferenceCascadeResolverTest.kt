@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class PreferenceCascadeResolverTest {
-
     private val cascadeResolver = PreferenceCascadeResolver()
 
     @Test

@@ -77,16 +77,18 @@ data class TimerUi(
     val finishedInMillis: Long = 0L,
 )
 
-fun PreferencesUiModel.toConfigUiState() = PreferencesConfigUiState(
-    repeatCount = repeatCount,
-    repeatRange = repeatRange,
-    focusOptions = focusOptions,
-    breakOptions = breakOptions,
-    isLongBreakEnabled = isLongBreakEnabled,
-    longBreakAfterOptions = longBreakAfterOptions,
-    longBreakOptions = longBreakOptions,
-)
+fun PreferencesUiModel.toConfigUiState() =
+    PreferencesConfigUiState(
+        repeatCount = repeatCount,
+        repeatRange = repeatRange,
+        focusOptions = focusOptions,
+        breakOptions = breakOptions,
+        isLongBreakEnabled = isLongBreakEnabled,
+        longBreakAfterOptions = longBreakAfterOptions,
+        longBreakOptions = longBreakOptions,
+    )
 
-fun PreferencesUiModel.toAppearanceUiState() = PreferencesAppearanceUiState(
-    themeOptions = themeOptions,
-)
+fun PreferencesUiModel.toAppearanceUiState() =
+    PreferencesAppearanceUiState(
+        themeOptions = themeOptions,
+    )

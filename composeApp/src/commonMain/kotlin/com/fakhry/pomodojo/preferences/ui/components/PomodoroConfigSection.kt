@@ -59,25 +59,26 @@ fun ColumnScope.PomodoroConfigSection(
     onLongBreakAfterSelected: (Int) -> Unit = {},
     onLongBreakMinutesSelected: (Int) -> Unit = {},
 ) = this.run {
-    TrackRecomposition(RecompositionTags.ConfigSection)
+    TrackRecomposition(RecompositionTags.CONFIG_SECTION)
     val visibilityLongBreakSection = remember { MutableTransitionState(isLongBreakEnabled) }
     val colorScheme = MaterialTheme.colorScheme
 
     Text(
         text = stringResource(Res.string.preferences_title_pomodoro_config),
-        style = MaterialTheme.typography.headlineMedium.copy(
-            color = colorScheme.onBackground,
-        ),
+        style =
+            MaterialTheme.typography.headlineMedium.copy(
+                color = colorScheme.onBackground,
+            ),
     )
 
     Surface(
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, colorScheme.outline),
         color = colorScheme.surface,
-        modifier = Modifier.padding(top = 8.dp)
+        modifier = Modifier.padding(top = 8.dp),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
             RepeatSection(
                 repeatCount = repeatCount,
@@ -119,12 +120,14 @@ fun ColumnScope.PomodoroConfigSection(
 
             AnimatedVisibility(
                 visibleState = visibilityLongBreakSection,
-                enter = expandVertically(
-                    animationSpec = tween()
-                ),
-                exit = shrinkVertically(
-                    animationSpec = tween()
-                ),
+                enter =
+                    expandVertically(
+                        animationSpec = tween(),
+                    ),
+                exit =
+                    shrinkVertically(
+                        animationSpec = tween(),
+                    ),
             ) {
                 Column {
                     PreferenceOptionsCompose(
@@ -143,7 +146,6 @@ fun ColumnScope.PomodoroConfigSection(
             }
         }
     }
-
 }
 
 @Composable
@@ -152,13 +154,14 @@ private fun RepeatSection(
     range: IntRange,
     onRepeatCountChanged: (Int) -> Unit,
 ) {
-    TrackRecomposition(RecompositionTags.RepeatSection)
+    TrackRecomposition(RecompositionTags.REPEAT_SECTION)
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = stringResource(Res.string.preferences_repeat_title),
-            style = MaterialTheme.typography.titleMedium.copy(
-                color = MaterialTheme.colorScheme.onBackground,
-            ),
+            style =
+                MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
         )
         WheelNumbers(
             start = range.first,
@@ -182,35 +185,38 @@ private fun LongBreakToggle(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().toggleable(
-                value = enabled,
-                role = Role.Switch,
-                onValueChange = {
-                    onToggle(it)
+            modifier =
+                Modifier.fillMaxWidth().toggleable(
+                    value = enabled,
+                    role = Role.Switch,
+                    onValueChange = {
+                        onToggle(it)
 
-                    val hapticType =
-                        if (it) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff
-                    hapticFeedback.performHapticFeedback(hapticType)
-                },
-            ).padding(horizontal = 20.dp, vertical = 12.dp),
+                        val hapticType =
+                            if (it) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff
+                        hapticFeedback.performHapticFeedback(hapticType)
+                    },
+                ).padding(horizontal = 20.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = stringResource(Res.string.preferences_enable_long_break),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                ),
+                style =
+                    MaterialTheme.typography.titleMedium.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                    ),
             )
             Switch(
                 checked = enabled,
                 onCheckedChange = null,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                    checkedTrackColor = MaterialTheme.colorScheme.primary,
-                    uncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                    uncheckedTrackColor = MaterialTheme.colorScheme.outline,
-                ),
+                colors =
+                    SwitchDefaults.colors(
+                        checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                        checkedTrackColor = MaterialTheme.colorScheme.primary,
+                        uncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                        uncheckedTrackColor = MaterialTheme.colorScheme.outline,
+                    ),
             )
         }
     }

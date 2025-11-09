@@ -18,7 +18,6 @@ class DashboardViewModel(
     private val repository: PreferencesRepository,
     private val focusRepository: PomodoroSessionRepository,
 ) : ViewModel() {
-
     private val _hasActiveSession = MutableStateFlow(false)
     val hasActiveSession: StateFlow<Boolean> = _hasActiveSession.asStateFlow()
 

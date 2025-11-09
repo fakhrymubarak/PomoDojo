@@ -38,48 +38,53 @@ class PreferencesViewModel(
 ) : ViewModel() {
     private val _state = MutableStateFlow(PreferencesUiModel())
     val state: StateFlow<PreferencesUiModel> = _state.asStateFlow()
-    val isLoadingState: StateFlow<Boolean> = state
-        .map { it.isLoading }
-        .distinctUntilChanged()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
-    val timelineState: StateFlow<TimelineUiModel> = state
-        .map { it.timeline }
-        .distinctUntilChanged()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, TimelineUiModel())
-    val configState: StateFlow<PreferencesConfigUiState> = state
-        .map { it.toConfigUiState() }
-        .distinctUntilChanged()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            PreferencesConfigUiState(
-                repeatCount = PreferencesDomain.DEFAULT_REPEAT_COUNT,
-                repeatRange = DEFAULT_REPEAT_RANGE,
-                focusOptions = persistentListOf(),
-                breakOptions = persistentListOf(),
-                isLongBreakEnabled = false,
-                longBreakAfterOptions = persistentListOf(),
-                longBreakOptions = persistentListOf(),
+    val isLoadingState: StateFlow<Boolean> =
+        state
+            .map { it.isLoading }
+            .distinctUntilChanged()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+    val timelineState: StateFlow<TimelineUiModel> =
+        state
+            .map { it.timeline }
+            .distinctUntilChanged()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, TimelineUiModel())
+    val configState: StateFlow<PreferencesConfigUiState> =
+        state
+            .map { it.toConfigUiState() }
+            .distinctUntilChanged()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                PreferencesConfigUiState(
+                    repeatCount = PreferencesDomain.DEFAULT_REPEAT_COUNT,
+                    repeatRange = DEFAULT_REPEAT_RANGE,
+                    focusOptions = persistentListOf(),
+                    breakOptions = persistentListOf(),
+                    isLongBreakEnabled = false,
+                    longBreakAfterOptions = persistentListOf(),
+                    longBreakOptions = persistentListOf(),
+                ),
             )
-        )
-    val appearanceState: StateFlow<PreferencesAppearanceUiState> = state
-        .map { it.toAppearanceUiState() }
-        .distinctUntilChanged()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            PreferencesAppearanceUiState(themeOptions = persistentListOf())
-        )
+    val appearanceState: StateFlow<PreferencesAppearanceUiState> =
+        state
+            .map { it.toAppearanceUiState() }
+            .distinctUntilChanged()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                PreferencesAppearanceUiState(themeOptions = persistentListOf()),
+            )
 
     init {
         viewModelScope.launch(dispatcher.io) {
             repository.preferences.collect { preferences ->
-                val mapped = preferences.mapToUiModel(
-                    timelineBuilder = {
-                        timelineBuilder(0L, it).toCompletedTimeline()
-                    },
-                    hourSplitter = hourSplitter::invoke,
-                )
+                val mapped =
+                    preferences.mapToUiModel(
+                        timelineBuilder = {
+                            timelineBuilder(0L, it).toCompletedTimeline()
+                        },
+                        hourSplitter = hourSplitter::invoke,
+                    )
                 _state.update { current ->
                     if (current.isLoading) {
                         mapped
@@ -135,15 +140,15 @@ class PreferencesViewModel(
         }
     }
 
-    private fun List<TimerSegmentsDomain>.toCompletedTimeline() = map { segment ->
-        segment.copy(timerStatus = TimerStatusDomain.Completed)
-    }
+    private fun List<TimerSegmentsDomain>.toCompletedTimeline() =
+        map { segment ->
+            segment.copy(timerStatus = TimerStatusDomain.Completed)
+        }
 
     override fun onCleared() {
         println("PreferencesViewModel onCleared")
         super.onCleared()
     }
-
 }
 
 private fun PreferencesUiModel.reuseStableListsFrom(previous: PreferencesUiModel): PreferencesUiModel {
@@ -172,4 +177,8 @@ private fun TimelineUiModel.reuseStableListsFrom(previous: TimelineUiModel): Tim
 }
 
 private fun <T> ImmutableList<T>.reuseIfEqual(previous: ImmutableList<T>): ImmutableList<T> =
-    if (this == previous) previous else this
+    if (this == previous) {
+        previous
+    } else {
+        this
+    }

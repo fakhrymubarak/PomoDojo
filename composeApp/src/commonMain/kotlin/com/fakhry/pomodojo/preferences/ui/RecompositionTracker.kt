@@ -22,10 +22,10 @@ fun TrackRecomposition(tag: String) {
 }
 
 object RecompositionTags {
-    const val Screen = "PreferencesScreen"
-    const val Content = "PreferencesContent"
-    const val TimelinePreview = "PomodoroTimelinePreviewSection"
-    const val ConfigSection = "PomodoroConfigSection"
-    const val RepeatSection = "RepeatSection"
-    const val AppearanceSection = "PreferenceAppearanceSection"
+    const val SCREEN = "PreferencesScreen"
+    const val CONTENT = "PreferencesContent"
+    const val TIMELINE_PREVIEW = "PomodoroTimelinePreviewSection"
+    const val CONFIG_SECTION = "PomodoroConfigSection"
+    const val REPEAT_SECTION = "RepeatSection"
+    const val APPEARANCE_SECTION = "PreferenceAppearanceSection"
 }

@@ -12,23 +12,24 @@ import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSUserDomainMask
 
-internal actual fun provideDataStore(): DataStore<Preferences> =
-    IosPreferencesDataStoreProvider.dataStore
+internal actual fun provideDataStore(): DataStore<Preferences> = IosPreferencesDataStoreProvider.dataStore
 
 private object IosPreferencesDataStoreProvider {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     val dataStore: DataStore<Preferences> by lazy {
-        val directory = NSSearchPathForDirectoriesInDomains(
-            directory = NSDocumentDirectory,
-            domainMask = NSUserDomainMask,
-            expandTilde = true,
-        ).firstOrNull() as? String ?: error("Unable to locate Documents directory for DataStore.")
+        val directory =
+            NSSearchPathForDirectoriesInDomains(
+                directory = NSDocumentDirectory,
+                domainMask = NSUserDomainMask,
+                expandTilde = true,
+            ).firstOrNull() as? String ?: error("Unable to locate Documents directory for DataStore.")
 
-        val path: Path = directory
-            .plus("/")
-            .plus(PREFERENCES_FILE_NAME)
-            .toPath()
+        val path: Path =
+            directory
+                .plus("/")
+                .plus(PREFERENCES_FILE_NAME)
+                .toPath()
 
         PreferenceDataStoreFactory.createWithPath(
             scope = scope,

@@ -8,19 +8,19 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 class BuildFocusTimelineUseCaseTest {
-
     private val timelineBuilder = BuildTimerSegmentsUseCase()
 
     @Test
     fun `inserts long break before subsequent focus`() {
-        val preferences = PreferencesDomain(
-            repeatCount = 5,
-            focusMinutes = 25,
-            breakMinutes = 5,
-            longBreakEnabled = true,
-            longBreakAfter = 2,
-            longBreakMinutes = 15,
-        )
+        val preferences =
+            PreferencesDomain(
+                repeatCount = 5,
+                focusMinutes = 25,
+                breakMinutes = 5,
+                longBreakEnabled = true,
+                longBreakAfter = 2,
+                longBreakMinutes = 15,
+            )
 
         val segments = timelineBuilder(0L, preferences)
         val longBreaks = segments.filter { it.type == TimerType.LONG_BREAK }
@@ -38,14 +38,15 @@ class BuildFocusTimelineUseCaseTest {
 
     @Test
     fun `omits long break when disabled`() {
-        val preferences = PreferencesDomain(
-            repeatCount = 4,
-            focusMinutes = 25,
-            breakMinutes = 5,
-            longBreakEnabled = false,
-            longBreakAfter = 4,
-            longBreakMinutes = 10,
-        )
+        val preferences =
+            PreferencesDomain(
+                repeatCount = 4,
+                focusMinutes = 25,
+                breakMinutes = 5,
+                longBreakEnabled = false,
+                longBreakAfter = 4,
+                longBreakMinutes = 10,
+            )
 
         val segments = timelineBuilder(0L, preferences)
         assertEquals(7, segments.size)
@@ -68,29 +69,30 @@ class BuildFocusTimelineUseCaseTest {
 
     @Test
     fun `inserts long breaks at configured interval`() {
-        val preferences = PreferencesDomain(
-            repeatCount = 6,
-            focusMinutes = 50,
-            breakMinutes = 10,
-            longBreakEnabled = true,
-            longBreakAfter = 2,
-            longBreakMinutes = 20,
-        )
+        val preferences =
+            PreferencesDomain(
+                repeatCount = 6,
+                focusMinutes = 50,
+                breakMinutes = 10,
+                longBreakEnabled = true,
+                longBreakAfter = 2,
+                longBreakMinutes = 20,
+            )
 
         val segments = timelineBuilder(0L, preferences)
-        val longBreaks = segments.withIndex()
-            .filter { it.value.type == TimerType.LONG_BREAK }
-            .map { it.index }
+        val longBreaks =
+            segments.withIndex()
+                .filter { it.value.type == TimerType.LONG_BREAK }
+                .map { it.index }
 
         assertEquals(listOf(3, 7), longBreaks) // after 2nd and 4th focus
         assertEquals(20, segments[3].durationMinutes())
         assertEquals(20, segments[7].durationMinutes())
         assertEquals(
             preferences.repeatCount * 2 - 1,
-            segments.size
+            segments.size,
         ) // focus blocks + breaks between them
     }
 }
 
-private fun TimerSegmentsDomain.durationMinutes(): Int =
-    (timer.durationEpochMs / 60_000L).toInt()
+private fun TimerSegmentsDomain.durationMinutes(): Int = (timer.durationEpochMs / 60_000L).toInt()

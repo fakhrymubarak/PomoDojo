@@ -11,29 +11,32 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class PomodoroSessionSelectorsTest {
-
-    private val baseSegment = TimelineSegmentUi(
-        type = TimerType.FOCUS,
-        cycleNumber = 1,
-        timer = TimerUi(progress = 0.25f),
-    )
-    private val baseTimeline = TimelineUiModel(
-        segments = persistentListOf(baseSegment),
-        hourSplits = persistentListOf(25),
-    )
-    private val baseState = PomodoroSessionUiState(
-        totalCycle = 4,
-        activeSegment = baseSegment,
-        timeline = baseTimeline,
-        quote = QuoteContent(text = "Stay focused"),
-    )
+    private val baseSegment =
+        TimelineSegmentUi(
+            type = TimerType.FOCUS,
+            cycleNumber = 1,
+            timer = TimerUi(progress = 0.25f),
+        )
+    private val baseTimeline =
+        TimelineUiModel(
+            segments = persistentListOf(baseSegment),
+            hourSplits = persistentListOf(25),
+        )
+    private val baseState =
+        PomodoroSessionUiState(
+            totalCycle = 4,
+            activeSegment = baseSegment,
+            timeline = baseTimeline,
+            quote = QuoteContent(text = "Stay focused"),
+        )
 
     @Test
     fun headerSelectorIgnoresQuoteChanges() {
         val initialHeader = baseState.toHeaderUiState()
-        val quoteUpdated = baseState.copy(
-            quote = QuoteContent(text = "New thought")
-        )
+        val quoteUpdated =
+            baseState.copy(
+                quote = QuoteContent(text = "New thought"),
+            )
         assertEquals(initialHeader, quoteUpdated.toHeaderUiState())
 
         val nextSegment = baseSegment.copy(cycleNumber = 2)

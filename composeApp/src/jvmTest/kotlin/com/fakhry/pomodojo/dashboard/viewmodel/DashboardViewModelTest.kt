@@ -25,7 +25,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DashboardViewModelTest {
-
     private val dispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -39,31 +38,33 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun `pref state reflects initial preferences`() = runTest(dispatcher) {
-        val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 30))
-        val focusRepository = FakeFocusRepository(hasActive = false)
+    fun `pref state reflects initial preferences`() =
+        runTest(dispatcher) {
+            val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 30))
+            val focusRepository = FakeFocusRepository(hasActive = false)
 
-        val viewModel = DashboardViewModel(repository, focusRepository)
-        advanceUntilIdle()
+            val viewModel = DashboardViewModel(repository, focusRepository)
+            advanceUntilIdle()
 
-        assertEquals(30, viewModel.prefState.value.focusMinutes)
-        assertFalse(viewModel.hasActiveSession.value)
-    }
+            assertEquals(30, viewModel.prefState.value.focusMinutes)
+            assertFalse(viewModel.hasActiveSession.value)
+        }
 
     @Test
-    fun `pref state updates when repository emits new value`() = runTest(dispatcher) {
-        val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 25))
-        val focusRepository = FakeFocusRepository(hasActive = true)
+    fun `pref state updates when repository emits new value`() =
+        runTest(dispatcher) {
+            val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 25))
+            val focusRepository = FakeFocusRepository(hasActive = true)
 
-        val viewModel = DashboardViewModel(repository, focusRepository)
-        advanceUntilIdle()
+            val viewModel = DashboardViewModel(repository, focusRepository)
+            advanceUntilIdle()
 
-        repository.emit(repository.current.copy(focusMinutes = 45))
-        advanceUntilIdle()
+            repository.emit(repository.current.copy(focusMinutes = 45))
+            advanceUntilIdle()
 
-        assertEquals(45, viewModel.prefState.value.focusMinutes)
-        assertTrue(viewModel.hasActiveSession.value)
-    }
+            assertEquals(45, viewModel.prefState.value.focusMinutes)
+            assertTrue(viewModel.hasActiveSession.value)
+        }
 
     private class FakePreferencesRepository(
         initial: PreferencesDomain,
