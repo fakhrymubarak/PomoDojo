@@ -37,12 +37,21 @@ import com.fakhry.pomodojo.generated.resources.preferences_long_break_after_titl
 import com.fakhry.pomodojo.generated.resources.preferences_long_break_timer_title
 import com.fakhry.pomodojo.generated.resources.preferences_repeat_title
 import com.fakhry.pomodojo.generated.resources.preferences_title_pomodoro_config
-import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
+import com.fakhry.pomodojo.preferences.ui.RecompositionTags
+import com.fakhry.pomodojo.preferences.ui.TrackRecomposition
+import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ColumnScope.PomodoroConfigSection(
-    state: PreferencesUiModel,
+    repeatCount: Int,
+    repeatRange: IntRange,
+    focusOptions: ImmutableList<PreferenceOption<Int>>,
+    breakOptions: ImmutableList<PreferenceOption<Int>>,
+    isLongBreakEnabled: Boolean,
+    longBreakAfterOptions: ImmutableList<PreferenceOption<Int>>,
+    longBreakOptions: ImmutableList<PreferenceOption<Int>>,
     onRepeatCountChanged: (Int) -> Unit = {},
     onFocusSelected: (Int) -> Unit = {},
     onBreakSelected: (Int) -> Unit = {},
@@ -50,7 +59,8 @@ fun ColumnScope.PomodoroConfigSection(
     onLongBreakAfterSelected: (Int) -> Unit = {},
     onLongBreakMinutesSelected: (Int) -> Unit = {},
 ) = this.run {
-    val visibilityLongBreakSection = remember { MutableTransitionState(state.isLongBreakEnabled) }
+    TrackRecomposition(RecompositionTags.ConfigSection)
+    val visibilityLongBreakSection = remember { MutableTransitionState(isLongBreakEnabled) }
     val colorScheme = MaterialTheme.colorScheme
 
     Text(
@@ -70,8 +80,8 @@ fun ColumnScope.PomodoroConfigSection(
             modifier = Modifier.padding(16.dp)
         ) {
             RepeatSection(
-                repeatCount = state.repeatCount,
-                range = state.repeatRange,
+                repeatCount = repeatCount,
+                range = repeatRange,
                 onRepeatCountChanged = onRepeatCountChanged,
             )
 
@@ -79,7 +89,7 @@ fun ColumnScope.PomodoroConfigSection(
 
             PreferenceOptionsCompose(
                 title = stringResource(Res.string.preferences_focus_timer_title),
-                options = state.focusOptions,
+                options = focusOptions,
                 onOptionSelected = {
                     onFocusSelected(it)
                 },
@@ -89,7 +99,7 @@ fun ColumnScope.PomodoroConfigSection(
 
             PreferenceOptionsCompose(
                 title = stringResource(Res.string.preferences_break_timer_title),
-                options = state.breakOptions,
+                options = breakOptions,
                 onOptionSelected = {
                     onBreakSelected(it)
                 },
@@ -98,7 +108,7 @@ fun ColumnScope.PomodoroConfigSection(
             Spacer(modifier = Modifier.height(16.dp))
 
             LongBreakToggle(
-                enabled = state.isLongBreakEnabled,
+                enabled = isLongBreakEnabled,
                 onToggle = {
                     onToggleLongBreak(it)
                     visibilityLongBreakSection.targetState = it
@@ -119,14 +129,14 @@ fun ColumnScope.PomodoroConfigSection(
                 Column {
                     PreferenceOptionsCompose(
                         title = stringResource(Res.string.preferences_long_break_after_title),
-                        options = state.longBreakAfterOptions,
+                        options = longBreakAfterOptions,
                         onOptionSelected = onLongBreakAfterSelected,
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
                     PreferenceOptionsCompose(
                         title = stringResource(Res.string.preferences_long_break_timer_title),
-                        options = state.longBreakOptions,
+                        options = longBreakOptions,
                         onOptionSelected = onLongBreakMinutesSelected,
                     )
                 }
@@ -142,6 +152,7 @@ private fun RepeatSection(
     range: IntRange,
     onRepeatCountChanged: (Int) -> Unit,
 ) {
+    TrackRecomposition(RecompositionTags.RepeatSection)
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = stringResource(Res.string.preferences_repeat_title),

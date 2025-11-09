@@ -25,6 +25,22 @@ data class PreferencesUiModel(
 )
 
 @Immutable
+data class PreferencesConfigUiState(
+    val repeatCount: Int,
+    val repeatRange: IntRange,
+    val focusOptions: ImmutableList<PreferenceOption<Int>>,
+    val breakOptions: ImmutableList<PreferenceOption<Int>>,
+    val isLongBreakEnabled: Boolean,
+    val longBreakAfterOptions: ImmutableList<PreferenceOption<Int>>,
+    val longBreakOptions: ImmutableList<PreferenceOption<Int>>,
+)
+
+@Immutable
+data class PreferencesAppearanceUiState(
+    val themeOptions: ImmutableList<PreferenceOption<AppTheme>>,
+)
+
+@Immutable
 data class TimelineUiModel(
     val segments: ImmutableList<TimelineSegmentUi> = persistentListOf(),
     val hourSplits: ImmutableList<Int> = persistentListOf(),
@@ -59,4 +75,18 @@ data class TimerUi(
     val durationEpochMs: Long = 0L,
     val formattedTime: String = "00:00",
     val finishedInMillis: Long = 0L,
+)
+
+fun PreferencesUiModel.toConfigUiState() = PreferencesConfigUiState(
+    repeatCount = repeatCount,
+    repeatRange = repeatRange,
+    focusOptions = focusOptions,
+    breakOptions = breakOptions,
+    isLongBreakEnabled = isLongBreakEnabled,
+    longBreakAfterOptions = longBreakAfterOptions,
+    longBreakOptions = longBreakOptions,
+)
+
+fun PreferencesUiModel.toAppearanceUiState() = PreferencesAppearanceUiState(
+    themeOptions = themeOptions,
 )

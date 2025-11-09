@@ -2,10 +2,10 @@ package com.fakhry.pomodojo.preferences.domain.usecase
 
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class BuildFocusTimelineUseCaseTest {
 
@@ -22,18 +22,18 @@ class BuildFocusTimelineUseCaseTest {
             longBreakMinutes = 15,
         )
 
-        val segments = timelineBuilder(preferences)
-        val longBreaks = segments.filterIsInstance<TimerSegmentsDomain.LongBreak>()
+        val segments = timelineBuilder(0L, preferences)
+        val longBreaks = segments.filter { it.type == TimerType.LONG_BREAK }
 
         assertEquals(9, segments.size)
         assertEquals(2, longBreaks.size)
-        assertEquals(15, longBreaks.first().duration)
-        assertEquals(15, longBreaks.last().duration)
+        assertEquals(15, longBreaks.first().durationMinutes())
+        assertEquals(15, longBreaks.last().durationMinutes())
 
         // Ensure long breaks are placed after every second focus except the final one.
-        assertTrue(segments[3] is TimerSegmentsDomain.LongBreak)
-        assertTrue(segments[7] is TimerSegmentsDomain.LongBreak)
-        assertEquals(5 * 25 + 2 * 15 + 2 * 5, segments.sumOf { it.duration })
+        assertEquals(TimerType.LONG_BREAK, segments[3].type)
+        assertEquals(TimerType.LONG_BREAK, segments[7].type)
+        assertEquals(5 * 25 + 2 * 15 + 2 * 5, segments.sumOf { it.durationMinutes() })
     }
 
     @Test
@@ -47,20 +47,23 @@ class BuildFocusTimelineUseCaseTest {
             longBreakMinutes = 10,
         )
 
-        val segments = timelineBuilder(preferences)
+        val segments = timelineBuilder(0L, preferences)
         assertEquals(7, segments.size)
 
-        val firstFocus = segments.first() as TimerSegmentsDomain.Focus
-        assertEquals(25, firstFocus.duration)
+        val firstSegment = segments.first()
+        assertEquals(TimerType.FOCUS, firstSegment.type)
+        assertEquals(25, firstSegment.durationMinutes())
 
-        val firstBreak = segments[1] as TimerSegmentsDomain.ShortBreak
-        assertEquals(5, firstBreak.duration)
+        val firstBreak = segments[1]
+        assertEquals(TimerType.SHORT_BREAK, firstBreak.type)
+        assertEquals(5, firstBreak.durationMinutes())
 
-        val lastFocus = segments.last() as TimerSegmentsDomain.Focus
-        assertEquals(25, lastFocus.duration)
+        val lastFocus = segments.last()
+        assertEquals(TimerType.FOCUS, lastFocus.type)
+        assertEquals(25, lastFocus.durationMinutes())
 
-        assertEquals(3, segments.count { it is TimerSegmentsDomain.ShortBreak })
-        assertFalse(segments.any { it is TimerSegmentsDomain.LongBreak })
+        assertEquals(3, segments.count { it.type == TimerType.SHORT_BREAK })
+        assertFalse(segments.any { it.type == TimerType.LONG_BREAK })
     }
 
     @Test
@@ -74,17 +77,20 @@ class BuildFocusTimelineUseCaseTest {
             longBreakMinutes = 20,
         )
 
-        val segments = timelineBuilder(preferences)
+        val segments = timelineBuilder(0L, preferences)
         val longBreaks = segments.withIndex()
-            .filter { it.value is TimerSegmentsDomain.LongBreak }
+            .filter { it.value.type == TimerType.LONG_BREAK }
             .map { it.index }
 
         assertEquals(listOf(3, 7), longBreaks) // after 2nd and 4th focus
-        assertEquals(20, (segments[3] as TimerSegmentsDomain.LongBreak).duration)
-        assertEquals(20, (segments[7] as TimerSegmentsDomain.LongBreak).duration)
+        assertEquals(20, segments[3].durationMinutes())
+        assertEquals(20, segments[7].durationMinutes())
         assertEquals(
             preferences.repeatCount * 2 - 1,
             segments.size
         ) // focus blocks + breaks between them
     }
 }
+
+private fun TimerSegmentsDomain.durationMinutes(): Int =
+    (timer.durationEpochMs / 60_000L).toInt()

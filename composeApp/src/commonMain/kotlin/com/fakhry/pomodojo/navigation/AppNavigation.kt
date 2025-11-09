@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.fakhry.pomodojo.dashboard.DashboardScreen
 import com.fakhry.pomodojo.focus.ui.PomodoroSessionScreen
-import com.fakhry.pomodojo.preferences.ui.PreferencesScreen
+import com.fakhry.pomodojo.preferences.ui.PreferencesRoute
 import kotlinx.serialization.Serializable
 
 object AppDestination {
@@ -70,7 +70,7 @@ fun AppNavHost(
             )
         }
         composable<AppDestination.Preferences> {
-            PreferencesScreen(
+            PreferencesRoute(
                 onNavigateBack = { navController.popBackStack() },
             )
         }
