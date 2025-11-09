@@ -13,9 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.fakhry.pomodojo.focus.ui.PhaseTimerStatus
-import com.fakhry.pomodojo.focus.ui.PhaseType
-import com.fakhry.pomodojo.focus.ui.PhaseUi
 import com.fakhry.pomodojo.focus.ui.PomodoroSessionUiState
 import com.fakhry.pomodojo.focus.ui.focusPhaseLabel
 import com.fakhry.pomodojo.generated.resources.Res
@@ -23,13 +20,12 @@ import com.fakhry.pomodojo.generated.resources.focus_session_header_cycle_count
 import com.fakhry.pomodojo.generated.resources.focus_session_header_title
 import com.fakhry.pomodojo.ui.components.BgHeaderCanvas
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
-import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PomodoroSessionHeaderSection(state: PomodoroSessionUiState) {
-    val activePhase = state.activePhase
+    val activePhase = state.activeSegment
     BgHeaderCanvas {
         Column(
             modifier = Modifier
@@ -68,13 +64,6 @@ fun PomodoroSessionHeaderSection(state: PomodoroSessionUiState) {
 @Composable
 private fun PomodoroSessionHeaderSectionPreview() {
     val state = PomodoroSessionUiState(
-        phases = persistentListOf(
-            PhaseUi(
-                type = PhaseType.FOCUS,
-                cycleNumber = 1,
-                timerStatus = PhaseTimerStatus.RUNNING
-            )
-        ),
         totalCycle = 4
     )
 

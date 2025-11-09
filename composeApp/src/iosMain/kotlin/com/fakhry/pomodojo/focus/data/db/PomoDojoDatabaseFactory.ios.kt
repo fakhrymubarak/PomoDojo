@@ -17,7 +17,8 @@ private object IosFocusDatabaseHolder {
         val dbFile = "${fileDirectory()}/$POMO_DOJO_DATABASE_NAME"
         Room.databaseBuilder<PomoDojoRoomDatabase>(
                 name = dbFile,
-            ).setDriver(BundledSQLiteDriver()).setQueryCoroutineContext(Dispatchers.IO).build()
+            ).addMigrations(*FocusMigrations)
+            .setDriver(BundledSQLiteDriver()).setQueryCoroutineContext(Dispatchers.IO).build()
     }
 
     @OptIn(ExperimentalForeignApi::class)

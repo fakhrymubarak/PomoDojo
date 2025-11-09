@@ -59,7 +59,10 @@ fun DashboardScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             DashboardHeader(onOpenSettings = onOpenSettings)
-            PomodoroTimerSection(formattedTime = formatTimerMinutes(prefState.focusMinutes))
+            PomodoroTimerSection(
+                formattedTime = formatTimerMinutes(prefState.focusMinutes),
+                progress = 1f,
+            )
 
             // Start button
             Button(

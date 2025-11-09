@@ -1,7 +1,7 @@
 package com.fakhry.pomodojo.preferences.domain.usecase
 
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimelineSegmentDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimelineTimerDomain
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -23,7 +23,7 @@ class BuildFocusTimelineUseCaseTest {
         )
 
         val segments = timelineBuilder(preferences)
-        val longBreaks = segments.filterIsInstance<TimelineSegmentDomain.LongBreak>()
+        val longBreaks = segments.filterIsInstance<TimelineTimerDomain.LongBreak>()
 
         assertEquals(9, segments.size)
         assertEquals(2, longBreaks.size)
@@ -31,8 +31,8 @@ class BuildFocusTimelineUseCaseTest {
         assertEquals(15, longBreaks.last().duration)
 
         // Ensure long breaks are placed after every second focus except the final one.
-        assertTrue(segments[3] is TimelineSegmentDomain.LongBreak)
-        assertTrue(segments[7] is TimelineSegmentDomain.LongBreak)
+        assertTrue(segments[3] is TimelineTimerDomain.LongBreak)
+        assertTrue(segments[7] is TimelineTimerDomain.LongBreak)
         assertEquals(5 * 25 + 2 * 15 + 2 * 5, segments.sumOf { it.duration })
     }
 
@@ -50,17 +50,17 @@ class BuildFocusTimelineUseCaseTest {
         val segments = timelineBuilder(preferences)
         assertEquals(7, segments.size)
 
-        val firstFocus = segments.first() as TimelineSegmentDomain.Focus
+        val firstFocus = segments.first() as TimelineTimerDomain.Focus
         assertEquals(25, firstFocus.duration)
 
-        val firstBreak = segments[1] as TimelineSegmentDomain.ShortBreak
+        val firstBreak = segments[1] as TimelineTimerDomain.ShortBreak
         assertEquals(5, firstBreak.duration)
 
-        val lastFocus = segments.last() as TimelineSegmentDomain.Focus
+        val lastFocus = segments.last() as TimelineTimerDomain.Focus
         assertEquals(25, lastFocus.duration)
 
-        assertEquals(3, segments.count { it is TimelineSegmentDomain.ShortBreak })
-        assertFalse(segments.any { it is TimelineSegmentDomain.LongBreak })
+        assertEquals(3, segments.count { it is TimelineTimerDomain.ShortBreak })
+        assertFalse(segments.any { it is TimelineTimerDomain.LongBreak })
     }
 
     @Test
@@ -76,12 +76,12 @@ class BuildFocusTimelineUseCaseTest {
 
         val segments = timelineBuilder(preferences)
         val longBreaks = segments.withIndex()
-            .filter { it.value is TimelineSegmentDomain.LongBreak }
+            .filter { it.value is TimelineTimerDomain.LongBreak }
             .map { it.index }
 
         assertEquals(listOf(3, 7), longBreaks) // after 2nd and 4th focus
-        assertEquals(20, (segments[3] as TimelineSegmentDomain.LongBreak).duration)
-        assertEquals(20, (segments[7] as TimelineSegmentDomain.LongBreak).duration)
+        assertEquals(20, (segments[3] as TimelineTimerDomain.LongBreak).duration)
+        assertEquals(20, (segments[7] as TimelineTimerDomain.LongBreak).duration)
         assertEquals(
             preferences.repeatCount * 2 - 1,
             segments.size

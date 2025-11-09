@@ -2,17 +2,22 @@ package com.fakhry.pomodojo.dashboard.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.fakhry.pomodojo.focus.ui.PhaseType
+import com.fakhry.pomodojo.focus.ui.focusPhaseLabel
+import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.ui.components.PomodoroTimerDecoration
 import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
@@ -26,14 +31,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun PomodoroTimerSection(
-    phaseType: PhaseType = PhaseType.FOCUS,
+    segmentType: TimerType = TimerType.FOCUS,
     formattedTime: String = "00:00",
     progress: Float = 0.5f,
 ) {
-    val color = when (phaseType) {
-        PhaseType.FOCUS -> Secondary
-        PhaseType.SHORT_BREAK -> Primary
-        PhaseType.LONG_BREAK -> LongBreakHighlight
+    val color = when (segmentType) {
+        TimerType.FOCUS -> Secondary
+        TimerType.SHORT_BREAK -> Primary
+        TimerType.LONG_BREAK -> LongBreakHighlight
     }
 
     Box(
@@ -45,15 +50,36 @@ fun PomodoroTimerSection(
             progress = progress,
         )
 
-        // Timer text
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = formattedTime,
+                style = MaterialTheme.typography.displayLarge.copy(
+                    fontSize = 56.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
+                textAlign = TextAlign.Center,
+            )
+            FocusPhaseChip(phase = segmentType, color = color)
+        }
+    }
+}
+
+@Composable
+private fun FocusPhaseChip(phase: TimerType, color: Color) {
+    Surface(
+        color = color.copy(alpha = 0.12f),
+        shape = CircleShape,
+    ) {
         Text(
-            text = formattedTime,
-            style = MaterialTheme.typography.displayLarge.copy(
-                fontSize = 56.sp,
+            text = focusPhaseLabel(phase),
+            style = MaterialTheme.typography.labelLarge.copy(
+                color = color,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
             ),
-            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
         )
     }
 }
@@ -64,7 +90,7 @@ fun PomodoroTimerSectionFocusPreview() {
     PomoDojoTheme {
         Column {
             PomodoroTimerSection(
-                phaseType = PhaseType.FOCUS,
+                segmentType = TimerType.FOCUS,
             )
         }
     }
@@ -76,7 +102,7 @@ fun PomodoroTimerSectionBreakPreview() {
     PomoDojoTheme {
         Column {
             PomodoroTimerSection(
-                phaseType = PhaseType.SHORT_BREAK,
+                segmentType = TimerType.SHORT_BREAK,
             )
         }
     }
@@ -88,7 +114,7 @@ fun PomodoroTimerSectionLongBreakPreview() {
     PomoDojoTheme {
         Column {
             PomodoroTimerSection(
-                phaseType = PhaseType.LONG_BREAK,
+                segmentType = TimerType.LONG_BREAK,
             )
         }
     }

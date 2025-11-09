@@ -1,15 +1,15 @@
 package com.fakhry.pomodojo.focus.domain.usecase
 
-import com.fakhry.pomodojo.focus.domain.model.ActiveFocusSessionWithQuoteDomain
+import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
-import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
+// TODO NEED TO ADJUST THE DATA LAYER.
 class GetActivePomodoroSessionUseCase(
     private val quoteRepo: QuoteRepository,
     private val preferencesRepo: PreferencesRepository,
@@ -24,18 +24,8 @@ class GetActivePomodoroSessionUseCase(
 
         val quote = quoteDef.await()
         val preferences = preferencesDef.await()
-        return@withContext ActiveFocusSessionWithQuoteDomain(
-            focusSession = activeSession,
-            quote = quote,
-            preferences = PreferencesDomain(
-                appTheme = preferences.appTheme,
-                repeatCount = activeSession.repeatCount,
-                focusMinutes = activeSession.focusMinutes,
-                breakMinutes = activeSession.breakMinutes,
-                longBreakEnabled = activeSession.longBreakEnabled,
-                longBreakAfter = activeSession.longBreakAfter,
-                longBreakMinutes = activeSession.longBreakMinutes,
-            ),
-        )
+
+
+        return@withContext PomodoroSessionDomain()
     }
 }

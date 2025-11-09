@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.preferences
 
-import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepository
+import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepositoryImpl
 import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 class PreferencesRepositoryTest {
 
     private val storage = FakePreferenceStorage()
-    private val repository = PreferencesRepository(
+    private val repository = PreferencesRepositoryImpl(
         storage = storage,
         cascadeResolver = PreferenceCascadeResolver(),
     )

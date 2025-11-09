@@ -22,7 +22,7 @@ internal object AndroidFocusDatabaseHolder {
             appContext,
             PomoDojoRoomDatabase::class.java,
             POMO_DOJO_DATABASE_NAME,
-        ).build()
+        ).addMigrations(*FocusMigrations).build()
     }
 
     fun initialize(context: Context) {

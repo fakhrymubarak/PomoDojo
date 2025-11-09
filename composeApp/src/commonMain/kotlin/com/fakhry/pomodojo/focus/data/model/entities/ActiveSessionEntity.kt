@@ -32,6 +32,8 @@ data class ActiveSessionEntity(
     val startedAtEpochMs: Long,
     @ColumnInfo(name = "elapsed_paused_epoch_ms")
     val elapsedPausedEpochMs: Long,
+    @ColumnInfo(name = "pause_started_at_epoch_ms")
+    val pauseStartedAtEpochMs: Long?,
     @ColumnInfo(name = "sessionStatus")
     val sessionStatus: String,
 

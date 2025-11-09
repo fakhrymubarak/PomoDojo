@@ -9,7 +9,7 @@ import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
 
 @Database(
     entities = [ActiveSessionEntity::class, HistorySessionEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 @ConstructedBy(PomoDojoRoomDatabaseConstructor::class)

@@ -57,15 +57,17 @@ import com.fakhry.pomodojo.generated.resources.focus_session_quote_content_descr
 import com.fakhry.pomodojo.generated.resources.focus_session_resume_content_description
 import com.fakhry.pomodojo.generated.resources.focus_session_timeline_title
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildFocusTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.preferences.ui.components.TimelineHoursSplit
 import com.fakhry.pomodojo.preferences.ui.components.TimelineLegends
 import com.fakhry.pomodojo.preferences.ui.components.TimelinePreview
 import com.fakhry.pomodojo.preferences.ui.mapper.mapToTimelineSegmentsUi
+import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -79,28 +81,33 @@ fun PomodoroSessionScreen(
     viewModel: FocusPomodoroViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    val isComplete by viewModel.isComplete.collectAsState()
 
     BackHandler {
         viewModel.onEndClicked()
     }
 
-    LaunchedEffect(isComplete) {
-        if (isComplete) onSessionCompleted()
+    LaunchedEffect(state.isComplete) {
+        if (state.isComplete) onSessionCompleted()
     }
 
     PomodoroSessionContent(
         state = state,
+        onTogglePause = viewModel::togglePauseResume,
         onEnd = viewModel::onEndClicked,
+        onDismissConfirm = viewModel::onDismissConfirmEnd,
+        onConfirmFinish = viewModel::onConfirmFinish,
     )
 }
 
 @Composable
 private fun PomodoroSessionContent(
     state: PomodoroSessionUiState,
+    onTogglePause: () -> Unit,
     onEnd: () -> Unit,
+    onDismissConfirm: () -> Unit,
+    onConfirmFinish: () -> Unit,
 ) {
-    val activePhase = state.activePhase
+    val activeSegment = state.activeSegment
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
@@ -112,9 +119,9 @@ private fun PomodoroSessionContent(
             PomodoroSessionHeaderSection(state = state)
             Spacer(modifier = Modifier.height(32.dp))
             PomodoroTimerSection(
-                phaseType = activePhase.type,
-                formattedTime = activePhase.formattedTime,
-                progress = activePhase.progress,
+                segmentType = activeSegment.type,
+                formattedTime = activeSegment.timerStatus.formattedTime,
+                progress = activeSegment.timerStatus.progress,
             )
             Spacer(modifier = Modifier.height(32.dp))
             FocusQuoteBlock(modifier = Modifier.padding(horizontal = 16.dp), quote = state.quote)
@@ -124,8 +131,17 @@ private fun PomodoroSessionContent(
                 timeline = state.timeline,
             )
             Spacer(modifier = Modifier.height(32.dp))
-            FocusControls(activePhase)
-
+            FocusControls(
+                activePhase = activeSegment,
+                onTogglePause = onTogglePause,
+                onEnd = onEnd,
+            )
+            if (state.isShowConfirmEndDialog) {
+                FocusConfirmDialog(
+                    onConfirmFinish = onConfirmFinish,
+                    onDismiss = onDismissConfirm,
+                )
+            }
         }
     }
 }
@@ -166,23 +182,6 @@ fun ColumnScope.PomodoroTimelineSessionSection(
 }
 
 @Composable
-private fun FocusPhaseChip(phase: PhaseType) {
-    Surface(
-        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-        shape = CircleShape,
-    ) {
-        Text(
-            text = focusPhaseLabel(phase),
-            style = MaterialTheme.typography.labelLarge.copy(
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
-            ),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-        )
-    }
-}
-
-@Composable
 private fun FocusQuoteBlock(modifier: Modifier, quote: QuoteContent) {
     val quoteDescription = stringResource(
         Res.string.focus_session_quote_content_description,
@@ -218,7 +217,7 @@ private fun FocusQuoteBlock(modifier: Modifier, quote: QuoteContent) {
 
 @Composable
 private fun FocusControls(
-    activePhase: PhaseUi,
+    activePhase: TimelineSegmentUi,
     onTogglePause: () -> Unit = {},
     onEnd: () -> Unit = {},
 ) {
@@ -226,7 +225,7 @@ private fun FocusControls(
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        val isPause = activePhase.timerStatus == PhaseTimerStatus.RUNNING
+        val isPause = activePhase.timerStatus is TimerStatusDomain.Paused
         val icon = if (isPause) Icons.Rounded.Pause else Icons.Rounded.PlayArrow
         val description = if (isPause) {
             stringResource(Res.string.focus_session_pause_content_description)
@@ -330,28 +329,31 @@ private fun FocusCompletedState(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun focusPhaseLabel(phase: PhaseType): String = when (phase) {
-    PhaseType.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
-    PhaseType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
-    PhaseType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
+fun focusPhaseLabel(phase: TimerType): String = when (phase) {
+    TimerType.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
+    TimerType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
+    TimerType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
 }
-
 
 @Preview
 @Composable
 private fun PomodoroSessionContentPreview() {
     val preferences = PreferencesDomain()
     val state = PomodoroSessionUiState(
-        phases = persistentListOf(
-            PhaseUi(type = PhaseType.FOCUS, cycleNumber = 1, timerStatus = PhaseTimerStatus.RUNNING)
-        ), totalCycle = 4, timeline = TimelineUiModel(
-            segments = BuildFocusTimelineUseCase().invoke(preferences).mapToTimelineSegmentsUi(),
+        totalCycle = 4,
+        timeline = TimelineUiModel(
+            segments = BuildFocusTimelineUseCase().invoke(0L, preferences).mapToTimelineSegmentsUi(),
             hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
-        )
+        ),
     )
 
     PomoDojoTheme {
-        PomodoroSessionContent(state = state, onEnd = {})
+        PomodoroSessionContent(
+            state = state,
+            onTogglePause = {},
+            onEnd = {},
+            onDismissConfirm = {},
+            onConfirmFinish = {},
+        )
     }
 }
-
