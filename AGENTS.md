@@ -9,6 +9,8 @@ The multiplatform source of truth lives in `composeApp/src`: shared UI, domain, 
 ./gradlew :composeApp:run                  # Desktop JVM app for rapid UI iteration
 ./gradlew :composeApp:jvmTest              # Executes JVM + common tests (kotlin.test/orbit)
 ./gradlew :composeApp:jacocoJvmTestReport  # Generates coverage in composeApp/build/reports
+./gradlew ktlintCheck                      # Kotlin style verification across all source sets
+./gradlew ktlintFormat                     # Auto-formats Kotlin files; run before large refactors
 xed iosApp/iosApp.xcodeproj                # Opens the iOS runner; build via the iOSApp scheme
 ```
 Ensure `local.properties` resolves the Android SDK and run Gradle with a Java 17-compatible JDK.
