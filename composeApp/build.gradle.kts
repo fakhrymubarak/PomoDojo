@@ -23,7 +23,7 @@ kotlin {
 
     listOf(
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
@@ -122,13 +122,11 @@ dependencies {
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.core)
 
-
     // Room KSP
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspJvm", libs.androidx.room.compiler)
-
 }
 
 compose.desktop {
@@ -173,8 +171,9 @@ tasks.register<JacocoReport>("jacocoJvmTestReport") {
     }
 
     val jvmMainCompilation = kotlinExt.targets.getByName("jvm").compilations.getByName("main")
-    val jvmSourceDirs = jvmMainCompilation.allKotlinSourceSets
-        .flatMap { it.kotlin.sourceDirectories.files }
+    val jvmSourceDirs =
+        jvmMainCompilation.allKotlinSourceSets
+            .flatMap { it.kotlin.sourceDirectories.files }
 
     sourceDirectories.setFrom(files(jvmSourceDirs))
     classDirectories.setFrom(jvmMainCompilation.output.classesDirs)
