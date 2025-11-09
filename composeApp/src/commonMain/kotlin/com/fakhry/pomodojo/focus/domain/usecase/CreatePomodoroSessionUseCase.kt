@@ -20,27 +20,29 @@ class CreatePomodoroSessionUseCase(
     private val hourSplitter: BuildHourSplitTimelineUseCase,
     private val dispatcher: DispatcherProvider,
 ) {
+    suspend operator fun invoke(now: Long) =
+        withContext(dispatcher.io) {
+            val quoteDef = async { quoteRepo.randomQuote() }
+            val preferencesDef = async { preferencesRepo.preferences.first() }
 
-    suspend operator fun invoke(now: Long) = withContext(dispatcher.io) {
-        val quoteDef = async { quoteRepo.randomQuote() }
-        val preferencesDef = async { preferencesRepo.preferences.first() }
+            val quote = quoteDef.await()
+            val preferences = preferencesDef.await()
 
-        val quote = quoteDef.await()
-        val preferences = preferencesDef.await()
-
-        val activeSession = PomodoroSessionDomain(
-            totalCycle = preferences.repeatCount,
-            startedAtEpochMs = now,
-            elapsedPauseEpochMs = 0L,
-            timeline = TimelineDomain(
-                segments = timelineBuilder(now, preferences),
-                hourSplits = hourSplitter(preferences),
-            ),
-            quote = quote,
-        )
+            val activeSession =
+                PomodoroSessionDomain(
+                    totalCycle = preferences.repeatCount,
+                    startedAtEpochMs = now,
+                    elapsedPauseEpochMs = 0L,
+                    timeline =
+                        TimelineDomain(
+                            segments = timelineBuilder(now, preferences),
+                            hourSplits = hourSplitter(preferences),
+                        ),
+                    quote = quote,
+                )
 
 //        pomodoroSessionRepo.saveActiveSession(activeSession)
 
-        return@withContext activeSession
-    }
+            return@withContext activeSession
+        }
 }

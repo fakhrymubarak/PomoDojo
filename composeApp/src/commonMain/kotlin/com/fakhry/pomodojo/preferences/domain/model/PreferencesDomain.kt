@@ -9,7 +9,7 @@ data class PreferencesDomain(
     val longBreakAfter: Int = DEFAULT_LONG_BREAK_AFTER,
     val longBreakMinutes: Int = DEFAULT_LONG_BREAK_MINUTES,
 ) {
-    val isLongBreakPoint : Boolean
+    val isLongBreakPoint: Boolean
         get() = longBreakEnabled && repeatCount % longBreakAfter == 0
     val focusMillis: Long
         get() = focusMinutes * 60_000L

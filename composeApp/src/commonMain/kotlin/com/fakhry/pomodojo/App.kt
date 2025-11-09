@@ -25,18 +25,20 @@ import org.koin.compose.koinInject
 @Preview
 fun App() {
     val initialThemeState = rememberInitialTheme()
-    val initialTheme = initialThemeState.value ?: run {
-        PomoDojoTheme {
-            // Awaiting stored theme before starting the DI graph.
+    val initialTheme =
+        initialThemeState.value ?: run {
+            PomoDojoTheme {
+                // Awaiting stored theme before starting the DI graph.
+            }
+            return
         }
-        return
-    }
-    val initialPreferences = remember(initialTheme) {
-        PreferencesDomain(appTheme = initialTheme)
-    }
+    val initialPreferences =
+        remember(initialTheme) {
+            PreferencesDomain(appTheme = initialTheme)
+        }
 
     KoinApplication(
-        application = { modules(composeAppModules) }
+        application = { modules(composeAppModules) },
     ) {
         val preferencesRepository = koinInject<PreferencesRepository>()
         val preferences by preferencesRepository.preferences.collectAsState(initial = initialPreferences)
@@ -53,10 +55,11 @@ fun App() {
 private fun rememberInitialTheme(): State<AppTheme?> {
     val dataStore = remember { provideDataStore() }
     return produceState(initialValue = null, key1 = dataStore) {
-        value = runCatching {
-            dataStore.data
-                .map { prefs -> AppTheme.fromStorage(prefs[PreferenceKeys.APP_THEME]) }
-                .first()
-        }.getOrDefault(AppTheme.DARK)
+        value =
+            runCatching {
+                dataStore.data
+                    .map { prefs -> AppTheme.fromStorage(prefs[PreferenceKeys.APP_THEME]) }
+                    .first()
+            }.getOrDefault(AppTheme.DARK)
     }
 }

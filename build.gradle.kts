@@ -17,8 +17,13 @@ subprojects {
     configure<KtlintExtension> {
         android.set(true)
         filter {
-            exclude("**/generated/**")
-            exclude("**/build/**")
+            exclude { element ->
+                element.file.absolutePath.contains("${File.separator}build${File.separator}")
+            }
         }
+    }
+
+    tasks.matching { it.name == "check" }.configureEach {
+        dependsOn(tasks.named("ktlintCheck"))
     }
 }

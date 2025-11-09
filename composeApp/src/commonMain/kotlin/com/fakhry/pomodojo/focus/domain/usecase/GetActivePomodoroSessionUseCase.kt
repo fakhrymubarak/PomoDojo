@@ -16,16 +16,15 @@ class GetActivePomodoroSessionUseCase(
     private val pomodoroSessionRepo: PomodoroSessionRepository,
     private val dispatcher: DispatcherProvider,
 ) {
+    suspend operator fun invoke() =
+        withContext(dispatcher.io) {
+            val activeSession = pomodoroSessionRepo.getActiveSession()
+            val quoteDef = async { quoteRepo.getById(activeSession.quoteId) }
+            val preferencesDef = async { preferencesRepo.preferences.first() }
 
-    suspend operator fun invoke() = withContext(dispatcher.io) {
-        val activeSession = pomodoroSessionRepo.getActiveSession()
-        val quoteDef = async { quoteRepo.getById(activeSession.quoteId) }
-        val preferencesDef = async { preferencesRepo.preferences.first() }
+            val quote = quoteDef.await()
+            val preferences = preferencesDef.await()
 
-        val quote = quoteDef.await()
-        val preferences = preferencesDef.await()
-
-
-        return@withContext PomodoroSessionDomain()
-    }
+            return@withContext PomodoroSessionDomain()
+        }
 }

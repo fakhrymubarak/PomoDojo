@@ -16,6 +16,6 @@ data class DispatcherProvider(
     constructor(testDispatcher: CoroutineDispatcher) : this(
         testDispatcher,
         testDispatcher,
-        testDispatcher
+        testDispatcher,
     )
 }

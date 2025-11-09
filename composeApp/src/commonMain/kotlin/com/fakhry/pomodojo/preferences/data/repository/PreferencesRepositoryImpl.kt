@@ -12,9 +12,9 @@ class PreferencesRepositoryImpl(
     private val storage: PreferenceStorage,
     private val cascadeResolver: PreferenceCascadeResolver,
 ) : PreferencesRepository {
-
-    override val preferences: Flow<PreferencesDomain> = storage.preferences
-        .distinctUntilChanged()
+    override val preferences: Flow<PreferencesDomain> =
+        storage.preferences
+            .distinctUntilChanged()
 
     override suspend fun updateRepeatCount(value: Int) {
         storage.update { it.copy(repeatCount = value) }

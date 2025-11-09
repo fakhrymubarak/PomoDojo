@@ -10,19 +10,19 @@ import okio.Path
 import okio.Path.Companion.toPath
 import java.io.File
 
-internal actual fun provideDataStore(): DataStore<Preferences> =
-    DesktopPreferencesDataStoreProvider.dataStore
+internal actual fun provideDataStore(): DataStore<Preferences> = DesktopPreferencesDataStoreProvider.dataStore
 
 private object DesktopPreferencesDataStoreProvider {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     val dataStore: DataStore<Preferences> by lazy {
         val home = System.getProperty("user.home") ?: "."
-        val directory = File(home, ".pomodojo").apply {
-            if (!exists()) {
-                mkdirs()
+        val directory =
+            File(home, ".pomodojo").apply {
+                if (!exists()) {
+                    mkdirs()
+                }
             }
-        }
         val path: Path = File(directory, PREFERENCES_FILE_NAME).absolutePath.toPath()
         PreferenceDataStoreFactory.createWithPath(
             scope = scope,

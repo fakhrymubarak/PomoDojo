@@ -128,7 +128,7 @@ private fun PomodoroSessionContent(
             PomodoroSessionHeaderSection(
                 timerType = activeSegment.type,
                 cycleNumber = activeSegment.cycleNumber,
-                totalCycle = state.totalCycle
+                totalCycle = state.totalCycle,
             )
             Spacer(modifier = Modifier.height(32.dp))
             PomodoroTimerSection(
@@ -162,10 +162,11 @@ fun ColumnScope.PomodoroTimelineSessionSection(
 
     Text(
         text = stringResource(Res.string.focus_session_timeline_title),
-        style = MaterialTheme.typography.titleMedium.copy(
-            color = MaterialTheme.colorScheme.onBackground,
-            fontWeight = FontWeight.Bold,
-        ),
+        style =
+            MaterialTheme.typography.titleMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Bold,
+            ),
         modifier = modifier.fillMaxWidth(),
     )
 
@@ -189,11 +190,15 @@ fun ColumnScope.PomodoroTimelineSessionSection(
 }
 
 @Composable
-private fun FocusQuoteBlock(modifier: Modifier, quote: QuoteContent) {
-    val quoteDescription = stringResource(
-        Res.string.focus_session_quote_content_description,
-        quote.text,
-    )
+private fun FocusQuoteBlock(
+    modifier: Modifier,
+    quote: QuoteContent,
+) {
+    val quoteDescription =
+        stringResource(
+            Res.string.focus_session_quote_content_description,
+            quote.text,
+        )
     Column(
         modifier = modifier.fillMaxWidth().semantics { contentDescription = quoteDescription },
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -201,22 +206,27 @@ private fun FocusQuoteBlock(modifier: Modifier, quote: QuoteContent) {
     ) {
         Text(
             text = "\"${quote.text}\"",
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center,
-            ),
+            style =
+                MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center,
+                ),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
         )
-        val attribution = listOfNotNull(
-            quote.character, quote.sourceTitle, quote.metadata
-        ).joinToString(separator = " — ").takeIf { it.isNotBlank() }
+        val attribution =
+            listOfNotNull(
+                quote.character,
+                quote.sourceTitle,
+                quote.metadata,
+            ).joinToString(separator = " — ").takeIf { it.isNotBlank() }
         if (attribution != null) {
             Text(
                 text = attribution,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                ),
+                style =
+                    MaterialTheme.typography.labelSmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
             )
         }
     }
@@ -233,11 +243,12 @@ private fun FocusControls(
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         val icon = if (isTimerRunning) Icons.Rounded.Pause else Icons.Rounded.PlayArrow
-        val description = if (isTimerRunning) {
-            stringResource(Res.string.focus_session_pause_content_description)
-        } else {
-            stringResource(Res.string.focus_session_resume_content_description)
-        }
+        val description =
+            if (isTimerRunning) {
+                stringResource(Res.string.focus_session_pause_content_description)
+            } else {
+                stringResource(Res.string.focus_session_resume_content_description)
+            }
         FocusCircularButton(
             onClick = onTogglePause,
             icon = { Icon(imageVector = icon, contentDescription = null) },
@@ -327,33 +338,37 @@ private fun FocusCompletedState(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = "Focus complete!",
-            style = MaterialTheme.typography.headlineMedium.copy(
-                color = MaterialTheme.colorScheme.onBackground,
-            ),
+            style =
+                MaterialTheme.typography.headlineMedium.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
         )
     }
 }
 
 @Composable
-fun focusPhaseLabel(phase: TimerType): String = when (phase) {
-    TimerType.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
-    TimerType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
-    TimerType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
-}
+fun focusPhaseLabel(phase: TimerType): String =
+    when (phase) {
+        TimerType.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
+        TimerType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
+        TimerType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
+    }
 
 @Preview
 @Composable
 private fun PomodoroSessionContentPreview() {
     val preferences = PreferencesDomain()
     val timerSegments = BuildTimerSegmentsUseCase().invoke(0L, preferences).mapToTimelineSegmentsUi(1_000L)
-    val state = PomodoroSessionUiState(
-        totalCycle = 4,
-        activeSegment = timerSegments.first(),
-        timeline = TimelineUiModel(
-            segments = timerSegments,
-            hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
-        ),
-    )
+    val state =
+        PomodoroSessionUiState(
+            totalCycle = 4,
+            activeSegment = timerSegments.first(),
+            timeline =
+                TimelineUiModel(
+                    segments = timerSegments,
+                    hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
+                ),
+        )
 
     PomoDojoTheme {
         PomodoroSessionContent(

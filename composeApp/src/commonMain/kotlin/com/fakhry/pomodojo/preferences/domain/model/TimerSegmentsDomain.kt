@@ -1,7 +1,9 @@
 package com.fakhry.pomodojo.preferences.domain.model
 
 enum class TimerType {
-    FOCUS, SHORT_BREAK, LONG_BREAK
+    FOCUS,
+    SHORT_BREAK,
+    LONG_BREAK,
 }
 
 data class TimerSegmentsDomain(
@@ -23,7 +25,10 @@ data class TimelineDomain(
 
 sealed class TimerStatusDomain {
     object Initial : TimerStatusDomain()
+
     object Completed : TimerStatusDomain()
+
     data class Running(val startedAtEpochMs: Long = 0L) : TimerStatusDomain()
+
     data class Paused(val elapsedPauseEpochMs: Long = 0L) : TimerStatusDomain()
 }

@@ -100,7 +100,7 @@ fun PreferencesScreen(
     onLongBreakAfterSelected: (Int) -> Unit = {},
     onLongBreakMinutesSelected: (Int) -> Unit = {},
 ) {
-    TrackRecomposition(RecompositionTags.Screen)
+    TrackRecomposition(RecompositionTags.SCREEN)
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
@@ -137,19 +137,22 @@ private fun PreferencesHeader(onNavigateBack: () -> Unit) {
     var isNavigatingBack by remember { mutableStateOf(false) }
     BgHeaderCanvas {
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.systemBars)
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            modifier =
+                Modifier.fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.systemBars)
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             IconButton(
-                modifier = Modifier.size(24.dp), onClick = {
+                modifier = Modifier.size(24.dp),
+                onClick = {
                     if (!isNavigatingBack) {
                         onNavigateBack()
                         isNavigatingBack = true
                     }
-                }) {
+                },
+            ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                     contentDescription = stringResource(Res.string.preferences_back_content_description),
@@ -158,10 +161,11 @@ private fun PreferencesHeader(onNavigateBack: () -> Unit) {
             }
             Text(
                 text = stringResource(Res.string.preferences_title),
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondary,
-                ),
+                style =
+                    MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                    ),
             )
         }
     }
@@ -180,14 +184,14 @@ private fun PreferencesContent(
     onLongBreakAfterSelected: (Int) -> Unit = {},
     onLongBreakMinutesSelected: (Int) -> Unit = {},
 ) {
-    TrackRecomposition(RecompositionTags.Content)
+    TrackRecomposition(RecompositionTags.CONTENT)
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
-            .padding(horizontal = 24.dp, vertical = 24.dp),
+        modifier =
+            Modifier.fillMaxSize().verticalScroll(scrollState)
+                .padding(horizontal = 24.dp, vertical = 24.dp),
     ) {
-
         PomodoroTimelinePreviewSection(timeline = timeline)
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -227,61 +231,69 @@ private fun PreferencesHeaderPreview() {
 @Preview
 @Composable
 private fun PreferencesContentPreview() {
-    val preferences = PreferencesDomain(
-        repeatCount = 4,
-        focusMinutes = 25,
-        breakMinutes = 5,
-        longBreakEnabled = true,
-        longBreakAfter = 4,
-        longBreakMinutes = 10,
-    )
-    val previewPreferencesState = PreferencesUiModel(
-        selectedTheme = preferences.appTheme,
-        themeOptions = AppTheme.entries.map { theme ->
-            PreferenceOption(
-                label = theme.displayName,
-                value = theme,
-                selected = theme == preferences.appTheme,
-            )
-        }.toPersistentList(),
-        repeatCount = preferences.repeatCount,
-        focusOptions = listOf(10, 25, 50).map { minutes ->
-            PreferenceOption(
-                label = "$minutes mins",
-                value = minutes,
-                selected = minutes == preferences.focusMinutes,
-            )
-        }.toPersistentList(),
-        breakOptions = listOf(2, 5, 10).map { minutes ->
-            PreferenceOption(
-                label = "$minutes mins",
-                value = minutes,
-                selected = minutes == preferences.breakMinutes,
-            )
-        }.toPersistentList(),
-        isLongBreakEnabled = preferences.longBreakEnabled,
-        longBreakAfterOptions = listOf(6, 4, 2).map { count ->
-            PreferenceOption(
-                label = "$count focuses",
-                value = count,
-                selected = count == preferences.longBreakAfter,
-                enabled = preferences.longBreakEnabled,
-            )
-        }.toPersistentList(),
-        longBreakOptions = listOf(4, 10, 20).map { minutes ->
-            PreferenceOption(
-                label = "$minutes mins",
-                value = minutes,
-                selected = minutes == preferences.longBreakMinutes,
-                enabled = preferences.longBreakEnabled,
-            )
-        }.toPersistentList(),
-        timeline = TimelineUiModel(
-            segments = BuildTimerSegmentsUseCase().invoke(0L, preferences).mapToTimelineSegmentsUi(),
-            hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
-        ),
-        isLoading = false,
-    )
+    val preferences =
+        PreferencesDomain(
+            repeatCount = 4,
+            focusMinutes = 25,
+            breakMinutes = 5,
+            longBreakEnabled = true,
+            longBreakAfter = 4,
+            longBreakMinutes = 10,
+        )
+    val previewPreferencesState =
+        PreferencesUiModel(
+            selectedTheme = preferences.appTheme,
+            themeOptions =
+                AppTheme.entries.map { theme ->
+                    PreferenceOption(
+                        label = theme.displayName,
+                        value = theme,
+                        selected = theme == preferences.appTheme,
+                    )
+                }.toPersistentList(),
+            repeatCount = preferences.repeatCount,
+            focusOptions =
+                listOf(10, 25, 50).map { minutes ->
+                    PreferenceOption(
+                        label = "$minutes mins",
+                        value = minutes,
+                        selected = minutes == preferences.focusMinutes,
+                    )
+                }.toPersistentList(),
+            breakOptions =
+                listOf(2, 5, 10).map { minutes ->
+                    PreferenceOption(
+                        label = "$minutes mins",
+                        value = minutes,
+                        selected = minutes == preferences.breakMinutes,
+                    )
+                }.toPersistentList(),
+            isLongBreakEnabled = preferences.longBreakEnabled,
+            longBreakAfterOptions =
+                listOf(6, 4, 2).map { count ->
+                    PreferenceOption(
+                        label = "$count focuses",
+                        value = count,
+                        selected = count == preferences.longBreakAfter,
+                        enabled = preferences.longBreakEnabled,
+                    )
+                }.toPersistentList(),
+            longBreakOptions =
+                listOf(4, 10, 20).map { minutes ->
+                    PreferenceOption(
+                        label = "$minutes mins",
+                        value = minutes,
+                        selected = minutes == preferences.longBreakMinutes,
+                        enabled = preferences.longBreakEnabled,
+                    )
+                }.toPersistentList(),
+            timeline =
+                TimelineUiModel(
+                    segments = BuildTimerSegmentsUseCase().invoke(0L, preferences).mapToTimelineSegmentsUi(),
+                    hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
+                ),
+            isLoading = false,
+        )
 
     val configState = previewPreferencesState.toConfigUiState()
     val appearanceState = previewPreferencesState.toAppearanceUiState()

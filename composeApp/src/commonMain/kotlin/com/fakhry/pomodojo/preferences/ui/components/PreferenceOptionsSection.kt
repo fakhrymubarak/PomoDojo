@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.preferences.ui.model.PreferenceOption
 import kotlinx.collections.immutable.ImmutableList
 
-
 @Composable
 fun <T> PreferenceOptionsCompose(
     modifier: Modifier = Modifier,
@@ -35,9 +34,10 @@ fun <T> PreferenceOptionsCompose(
     Column(modifier) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium.copy(
-                color = MaterialTheme.colorScheme.onBackground,
-            ),
+            style =
+                MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -66,21 +66,24 @@ private fun <T> PreferenceOptionChip(
 ) {
     val isSelected = option.selected
     val colorScheme = MaterialTheme.colorScheme
-    val backgroundColor = if (isSelected) {
-        colorScheme.secondary
-    } else {
-        colorScheme.surfaceVariant
-    }
-    val borderColor = if (isSelected) {
-        colorScheme.secondary
-    } else {
-        colorScheme.outline
-    }
-    val contentColor = if (isSelected) {
-        colorScheme.onSecondary
-    } else {
-        colorScheme.onSurface
-    }
+    val backgroundColor =
+        if (isSelected) {
+            colorScheme.secondary
+        } else {
+            colorScheme.surfaceVariant
+        }
+    val borderColor =
+        if (isSelected) {
+            colorScheme.secondary
+        } else {
+            colorScheme.outline
+        }
+    val contentColor =
+        if (isSelected) {
+            colorScheme.onSecondary
+        } else {
+            colorScheme.onSurface
+        }
     val alpha = if (option.enabled) 1f else 0.3f
 
     Surface(
@@ -92,10 +95,11 @@ private fun <T> PreferenceOptionChip(
     ) {
         Text(
             text = option.label,
-            style = MaterialTheme.typography.labelLarge.copy(
-                color = contentColor,
-                fontWeight = FontWeight.Medium,
-            ),
+            style =
+                MaterialTheme.typography.labelLarge.copy(
+                    color = contentColor,
+                    fontWeight = FontWeight.Medium,
+                ),
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
         )
     }

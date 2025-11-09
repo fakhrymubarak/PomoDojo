@@ -64,10 +64,11 @@ fun PomodoroTimerDecoration(
         // Outer ring stroke
         repeat(dotCount) { index ->
             val angle = (2 * PI * index / dotCount) - (PI / 2)
-            val dotCenter = Offset(
-                x = center.x + orbitRadius * cos(angle).toFloat(),
-                y = center.y + orbitRadius * sin(angle).toFloat(),
-            )
+            val dotCenter =
+                Offset(
+                    x = center.x + orbitRadius * cos(angle).toFloat(),
+                    y = center.y + orbitRadius * sin(angle).toFloat(),
+                )
             drawCircle(
                 color = Primary,
                 radius = dotRadius,
@@ -81,6 +82,7 @@ fun PomodoroTimerDecoration(
 @Composable
 fun PomodoroTimerDecorationPreview() {
     PomodoroTimerDecoration(
-        progressColor = Secondary, progress = 0.5f
+        progressColor = Secondary,
+        progress = 0.5f,
     )
 }

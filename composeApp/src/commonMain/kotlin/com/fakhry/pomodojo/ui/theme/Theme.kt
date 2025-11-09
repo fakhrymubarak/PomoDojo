@@ -11,63 +11,57 @@ import androidx.compose.runtime.remember
 /**
  * PomoDojo color schemes for dark and light themes.
  */
-private val DarkColorScheme = darkColorScheme(
-    primary = Primary,
-    onPrimary = DarkOnPrimary,
-    primaryContainer = Primary,
-    onPrimaryContainer = DarkOnPrimary,
+private val DarkColorScheme =
+    darkColorScheme(
+        primary = Primary,
+        onPrimary = DarkOnPrimary,
+        primaryContainer = Primary,
+        onPrimaryContainer = DarkOnPrimary,
+        secondary = Secondary,
+        onSecondary = DarkOnPrimary,
+        secondaryContainer = Secondary,
+        onSecondaryContainer = DarkOnPrimary,
+        background = DarkBackground,
+        onBackground = DarkOnSurface,
+        surface = DarkSurface,
+        onSurface = DarkOnSurface,
+        surfaceVariant = DarkSurfaceVariant,
+        onSurfaceVariant = DarkOnSurfaceVariant,
+        outline = DarkOutline,
+        outlineVariant = DarkOutline,
+        inverseSurface = LightSurface,
+        inverseOnSurface = LightOnSurface,
+        tertiary = Secondary,
+        onTertiary = DarkOnPrimary,
+        error = Primary,
+        onError = DarkOnPrimary,
+    )
 
-    secondary = Secondary,
-    onSecondary = DarkOnPrimary,
-    secondaryContainer = Secondary,
-    onSecondaryContainer = DarkOnPrimary,
-
-    background = DarkBackground,
-    onBackground = DarkOnSurface,
-
-    surface = DarkSurface,
-    onSurface = DarkOnSurface,
-    surfaceVariant = DarkSurfaceVariant,
-    onSurfaceVariant = DarkOnSurfaceVariant,
-    outline = DarkOutline,
-    outlineVariant = DarkOutline,
-    inverseSurface = LightSurface,
-    inverseOnSurface = LightOnSurface,
-    tertiary = Secondary,
-    onTertiary = DarkOnPrimary,
-
-    error = Primary,
-    onError = DarkOnPrimary,
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = Primary,
-    onPrimary = LightOnPrimary,
-    primaryContainer = Primary,
-    onPrimaryContainer = LightOnPrimary,
-
-    secondary = Secondary,
-    onSecondary = LightOnPrimary,
-    secondaryContainer = Secondary,
-    onSecondaryContainer = LightOnPrimary,
-
-    background = LightBackground,
-    onBackground = LightOnBackground,
-
-    surface = LightSurface,
-    onSurface = LightOnSurface,
-    surfaceVariant = LightSurfaceVariant,
-    onSurfaceVariant = LightOnSurfaceVariant,
-    outline = LightOutline,
-    outlineVariant = LightOutline,
-    inverseSurface = DarkSurface,
-    inverseOnSurface = DarkOnSurface,
-    tertiary = Secondary,
-    onTertiary = LightOnPrimary,
-
-    error = Primary,
-    onError = LightOnPrimary,
-)
+private val LightColorScheme =
+    lightColorScheme(
+        primary = Primary,
+        onPrimary = LightOnPrimary,
+        primaryContainer = Primary,
+        onPrimaryContainer = LightOnPrimary,
+        secondary = Secondary,
+        onSecondary = LightOnPrimary,
+        secondaryContainer = Secondary,
+        onSecondaryContainer = LightOnPrimary,
+        background = LightBackground,
+        onBackground = LightOnBackground,
+        surface = LightSurface,
+        onSurface = LightOnSurface,
+        surfaceVariant = LightSurfaceVariant,
+        onSurfaceVariant = LightOnSurfaceVariant,
+        outline = LightOutline,
+        outlineVariant = LightOutline,
+        inverseSurface = DarkSurface,
+        inverseOnSurface = DarkOnSurface,
+        tertiary = Secondary,
+        onTertiary = LightOnPrimary,
+        error = Primary,
+        onError = LightOnPrimary,
+    )
 
 /**
  * PomoDojo Theme
@@ -79,18 +73,20 @@ fun PomoDojoTheme(
     darkTheme: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val targetColorScheme = remember(darkTheme) {
-        if (darkTheme) DarkColorScheme else LightColorScheme
-    }
-    val animatedColorScheme = animateColorScheme(
-        targetScheme = targetColorScheme,
-        isLightScheme = !darkTheme,
-    )
+    val targetColorScheme =
+        remember(darkTheme) {
+            if (darkTheme) DarkColorScheme else LightColorScheme
+        }
+    val animatedColorScheme =
+        animateColorScheme(
+            targetScheme = targetColorScheme,
+            isLightScheme = !darkTheme,
+        )
 
     MaterialTheme(
         colorScheme = animatedColorScheme,
         typography = pomoDojoTypography(),
-        content = content
+        content = content,
     )
 }
 
@@ -112,19 +108,21 @@ private fun animateColorScheme(
     val onSecondary = animateColorAsState(targetScheme.onSecondary, label = "onSecondary").value
     val secondaryContainer =
         animateColorAsState(targetScheme.secondaryContainer, label = "secondaryContainer").value
-    val onSecondaryContainer = animateColorAsState(
-        targetScheme.onSecondaryContainer,
-        label = "onSecondaryContainer"
-    ).value
+    val onSecondaryContainer =
+        animateColorAsState(
+            targetScheme.onSecondaryContainer,
+            label = "onSecondaryContainer",
+        ).value
 
     val tertiary = animateColorAsState(targetScheme.tertiary, label = "tertiary").value
     val onTertiary = animateColorAsState(targetScheme.onTertiary, label = "onTertiary").value
     val tertiaryContainer =
         animateColorAsState(targetScheme.tertiaryContainer, label = "tertiaryContainer").value
-    val onTertiaryContainer = animateColorAsState(
-        targetScheme.onTertiaryContainer,
-        label = "onTertiaryContainer"
-    ).value
+    val onTertiaryContainer =
+        animateColorAsState(
+            targetScheme.onTertiaryContainer,
+            label = "onTertiaryContainer",
+        ).value
 
     val background = animateColorAsState(targetScheme.background, label = "background").value
     val onBackground = animateColorAsState(targetScheme.onBackground, label = "onBackground").value
@@ -150,10 +148,11 @@ private fun animateColorScheme(
     val onError = animateColorAsState(targetScheme.onError, label = "onError").value
     val errorContainer =
         animateColorAsState(targetScheme.errorContainer, label = "errorContainer").value
-    val onErrorContainer = animateColorAsState(
-        targetScheme.onErrorContainer,
-        label = "onErrorContainer"
-    ).value
+    val onErrorContainer =
+        animateColorAsState(
+            targetScheme.onErrorContainer,
+            label = "onErrorContainer",
+        ).value
 
     return if (isLightScheme) {
         lightColorScheme(

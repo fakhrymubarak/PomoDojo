@@ -36,7 +36,6 @@ data class ActiveSessionEntity(
     val pauseStartedAtEpochMs: Long?,
     @ColumnInfo(name = "sessionStatus")
     val sessionStatus: String,
-
     @ColumnInfo(name = "repeat_count")
     val repeatCount: Int,
     @ColumnInfo(name = "focus_minutes")
@@ -49,7 +48,6 @@ data class ActiveSessionEntity(
     val longBreakAfter: Int,
     @ColumnInfo(name = "long_break_minutes")
     val longBreakMinutes: Int,
-
     @ColumnInfo(name = "quote_id")
     val quoteId: String,
 )

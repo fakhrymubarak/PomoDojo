@@ -7,5 +7,6 @@ import com.fakhry.pomodojo.focus.domain.model.QuoteContent
  */
 interface QuoteRepository {
     suspend fun randomQuote(): QuoteContent
+
     suspend fun getById(id: String): QuoteContent
 }

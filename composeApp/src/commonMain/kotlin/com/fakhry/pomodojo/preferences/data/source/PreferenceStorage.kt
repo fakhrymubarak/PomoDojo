@@ -5,5 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface PreferenceStorage {
     val preferences: Flow<PreferencesDomain>
+
     suspend fun update(transform: (PreferencesDomain) -> PreferencesDomain)
 }

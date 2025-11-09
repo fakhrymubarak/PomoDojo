@@ -73,7 +73,7 @@ private val TooltipVerticalSpacing = 8.dp
  */
 @Composable
 fun FocusHistorySection(
-    modifier: Modifier= Modifier,
+    modifier: Modifier = Modifier,
     totalMinutes: Int,
     selectedYear: Int,
     availableYears: ImmutableList<Int>,
@@ -94,9 +94,10 @@ fun FocusHistorySection(
             FocusHistoryGraph(
                 modifier = Modifier.weight(1f),
                 selectedYear = selectedYear,
-                cells = remember(selectedYear, cells) {
-                    cells
-                },
+                cells =
+                    remember(selectedYear, cells) {
+                        cells
+                    },
             )
             Spacer(modifier = Modifier.width(16.dp))
             // Year Filter
@@ -109,20 +110,21 @@ fun FocusHistorySection(
     }
 }
 
-
 @Composable
 private fun StatisticsCard(totalMinutes: Int) {
     val totalMinutesText = stringResource(Res.string.focus_history_total_minutes, totalMinutes)
     Text(
         text = totalMinutesText,
-        style = MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics {
-                contentDescription = totalMinutesText
-            },
+        style =
+            MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .semantics {
+                    contentDescription = totalMinutesText
+                },
     )
 }
 
@@ -143,32 +145,38 @@ private fun YearFilters(
                 stringResource(Res.string.focus_history_switch_year_description, year)
             val isSelected = year == selectedYear
             Box(
-                modifier = Modifier.background(
-                    color = if (isSelected) {
-                        MaterialTheme.colorScheme.secondary
-                    } else {
-                        MaterialTheme.colorScheme.surfaceVariant
-                    },
-                    shape = RoundedCornerShape(16.dp)
-                ).clickable { onSelectYear(year) }.padding(horizontal = 16.dp, vertical = 8.dp)
-                    .semantics {
-                        role = Role.Button
-                        contentDescription = if (isSelected) {
-                            selectedDescription
-                        } else {
-                            switchDescription
-                        }
-                    }) {
+                modifier =
+                    Modifier.background(
+                        color =
+                            if (isSelected) {
+                                MaterialTheme.colorScheme.secondary
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            },
+                        shape = RoundedCornerShape(16.dp),
+                    ).clickable { onSelectYear(year) }.padding(horizontal = 16.dp, vertical = 8.dp)
+                        .semantics {
+                            role = Role.Button
+                            contentDescription =
+                                if (isSelected) {
+                                    selectedDescription
+                                } else {
+                                    switchDescription
+                                }
+                        },
+            ) {
                 Text(
                     text = year.toString(),
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        color = if (isSelected) {
-                            MaterialTheme.colorScheme.onSecondary
-                        } else {
-                            MaterialTheme.colorScheme.onSurface
-                        },
-                    ),
+                    style =
+                        MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                            color =
+                                if (isSelected) {
+                                    MaterialTheme.colorScheme.onSecondary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                },
+                        ),
                 )
             }
         }
@@ -188,9 +196,10 @@ private fun FocusHistoryGraph(
     val cellSize = 24.dp
     val cellSpacing = 8.dp
     val flattenedCells = remember(cells) { cells.flatten() }
-    val rows = remember(flattenedCells.size) {
-        if (flattenedCells.isEmpty()) 0 else (flattenedCells.size + columns - 1) / columns
-    }
+    val rows =
+        remember(flattenedCells.size) {
+            if (flattenedCells.isEmpty()) 0 else (flattenedCells.size + columns - 1) / columns
+        }
     val gridWidth = cellSize * columns + cellSpacing * (columns - 1)
     val gridHeight = if (rows <= 0) 0.dp else cellSize * rows + cellSpacing * (rows - 1)
 
@@ -198,13 +207,14 @@ private fun FocusHistoryGraph(
         columns = GridCells.Fixed(columns),
         horizontalArrangement = Arrangement.spacedBy(cellSpacing),
         verticalArrangement = Arrangement.spacedBy(cellSpacing),
-        modifier = modifier
-            .width(gridWidth)
-            .height(gridHeight)
-            .semantics {
-                role = Role.Image
-                contentDescription = semanticDescription
-            },
+        modifier =
+            modifier
+                .width(gridWidth)
+                .height(gridHeight)
+                .semantics {
+                    role = Role.Image
+                    contentDescription = semanticDescription
+                },
         contentPadding = PaddingValues(0.dp),
         userScrollEnabled = false,
     ) {
@@ -232,16 +242,18 @@ private fun FocusHistoryCellItem(
 
         is HistoryCell.Text -> {
             Box(
-                modifier = Modifier
-                    .size(cellSize)
-                    .semantics { contentDescription = cell.text },
+                modifier =
+                    Modifier
+                        .size(cellSize)
+                        .semantics { contentDescription = cell.text },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = cell.text,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ),
+                    style =
+                        MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        ),
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                 )
@@ -250,11 +262,12 @@ private fun FocusHistoryCellItem(
 
         is HistoryCell.GraphLevel -> {
             val color = contributionColorMap[cell.intensityLevel] ?: GraphLevel0
-            val tooltipText = stringResource(
-                Res.string.focus_history_cell_tooltip,
-                cell.focusMinutes,
-                cell.breakMinutes,
-            )
+            val tooltipText =
+                stringResource(
+                    Res.string.focus_history_cell_tooltip,
+                    cell.focusMinutes,
+                    cell.breakMinutes,
+                )
             var showTooltip by remember(cell.focusMinutes, cell.breakMinutes) {
                 mutableStateOf(false)
             }
@@ -268,48 +281,53 @@ private fun FocusHistoryCellItem(
             }
 
             Box(
-                modifier = Modifier
-                    .size(cellSize)
-                    .combinedClickable(
-                        onClick = {
-                            hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
-                            showTooltip = true
-                        },
-                    )
-                    .semantics { contentDescription = tooltipText }
-                    .focusable()
+                modifier =
+                    Modifier
+                        .size(cellSize)
+                        .combinedClickable(
+                            onClick = {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                                showTooltip = true
+                            },
+                        )
+                        .semantics { contentDescription = tooltipText }
+                        .focusable(),
             ) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            color = color,
-                            shape = RoundedCornerShape(2.dp),
-                        ),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .background(
+                                color = color,
+                                shape = RoundedCornerShape(2.dp),
+                            ),
                 )
 
                 if (showTooltip) {
                     val density = LocalDensity.current
-                    val positionProvider = remember(density) {
-                        TooltipPositionProvider(density)
-                    }
+                    val positionProvider =
+                        remember(density) {
+                            TooltipPositionProvider(density)
+                        }
 
                     Popup(
                         popupPositionProvider = positionProvider,
                         onDismissRequest = { showTooltip = false },
-                        properties = PopupProperties(
-                            focusable = false,
-                            dismissOnBackPress = false,
-                            dismissOnClickOutside = true,
-                        ),
+                        properties =
+                            PopupProperties(
+                                focusable = false,
+                                dismissOnBackPress = false,
+                                dismissOnClickOutside = true,
+                            ),
                     ) {
                         Box(
-                            modifier = Modifier
-                                .background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(6.dp),
-                                )
-                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            modifier =
+                                Modifier
+                                    .background(
+                                        color = MaterialTheme.colorScheme.surfaceVariant,
+                                        shape = RoundedCornerShape(6.dp),
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 4.dp),
                         ) {
                             Text(
                                 text = tooltipText,
@@ -327,7 +345,6 @@ private fun FocusHistoryCellItem(
 private class TooltipPositionProvider(
     private val density: Density,
 ) : PopupPositionProvider {
-
     override fun calculatePosition(
         anchorBounds: IntRect,
         windowSize: IntSize,
@@ -335,25 +352,28 @@ private class TooltipPositionProvider(
         popupContentSize: IntSize,
     ): IntOffset {
         val spacing = with(density) { TooltipVerticalSpacing.roundToPx() }
-        val anchorStart = when (layoutDirection) {
-            LayoutDirection.Ltr -> anchorBounds.left
-            LayoutDirection.Rtl -> anchorBounds.right - anchorBounds.width
-        }
+        val anchorStart =
+            when (layoutDirection) {
+                LayoutDirection.Ltr -> anchorBounds.left
+                LayoutDirection.Rtl -> anchorBounds.right - anchorBounds.width
+            }
         val preferredX = anchorStart + (anchorBounds.width - popupContentSize.width) / 2
         val maxX = windowSize.width - popupContentSize.width
-        val resolvedX = when {
-            maxX <= 0 -> 0
-            else -> preferredX.coerceIn(0, maxX)
-        }
+        val resolvedX =
+            when {
+                maxX <= 0 -> 0
+                else -> preferredX.coerceIn(0, maxX)
+            }
 
         val preferredY = anchorBounds.top - popupContentSize.height - spacing
         val fallbackY = anchorBounds.bottom + spacing
         val candidateY = if (preferredY >= 0) preferredY else fallbackY
         val maxY = windowSize.height - popupContentSize.height
-        val resolvedY = when {
-            maxY <= 0 -> candidateY.coerceAtLeast(0)
-            else -> candidateY.coerceIn(0, maxY)
-        }
+        val resolvedY =
+            when {
+                maxY <= 0 -> candidateY.coerceAtLeast(0)
+                else -> candidateY.coerceIn(0, maxY)
+            }
 
         return IntOffset(resolvedX, resolvedY)
     }
