@@ -1,6 +1,5 @@
 package com.fakhry.pomodojo.focus.data.repository
 
-import com.fakhry.pomodojo.focus.data.db.FocusSessionDao
 import com.fakhry.pomodojo.focus.data.db.PomoDojoRoomDatabase
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionEntity
 import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
@@ -14,7 +13,8 @@ import kotlin.time.ExperimentalTime
 class RoomPomodoroSessionRepository(
     database: PomoDojoRoomDatabase,
 ) : PomodoroSessionRepository {
-    private val activeDao: FocusSessionDao = database.focusSessionDao()
+    private val activeDao = database.focusSessionDao()
+    private val historyDao = database.historySessionDao()
 
     override suspend fun hasActiveSession(): Boolean = activeDao.hasActiveSession()
 
