@@ -1,11 +1,15 @@
 package com.fakhry.pomodojo.dashboard.viewmodel
 
+import com.fakhry.pomodojo.dashboard.domain.repository.PomodoroHistoryRepository
 import com.fakhry.pomodojo.dashboard.ui.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.focus.domain.model.ActiveFocusSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
+import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
+import com.fakhry.pomodojo.ui.state.DomainResult
+import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +27,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DashboardViewModelTest {
@@ -43,8 +49,18 @@ class DashboardViewModelTest {
         runTest(dispatcher) {
             val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 30))
             val focusRepository = FakeFocusRepository(hasActive = false)
+            val historyRepository = FakeHistoryRepository()
+            val dispatcherProvider = DispatcherProvider(dispatcher)
+            val currentTimeProvider = FakeCurrentTimeProvider()
 
-            val viewModel = DashboardViewModel(repository, focusRepository)
+            val viewModel =
+                DashboardViewModel(
+                    historyRepo = historyRepository,
+                    repository = repository,
+                    focusRepository = focusRepository,
+                    dispatcher = dispatcherProvider,
+                    currentTimeProvider = currentTimeProvider,
+                )
             advanceUntilIdle()
 
             assertEquals(30, viewModel.prefState.value.focusMinutes)
@@ -56,8 +72,18 @@ class DashboardViewModelTest {
         runTest(dispatcher) {
             val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 25))
             val focusRepository = FakeFocusRepository(hasActive = true)
+            val historyRepository = FakeHistoryRepository()
+            val dispatcherProvider = DispatcherProvider(dispatcher)
+            val currentTimeProvider = FakeCurrentTimeProvider()
 
-            val viewModel = DashboardViewModel(repository, focusRepository)
+            val viewModel =
+                DashboardViewModel(
+                    historyRepo = historyRepository,
+                    repository = repository,
+                    focusRepository = focusRepository,
+                    dispatcher = dispatcherProvider,
+                    currentTimeProvider = currentTimeProvider,
+                )
             advanceUntilIdle()
 
             repository.emit(repository.current.copy(focusMinutes = 45))
@@ -130,5 +156,16 @@ class DashboardViewModelTest {
         override suspend fun clearActiveSession() {
             hasActive = false
         }
+    }
+
+    private class FakeHistoryRepository : PomodoroHistoryRepository {
+        override fun getHistory(year: Int) = DomainResult.Error("not implemented", -1)
+    }
+
+    @OptIn(ExperimentalTime::class)
+    private class FakeCurrentTimeProvider : CurrentTimeProvider {
+        override fun now(): Long = 0L
+
+        override fun nowInstant(): Instant = Instant.fromEpochMilliseconds(0)
     }
 }
