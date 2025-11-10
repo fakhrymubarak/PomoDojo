@@ -50,6 +50,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.fakhry.pomodojo.dashboard.model.HistoryCell
+import com.fakhry.pomodojo.dashboard.model.HistorySectionUi
 import com.fakhry.pomodojo.dashboard.model.contributionColorMap
 import com.fakhry.pomodojo.dashboard.model.previewDashboardState
 import com.fakhry.pomodojo.generated.resources.Res
@@ -72,19 +73,16 @@ private val TooltipVerticalSpacing = 8.dp
  * Contains statistics, year filter, and activity graph
  */
 @Composable
-fun FocusHistorySection(
+fun PomodoroHistorySection(
     modifier: Modifier = Modifier,
-    totalMinutes: Int,
-    selectedYear: Int,
-    availableYears: ImmutableList<Int>,
-    cells: ImmutableList<ImmutableList<HistoryCell>>,
+    historyState: HistorySectionUi,
     onSelectYear: (Int) -> Unit = {},
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        StatisticsCard(totalMinutes = totalMinutes)
+        StatisticsCard(totalMinutes = historyState.focusMinutesThisYear)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -93,17 +91,16 @@ fun FocusHistorySection(
             // Focus History Graph
             FocusHistoryGraph(
                 modifier = Modifier.weight(1f),
-                selectedYear = selectedYear,
-                cells =
-                    remember(selectedYear, cells) {
-                        cells
-                    },
+                selectedYear = historyState.selectedYear,
+                cells = remember(historyState.selectedYear, historyState.cells) {
+                    historyState.cells
+                },
             )
             Spacer(modifier = Modifier.width(16.dp))
             // Year Filter
             YearFilters(
-                years = availableYears,
-                selectedYear = selectedYear,
+                years = historyState.availableYears,
+                selectedYear = historyState.selectedYear,
                 onSelectYear = onSelectYear,
             )
         }
@@ -384,11 +381,8 @@ private class TooltipPositionProvider(
 fun FocusHistorySectionPreview() {
     val previewState = previewDashboardState
     PomoDojoTheme {
-        FocusHistorySection(
-            totalMinutes = previewState.historySection.focusMinutesThisYear,
-            selectedYear = previewState.historySection.selectedYear,
-            availableYears = previewState.historySection.availableYears,
-            cells = previewState.historySection.cells,
+        PomodoroHistorySection(
+            historyState = previewState.historySection,
         )
     }
 }

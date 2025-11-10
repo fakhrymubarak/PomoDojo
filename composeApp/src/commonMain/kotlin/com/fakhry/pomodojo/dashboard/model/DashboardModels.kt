@@ -7,7 +7,6 @@ import com.fakhry.pomodojo.ui.theme.GraphLevel3
 import com.fakhry.pomodojo.ui.theme.GraphLevel4
 import com.fakhry.pomodojo.ui.theme.GraphLevel5
 import com.fakhry.pomodojo.ui.theme.GraphLevel6
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.random.Random
 
@@ -18,26 +17,6 @@ data class DashboardState(
     val timerMinutes: Int,
     val historySection: HistorySectionUi,
 )
-
-data class HistorySectionUi(
-    val focusMinutesThisYear: Int,
-    val selectedYear: Int,
-    val availableYears: ImmutableList<Int>,
-    val cells: ImmutableList<ImmutableList<HistoryCell>>,
-)
-
-sealed class HistoryCell {
-    data class Text(val text: String) : HistoryCell()
-
-    data object Empty : HistoryCell()
-
-    data class GraphLevel(
-        val intensityLevel: Int,
-        val focusMinutes: Int,
-        val breakMinutes: Int,
-    ) : HistoryCell()
-}
-
 /**
  * Mapping from intensity level to color hex encoded in the specification.
  */
