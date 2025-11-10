@@ -2,6 +2,7 @@ package com.fakhry.pomodojo.dashboard.domain.model
 
 data class PomodoroHistoryDomain(
     val focusMinutesThisYear: Int,
+    val availableYears: List<Int>,
     val histories: List<HistoryDomain>,
 )
 

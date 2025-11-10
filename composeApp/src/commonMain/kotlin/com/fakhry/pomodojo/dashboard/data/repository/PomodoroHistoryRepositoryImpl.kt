@@ -37,6 +37,7 @@ class PomodoroHistoryRepositoryImpl : PomodoroHistoryRepository {
         return DomainResult.Success(
             PomodoroHistoryDomain(
                 focusMinutesThisYear = focusMinutesThisYear,
+                availableYears = listOf(2025, 2024, 2023),
                 histories = filtered
             )
         )

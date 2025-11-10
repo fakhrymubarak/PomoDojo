@@ -8,19 +8,23 @@ import com.fakhry.pomodojo.dashboard.ui.model.intensityLevelForMinutes
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
+import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.plus
 
 fun PomodoroHistoryDomain.mapToHistorySectionUi(
     selectedYear: Int,
+    currentDate: LocalDate? = null,
 ): HistorySectionUi {
     val parsedEntries = histories.mapNotNull { it.toHistoryEntryOrNull() }.sortedBy { it.date }
-    val historyCells = buildHistoryCells(parsedEntries, selectedYear)
+    val historyCells = buildHistoryCells(parsedEntries, selectedYear, currentDate)
 
     return HistorySectionUi(
         focusMinutesThisYear = focusMinutesThisYear,
         selectedYear = selectedYear,
-        availableYears = persistentListOf(2023, 2024, 2025),
+        availableYears = availableYears.toPersistentList(),
         cells = historyCells,
     )
 }
@@ -28,38 +32,55 @@ fun PomodoroHistoryDomain.mapToHistorySectionUi(
 private fun buildHistoryCells(
     entries: List<HistoryEntry>,
     year: Int,
+    currentDate: LocalDate?,
 ): ImmutableList<ImmutableList<HistoryCell>> {
     val rows = mutableListOf<ImmutableList<HistoryCell>>()
     rows += dayLabelRow()
 
     val entriesByDate = entries.associateBy { it.date }
-
-    Month.entries.toTypedArray().sortedByDescending { it.ordinal }.forEach { month ->
-        val dailyCells = generateDatesForMonth(year, month).map { date ->
-            entriesByDate[date]?.toGraphCell() ?: EmptyGraphCell
+    val orderedDates = buildOrderedDates(year, currentDate)
+    if (orderedDates.isEmpty()) {
+        return rows.toPersistentList()
+    }
+    val startPadding =
+        orderedDates.first().dayOfWeek.isoDayNumber.let { iso ->
+            (iso - 1).coerceAtLeast(0)
         }
-        val weeklyCells = dailyCells.chunked(7)
-        weeklyCells.forEachIndexed { index, chunk ->
-            val paddedChunk = if (chunk.size < 7) {
-                chunk + List(7 - chunk.size) { EmptyGraphCell }
-            } else {
-                chunk
+    val paddedDates =
+        buildList {
+            repeat(startPadding) { add(null) }
+            addAll(orderedDates)
+            val remainder = size % 7
+            if (remainder != 0) {
+                repeat(7 - remainder) { add(null) }
             }
-            val row = buildList {
-                add(
-                    if (index == 0) {
-                        HistoryCell.Text(month.toLabel())
-                    } else {
-                        HistoryCell.Empty
-                    },
-                )
-                addAll(paddedChunk)
-            }.toPersistentList()
-            rows += row
         }
+
+    val weeklyCells = paddedDates.chunked(7)
+    weeklyCells.asReversed().forEach { week ->
+        rows += buildWeekRow(week, entriesByDate)
     }
 
     return rows.toPersistentList()
+}
+
+private fun buildWeekRow(
+    week: List<LocalDate?>,
+    entriesByDate: Map<LocalDate, HistoryEntry>,
+): ImmutableList<HistoryCell> {
+    val monthLabel = week.firstNotNullOfOrNull { date ->
+        date?.takeIf { it.day == 1 }?.month?.toLabel()
+    }
+    val dayCells = week.map { date ->
+        when (date) {
+            null -> HistoryCell.Empty
+            else -> entriesByDate[date]?.toGraphCell() ?: date.toEmptyGraphCell()
+        }
+    }
+    return buildList {
+        add(monthLabel?.let(HistoryCell::Text) ?: HistoryCell.Empty)
+        addAll(dayCells)
+    }.toPersistentList()
 }
 
 private fun dayLabelRow(): ImmutableList<HistoryCell> = persistentListOf(
@@ -95,40 +116,34 @@ private fun HistoryEntry.toGraphCell(): HistoryCell.GraphLevel = HistoryCell.Gra
     breakMinutes = breakMinutes,
 )
 
-private fun LocalDate.formatToDdMmm(): String {
-    val date = this.day
-    val month = this.month.toLabel()
-    return "$date $month"
-}
+private fun LocalDate.toEmptyGraphCell(): HistoryCell.GraphLevel = HistoryCell.GraphLevel(
+    intensityLevel = 0,
+    focusMinutes = 0,
+    breakMinutes = 0,
+    date = formatToDdMmm(),
+)
 
-private fun generateDatesForMonth(
+private fun LocalDate.formatToDdMmm(): String = "$day ${month.toLabel()}"
+
+private fun buildOrderedDates(
     year: Int,
-    month: Month,
+    currentDate: LocalDate?,
 ): List<LocalDate> {
-    val daysInMonth = when (month) {
-        Month.JANUARY,
-        Month.MARCH,
-        Month.MAY,
-        Month.JULY,
-        Month.AUGUST,
-        Month.OCTOBER,
-        Month.DECEMBER,
-            -> 31
-
-        Month.APRIL,
-        Month.JUNE,
-        Month.SEPTEMBER,
-        Month.NOVEMBER,
-            -> 30
-
-        Month.FEBRUARY -> if (isLeapYear(year)) 29 else 28
+    val start = LocalDate(year, Month.JANUARY, 1)
+    val yearEnd = LocalDate(year, Month.DECEMBER, 31)
+    val lastDate = currentDate?.takeIf { it.year == year }?.coerceAtMost(yearEnd) ?: yearEnd
+    if (lastDate < start) {
+        return emptyList()
     }
-    return (daysInMonth downTo 1).map { day ->
-        LocalDate(year = year, month = month.ordinal + 1, day = day)
+
+    val dates = mutableListOf<LocalDate>()
+    var cursor = start
+    while (cursor <= lastDate) {
+        dates += cursor
+        cursor = cursor.plus(DatePeriod(days = 1))
     }
+    return dates
 }
-
-private fun isLeapYear(year: Int): Boolean = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
 
 private fun String.toLocalDateOrNull(): LocalDate? {
     val normalized = trim()
@@ -157,5 +172,3 @@ private fun String.toLocalDateOrNull(): LocalDate? {
 }
 
 private fun Month.toLabel(): String = name.take(3).lowercase().replaceFirstChar { it.uppercase() }
-
-private val EmptyGraphCell = HistoryCell.GraphLevel(0, 0, 0)
