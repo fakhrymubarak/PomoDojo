@@ -22,7 +22,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.dashboard.components.DashboardHeader
-import com.fakhry.pomodojo.dashboard.components.FocusHistorySection
+import com.fakhry.pomodojo.dashboard.components.PomodoroHistorySection
 import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
 import com.fakhry.pomodojo.dashboard.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.generated.resources.Res
@@ -83,12 +83,9 @@ fun DashboardScreen(
             }
 
             // Focus History Section
-            FocusHistorySection(
+            PomodoroHistorySection(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                totalMinutes = historyState.focusMinutesThisYear,
-                selectedYear = historyState.selectedYear,
-                availableYears = historyState.availableYears,
-                cells = historyState.cells,
+                historyState = historyState,
                 onSelectYear = viewModel::selectYear,
             )
         }
