@@ -23,12 +23,6 @@ data class TimelineDomain(
     val hourSplits: List<Int> = emptyList(),
 )
 
-sealed class TimerStatusDomain {
-    object Initial : TimerStatusDomain()
-
-    object Completed : TimerStatusDomain()
-
-    data class Running(val startedAtEpochMs: Long = 0L) : TimerStatusDomain()
-
-    data class Paused(val elapsedPauseEpochMs: Long = 0L) : TimerStatusDomain()
+enum class TimerStatusDomain {
+    Initial, Completed, Running, Paused
 }

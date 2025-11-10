@@ -113,8 +113,8 @@ fun PomodoroSessionScreen(
 @Composable
 private fun PomodoroSessionContent(
     state: PomodoroSessionUiState,
-    onTogglePause: () -> Unit,
-    onEnd: () -> Unit,
+    onTogglePause: () -> Unit = {},
+    onEnd: () -> Unit = {},
 ) {
     val activeSegment = state.activeSegment
     Surface(
@@ -145,7 +145,7 @@ private fun PomodoroSessionContent(
             )
             Spacer(modifier = Modifier.height(32.dp))
             FocusControls(
-                isTimerRunning = activeSegment.timerStatus is TimerStatusDomain.Running,
+                isTimerRunning = activeSegment.timerStatus == TimerStatusDomain.Running,
                 onTogglePause = onTogglePause,
                 onEnd = onEnd,
             )
@@ -371,10 +371,6 @@ private fun PomodoroSessionContentPreview() {
         )
 
     PomoDojoTheme {
-        PomodoroSessionContent(
-            state = state,
-            onTogglePause = {},
-            onEnd = {},
-        )
+        PomodoroSessionContent(state = state)
     }
 }
