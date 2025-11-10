@@ -13,6 +13,7 @@ class HistoryGraphMapperTest {
     private val historyDomain =
         PomodoroHistoryDomain(
             focusMinutesThisYear = 0,
+            availableYears = emptyList(),
             histories =
                 listOf(
                     HistoryDomain(date = "2024-01-03", focusMinutes = 25, breakMinutes = 5),
@@ -113,6 +114,7 @@ class HistoryGraphMapperTest {
         val domain =
             PomodoroHistoryDomain(
                 focusMinutesThisYear = 0,
+                availableYears = listOf(2023),
                 histories =
                     listOf(
                         HistoryDomain(

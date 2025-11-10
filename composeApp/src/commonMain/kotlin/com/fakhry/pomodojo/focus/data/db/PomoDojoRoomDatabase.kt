@@ -9,7 +9,7 @@ import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
 
 @Database(
     entities = [ActiveSessionEntity::class, HistorySessionEntity::class],
-    version = 2,
+    version = 1,
     exportSchema = true,
 )
 @ConstructedBy(PomoDojoRoomDatabaseConstructor::class)
@@ -20,7 +20,7 @@ abstract class PomoDojoRoomDatabase : RoomDatabase() {
 }
 
 // The Room compiler generates the `actual` implementations.
-@Suppress("KotlinNoActualForExpect")
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect object PomoDojoRoomDatabaseConstructor : RoomDatabaseConstructor<PomoDojoRoomDatabase> {
     override fun initialize(): PomoDojoRoomDatabase
 }
