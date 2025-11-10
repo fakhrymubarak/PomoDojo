@@ -49,10 +49,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
-import com.fakhry.pomodojo.dashboard.model.HistoryCell
-import com.fakhry.pomodojo.dashboard.model.HistorySectionUi
-import com.fakhry.pomodojo.dashboard.model.contributionColorMap
-import com.fakhry.pomodojo.dashboard.model.previewDashboardState
+import com.fakhry.pomodojo.dashboard.ui.model.HistoryCell
+import com.fakhry.pomodojo.dashboard.ui.model.HistorySectionUi
+import com.fakhry.pomodojo.dashboard.ui.model.contributionColorMap
+import com.fakhry.pomodojo.dashboard.ui.model.previewDashboardState
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.focus_history_cell_tooltip
 import com.fakhry.pomodojo.generated.resources.focus_history_graph_content_description
@@ -262,6 +262,7 @@ private fun FocusHistoryCellItem(
             val tooltipText =
                 stringResource(
                     Res.string.focus_history_cell_tooltip,
+                    cell.date,
                     cell.focusMinutes,
                     cell.breakMinutes,
                 )

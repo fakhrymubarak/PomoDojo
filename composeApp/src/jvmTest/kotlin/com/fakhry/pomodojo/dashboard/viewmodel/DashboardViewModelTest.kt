@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.dashboard.viewmodel
 
+import com.fakhry.pomodojo.dashboard.ui.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.focus.domain.model.ActiveFocusSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme

@@ -8,7 +8,7 @@
     <string name="focus_history_selected_year_description">Viewing activity for %1$d</string>
     <string name="focus_history_switch_year_description">Switch to activity from %1$d</string>
     <string name="focus_history_graph_content_description">Focus history activity graph for %1$d</string>
-    <string name="focus_history_cell_tooltip">%1$d minutes focus with %2$d minutes break</string>
+    <string name="focus_history_cell_tooltip">%1$s, %2$d minutes focus with %3$d minutes break</string>
     <string name="pomodoro_timer_content_description">Timer set to %1$d minutes</string>
     <string name="pomodoro_timer_start">Start Pomodoro</string>
 
