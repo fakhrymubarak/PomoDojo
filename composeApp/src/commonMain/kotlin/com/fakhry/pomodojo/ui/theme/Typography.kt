@@ -39,68 +39,68 @@ fun pomoDojoTypography(): Typography {
     return Typography(
         // Headline 1 - Screen titles, major headings
         headlineLarge =
-            TextStyle(
-                // TODO: Replace with Plus Jakarta Sans when font is added
-                fontFamily = plusJakartaFamily,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 24.sp,
-                lineHeight = 32.sp,
-            ),
+        TextStyle(
+            // TODO: Replace with Plus Jakarta Sans when font is added
+            fontFamily = plusJakartaFamily,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 24.sp,
+            lineHeight = 32.sp,
+        ),
         // Headline 2 - Section titles, dialog titles
         headlineMedium =
-            TextStyle(
-                fontFamily = plusJakartaFamily,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-            ),
+        TextStyle(
+            fontFamily = plusJakartaFamily,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+        ),
         // Large display - Timer display
         displayLarge =
-            TextStyle(
-                fontFamily = plusJakartaFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 56.sp,
-                lineHeight = 64.sp,
-            ),
+        TextStyle(
+            fontFamily = plusJakartaFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 56.sp,
+            lineHeight = 64.sp,
+        ),
         // Title Medium - Card titles
         titleMedium =
-            TextStyle(
-                fontFamily = plusJakartaFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
-            ),
+        TextStyle(
+            fontFamily = plusJakartaFamily,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+        ),
         // Label Large - Button text (TextBold12)
         labelLarge =
-            TextStyle(
-                fontFamily = plusJakartaFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
-            ),
+        TextStyle(
+            fontFamily = plusJakartaFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+        ),
         // Body Medium - Regular body text (Regular12)
         bodyMedium =
-            TextStyle(
-                fontFamily = plusJakartaFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
-            ),
+        TextStyle(
+            fontFamily = plusJakartaFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+        ),
         // Body Small - Small body text (Regular10)
         bodySmall =
-            TextStyle(
-                fontFamily = plusJakartaFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 10.sp,
-                lineHeight = 16.sp,
-            ),
+        TextStyle(
+            fontFamily = plusJakartaFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 10.sp,
+            lineHeight = 16.sp,
+        ),
         // Label Small - Small labels, graph labels (Regular8)
         labelSmall =
-            TextStyle(
-                fontFamily = plusJakartaFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 8.sp,
-                lineHeight = 12.sp,
-            ),
+        TextStyle(
+            fontFamily = plusJakartaFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 8.sp,
+            lineHeight = 12.sp,
+        ),
     )
 }

@@ -6,8 +6,4 @@ data class PomodoroHistoryDomain(
     val histories: List<HistoryDomain>,
 )
 
-data class HistoryDomain(
-    val date: String,
-    val focusMinutes: Int,
-    val breakMinutes: Int,
-)
+data class HistoryDomain(val date: String, val focusMinutes: Int, val breakMinutes: Int)

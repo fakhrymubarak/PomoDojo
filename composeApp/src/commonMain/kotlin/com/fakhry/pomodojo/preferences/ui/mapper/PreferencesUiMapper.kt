@@ -20,20 +20,22 @@ fun PreferencesDomain.mapToUiModel(
 ) = this.run {
     val longBreakEnabled = longBreakEnabled
     val themeOptions =
-        AppTheme.entries.map { theme ->
-            PreferenceOption(
-                label = theme.displayName,
-                value = theme,
-                selected = appTheme == theme,
-            )
-        }.toPersistentList()
+        AppTheme.entries
+            .map { theme ->
+                PreferenceOption(
+                    label = theme.displayName,
+                    value = theme,
+                    selected = appTheme == theme,
+                )
+            }.toPersistentList()
 
     return@run PreferencesUiModel(
         selectedTheme = appTheme,
         themeOptions = themeOptions,
         repeatCount = repeatCount,
         focusOptions =
-            FOCUS_OPTIONS.map { minutes ->
+        FOCUS_OPTIONS
+            .map { minutes ->
                 PreferenceOption(
                     label = "$minutes mins",
                     value = minutes,
@@ -41,7 +43,8 @@ fun PreferencesDomain.mapToUiModel(
                 )
             }.toPersistentList(),
         breakOptions =
-            BREAK_OPTIONS.map { minutes ->
+        BREAK_OPTIONS
+            .map { minutes ->
                 PreferenceOption(
                     label = "$minutes mins",
                     value = minutes,
@@ -50,7 +53,8 @@ fun PreferencesDomain.mapToUiModel(
             }.toPersistentList(),
         isLongBreakEnabled = longBreakEnabled,
         longBreakAfterOptions =
-            LONG_BREAK_AFTER.map { count ->
+        LONG_BREAK_AFTER
+            .map { count ->
                 PreferenceOption(
                     label = "$count focuses",
                     value = count,
@@ -59,7 +63,8 @@ fun PreferencesDomain.mapToUiModel(
                 )
             }.toPersistentList(),
         longBreakOptions =
-            LONG_BREAK_MINUTES.map { minutes ->
+        LONG_BREAK_MINUTES
+            .map { minutes ->
                 PreferenceOption(
                     label = "$minutes mins",
                     value = minutes,
@@ -68,10 +73,10 @@ fun PreferencesDomain.mapToUiModel(
                 )
             }.toPersistentList(),
         timeline =
-            TimelineUiModel(
-                segments = timelineBuilder(this).mapToTimelineSegmentsUi(),
-                hourSplits = hourSplitter(this).toPersistentList(),
-            ),
+        TimelineUiModel(
+            segments = timelineBuilder(this).mapToTimelineSegmentsUi(),
+            hourSplits = hourSplitter(this).toPersistentList(),
+        ),
         isLoading = false,
     )
 }

@@ -81,7 +81,8 @@ class BuildFocusTimelineUseCaseTest {
 
         val segments = timelineBuilder(0L, preferences)
         val longBreaks =
-            segments.withIndex()
+            segments
+                .withIndex()
                 .filter { it.value.type == TimerType.LONG_BREAK }
                 .map { it.index }
 

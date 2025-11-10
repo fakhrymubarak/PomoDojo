@@ -9,7 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import okio.Path.Companion.toPath
 
-internal actual fun provideDataStore(): DataStore<Preferences> = AndroidPreferencesDataStoreProvider.dataStore
+internal actual fun provideDataStore(): DataStore<Preferences> =
+    AndroidPreferencesDataStoreProvider.dataStore
 
 fun initAndroidPreferenceStorage(context: Context) {
     AndroidPreferencesDataStoreProvider.initialize(context.applicationContext)
@@ -27,7 +28,10 @@ private object AndroidPreferencesDataStoreProvider {
         PreferenceDataStoreFactory.createWithPath(
             scope = scope,
             produceFile = {
-                appContext.filesDir.resolve(PREFERENCES_FILE_NAME).absolutePath.toPath()
+                appContext.filesDir
+                    .resolve(PREFERENCES_FILE_NAME)
+                    .absolutePath
+                    .toPath()
             },
         )
     }

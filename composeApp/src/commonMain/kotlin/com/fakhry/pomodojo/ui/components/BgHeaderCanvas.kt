@@ -68,9 +68,9 @@ fun BgHeaderCanvasPreview() {
                 modifier = Modifier.padding(16.dp),
                 text = stringResource(Res.string.dashboard_header_title),
                 style =
-                    MaterialTheme.typography.headlineMedium.copy(
-                        color = MaterialTheme.colorScheme.onSecondary,
-                    ),
+                MaterialTheme.typography.headlineMedium.copy(
+                    color = MaterialTheme.colorScheme.onSecondary,
+                ),
             )
         }
     }

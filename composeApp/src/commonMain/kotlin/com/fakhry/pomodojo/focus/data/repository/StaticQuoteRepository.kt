@@ -37,12 +37,11 @@ class StaticQuoteRepository : QuoteRepository {
             ),
         )
 
-    override suspend fun randomQuote(): QuoteContent =
-        quotes
-            .takeIf { it.isNotEmpty() }
-            ?.let { list ->
-                list[Random.Default.nextInt(list.size)]
-            } ?: QuoteContent.DEFAULT_QUOTE
+    override suspend fun randomQuote(): QuoteContent = quotes
+        .takeIf { it.isNotEmpty() }
+        ?.let { list ->
+            list[Random.Default.nextInt(list.size)]
+        } ?: QuoteContent.DEFAULT_QUOTE
 
     override suspend fun getById(id: String): QuoteContent =
         quotes.firstOrNull { it.id == id } ?: QuoteContent.DEFAULT_QUOTE

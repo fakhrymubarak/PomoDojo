@@ -25,114 +25,119 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class PreferencesViewModelTest {
     @Test
-    fun `initial state mirrors stored preferences`() =
-        runTest {
-            val storage = FakePreferenceStorage()
-            val repository =
-                PreferencesRepositoryImpl(
-                    storage = storage,
-                    cascadeResolver = PreferenceCascadeResolver(),
-                )
-            val testDispatcher = Dispatchers.Unconfined
-            val viewModel =
-                PreferencesViewModel(
-                    repository = repository,
-                    timelineBuilder = BuildTimerSegmentsUseCase(),
-                    hourSplitter = BuildHourSplitTimelineUseCase(),
-                    dispatcher = DispatcherProvider(testDispatcher),
-                )
+    fun `initial state mirrors stored preferences`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
 
-            advanceUntilIdle()
+        advanceUntilIdle()
 
-            val state = viewModel.state.value
+        val state = viewModel.state.value
 
-            assertFalse(state.isLoading)
-            assertEquals(PreferencesDomain.DEFAULT_REPEAT_COUNT, state.repeatCount)
-            assertTrue(state.focusOptions.first { it.value == 25 }.selected)
-            assertEquals(7, state.timeline.segments.size) // 4 focus + 3 short breaks + long break
-        }
+        assertFalse(state.isLoading)
+        assertEquals(PreferencesDomain.DEFAULT_REPEAT_COUNT, state.repeatCount)
+        assertTrue(state.focusOptions.first { it.value == 25 }.selected)
+        assertEquals(7, state.timeline.segments.size) // 4 focus + 3 short breaks + long break
+    }
 
     @Test
-    fun `selecting focus option cascades updates`() =
-        runTest {
-            val storage = FakePreferenceStorage()
-            val repository =
-                PreferencesRepositoryImpl(
-                    storage = storage,
-                    cascadeResolver = PreferenceCascadeResolver(),
-                )
-            val testDispatcher = Dispatchers.Unconfined
-            val viewModel =
-                PreferencesViewModel(
-                    repository = repository,
-                    timelineBuilder = BuildTimerSegmentsUseCase(),
-                    hourSplitter = BuildHourSplitTimelineUseCase(),
-                    dispatcher = DispatcherProvider(testDispatcher),
-                )
+    fun `selecting focus option cascades updates`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
 
-            advanceUntilIdle()
+        advanceUntilIdle()
 
-            viewModel.onFocusOptionSelected(50)
-            advanceUntilIdle()
+        viewModel.onFocusOptionSelected(50)
+        advanceUntilIdle()
 
-            val state = viewModel.state.value
+        val state = viewModel.state.value
 
-            assertTrue(state.focusOptions.first { it.value == 50 }.selected)
-            assertTrue(state.breakOptions.first { it.value == 10 }.selected)
-            assertTrue(state.longBreakAfterOptions.first { it.value == 2 }.selected)
-            assertTrue(state.longBreakOptions.first { it.value == 20 }.selected)
-            assertEquals(1, state.timeline.segments.count { it.type == TimerType.LONG_BREAK })
-        }
+        assertTrue(state.focusOptions.first { it.value == 50 }.selected)
+        assertTrue(state.breakOptions.first { it.value == 10 }.selected)
+        assertTrue(state.longBreakAfterOptions.first { it.value == 2 }.selected)
+        assertTrue(state.longBreakOptions.first { it.value == 20 }.selected)
+        assertEquals(1, state.timeline.segments.count { it.type == TimerType.LONG_BREAK })
+    }
 
     @Test
-    fun `unrelated preference keeps immutable option references`() =
-        runTest {
-            val storage = FakePreferenceStorage()
-            val repository =
-                PreferencesRepositoryImpl(
-                    storage = storage,
-                    cascadeResolver = PreferenceCascadeResolver(),
-                )
-            val testDispatcher = Dispatchers.Unconfined
-            val viewModel =
-                PreferencesViewModel(
-                    repository = repository,
-                    timelineBuilder = BuildTimerSegmentsUseCase(),
-                    hourSplitter = BuildHourSplitTimelineUseCase(),
-                    dispatcher = DispatcherProvider(testDispatcher),
-                )
-
-            advanceUntilIdle()
-            val initialState = viewModel.state.value
-
-            viewModel.onRepeatCountChanged(initialState.repeatCount + 1)
-            advanceUntilIdle()
-
-            val updatedState = viewModel.state.value
-
-            assertSame(
-                initialState.themeOptions,
-                updatedState.themeOptions,
-                "Theme options should keep the same reference.",
+    fun `unrelated preference keeps immutable option references`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
             )
-            assertSame(initialState.focusOptions, updatedState.focusOptions, "Focus options should remain stable.")
-            assertSame(initialState.breakOptions, updatedState.breakOptions, "Break options should remain stable.")
-            assertSame(
-                initialState.longBreakAfterOptions,
-                updatedState.longBreakAfterOptions,
-                "Long-break-after options should remain stable.",
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
             )
-            assertSame(
-                initialState.longBreakOptions,
-                updatedState.longBreakOptions,
-                "Long-break duration options should remain stable.",
-            )
-            assertNotSame(
-                initialState.timeline.segments,
-                updatedState.timeline.segments,
-                "Timeline must change when repeat count updates.",
-            )
-        }
+
+        advanceUntilIdle()
+        val initialState = viewModel.state.value
+
+        viewModel.onRepeatCountChanged(initialState.repeatCount + 1)
+        advanceUntilIdle()
+
+        val updatedState = viewModel.state.value
+
+        assertSame(
+            initialState.themeOptions,
+            updatedState.themeOptions,
+            "Theme options should keep the same reference.",
+        )
+        assertSame(
+            initialState.focusOptions,
+            updatedState.focusOptions,
+            "Focus options should remain stable.",
+        )
+        assertSame(
+            initialState.breakOptions,
+            updatedState.breakOptions,
+            "Break options should remain stable.",
+        )
+        assertSame(
+            initialState.longBreakAfterOptions,
+            updatedState.longBreakAfterOptions,
+            "Long-break-after options should remain stable.",
+        )
+        assertSame(
+            initialState.longBreakOptions,
+            updatedState.longBreakOptions,
+            "Long-break duration options should remain stable.",
+        )
+        assertNotSame(
+            initialState.timeline.segments,
+            updatedState.timeline.segments,
+            "Timeline must change when repeat count updates.",
+        )
+    }
 
     private class FakePreferenceStorage : PreferenceStorage {
         private val state = MutableStateFlow(PreferencesDomain())

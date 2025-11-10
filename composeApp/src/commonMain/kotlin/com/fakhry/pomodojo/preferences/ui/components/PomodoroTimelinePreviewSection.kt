@@ -101,11 +101,15 @@ fun ColumnScope.TimelinePreview(segments: ImmutableList<TimelineSegmentUi>) = th
             }
             Box(
                 modifier = Modifier.fillMaxHeight().weight(segment.timer.durationEpochMs.toFloat())
-                    .clip(RoundedCornerShape(2.dp)).background(MaterialTheme.colorScheme.surfaceVariant),
+                    .clip(
+                        RoundedCornerShape(2.dp),
+                    ).background(MaterialTheme.colorScheme.surfaceVariant),
             ) {
                 if (progress > 0f) {
                     Box(
-                        modifier = Modifier.fillMaxHeight().fillMaxWidth(progress).background(color),
+                        modifier = Modifier.fillMaxHeight().fillMaxWidth(
+                            progress,
+                        ).background(color),
                     )
                 }
             }
@@ -128,7 +132,9 @@ fun TimelineHoursSplit(hourSplits: ImmutableList<Int>) {
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Box(
-                    modifier = Modifier.height(1.dp).fillMaxWidth().background(MaterialTheme.colorScheme.primary),
+                    modifier = Modifier.height(
+                        1.dp,
+                    ).fillMaxWidth().background(MaterialTheme.colorScheme.primary),
                 )
                 Text(
                     text = pluralStringResource(Res.plurals.minutes, duration, duration),
@@ -201,7 +207,8 @@ private fun PomodoroTimelinePreviewSectionPreview() {
         segments = persistentListOf(
             TimelineSegmentUi(timerStatus = TimerStatusDomain.Completed),
             TimelineSegmentUi(
-                type = TimerType.SHORT_BREAK, timerStatus = TimerStatusDomain.Completed,
+                type = TimerType.SHORT_BREAK,
+                timerStatus = TimerStatusDomain.Completed,
             ),
             TimelineSegmentUi(timerStatus = TimerStatusDomain.Running),
             TimelineSegmentUi(

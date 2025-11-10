@@ -45,57 +45,53 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun `pref state reflects initial preferences`() =
-        runTest(dispatcher) {
-            val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 30))
-            val focusRepository = FakeFocusRepository(hasActive = false)
-            val historyRepository = FakeHistoryRepository()
-            val dispatcherProvider = DispatcherProvider(dispatcher)
-            val currentTimeProvider = FakeCurrentTimeProvider()
+    fun `pref state reflects initial preferences`() = runTest(dispatcher) {
+        val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 30))
+        val focusRepository = FakeFocusRepository(hasActive = false)
+        val historyRepository = FakeHistoryRepository()
+        val dispatcherProvider = DispatcherProvider(dispatcher)
+        val currentTimeProvider = FakeCurrentTimeProvider()
 
-            val viewModel =
-                DashboardViewModel(
-                    historyRepo = historyRepository,
-                    repository = repository,
-                    focusRepository = focusRepository,
-                    dispatcher = dispatcherProvider,
-                    currentTimeProvider = currentTimeProvider,
-                )
-            advanceUntilIdle()
+        val viewModel =
+            DashboardViewModel(
+                historyRepo = historyRepository,
+                repository = repository,
+                focusRepository = focusRepository,
+                dispatcher = dispatcherProvider,
+                currentTimeProvider = currentTimeProvider,
+            )
+        advanceUntilIdle()
 
-            assertEquals(30, viewModel.prefState.value.focusMinutes)
-            assertFalse(viewModel.hasActiveSession.value)
-        }
+        assertEquals(30, viewModel.prefState.value.focusMinutes)
+        assertFalse(viewModel.hasActiveSession.value)
+    }
 
     @Test
-    fun `pref state updates when repository emits new value`() =
-        runTest(dispatcher) {
-            val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 25))
-            val focusRepository = FakeFocusRepository(hasActive = true)
-            val historyRepository = FakeHistoryRepository()
-            val dispatcherProvider = DispatcherProvider(dispatcher)
-            val currentTimeProvider = FakeCurrentTimeProvider()
+    fun `pref state updates when repository emits new value`() = runTest(dispatcher) {
+        val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 25))
+        val focusRepository = FakeFocusRepository(hasActive = true)
+        val historyRepository = FakeHistoryRepository()
+        val dispatcherProvider = DispatcherProvider(dispatcher)
+        val currentTimeProvider = FakeCurrentTimeProvider()
 
-            val viewModel =
-                DashboardViewModel(
-                    historyRepo = historyRepository,
-                    repository = repository,
-                    focusRepository = focusRepository,
-                    dispatcher = dispatcherProvider,
-                    currentTimeProvider = currentTimeProvider,
-                )
-            advanceUntilIdle()
+        val viewModel =
+            DashboardViewModel(
+                historyRepo = historyRepository,
+                repository = repository,
+                focusRepository = focusRepository,
+                dispatcher = dispatcherProvider,
+                currentTimeProvider = currentTimeProvider,
+            )
+        advanceUntilIdle()
 
-            repository.emit(repository.current.copy(focusMinutes = 45))
-            advanceUntilIdle()
+        repository.emit(repository.current.copy(focusMinutes = 45))
+        advanceUntilIdle()
 
-            assertEquals(45, viewModel.prefState.value.focusMinutes)
-            assertTrue(viewModel.hasActiveSession.value)
-        }
+        assertEquals(45, viewModel.prefState.value.focusMinutes)
+        assertTrue(viewModel.hasActiveSession.value)
+    }
 
-    private class FakePreferencesRepository(
-        initial: PreferencesDomain,
-    ) : PreferencesRepository {
+    private class FakePreferencesRepository(initial: PreferencesDomain) : PreferencesRepository {
         private val state = MutableStateFlow(initial)
         val current: PreferencesDomain get() = state.value
 
@@ -134,19 +130,20 @@ class DashboardViewModelTest {
         }
     }
 
-    private class FakeFocusRepository(
-        private var hasActive: Boolean,
-    ) : PomodoroSessionRepository {
+    private class FakeFocusRepository(private var hasActive: Boolean) : PomodoroSessionRepository {
         override suspend fun hasActiveSession(): Boolean = hasActive
 
-        override suspend fun getActiveSession(): ActiveFocusSessionDomain = ActiveFocusSessionDomain()
+        override suspend fun getActiveSession(): ActiveFocusSessionDomain =
+            ActiveFocusSessionDomain()
 
         override suspend fun saveActiveSession(snapshot: ActiveFocusSessionDomain) {
             hasActive = true
         }
 
         override suspend fun updateActiveSession(snapshot: ActiveFocusSessionDomain) {
-            hasActive = snapshot.sessionStatus == com.fakhry.pomodojo.focus.domain.model.FocusTimerStatus.RUNNING
+            hasActive =
+                snapshot.sessionStatus ==
+                com.fakhry.pomodojo.focus.domain.model.FocusTimerStatus.RUNNING
         }
 
         override suspend fun completeSession(snapshot: ActiveFocusSessionDomain) {

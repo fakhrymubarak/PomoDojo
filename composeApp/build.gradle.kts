@@ -94,12 +94,21 @@ kotlin {
 
 android {
     namespace = "com.fakhry.pomodojo"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.android.compileSdk
+            .get()
+            .toInt()
 
     defaultConfig {
         applicationId = "com.fakhry.pomodojo"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.android.targetSdk
+                .get()
+                .toInt()
         versionCode = 1
         versionName = "1.0"
     }
@@ -179,10 +188,13 @@ tasks.register<JacocoReport>("jacocoJvmTestReport") {
         html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jvmTest"))
     }
 
-    val jvmMainCompilation = kotlinExt.targets.getByName("jvm").compilations.getByName("main")
+    val jvmMainCompilation =
+        kotlinExt.targets
+            .getByName("jvm")
+            .compilations
+            .getByName("main")
     val jvmSourceDirs =
-        jvmMainCompilation.allKotlinSourceSets
-            .flatMap { it.kotlin.sourceDirectories.files }
+        jvmMainCompilation.allKotlinSourceSets.flatMap { it.kotlin.sourceDirectories.files }
 
     sourceDirectories.setFrom(files(jvmSourceDirs))
     classDirectories.setFrom(jvmMainCompilation.output.classesDirs)

@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.dashboard.components
+package com.fakhry.pomodojo.dashboard.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,12 +35,11 @@ fun PomodoroTimerSection(
     formattedTime: String = "00:00",
     progress: Float = 0.5f,
 ) {
-    val color =
-        when (segmentType) {
-            TimerType.FOCUS -> Secondary
-            TimerType.SHORT_BREAK -> Primary
-            TimerType.LONG_BREAK -> LongBreakHighlight
-        }
+    val color = when (segmentType) {
+        TimerType.FOCUS -> Secondary
+        TimerType.SHORT_BREAK -> Primary
+        TimerType.LONG_BREAK -> LongBreakHighlight
+    }
 
     Box(
         modifier = Modifier.size(280.dp),
@@ -56,12 +55,11 @@ fun PomodoroTimerSection(
         ) {
             Text(
                 text = formattedTime,
-                style =
-                    MaterialTheme.typography.displayLarge.copy(
-                        fontSize = 56.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                    ),
+                style = MaterialTheme.typography.displayLarge.copy(
+                    fontSize = 56.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
                 textAlign = TextAlign.Center,
             )
             FocusPhaseChip(phase = segmentType, color = color)
@@ -70,21 +68,17 @@ fun PomodoroTimerSection(
 }
 
 @Composable
-private fun FocusPhaseChip(
-    phase: TimerType,
-    color: Color,
-) {
+private fun FocusPhaseChip(phase: TimerType, color: Color) {
     Surface(
         color = color.copy(alpha = 0.12f),
         shape = CircleShape,
     ) {
         Text(
             text = focusPhaseLabel(phase),
-            style =
-                MaterialTheme.typography.labelLarge.copy(
-                    color = color,
-                    fontWeight = FontWeight.Bold,
-                ),
+            style = MaterialTheme.typography.labelLarge.copy(
+                color = color,
+                fontWeight = FontWeight.Bold,
+            ),
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
         )
     }

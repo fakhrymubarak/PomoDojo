@@ -18,11 +18,12 @@ internal object AndroidFocusDatabaseHolder {
         check(::appContext.isInitialized) {
             "Android focus database not initialized. Call initAndroidFocusDatabase() first."
         }
-        Room.databaseBuilder(
-            appContext,
-            PomoDojoRoomDatabase::class.java,
-            POMO_DOJO_DATABASE_NAME,
-        ).build()
+        Room
+            .databaseBuilder(
+                appContext,
+                PomoDojoRoomDatabase::class.java,
+                POMO_DOJO_DATABASE_NAME,
+            ).build()
     }
 
     fun initialize(context: Context) {

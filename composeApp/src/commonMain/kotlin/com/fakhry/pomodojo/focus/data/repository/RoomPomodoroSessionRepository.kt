@@ -10,9 +10,7 @@ import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-class RoomPomodoroSessionRepository(
-    database: PomoDojoRoomDatabase,
-) : PomodoroSessionRepository {
+class RoomPomodoroSessionRepository(database: PomoDojoRoomDatabase) : PomodoroSessionRepository {
     private val activeDao = database.focusSessionDao()
     private val historyDao = database.historySessionDao()
 
@@ -40,22 +38,23 @@ class RoomPomodoroSessionRepository(
         activeDao.clearActiveSession()
     }
 
-    private fun ActiveFocusSessionDomain.toEntity(): ActiveSessionEntity =
-        ActiveSessionEntity(
-            startedAtEpochMs = startedAtEpochMs,
-            elapsedPausedEpochMs = elapsedPauseEpochMs,
-            pauseStartedAtEpochMs = pauseStartedAtEpochMs,
-            sessionStatus = sessionStatus.name,
-            repeatCount = repeatCount,
-            focusMinutes = focusMinutes,
-            breakMinutes = breakMinutes,
-            longBreakEnabled = longBreakEnabled,
-            longBreakMinutes = longBreakMinutes,
-            longBreakAfter = longBreakAfter,
-            quoteId = quoteId,
-        )
+    private fun ActiveFocusSessionDomain.toEntity(): ActiveSessionEntity = ActiveSessionEntity(
+        startedAtEpochMs = startedAtEpochMs,
+        elapsedPausedEpochMs = elapsedPauseEpochMs,
+        pauseStartedAtEpochMs = pauseStartedAtEpochMs,
+        sessionStatus = sessionStatus.name,
+        repeatCount = repeatCount,
+        focusMinutes = focusMinutes,
+        breakMinutes = breakMinutes,
+        longBreakEnabled = longBreakEnabled,
+        longBreakMinutes = longBreakMinutes,
+        longBreakAfter = longBreakAfter,
+        quoteId = quoteId,
+    )
 
-    private fun ActiveFocusSessionDomain.toFinishedEntity(finishedTime: Long): HistorySessionEntity {
+    private fun ActiveFocusSessionDomain.toFinishedEntity(
+        finishedTime: Long,
+    ): HistorySessionEntity {
         var totalFocusMinutes = 0
         var totalBreakMinutes = 0
         timelines.forEach {
@@ -74,27 +73,25 @@ class RoomPomodoroSessionRepository(
         )
     }
 
-    private fun ActiveSessionEntity?.toDomain() =
-        this?.run {
-            ActiveFocusSessionDomain(
-                sessionId = sessionId,
-                startedAtEpochMs = startedAtEpochMs,
-                elapsedPauseEpochMs = elapsedPausedEpochMs,
-                pauseStartedAtEpochMs = pauseStartedAtEpochMs,
-                sessionStatus = sessionStatus.toEnumSessionStatus(),
-                repeatCount = repeatCount,
-                focusMinutes = focusMinutes,
-                breakMinutes = breakMinutes,
-                longBreakEnabled = longBreakEnabled,
-                longBreakAfter = longBreakAfter,
-                longBreakMinutes = longBreakMinutes,
-                quoteId = quoteId,
-            )
-        } ?: ActiveFocusSessionDomain()
+    private fun ActiveSessionEntity?.toDomain() = this?.run {
+        ActiveFocusSessionDomain(
+            sessionId = sessionId,
+            startedAtEpochMs = startedAtEpochMs,
+            elapsedPauseEpochMs = elapsedPausedEpochMs,
+            pauseStartedAtEpochMs = pauseStartedAtEpochMs,
+            sessionStatus = sessionStatus.toEnumSessionStatus(),
+            repeatCount = repeatCount,
+            focusMinutes = focusMinutes,
+            breakMinutes = breakMinutes,
+            longBreakEnabled = longBreakEnabled,
+            longBreakAfter = longBreakAfter,
+            longBreakMinutes = longBreakMinutes,
+            quoteId = quoteId,
+        )
+    } ?: ActiveFocusSessionDomain()
 
-    private fun String.toEnumSessionStatus() =
-        when (this) {
-            FocusTimerStatus.PAUSED.name -> FocusTimerStatus.PAUSED
-            else -> FocusTimerStatus.RUNNING
-        }
+    private fun String.toEnumSessionStatus() = when (this) {
+        FocusTimerStatus.PAUSED.name -> FocusTimerStatus.PAUSED
+        else -> FocusTimerStatus.RUNNING
+    }
 }

@@ -10,7 +10,8 @@ import okio.Path
 import okio.Path.Companion.toPath
 import java.io.File
 
-internal actual fun provideDataStore(): DataStore<Preferences> = DesktopPreferencesDataStoreProvider.dataStore
+internal actual fun provideDataStore(): DataStore<Preferences> =
+    DesktopPreferencesDataStoreProvider.dataStore
 
 private object DesktopPreferencesDataStoreProvider {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)

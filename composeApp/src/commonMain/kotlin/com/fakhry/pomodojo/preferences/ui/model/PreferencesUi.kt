@@ -36,9 +36,7 @@ data class PreferencesConfigUiState(
 )
 
 @Immutable
-data class PreferencesAppearanceUiState(
-    val themeOptions: ImmutableList<PreferenceOption<AppTheme>>,
-)
+data class PreferencesAppearanceUiState(val themeOptions: ImmutableList<PreferenceOption<AppTheme>>)
 
 @Immutable
 data class TimelineUiModel(
@@ -79,18 +77,16 @@ data class TimerUi(
     val elapsedPauseTime: Long = 0L,
 )
 
-fun PreferencesUiModel.toConfigUiState() =
-    PreferencesConfigUiState(
-        repeatCount = repeatCount,
-        repeatRange = repeatRange,
-        focusOptions = focusOptions,
-        breakOptions = breakOptions,
-        isLongBreakEnabled = isLongBreakEnabled,
-        longBreakAfterOptions = longBreakAfterOptions,
-        longBreakOptions = longBreakOptions,
-    )
+fun PreferencesUiModel.toConfigUiState() = PreferencesConfigUiState(
+    repeatCount = repeatCount,
+    repeatRange = repeatRange,
+    focusOptions = focusOptions,
+    breakOptions = breakOptions,
+    isLongBreakEnabled = isLongBreakEnabled,
+    longBreakAfterOptions = longBreakAfterOptions,
+    longBreakOptions = longBreakOptions,
+)
 
-fun PreferencesUiModel.toAppearanceUiState() =
-    PreferencesAppearanceUiState(
-        themeOptions = themeOptions,
-    )
+fun PreferencesUiModel.toAppearanceUiState() = PreferencesAppearanceUiState(
+    themeOptions = themeOptions,
+)

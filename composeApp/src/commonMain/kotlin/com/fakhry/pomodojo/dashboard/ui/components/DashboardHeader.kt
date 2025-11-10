@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.dashboard.components
+package com.fakhry.pomodojo.dashboard.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -29,18 +29,16 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun DashboardHeader(onOpenSettings: () -> Unit = {}) {
     BgHeaderCanvas {
         Row(
-            modifier =
-                Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.systemBars)
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            modifier = Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.systemBars)
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = stringResource(Res.string.dashboard_header_title),
-                style =
-                    MaterialTheme.typography.headlineMedium.copy(
-                        color = MaterialTheme.colorScheme.onSecondary,
-                    ),
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    color = MaterialTheme.colorScheme.onSecondary,
+                ),
             )
             IconButton(
                 modifier = Modifier.size(24.dp),

@@ -45,13 +45,12 @@ fun WheelNumbers(
     onValueChange: (Int) -> Unit = {},
     onValueChangeDebounceMillis: Long = 120,
 ) {
-    val numbers =
-        remember(start, end) {
-            when {
-                start <= end -> (start..end).toList()
-                else -> (start downTo end).toList()
-            }
+    val numbers = remember(start, end) {
+        when {
+            start <= end -> (start..end).toList()
+            else -> (start downTo end).toList()
         }
+    }
     if (numbers.isEmpty()) return
 
     val lowerBound = minOf(start, end)
@@ -62,14 +61,15 @@ fun WheelNumbers(
 
     val itemWidth = 44.dp
     val indicatorHeight = 56.dp
-    val baseIndex =
-        remember(numbers) {
-            val midpoint = Int.MAX_VALUE / 2
-            val modulo = numbers.size
-            if (modulo == 0) 0 else midpoint - (midpoint % modulo)
-        }
+    val baseIndex = remember(numbers) {
+        val midpoint = Int.MAX_VALUE / 2
+        val modulo = numbers.size
+        if (modulo == 0) 0 else midpoint - (midpoint % modulo)
+    }
 
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = baseIndex + selectedIndexInNumbers)
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = baseIndex + selectedIndexInNumbers,
+    )
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
     val hapticFeedback = LocalHapticFeedback.current
 
@@ -83,11 +83,10 @@ fun WheelNumbers(
             val viewportCenter =
                 layoutInfo.viewportStartOffset +
                     (layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset) / 2
-            val centredIndex =
-                itemsInfo.minByOrNull { info ->
-                    val itemCenter = info.offset + info.size / 2
-                    abs(itemCenter - viewportCenter)
-                }?.index ?: baseIndex
+            val centredIndex = itemsInfo.minByOrNull { info ->
+                val itemCenter = info.offset + info.size / 2
+                abs(itemCenter - viewportCenter)
+            }?.index ?: baseIndex
 
             val safeIndex = ((centredIndex % numbers.size) + numbers.size) % numbers.size
             numbers[safeIndex]
@@ -110,16 +109,15 @@ fun WheelNumbers(
         val modulo = numbers.size
         val selectedIndex = selectedIndexInNumbers
         val currentIndex = listState.firstVisibleItemIndex
-        val candidateIndices =
-            if (modulo == 0) {
-                emptyList()
-            } else {
-                val currentCycle = currentIndex / modulo
-                listOf(currentCycle - 1, currentCycle, currentCycle + 1).mapNotNull { cycle ->
-                    val candidate = cycle * modulo + selectedIndex
-                    candidate.takeIf { it >= 0 }
-                }
+        val candidateIndices = if (modulo == 0) {
+            emptyList()
+        } else {
+            val currentCycle = currentIndex / modulo
+            listOf(currentCycle - 1, currentCycle, currentCycle + 1).mapNotNull { cycle ->
+                val candidate = cycle * modulo + selectedIndex
+                candidate.takeIf { it >= 0 }
             }
+        }
         val defaultTarget = baseIndex + selectedIndex
         val targetIndex = candidateIndices.minByOrNull { abs(it - currentIndex) } ?: defaultTarget
         if (!hasInitialSync) {
@@ -147,11 +145,10 @@ fun WheelNumbers(
         modifier = modifier.height(96.dp),
         contentAlignment = Alignment.Center,
     ) {
-        val horizontalPadding =
-            remember(maxWidth, itemWidth) {
-                val padding = (maxWidth - itemWidth) / 2
-                if (padding > 0.dp) padding else 0.dp
-            }
+        val horizontalPadding = remember(maxWidth, itemWidth) {
+            val padding = (maxWidth - itemWidth) / 2
+            if (padding > 0.dp) padding else 0.dp
+        }
 
         LazyRow(
             state = listState,
@@ -181,59 +178,41 @@ fun WheelNumbers(
 }
 
 @Composable
-private fun WheelNumberItem(
-    number: Int,
-    isSelected: Boolean,
-    width: Dp,
-) {
+private fun WheelNumberItem(number: Int, isSelected: Boolean, width: Dp) {
     val scale by animateFloatAsState(if (isSelected) 1f else 0.85f)
     val alpha by animateFloatAsState(if (isSelected) 1f else 0.4f)
     val density = LocalDensity.current
 
     Box(
-        modifier =
-            Modifier
-                .width(width)
-                .height(56.dp),
+        modifier = Modifier.width(width).height(56.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = number.toString(),
-            style =
-                if (isSelected) {
-                    MaterialTheme.typography.headlineMedium
-                } else {
-                    MaterialTheme.typography.titleMedium
-                },
+            style = if (isSelected) {
+                MaterialTheme.typography.headlineMedium
+            } else {
+                MaterialTheme.typography.titleMedium
+            },
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier =
-                Modifier.graphicsLayer {
-                    this.alpha = alpha
-                    this.scaleX = scale
-                    this.scaleY = scale
-                    this.cameraDistance = 12f * density.density
-                },
+            modifier = Modifier.graphicsLayer {
+                this.alpha = alpha
+                this.scaleX = scale
+                this.scaleY = scale
+                this.cameraDistance = 12f * density.density
+            },
         )
     }
 }
 
 @Composable
-private fun SelectionOverlay(
-    modifier: Modifier = Modifier,
-    width: Dp,
-    height: Dp,
-    shape: Shape,
-) {
+private fun SelectionOverlay(modifier: Modifier = Modifier, width: Dp, height: Dp, shape: Shape) {
     Box(
-        modifier =
-            modifier
-                .width(width)
-                .height(height)
-                .background(
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                    shape = shape,
-                ),
+        modifier = modifier.width(width).height(height).background(
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+            shape = shape,
+        ),
     )
 }
 

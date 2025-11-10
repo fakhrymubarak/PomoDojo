@@ -17,9 +17,8 @@ const val PREFERENCES_FILE_NAME = "pomodojo.preferences_pb"
 
 internal expect fun provideDataStore(): DataStore<Preferences>
 
-class DataStorePreferenceStorage(
-    private val dataStore: DataStore<Preferences>,
-) : PreferenceStorage {
+class DataStorePreferenceStorage(private val dataStore: DataStore<Preferences>) :
+    PreferenceStorage {
     override val preferences: Flow<PreferencesDomain> =
         dataStore.data
             .map { it.toDomain() }
@@ -34,17 +33,23 @@ class DataStorePreferenceStorage(
     }
 
     private fun Preferences.toDomain(): PreferencesDomain {
-        val repeatCount = this[PreferenceKeys.REPEAT_COUNT] ?: PreferencesDomain.DEFAULT_REPEAT_COUNT
+        val repeatCount =
+            this[PreferenceKeys.REPEAT_COUNT] ?: PreferencesDomain.DEFAULT_REPEAT_COUNT
 
-        val focusMinutes = this[PreferenceKeys.FOCUS_MINUTES] ?: PreferencesDomain.DEFAULT_FOCUS_MINUTES
+        val focusMinutes =
+            this[PreferenceKeys.FOCUS_MINUTES] ?: PreferencesDomain.DEFAULT_FOCUS_MINUTES
 
-        val breakMinutes = this[PreferenceKeys.BREAK_MINUTES] ?: PreferencesDomain.DEFAULT_BREAK_MINUTES
+        val breakMinutes =
+            this[PreferenceKeys.BREAK_MINUTES] ?: PreferencesDomain.DEFAULT_BREAK_MINUTES
 
         val longBreakEnabled = this[PreferenceKeys.LONG_BREAK_ENABLED] ?: true
 
-        val longBreakAfter = this[PreferenceKeys.LONG_BREAK_AFTER_COUNT] ?: PreferencesDomain.DEFAULT_LONG_BREAK_AFTER
+        val longBreakAfter =
+            this[PreferenceKeys.LONG_BREAK_AFTER_COUNT]
+                ?: PreferencesDomain.DEFAULT_LONG_BREAK_AFTER
 
-        val longBreakMinutes = this[PreferenceKeys.LONG_BREAK_MINUTES] ?: PreferencesDomain.DEFAULT_LONG_BREAK_MINUTES
+        val longBreakMinutes =
+            this[PreferenceKeys.LONG_BREAK_MINUTES] ?: PreferencesDomain.DEFAULT_LONG_BREAK_MINUTES
 
         val appTheme = AppTheme.fromStorage(this[PreferenceKeys.APP_THEME])
 

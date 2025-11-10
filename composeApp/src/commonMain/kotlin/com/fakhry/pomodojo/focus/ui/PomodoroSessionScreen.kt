@@ -41,7 +41,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
+import com.fakhry.pomodojo.dashboard.ui.components.PomodoroTimerSection
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.focus.ui.components.PomodoroSessionHeaderSection
 import com.fakhry.pomodojo.generated.resources.Res
@@ -154,51 +154,44 @@ private fun PomodoroSessionContent(
 }
 
 @Composable
-fun ColumnScope.PomodoroTimelineSessionSection(
-    modifier: Modifier,
-    timeline: TimelineUiModel,
-) = this.run {
-    val colorScheme = MaterialTheme.colorScheme
+fun ColumnScope.PomodoroTimelineSessionSection(modifier: Modifier, timeline: TimelineUiModel) =
+    this.run {
+        val colorScheme = MaterialTheme.colorScheme
 
-    Text(
-        text = stringResource(Res.string.focus_session_timeline_title),
-        style =
-            MaterialTheme.typography.titleMedium.copy(
+        Text(
+            text = stringResource(Res.string.focus_session_timeline_title),
+            style = MaterialTheme.typography.titleMedium.copy(
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
             ),
-        modifier = modifier.fillMaxWidth(),
-    )
+            modifier = modifier.fillMaxWidth(),
+        )
 
-    Surface(
-        modifier = modifier.padding(top = 8.dp),
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, colorScheme.outline),
-        color = colorScheme.surface,
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Surface(
+            modifier = modifier.padding(top = 8.dp),
+            shape = RoundedCornerShape(16.dp),
+            border = BorderStroke(1.dp, colorScheme.outline),
+            color = colorScheme.surface,
         ) {
-            TimelinePreview(timeline.segments)
-            Spacer(modifier = Modifier.height(4.dp))
-            TimelineHoursSplit(timeline.hourSplits)
-            Spacer(modifier = Modifier.height(12.dp))
-            TimelineLegends()
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                TimelinePreview(timeline.segments)
+                Spacer(modifier = Modifier.height(4.dp))
+                TimelineHoursSplit(timeline.hourSplits)
+                Spacer(modifier = Modifier.height(12.dp))
+                TimelineLegends()
+            }
         }
     }
-}
 
 @Composable
-private fun FocusQuoteBlock(
-    modifier: Modifier,
-    quote: QuoteContent,
-) {
-    val quoteDescription =
-        stringResource(
-            Res.string.focus_session_quote_content_description,
-            quote.text,
-        )
+private fun FocusQuoteBlock(modifier: Modifier, quote: QuoteContent) {
+    val quoteDescription = stringResource(
+        Res.string.focus_session_quote_content_description,
+        quote.text,
+    )
     Column(
         modifier = modifier.fillMaxWidth().semantics { contentDescription = quoteDescription },
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -206,27 +199,24 @@ private fun FocusQuoteBlock(
     ) {
         Text(
             text = "\"${quote.text}\"",
-            style =
-                MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center,
-                ),
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center,
+            ),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
         )
-        val attribution =
-            listOfNotNull(
-                quote.character,
-                quote.sourceTitle,
-                quote.metadata,
-            ).joinToString(separator = " — ").takeIf { it.isNotBlank() }
+        val attribution = listOfNotNull(
+            quote.character,
+            quote.sourceTitle,
+            quote.metadata,
+        ).joinToString(separator = " — ").takeIf { it.isNotBlank() }
         if (attribution != null) {
             Text(
                 text = attribution,
-                style =
-                    MaterialTheme.typography.labelSmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ),
+                style = MaterialTheme.typography.labelSmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
             )
         }
     }
@@ -243,12 +233,11 @@ private fun FocusControls(
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         val icon = if (isTimerRunning) Icons.Rounded.Pause else Icons.Rounded.PlayArrow
-        val description =
-            if (isTimerRunning) {
-                stringResource(Res.string.focus_session_pause_content_description)
-            } else {
-                stringResource(Res.string.focus_session_resume_content_description)
-            }
+        val description = if (isTimerRunning) {
+            stringResource(Res.string.focus_session_pause_content_description)
+        } else {
+            stringResource(Res.string.focus_session_resume_content_description)
+        }
         FocusCircularButton(
             onClick = onTogglePause,
             icon = { Icon(imageVector = icon, contentDescription = null) },
@@ -293,10 +282,7 @@ private fun FocusCircularButton(
 }
 
 @Composable
-private fun FocusConfirmDialog(
-    onConfirmFinish: () -> Unit,
-    onDismiss: () -> Unit,
-) {
+private fun FocusConfirmDialog(onConfirmFinish: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -338,37 +324,36 @@ private fun FocusCompletedState(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = "Focus complete!",
-            style =
-                MaterialTheme.typography.headlineMedium.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                ),
+            style = MaterialTheme.typography.headlineMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+            ),
         )
     }
 }
 
 @Composable
-fun focusPhaseLabel(phase: TimerType): String =
-    when (phase) {
-        TimerType.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
-        TimerType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
-        TimerType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
-    }
+fun focusPhaseLabel(phase: TimerType) = when (phase) {
+    TimerType.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
+    TimerType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
+    TimerType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
+}
 
 @Preview
 @Composable
 private fun PomodoroSessionContentPreview() {
     val preferences = PreferencesDomain()
-    val timerSegments = BuildTimerSegmentsUseCase().invoke(0L, preferences).mapToTimelineSegmentsUi(1_000L)
-    val state =
-        PomodoroSessionUiState(
-            totalCycle = 4,
-            activeSegment = timerSegments.first(),
-            timeline =
-                TimelineUiModel(
-                    segments = timerSegments,
-                    hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
-                ),
-        )
+    val timerSegments = BuildTimerSegmentsUseCase().invoke(
+        0L,
+        preferences,
+    ).mapToTimelineSegmentsUi(1_000L)
+    val state = PomodoroSessionUiState(
+        totalCycle = 4,
+        activeSegment = timerSegments.first(),
+        timeline = TimelineUiModel(
+            segments = timerSegments,
+            hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
+        ),
+    )
 
     PomoDojoTheme {
         PomodoroSessionContent(state = state)

@@ -69,10 +69,7 @@ private val LightColorScheme =
  * Wraps MaterialTheme with app specific typography and colors.
  */
 @Composable
-fun PomoDojoTheme(
-    darkTheme: Boolean = true,
-    content: @Composable () -> Unit,
-) {
+fun PomoDojoTheme(darkTheme: Boolean = true, content: @Composable () -> Unit) {
     val targetColorScheme =
         remember(darkTheme) {
             if (darkTheme) DarkColorScheme else LightColorScheme
@@ -91,10 +88,7 @@ fun PomoDojoTheme(
 }
 
 @Composable
-private fun animateColorScheme(
-    targetScheme: ColorScheme,
-    isLightScheme: Boolean,
-): ColorScheme {
+private fun animateColorScheme(targetScheme: ColorScheme, isLightScheme: Boolean): ColorScheme {
     val primary = animateColorAsState(targetScheme.primary, label = "primary").value
     val onPrimary = animateColorAsState(targetScheme.onPrimary, label = "onPrimary").value
     val primaryContainer =

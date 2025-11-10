@@ -65,10 +65,9 @@ fun ColumnScope.PomodoroConfigSection(
 
     Text(
         text = stringResource(Res.string.preferences_title_pomodoro_config),
-        style =
-            MaterialTheme.typography.headlineMedium.copy(
-                color = colorScheme.onBackground,
-            ),
+        style = MaterialTheme.typography.headlineMedium.copy(
+            color = colorScheme.onBackground,
+        ),
     )
 
     Surface(
@@ -120,14 +119,12 @@ fun ColumnScope.PomodoroConfigSection(
 
             AnimatedVisibility(
                 visibleState = visibilityLongBreakSection,
-                enter =
-                    expandVertically(
-                        animationSpec = tween(),
-                    ),
-                exit =
-                    shrinkVertically(
-                        animationSpec = tween(),
-                    ),
+                enter = expandVertically(
+                    animationSpec = tween(),
+                ),
+                exit = shrinkVertically(
+                    animationSpec = tween(),
+                ),
             ) {
                 Column {
                     PreferenceOptionsCompose(
@@ -149,19 +146,14 @@ fun ColumnScope.PomodoroConfigSection(
 }
 
 @Composable
-private fun RepeatSection(
-    repeatCount: Int,
-    range: IntRange,
-    onRepeatCountChanged: (Int) -> Unit,
-) {
+private fun RepeatSection(repeatCount: Int, range: IntRange, onRepeatCountChanged: (Int) -> Unit) {
     TrackRecomposition(RecompositionTags.REPEAT_SECTION)
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = stringResource(Res.string.preferences_repeat_title),
-            style =
-                MaterialTheme.typography.titleMedium.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                ),
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+            ),
         )
         WheelNumbers(
             start = range.first,
@@ -173,10 +165,7 @@ private fun RepeatSection(
 }
 
 @Composable
-private fun LongBreakToggle(
-    enabled: Boolean,
-    onToggle: (Boolean) -> Unit,
-) {
+private fun LongBreakToggle(enabled: Boolean, onToggle: (Boolean) -> Unit) {
     val hapticFeedback = LocalHapticFeedback.current
 
     Surface(
@@ -185,38 +174,35 @@ private fun LongBreakToggle(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
     ) {
         Row(
-            modifier =
-                Modifier.fillMaxWidth().toggleable(
-                    value = enabled,
-                    role = Role.Switch,
-                    onValueChange = {
-                        onToggle(it)
+            modifier = Modifier.fillMaxWidth().toggleable(
+                value = enabled,
+                role = Role.Switch,
+                onValueChange = {
+                    onToggle(it)
 
-                        val hapticType =
-                            if (it) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff
-                        hapticFeedback.performHapticFeedback(hapticType)
-                    },
-                ).padding(horizontal = 20.dp, vertical = 12.dp),
+                    val hapticType =
+                        if (it) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff
+                    hapticFeedback.performHapticFeedback(hapticType)
+                },
+            ).padding(horizontal = 20.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = stringResource(Res.string.preferences_enable_long_break),
-                style =
-                    MaterialTheme.typography.titleMedium.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                    ),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
             )
             Switch(
                 checked = enabled,
                 onCheckedChange = null,
-                colors =
-                    SwitchDefaults.colors(
-                        checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                        checkedTrackColor = MaterialTheme.colorScheme.primary,
-                        uncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                        uncheckedTrackColor = MaterialTheme.colorScheme.outline,
-                    ),
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
+                    uncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                    uncheckedTrackColor = MaterialTheme.colorScheme.outline,
+                ),
             )
         }
     }
