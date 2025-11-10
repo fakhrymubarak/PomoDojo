@@ -85,23 +85,18 @@ private fun buildWeekRow(
     }.toPersistentList()
 }
 
-private fun dayLabelRow(): ImmutableList<HistoryCell> =
-    persistentListOf(
-        HistoryCell.Empty,
-        HistoryCell.Text("Mon"),
-        HistoryCell.Empty,
-        HistoryCell.Text("Wed"),
-        HistoryCell.Empty,
-        HistoryCell.Text("Fri"),
-        HistoryCell.Empty,
-        HistoryCell.Text("Sun"),
-    )
-
-private data class HistoryEntry(
-    val date: LocalDate,
-    val focusMinutes: Int,
-    val breakMinutes: Int,
+private fun dayLabelRow(): ImmutableList<HistoryCell> = persistentListOf(
+    HistoryCell.Empty,
+    HistoryCell.Text("Mon"),
+    HistoryCell.Empty,
+    HistoryCell.Text("Wed"),
+    HistoryCell.Empty,
+    HistoryCell.Text("Fri"),
+    HistoryCell.Empty,
+    HistoryCell.Text("Sun"),
 )
+
+private data class HistoryEntry(val date: LocalDate, val focusMinutes: Int, val breakMinutes: Int)
 
 private fun HistoryDomain.toHistoryEntryOrNull(): HistoryEntry? {
     val parsedDate = date.toLocalDateOrNull() ?: return null
@@ -112,28 +107,23 @@ private fun HistoryDomain.toHistoryEntryOrNull(): HistoryEntry? {
     )
 }
 
-private fun HistoryEntry.toGraphCell(): HistoryCell.GraphLevel =
-    HistoryCell.GraphLevel(
-        intensityLevel = intensityLevelForMinutes(focusMinutes),
-        date = date.formatToDdMmm(),
-        focusMinutes = focusMinutes,
-        breakMinutes = breakMinutes,
-    )
+private fun HistoryEntry.toGraphCell(): HistoryCell.GraphLevel = HistoryCell.GraphLevel(
+    intensityLevel = intensityLevelForMinutes(focusMinutes),
+    date = date.formatToDdMmm(),
+    focusMinutes = focusMinutes,
+    breakMinutes = breakMinutes,
+)
 
-private fun LocalDate.toEmptyGraphCell(): HistoryCell.GraphLevel =
-    HistoryCell.GraphLevel(
-        intensityLevel = 0,
-        focusMinutes = 0,
-        breakMinutes = 0,
-        date = formatToDdMmm(),
-    )
+private fun LocalDate.toEmptyGraphCell(): HistoryCell.GraphLevel = HistoryCell.GraphLevel(
+    intensityLevel = 0,
+    focusMinutes = 0,
+    breakMinutes = 0,
+    date = formatToDdMmm(),
+)
 
 private fun LocalDate.formatToDdMmm(): String = "$day ${month.toLabel()}"
 
-private fun buildOrderedDates(
-    year: Int,
-    currentDate: LocalDate?,
-): List<LocalDate> {
+private fun buildOrderedDates(year: Int, currentDate: LocalDate?): List<LocalDate> {
     val start = LocalDate(year, Month.JANUARY, 1)
     val yearEnd = LocalDate(year, Month.DECEMBER, 31)
     val lastDate = currentDate?.takeIf { it.year == year }?.coerceAtMost(yearEnd) ?: yearEnd

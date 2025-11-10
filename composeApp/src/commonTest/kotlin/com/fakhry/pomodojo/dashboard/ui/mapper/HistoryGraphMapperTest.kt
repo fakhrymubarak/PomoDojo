@@ -15,10 +15,10 @@ class HistoryGraphMapperTest {
             focusMinutesThisYear = 0,
             availableYears = emptyList(),
             histories =
-                listOf(
-                    HistoryDomain(date = "2024-01-03", focusMinutes = 25, breakMinutes = 5),
-                    HistoryDomain(date = "2024-02-02", focusMinutes = 30, breakMinutes = 10),
-                ),
+            listOf(
+                HistoryDomain(date = "2024-01-03", focusMinutes = 25, breakMinutes = 5),
+                HistoryDomain(date = "2024-02-02", focusMinutes = 30, breakMinutes = 10),
+            ),
         )
 
     @Test
@@ -86,10 +86,11 @@ class HistoryGraphMapperTest {
     fun `current year mapping stops at today`() {
         val today = LocalDate(year = 2024, month = Month.FEBRUARY, day = 3)
         val cells =
-            historyDomain.mapToHistorySectionUi(
-                selectedYear = 2024,
-                currentDate = today,
-            ).cells
+            historyDomain
+                .mapToHistorySectionUi(
+                    selectedYear = 2024,
+                    currentDate = today,
+                ).cells
 
         val recentRow =
             cells
@@ -116,13 +117,13 @@ class HistoryGraphMapperTest {
                 focusMinutesThisYear = 0,
                 availableYears = listOf(2023),
                 histories =
-                    listOf(
-                        HistoryDomain(
-                            date = "2023-01-01",
-                            focusMinutes = 15,
-                            breakMinutes = 5,
-                        ),
+                listOf(
+                    HistoryDomain(
+                        date = "2023-01-01",
+                        focusMinutes = 15,
+                        breakMinutes = 5,
                     ),
+                ),
             )
 
         val cells = domain.mapToHistorySectionUi(selectedYear = 2023).cells

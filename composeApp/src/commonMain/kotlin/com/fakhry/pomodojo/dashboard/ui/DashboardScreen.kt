@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -21,9 +22,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.fakhry.pomodojo.dashboard.components.DashboardHeader
-import com.fakhry.pomodojo.dashboard.components.PomodoroHistorySection
-import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
+import com.fakhry.pomodojo.dashboard.ui.components.DashboardHeader
+import com.fakhry.pomodojo.dashboard.ui.components.PomodoroHistorySection
+import com.fakhry.pomodojo.dashboard.ui.components.PomodoroTimerSection
 import com.fakhry.pomodojo.dashboard.ui.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.pomodoro_timer_start
@@ -68,11 +69,10 @@ fun DashboardScreen(
             Button(
                 onClick = onStartPomodoro,
                 modifier = Modifier.semantics { contentDescription = startLabel },
-                colors =
-                    androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
                 shape = RoundedCornerShape(24.dp),
             ) {
                 Text(

@@ -27,8 +27,10 @@ class PomodoroSessionViewModel(
     private val createPomodoroSessionUseCase: CreatePomodoroSessionUseCase,
     private val getPomodoroSessionUseCase: GetActivePomodoroSessionUseCase,
     private val dispatcher: DispatcherProvider,
-) : ContainerHost<PomodoroSessionUiState, PomodoroSessionSideEffect>, ViewModel() {
-    override val container = container<PomodoroSessionUiState, PomodoroSessionSideEffect>(PomodoroSessionUiState())
+) : ViewModel(),
+    ContainerHost<PomodoroSessionUiState, PomodoroSessionSideEffect> {
+    override val container =
+        container<PomodoroSessionUiState, PomodoroSessionSideEffect>(PomodoroSessionUiState())
     private var countDownJob: Job? = null
 
     init {
@@ -54,8 +56,10 @@ class PomodoroSessionViewModel(
             val timeline = state.timeline
             val timelineSegments = timeline.segments.toMutableList()
             val activeSegmentIndex = timelineSegments.indexOf(activeSegment)
-            val newActiveSegment =
-                activeSegment.copy(timerStatus = updatedTimerStatus, timer = activeTimer.copy(startedPauseTime = now))
+            val newActiveSegment = activeSegment.copy(
+                timerStatus = updatedTimerStatus,
+                timer = activeTimer.copy(startedPauseTime = now),
+            )
             timelineSegments.remove(activeSegment)
             timelineSegments.add(activeSegmentIndex, newActiveSegment)
 
@@ -118,7 +122,7 @@ class PomodoroSessionViewModel(
                     activeTimer.elapsedPauseTime
                 } else {
                     now - activeTimer.startedPauseTime
-                }
+                },
             )
             val updatedTimerStatus = if (isTimerRunning && remainingMillis <= 0) {
                 TimerStatusDomain.Completed
@@ -130,7 +134,10 @@ class PomodoroSessionViewModel(
             val timeline = state.timeline
             val timelineSegments = timeline.segments.toMutableList()
             val activeSegmentIndex = timelineSegments.indexOf(activeSegment)
-            val newActiveSegment = activeSegment.copy(timerStatus = updatedTimerStatus, timer = updatedTimer)
+            val newActiveSegment = activeSegment.copy(
+                timerStatus = updatedTimerStatus,
+                timer = updatedTimer,
+            )
             timelineSegments.remove(activeSegment)
             timelineSegments.add(activeSegmentIndex, newActiveSegment)
 
@@ -153,9 +160,10 @@ class PomodoroSessionViewModel(
         timelineSegments: MutableList<TimelineSegmentUi>,
     ) = intent {
         val nextSegmentIndex = activeSegmentIndex + 1
-        val nextSegment = timelineSegments.getOrNull(nextSegmentIndex) ?: return@intent postSideEffect(
-            PomodoroSessionSideEffect.OnSessionComplete,
-        )
+        val nextSegment =
+            timelineSegments.getOrNull(nextSegmentIndex) ?: return@intent postSideEffect(
+                PomodoroSessionSideEffect.OnSessionComplete,
+            )
         val nextTimer = nextSegment.timer
         val finishedInMillis = now + nextTimer.durationEpochMs
         val newTimerStatus = TimerStatusDomain.Running

@@ -41,7 +41,9 @@ fun App() {
         application = { modules(composeAppModules) },
     ) {
         val preferencesRepository = koinInject<PreferencesRepository>()
-        val preferences by preferencesRepository.preferences.collectAsState(initial = initialPreferences)
+        val preferences by preferencesRepository.preferences.collectAsState(
+            initial = initialPreferences,
+        )
         val useDarkTheme = preferences.appTheme == AppTheme.DARK
 
         PomoDojoTheme(darkTheme = useDarkTheme) {

@@ -19,24 +19,24 @@ class PomodoroHistoryRepositoryImpl(
     private val historyDao: HistorySessionDao,
     private val timeZone: TimeZone = TimeZone.UTC,
 ) : PomodoroHistoryRepository {
-    override fun getHistory(year: Int): DomainResult<PomodoroHistoryDomain> =
-        runBlocking {
-            val (startEpochMs, endEpochMs) = yearBounds(year)
-            val focusMinutesThisYear = historyDao.getTotalFocusMinutesBetween(startEpochMs, endEpochMs)
-            val availableYears = historyDao.getAvailableYears()
-            val histories =
-                historyDao
-                    .getSessionsBetween(startEpochMs, endEpochMs)
-                    .mapToDomain(timeZone)
+    override fun getHistory(year: Int): DomainResult<PomodoroHistoryDomain> = runBlocking {
+        val (startEpochMs, endEpochMs) = yearBounds(year)
+        val focusMinutesThisYear =
+            historyDao.getTotalFocusMinutesBetween(startEpochMs, endEpochMs)
+        val availableYears = historyDao.getAvailableYears()
+        val histories =
+            historyDao
+                .getSessionsBetween(startEpochMs, endEpochMs)
+                .mapToDomain(timeZone)
 
-            DomainResult.Success(
-                PomodoroHistoryDomain(
-                    focusMinutesThisYear = focusMinutesThisYear,
-                    availableYears = availableYears,
-                    histories = histories,
-                ),
-            )
-        }
+        DomainResult.Success(
+            PomodoroHistoryDomain(
+                focusMinutesThisYear = focusMinutesThisYear,
+                availableYears = availableYears,
+                histories = histories,
+            ),
+        )
+    }
 
     @OptIn(ExperimentalTime::class)
     private fun yearBounds(year: Int): Pair<Long, Long> {
@@ -58,7 +58,8 @@ private fun List<HistorySessionEntity>.mapToDomain(timeZone: TimeZone): List<His
 @OptIn(ExperimentalTime::class)
 private fun HistorySessionEntity.toDomain(timeZone: TimeZone): HistoryDomain {
     val date =
-        Instant.fromEpochMilliseconds(dateFinishedEpochMs)
+        Instant
+            .fromEpochMilliseconds(dateFinishedEpochMs)
             .toLocalDateTime(timeZone)
             .date
             .toString()

@@ -15,9 +15,12 @@ actual fun createDatabase(): PomoDojoRoomDatabase = IosFocusDatabaseHolder.datab
 private object IosFocusDatabaseHolder {
     val database: PomoDojoRoomDatabase by lazy {
         val dbFile = "${fileDirectory()}/$POMO_DOJO_DATABASE_NAME"
-        Room.databaseBuilder<PomoDojoRoomDatabase>(
-            name = dbFile,
-        ).setDriver(BundledSQLiteDriver()).setQueryCoroutineContext(Dispatchers.IO).build()
+        Room
+            .databaseBuilder<PomoDojoRoomDatabase>(
+                name = dbFile,
+            ).setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .build()
     }
 
     @OptIn(ExperimentalForeignApi::class)

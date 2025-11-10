@@ -12,7 +12,8 @@ import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSUserDomainMask
 
-internal actual fun provideDataStore(): DataStore<Preferences> = IosPreferencesDataStoreProvider.dataStore
+internal actual fun provideDataStore(): DataStore<Preferences> =
+    IosPreferencesDataStoreProvider.dataStore
 
 private object IosPreferencesDataStoreProvider {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -23,7 +24,8 @@ private object IosPreferencesDataStoreProvider {
                 directory = NSDocumentDirectory,
                 domainMask = NSUserDomainMask,
                 expandTilde = true,
-            ).firstOrNull() as? String ?: error("Unable to locate Documents directory for DataStore.")
+            ).firstOrNull() as? String
+                ?: error("Unable to locate Documents directory for DataStore.")
 
         val path: Path =
             directory

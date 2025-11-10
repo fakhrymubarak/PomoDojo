@@ -24,11 +24,7 @@ import kotlin.math.sin
  * Decorative ring + orbiting dots used by pomodoro timers across the app.
  */
 @Composable
-fun PomodoroTimerDecoration(
-    modifier: Modifier = Modifier,
-    progressColor: Color,
-    progress: Float,
-) {
+fun PomodoroTimerDecoration(modifier: Modifier = Modifier, progressColor: Color, progress: Float) {
     val animatedProgress by animateFloatAsState(
         targetValue = progress.coerceIn(0f, 1f),
         label = "focus-timer-progress",

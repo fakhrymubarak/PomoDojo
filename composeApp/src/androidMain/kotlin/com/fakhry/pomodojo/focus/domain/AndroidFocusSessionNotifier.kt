@@ -23,10 +23,11 @@ actual fun provideFocusSessionNotifier(): FocusSessionNotifier {
     return AndroidFocusSessionNotifier(context)
 }
 
-class AndroidFocusSessionNotifier(
-    private val context: Context,
-) : FocusSessionNotifier {
-    private val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNotifier {
+    private val alarmManager: AlarmManager =
+        context.getSystemService(
+            Context.ALARM_SERVICE,
+        ) as AlarmManager
 
     override suspend fun schedule(snapshot: ActiveFocusSessionDomain) {
 //        if (snapshot.status != FocusTimerStatus.RUNNING) {
@@ -52,8 +53,11 @@ class AndroidFocusSessionNotifier(
         val manager = NotificationManagerCompat.from(context)
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
             val channel =
-                NotificationChannelCompat.Builder(CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_HIGH)
-                    .setName(CHANNEL_NAME)
+                NotificationChannelCompat
+                    .Builder(
+                        CHANNEL_ID,
+                        NotificationManagerCompat.IMPORTANCE_HIGH,
+                    ).setName(CHANNEL_NAME)
                     .setDescription("Focus session reminders")
                     .build()
             manager.createNotificationChannel(channel)
@@ -61,22 +65,24 @@ class AndroidFocusSessionNotifier(
     }
 
     companion object {
-        fun buildCompletedNotification(
-            context: Context,
-            sessionId: String,
-        ) {
+        fun buildCompletedNotification(context: Context, sessionId: String) {
             val notification =
-                NotificationCompat.Builder(context, CHANNEL_ID)
+                NotificationCompat
+                    .Builder(context, CHANNEL_ID)
                     .setSmallIcon(android.R.drawable.ic_popup_reminder)
                     .setContentTitle(context.getString(R.string.focus_session_complete_title))
                     .setContentText(context.getString(R.string.focus_session_complete_body))
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(true)
                     .build()
-            NotificationManagerCompat.from(context).notify(sessionNotificationId(sessionId), notification)
+            NotificationManagerCompat
+                .from(
+                    context,
+                ).notify(sessionNotificationId(sessionId), notification)
         }
 
-        private fun sessionNotificationId(sessionId: String): Int = REQUEST_CODE_OFFSET + sessionId.hashCode()
+        private fun sessionNotificationId(sessionId: String): Int =
+            REQUEST_CODE_OFFSET + sessionId.hashCode()
     }
 
     private fun buildPendingIntent(sessionId: String): PendingIntent {
@@ -95,10 +101,7 @@ class AndroidFocusSessionNotifier(
 }
 
 class FocusSessionNotificationReceiver : BroadcastReceiver() {
-    override fun onReceive(
-        context: Context,
-        intent: Intent?,
-    ) {
+    override fun onReceive(context: Context, intent: Intent?) {
         val sessionId = intent?.getStringExtra(EXTRA_SESSION_ID) ?: return
         AndroidFocusSessionNotifier.buildCompletedNotification(context, sessionId)
     }

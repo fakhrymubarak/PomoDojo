@@ -32,10 +32,7 @@ interface HistorySessionDao {
           AND date_finished < :endExclusive
         """,
     )
-    suspend fun getTotalFocusMinutesBetween(
-        startInclusive: Long,
-        endExclusive: Long,
-    ): Int
+    suspend fun getTotalFocusMinutesBetween(startInclusive: Long, endExclusive: Long): Int
 
     @Query(
         """

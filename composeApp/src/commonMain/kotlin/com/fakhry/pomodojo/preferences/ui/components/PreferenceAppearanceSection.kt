@@ -30,10 +30,9 @@ fun ColumnScope.PreferenceAppearanceSection(
 
     Text(
         text = stringResource(Res.string.preferences_title_pomodoro_appearance_config),
-        style =
-            MaterialTheme.typography.headlineMedium.copy(
-                color = colorScheme.onBackground,
-            ),
+        style = MaterialTheme.typography.headlineMedium.copy(
+            color = colorScheme.onBackground,
+        ),
     )
 
     Surface(
