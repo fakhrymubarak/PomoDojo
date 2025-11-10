@@ -73,8 +73,10 @@ data class TimelineSegmentUi(
 data class TimerUi(
     val progress: Float = 0f,
     val durationEpochMs: Long = 0L,
-    val formattedTime: String = "00:00",
     val finishedInMillis: Long = 0L,
+    val formattedTime: String = "00:00",
+    val startedPauseTime: Long = 0L,
+    val elapsedPauseTime: Long = 0L,
 )
 
 fun PreferencesUiModel.toConfigUiState() =
