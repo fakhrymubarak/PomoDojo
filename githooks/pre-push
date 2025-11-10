@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+run() {
+    local task="$1"
+    echo "==> Running ./gradlew $task"
+    ./gradlew "$task"
+}
+
+run ktlintCheck
+run check
+run :composeApp:assembleRelease
+run :composeApp:jvmJar
+run :composeApp:linkReleaseFrameworkIosArm64
+run :composeApp:linkReleaseFrameworkIosSimulatorArm64

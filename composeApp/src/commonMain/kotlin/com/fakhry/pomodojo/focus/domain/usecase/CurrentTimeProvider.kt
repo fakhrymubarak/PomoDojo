@@ -6,6 +6,7 @@ import kotlin.time.Instant
 
 interface CurrentTimeProvider {
     fun now(): Long
+
     @OptIn(ExperimentalTime::class)
     fun nowInstant(): Instant
 }
@@ -13,5 +14,6 @@ interface CurrentTimeProvider {
 @OptIn(ExperimentalTime::class)
 object SystemCurrentTimeProvider : CurrentTimeProvider {
     override fun now(): Long = Clock.System.now().toEpochMilliseconds()
+
     override fun nowInstant(): Instant = Clock.System.now()
 }

@@ -92,9 +92,10 @@ fun PomodoroHistorySection(
             FocusHistoryGraph(
                 modifier = Modifier.weight(1f),
                 selectedYear = historyState.selectedYear,
-                cells = remember(historyState.selectedYear, historyState.cells) {
-                    historyState.cells
-                },
+                cells =
+                    remember(historyState.selectedYear, historyState.cells) {
+                        historyState.cells
+                    },
             )
             Spacer(modifier = Modifier.width(16.dp))
             // Year Filter

@@ -17,6 +17,7 @@ data class DashboardState(
     val timerMinutes: Int,
     val historySection: HistorySectionUi,
 )
+
 /**
  * Mapping from intensity level to color hex encoded in the specification.
  */

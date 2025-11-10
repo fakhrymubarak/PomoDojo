@@ -1,6 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jlleitschuh.gradle.ktlint.KtlintExtension
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -147,6 +148,14 @@ compose.resources {
 
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+// KTLint Excluded Linting
+configure<KtlintExtension> {
+    filter {
+        exclude("**/build/**")
+        exclude("**/build/generated/**")
+    }
 }
 
 val kotlinExt = extensions.getByType<KotlinMultiplatformExtension>()

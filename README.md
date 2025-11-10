@@ -17,6 +17,12 @@ xed iosApp/iosApp.xcodeproj           # Open the Swift runner, then build via Xc
 ```
 Requirements: JDK 17+, Android SDK path defined in `local.properties`, Xcode 15+ for iOS builds.
 
+## Git Hooks
+Local hooks mirror CI by running `ktlintCheck`, `check`, Android/Desktop/iOS builds before every push. Enable them once per clone:
+```
+git config core.hooksPath githooks
+```
+
 ## Project Structure
 - `composeApp/src/commonMain` – Shared UI, domain, DI, and resource definitions.
 - `composeApp/src/androidMain | iosMain | jvmMain` – Platform-specific implementations and launchers.
