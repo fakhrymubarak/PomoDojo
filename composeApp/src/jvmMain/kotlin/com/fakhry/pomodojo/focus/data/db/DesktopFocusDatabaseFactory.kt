@@ -18,7 +18,6 @@ private object DesktopFocusDatabaseHolder {
     val database: PomoDojoRoomDatabase by lazy {
         Room.databaseBuilder<PomoDojoRoomDatabase>(
             name = databasePath.toString(),
-        ).addMigrations(*FocusMigrations)
-            .setDriver(BundledSQLiteDriver()).build()
+        ).setDriver(BundledSQLiteDriver()).build()
     }
 }
