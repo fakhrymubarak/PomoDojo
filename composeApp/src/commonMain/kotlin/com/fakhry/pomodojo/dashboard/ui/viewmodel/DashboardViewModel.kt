@@ -1,0 +1,86 @@
+package com.fakhry.pomodojo.dashboard.ui.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.fakhry.pomodojo.dashboard.domain.repository.PomodoroHistoryRepository
+import com.fakhry.pomodojo.dashboard.ui.mapper.mapToHistorySectionUi
+import com.fakhry.pomodojo.dashboard.ui.model.HistorySectionUi
+import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
+import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
+import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
+import com.fakhry.pomodojo.ui.state.DomainResult
+import com.fakhry.pomodojo.utils.DispatcherProvider
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
+
+
+class DashboardViewModel(
+    private val historyRepo: PomodoroHistoryRepository,
+    private val repository: PreferencesRepository,
+    private val focusRepository: PomodoroSessionRepository,
+    private val dispatcher: DispatcherProvider,
+    private val currentTimeProvider: CurrentTimeProvider,
+) : ViewModel() {
+    private val _hasActiveSession = MutableStateFlow(false)
+    val hasActiveSession: StateFlow<Boolean> = _hasActiveSession.asStateFlow()
+
+    private val _prefState = MutableStateFlow(PreferencesDomain())
+    val prefState: StateFlow<PreferencesDomain> = _prefState.asStateFlow()
+
+    private val _historyState = MutableStateFlow(HistorySectionUi())
+    val historyState: StateFlow<HistorySectionUi> = _historyState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            async { checkHasActiveSession() }
+            async { fetchPreferences() }
+            async { fetchHistory() }
+        }
+    }
+
+    suspend fun checkHasActiveSession() {
+        val hasActiveSession = focusRepository.hasActiveSession()
+        _hasActiveSession.value = hasActiveSession
+    }
+
+    suspend fun fetchPreferences() {
+        repository.preferences.collect { preferences ->
+            _prefState.value = preferences
+        }
+    }
+
+    fun fetchHistory(selectedYear: Int = -1) = viewModelScope.launch(dispatcher.io) {
+        @OptIn(ExperimentalTime::class) val currentYear = if (selectedYear < 0) {
+            currentTimeProvider.nowInstant().toLocalDateTime(TimeZone.UTC).year
+        } else {
+            selectedYear
+        }
+        when (val result = historyRepo.getHistory(currentYear)) {
+            is DomainResult.Success -> {
+                val historySectionUi: HistorySectionUi = result.data.mapToHistorySectionUi(selectedYear = currentYear)
+                _historyState.update { historySectionUi }
+            }
+
+            is DomainResult.Error -> {}
+        }
+    }
+
+    fun selectYear(year: Int) {
+        _historyState.update { current ->
+            if (year == current.selectedYear || year !in current.availableYears) {
+                current
+            } else {
+                fetchHistory(year)
+                current.copy(selectedYear = year)
+            }
+        }
+    }
+}

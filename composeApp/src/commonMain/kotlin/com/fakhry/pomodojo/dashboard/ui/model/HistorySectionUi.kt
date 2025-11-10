@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.dashboard.model
+package com.fakhry.pomodojo.dashboard.ui.model
 
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
@@ -25,5 +25,6 @@ sealed class HistoryCell {
         val intensityLevel: Int,
         val focusMinutes: Int,
         val breakMinutes: Int,
+        val date: String = "",
     ) : HistoryCell()
 }

@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.fakhry.pomodojo.dashboard.DashboardScreen
+import com.fakhry.pomodojo.dashboard.ui.DashboardScreen
 import com.fakhry.pomodojo.focus.ui.PomodoroSessionScreen
 import com.fakhry.pomodojo.preferences.ui.PreferencesRoute
 import kotlinx.serialization.Serializable

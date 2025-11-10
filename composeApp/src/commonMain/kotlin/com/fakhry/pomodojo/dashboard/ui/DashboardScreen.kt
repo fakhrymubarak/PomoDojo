@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.dashboard
+package com.fakhry.pomodojo.dashboard.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.dashboard.components.DashboardHeader
 import com.fakhry.pomodojo.dashboard.components.PomodoroHistorySection
 import com.fakhry.pomodojo.dashboard.components.PomodoroTimerSection
-import com.fakhry.pomodojo.dashboard.viewmodel.DashboardViewModel
+import com.fakhry.pomodojo.dashboard.ui.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.pomodoro_timer_start
 import com.fakhry.pomodojo.utils.formatTimerMinutes

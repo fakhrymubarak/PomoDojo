@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.dashboard.model
+package com.fakhry.pomodojo.dashboard.ui.model
 
 import com.fakhry.pomodojo.ui.theme.GraphLevel0
 import com.fakhry.pomodojo.ui.theme.GraphLevel1
