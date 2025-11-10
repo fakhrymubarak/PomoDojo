@@ -98,12 +98,18 @@ class PomodoroHistoryRepositoryImplTest {
             // no-op for tests
         }
 
-        override suspend fun getSessionsBetween(startInclusive: Long, endExclusive: Long): List<HistorySessionEntity> {
+        override suspend fun getSessionsBetween(
+            startInclusive: Long,
+            endExclusive: Long,
+        ): List<HistorySessionEntity> {
             sessionsRange = startInclusive to endExclusive
             return sessions
         }
 
-        override suspend fun getTotalFocusMinutesBetween(startInclusive: Long, endExclusive: Long): Int {
+        override suspend fun getTotalFocusMinutesBetween(
+            startInclusive: Long,
+            endExclusive: Long,
+        ): Int {
             totalMinutesRange = startInclusive to endExclusive
             return totalMinutes
         }

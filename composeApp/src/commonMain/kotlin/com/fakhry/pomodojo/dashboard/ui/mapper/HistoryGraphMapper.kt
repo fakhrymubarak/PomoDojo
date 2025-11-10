@@ -68,31 +68,34 @@ private fun buildWeekRow(
     week: List<LocalDate?>,
     entriesByDate: Map<LocalDate, HistoryEntry>,
 ): ImmutableList<HistoryCell> {
-    val monthLabel = week.firstNotNullOfOrNull { date ->
-        date?.takeIf { it.day == 1 }?.month?.toLabel()
-    }
-    val dayCells = week.map { date ->
-        when (date) {
-            null -> HistoryCell.Empty
-            else -> entriesByDate[date]?.toGraphCell() ?: date.toEmptyGraphCell()
+    val monthLabel =
+        week.firstNotNullOfOrNull { date ->
+            date?.takeIf { it.day == 1 }?.month?.toLabel()
         }
-    }
+    val dayCells =
+        week.map { date ->
+            when (date) {
+                null -> HistoryCell.Empty
+                else -> entriesByDate[date]?.toGraphCell() ?: date.toEmptyGraphCell()
+            }
+        }
     return buildList {
         add(monthLabel?.let(HistoryCell::Text) ?: HistoryCell.Empty)
         addAll(dayCells)
     }.toPersistentList()
 }
 
-private fun dayLabelRow(): ImmutableList<HistoryCell> = persistentListOf(
-    HistoryCell.Empty,
-    HistoryCell.Text("Mon"),
-    HistoryCell.Empty,
-    HistoryCell.Text("Wed"),
-    HistoryCell.Empty,
-    HistoryCell.Text("Fri"),
-    HistoryCell.Empty,
-    HistoryCell.Text("Sun"),
-)
+private fun dayLabelRow(): ImmutableList<HistoryCell> =
+    persistentListOf(
+        HistoryCell.Empty,
+        HistoryCell.Text("Mon"),
+        HistoryCell.Empty,
+        HistoryCell.Text("Wed"),
+        HistoryCell.Empty,
+        HistoryCell.Text("Fri"),
+        HistoryCell.Empty,
+        HistoryCell.Text("Sun"),
+    )
 
 private data class HistoryEntry(
     val date: LocalDate,
@@ -109,19 +112,21 @@ private fun HistoryDomain.toHistoryEntryOrNull(): HistoryEntry? {
     )
 }
 
-private fun HistoryEntry.toGraphCell(): HistoryCell.GraphLevel = HistoryCell.GraphLevel(
-    intensityLevel = intensityLevelForMinutes(focusMinutes),
-    date = date.formatToDdMmm(),
-    focusMinutes = focusMinutes,
-    breakMinutes = breakMinutes,
-)
+private fun HistoryEntry.toGraphCell(): HistoryCell.GraphLevel =
+    HistoryCell.GraphLevel(
+        intensityLevel = intensityLevelForMinutes(focusMinutes),
+        date = date.formatToDdMmm(),
+        focusMinutes = focusMinutes,
+        breakMinutes = breakMinutes,
+    )
 
-private fun LocalDate.toEmptyGraphCell(): HistoryCell.GraphLevel = HistoryCell.GraphLevel(
-    intensityLevel = 0,
-    focusMinutes = 0,
-    breakMinutes = 0,
-    date = formatToDdMmm(),
-)
+private fun LocalDate.toEmptyGraphCell(): HistoryCell.GraphLevel =
+    HistoryCell.GraphLevel(
+        intensityLevel = 0,
+        focusMinutes = 0,
+        breakMinutes = 0,
+        date = formatToDdMmm(),
+    )
 
 private fun LocalDate.formatToDdMmm(): String = "$day ${month.toLabel()}"
 
@@ -158,13 +163,15 @@ private fun String.toLocalDateOrNull(): LocalDate? {
         val isoFirst = parts[0].length == 4
         val isoLast = parts[2].length == 4
         when {
-            isoFirst -> runCatching {
-                LocalDate(parts[0].toInt(), parts[1].toInt(), parts[2].toInt())
-            }.getOrNull()?.let { return it }
+            isoFirst ->
+                runCatching {
+                    LocalDate(parts[0].toInt(), parts[1].toInt(), parts[2].toInt())
+                }.getOrNull()?.let { return it }
 
-            isoLast -> runCatching {
-                LocalDate(parts[2].toInt(), parts[1].toInt(), parts[0].toInt())
-            }.getOrNull()?.let { return it }
+            isoLast ->
+                runCatching {
+                    LocalDate(parts[2].toInt(), parts[1].toInt(), parts[0].toInt())
+                }.getOrNull()?.let { return it }
         }
     }
 

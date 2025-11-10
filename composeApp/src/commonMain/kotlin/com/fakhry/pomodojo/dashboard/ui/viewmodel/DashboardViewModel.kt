@@ -21,7 +21,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
 
-
 class DashboardViewModel(
     private val historyRepo: PomodoroHistoryRepository,
     private val repository: PreferencesRepository,
@@ -58,8 +57,7 @@ class DashboardViewModel(
     }
 
     fun fetchHistory(selectedYear: Int = -1) = viewModelScope.launch(dispatcher.io) {
-        @OptIn(ExperimentalTime::class)
-        val now = currentTimeProvider.nowInstant().toLocalDateTime(TimeZone.UTC)
+        @OptIn(ExperimentalTime::class) val now = currentTimeProvider.nowInstant().toLocalDateTime(TimeZone.UTC)
         val today = now.date
         val currentYear = if (selectedYear < 0) {
             today.year
@@ -68,11 +66,10 @@ class DashboardViewModel(
         }
         when (val result = historyRepo.getHistory(currentYear)) {
             is DomainResult.Success -> {
-                val historySectionUi: HistorySectionUi =
-                    result.data.mapToHistorySectionUi(
-                        selectedYear = currentYear,
-                        currentDate = today,
-                    )
+                val historySectionUi: HistorySectionUi = result.data.mapToHistorySectionUi(
+                    selectedYear = currentYear,
+                    currentDate = today,
+                )
                 _historyState.update { historySectionUi }
             }
 

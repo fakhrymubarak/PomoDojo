@@ -7,10 +7,11 @@ import com.fakhry.pomodojo.focus.data.db.PomoDojoRoomDatabase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-val dashboardModule = module {
-    viewModelOf(::DashboardViewModel)
-    factory<PomodoroHistoryRepository> {
-        val database: PomoDojoRoomDatabase = get()
-        PomodoroHistoryRepositoryImpl(database.historySessionDao())
+val dashboardModule =
+    module {
+        viewModelOf(::DashboardViewModel)
+        factory<PomodoroHistoryRepository> {
+            val database: PomoDojoRoomDatabase = get()
+            PomodoroHistoryRepositoryImpl(database.historySessionDao())
+        }
     }
-}
