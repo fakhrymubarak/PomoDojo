@@ -21,30 +21,29 @@ class PomodoroHistoryRepositoryImplTest {
     fun `maps dao output into domain model`() {
         fakeDao.totalMinutes = 185
         fakeDao.availableYears = listOf(2024, 2023)
-        fakeDao.sessions =
-            listOf(
-                historyEntity(
-                    year = 2024,
-                    month = Month.FEBRUARY,
-                    day = 10,
-                    focusMinutes = 25,
-                    breakMinutes = 5,
-                ),
-                historyEntity(
-                    year = 2023,
-                    month = Month.MARCH,
-                    day = 11,
-                    focusMinutes = 50,
-                    breakMinutes = 10,
-                ),
-            )
+        fakeDao.sessions = listOf(
+            historyEntity(
+                year = 2024,
+                month = Month.FEBRUARY,
+                day = 10,
+                focusMinutes = 25,
+                breakMinutes = 5,
+            ),
+            historyEntity(
+                year = 2023,
+                month = Month.MARCH,
+                day = 11,
+                focusMinutes = 50,
+                breakMinutes = 10,
+            ),
+        )
 
         val result = repository.getHistory(2024) as DomainResult.Success
         val domain: PomodoroHistoryDomain = result.data
 
         assertEquals(185, domain.focusMinutesThisYear)
         assertEquals(listOf(2024, 2023), domain.availableYears)
-        assertEquals(1, domain.histories.size)
+        assertEquals(2, domain.histories.size)
         val history = domain.histories.first()
         assertEquals("2024-02-10", history.date)
         assertEquals(25, history.focusMinutes)
@@ -76,8 +75,7 @@ class PomodoroHistoryRepositoryImplTest {
         focusMinutes: Int,
         breakMinutes: Int,
     ): HistorySessionEntity {
-        val epoch =
-            LocalDate(year, month, day).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+        val epoch = LocalDate(year, month, day).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
         return HistorySessionEntity(
             id = 1L,
             dateStartedEpochMs = epoch,
