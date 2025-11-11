@@ -2,4 +2,13 @@
     <string name="app_name">PomoDojo</string>
     <string name="focus_session_complete_title">Focus session complete</string>
     <string name="focus_session_complete_body">Take a break and celebrate your progress!</string>
+    <string name="focus_session_live_title">Focus session in progress</string>
+    <string name="focus_session_live_subtitle">%1$s · %2$s remaining</string>
+    <string name="focus_session_live_body">Segment %1$d of %2$d • %3$d%% complete</string>
+    <string name="focus_session_phase_focus_label">Focus</string>
+    <string name="focus_session_phase_short_break_label">Break</string>
+    <string name="focus_session_phase_long_break_label">Long break</string>
+    <string name="focus_session_notification_title_format">Pomodoro Session - %1$s</string>
+    <string name="focus_session_notification_subtitle_format">%1$s remaining</string>
+    <string name="focus_session_notification_body_format">Segment %1$d of %2$d</string>
 </resources>

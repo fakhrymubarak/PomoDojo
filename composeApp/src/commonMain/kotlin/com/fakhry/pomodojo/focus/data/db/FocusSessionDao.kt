@@ -50,10 +50,7 @@ interface FocusSessionDao {
     }
 
     @Transaction
-    suspend fun replaceHourSplits(
-        sessionId: Long,
-        splits: List<ActiveSessionHourSplitEntity>,
-    ) {
+    suspend fun replaceHourSplits(sessionId: Long, splits: List<ActiveSessionHourSplitEntity>) {
         deleteHourSplits(sessionId)
         if (splits.isNotEmpty()) {
             insertHourSplits(splits)
