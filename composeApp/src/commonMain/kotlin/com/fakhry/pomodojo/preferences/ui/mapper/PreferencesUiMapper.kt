@@ -32,6 +32,7 @@ fun PreferencesDomain.mapToUiModel(
     return@run PreferencesUiModel(
         selectedTheme = appTheme,
         themeOptions = themeOptions,
+        isAlwaysOnDisplayEnabled = alwaysOnDisplayEnabled,
         repeatCount = repeatCount,
         focusOptions =
         FOCUS_OPTIONS

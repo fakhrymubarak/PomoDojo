@@ -13,6 +13,7 @@ import kotlinx.collections.immutable.persistentListOf
 data class PreferencesUiModel(
     val selectedTheme: AppTheme = AppTheme.DARK,
     val themeOptions: ImmutableList<PreferenceOption<AppTheme>> = persistentListOf(),
+    val isAlwaysOnDisplayEnabled: Boolean = false,
     val repeatCount: Int = DEFAULT_REPEAT_COUNT,
     val repeatRange: IntRange = DEFAULT_REPEAT_RANGE,
     val focusOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),
@@ -36,7 +37,10 @@ data class PreferencesConfigUiState(
 )
 
 @Immutable
-data class PreferencesAppearanceUiState(val themeOptions: ImmutableList<PreferenceOption<AppTheme>>)
+data class PreferencesAppearanceUiState(
+    val themeOptions: ImmutableList<PreferenceOption<AppTheme>>,
+    val isAlwaysOnDisplayEnabled: Boolean,
+)
 
 @Immutable
 data class TimelineUiModel(
@@ -89,4 +93,5 @@ fun PreferencesUiModel.toConfigUiState() = PreferencesConfigUiState(
 
 fun PreferencesUiModel.toAppearanceUiState() = PreferencesAppearanceUiState(
     themeOptions = themeOptions,
+    isAlwaysOnDisplayEnabled = isAlwaysOnDisplayEnabled,
 )

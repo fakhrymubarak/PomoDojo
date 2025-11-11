@@ -29,6 +29,7 @@
     <string name="preferences_timeline_break_label">Break</string>
     <string name="preferences_timeline_long_break_label">Long Break</string>
     <string name="preferences_theme_title">Theme</string>
+    <string name="preferences_always_on_display_title">Always On Display</string>
     <plurals name="hours">
         <item quantity="one">%1$d hr</item>
         <item quantity="other">%1$d hrs</item>

@@ -20,4 +20,6 @@ interface PreferencesRepository {
     suspend fun updateLongBreakMinutes(value: Int)
 
     suspend fun updateAppTheme(theme: AppTheme)
+
+    suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean)
 }

@@ -125,6 +125,10 @@ class DashboardViewModelTest {
             state.update { it.copy(appTheme = theme) }
         }
 
+        override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {
+            state.update { it.copy(alwaysOnDisplayEnabled = enabled) }
+        }
+
         fun emit(preferences: PreferencesDomain) {
             state.value = preferences
         }

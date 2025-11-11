@@ -60,7 +60,10 @@ class PreferencesViewModel(
         state.map { it.toAppearanceUiState() }.distinctUntilChanged().stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
-            PreferencesAppearanceUiState(themeOptions = persistentListOf()),
+            PreferencesAppearanceUiState(
+                themeOptions = persistentListOf(),
+                isAlwaysOnDisplayEnabled = false,
+            ),
         )
 
     init {
@@ -124,6 +127,13 @@ class PreferencesViewModel(
     fun onThemeSelected(theme: AppTheme) {
         viewModelScope.launch(dispatcher.io) {
             repository.updateAppTheme(theme)
+        }
+    }
+
+    fun onAlwaysOnDisplayToggled(enabled: Boolean) {
+        if (_state.value.isAlwaysOnDisplayEnabled == enabled) return
+        viewModelScope.launch(dispatcher.io) {
+            repository.updateAlwaysOnDisplayEnabled(enabled)
         }
     }
 
