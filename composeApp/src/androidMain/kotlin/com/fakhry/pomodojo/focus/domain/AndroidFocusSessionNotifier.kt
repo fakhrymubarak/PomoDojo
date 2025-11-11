@@ -140,9 +140,10 @@ private fun segmentRemaining(segment: TimerSegmentsDomain, now: Long): Long =
         TimerStatusDomain.Completed -> 0L
         TimerStatusDomain.Initial -> segment.timer.durationEpochMs
         TimerStatusDomain.Running -> (segment.timer.finishedInMillis - now).coerceAtLeast(0L)
-        TimerStatusDomain.Paused -> (segment.timer.finishedInMillis - segment.timer.startedPauseTime).coerceAtLeast(
-            0L,
-        )
+        TimerStatusDomain.Paused -> {
+            val remaining = segment.timer.finishedInMillis - segment.timer.startedPauseTime
+            remaining.coerceAtLeast(0L)
+        }
     }
 
 private fun TimerType.toLabel(context: Context): String = when (this) {

@@ -132,14 +132,10 @@ class PomodoroSessionViewModel(
         }
     }
 
-    private fun prepareSession(
-        session: PomodoroSessionDomain,
-        now: Long,
-    ): PreparedSession {
-        timelineSegments =
-            session.timeline.segments
-                .map { it.toTimelineSegmentUi(now) }
-                .toMutableList()
+    private fun prepareSession(session: PomodoroSessionDomain, now: Long): PreparedSession {
+        timelineSegments = session.timeline.segments
+            .map { it.toTimelineSegmentUi(now) }
+            .toMutableList()
         activeSegmentIndex = timelineSegments.resolveActiveIndex()
         val mutated = fastForwardTimeline(now)
         activeSegmentIndex = timelineSegments.resolveActiveIndex()
@@ -402,8 +398,7 @@ class PomodoroSessionViewModel(
             totalCycle = currentState.totalCycle,
             startedAtEpochMs = currentState.startedAtEpochMs,
             elapsedPauseEpochMs = currentState.elapsedPauseEpochMs,
-            timeline =
-            TimelineDomain(
+            timeline = TimelineDomain(
                 segments = timelineSegments.map { it.toDomainSegment() },
                 hourSplits = currentState.timeline.hourSplits.toList(),
             ),
