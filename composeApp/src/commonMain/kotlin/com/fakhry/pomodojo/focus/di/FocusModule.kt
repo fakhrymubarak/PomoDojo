@@ -17,13 +17,12 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val focusModule =
-    module {
-        viewModelOf(::PomodoroSessionViewModel)
-        single { RoomPomodoroSessionRepository(get<PomoDojoRoomDatabase>()) } bind PomodoroSessionRepository::class
-        singleOf(::StaticQuoteRepository) bind QuoteRepository::class
-        singleOf(::CreatePomodoroSessionUseCase)
-        single<PomoDojoRoomDatabase> { createDatabase() }
-        single<FocusSessionNotifier> { provideFocusSessionNotifier() }
-        single<CurrentTimeProvider> { SystemCurrentTimeProvider }
-    }
+val focusModule = module {
+    viewModelOf(::PomodoroSessionViewModel)
+    single { RoomPomodoroSessionRepository(get<PomoDojoRoomDatabase>()) } bind PomodoroSessionRepository::class
+    singleOf(::StaticQuoteRepository) bind QuoteRepository::class
+    singleOf(::CreatePomodoroSessionUseCase)
+    single<PomoDojoRoomDatabase> { createDatabase() }
+    single<FocusSessionNotifier> { provideFocusSessionNotifier() }
+    single<CurrentTimeProvider> { SystemCurrentTimeProvider }
+}

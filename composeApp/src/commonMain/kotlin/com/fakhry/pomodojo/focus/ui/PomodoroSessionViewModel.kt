@@ -3,9 +3,11 @@ package com.fakhry.pomodojo.focus.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.focus.domain.model.sessionId
 import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
+import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.focus.domain.usecase.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
@@ -26,6 +28,7 @@ class PomodoroSessionViewModel(
     private val currentTimeProvider: CurrentTimeProvider = SystemCurrentTimeProvider,
     private val createPomodoroSessionUseCase: CreatePomodoroSessionUseCase,
     private val sessionRepository: PomodoroSessionRepository,
+    private val focusSessionNotifier: FocusSessionNotifier,
     private val dispatcher: DispatcherProvider,
 ) : ViewModel(), ContainerHost<PomodoroSessionUiState, PomodoroSessionSideEffect> {
     override val container =
@@ -74,6 +77,7 @@ class PomodoroSessionViewModel(
             else -> Unit
         }
         persistActiveSnapshotIfNeeded()
+        updateNotification()
     }
 
     fun onDismissConfirmEnd() = intent {
@@ -109,13 +113,17 @@ class PomodoroSessionViewModel(
             }
         val uiState = prepareSessionUi(session, now)
         reduce { uiState }
+        focusSessionNotifier.schedule(session)
         when (timelineSegments.getOrNull(activeSegmentIndex)?.timerStatus) {
             TimerStatusDomain.Running -> startTicker()
             else -> stopTicker()
         }
     }
 
-    private fun prepareSessionUi(session: PomodoroSessionDomain, now: Long): PomodoroSessionUiState {
+    private fun prepareSessionUi(
+        session: PomodoroSessionDomain,
+        now: Long,
+    ): PomodoroSessionUiState {
         timelineSegments =
             session.timeline.segments
                 .map { it.toTimelineSegmentUi(now) }
@@ -180,6 +188,7 @@ class PomodoroSessionViewModel(
             if (advancedSegment) {
                 persistActiveSnapshotIfNeeded()
             }
+            updateNotification()
         }
     }
 
@@ -295,7 +304,10 @@ class PomodoroSessionViewModel(
 
     private suspend fun completeActiveSession() {
         val currentState = container.stateFlow.value
-        buildSessionSnapshot(currentState)?.let { sessionRepository.completeSession(it) }
+        buildSessionSnapshot(currentState)?.let {
+            sessionRepository.completeSession(it)
+            focusSessionNotifier.cancel(it.sessionId())
+        }
     }
 
     private fun buildSessionSnapshot(currentState: PomodoroSessionUiState): PomodoroSessionDomain? {
@@ -311,6 +323,15 @@ class PomodoroSessionViewModel(
             ),
             quote = currentState.quote,
         )
+    }
+
+    private suspend fun updateNotification() {
+        val currentState = container.stateFlow.value
+        if (currentState.isComplete) {
+            focusSessionNotifier.cancel(currentState.startedAtEpochMs.toString())
+            return
+        }
+        buildSessionSnapshot(currentState)?.let { focusSessionNotifier.schedule(it) }
     }
 
     override fun onCleared() {

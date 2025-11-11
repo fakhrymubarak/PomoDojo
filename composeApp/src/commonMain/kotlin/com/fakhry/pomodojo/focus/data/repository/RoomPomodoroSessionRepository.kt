@@ -90,19 +90,18 @@ class RoomPomodoroSessionRepository(
             ),
         )
 
-    private fun ActiveSessionSegmentEntity.toDomain(): TimerSegmentsDomain =
-        TimerSegmentsDomain(
-            type = type,
-            cycleNumber = cycleNumber,
-            timer =
-            TimerDomain(
-                durationEpochMs = durationEpochMs,
-                finishedInMillis = finishedInMillis,
-                startedPauseTime = startedPauseTime,
-                elapsedPauseTime = elapsedPauseTime,
-            ),
-            timerStatus = timerStatus,
-        )
+    private fun ActiveSessionSegmentEntity.toDomain(): TimerSegmentsDomain = TimerSegmentsDomain(
+        type = type,
+        cycleNumber = cycleNumber,
+        timer =
+        TimerDomain(
+            durationEpochMs = durationEpochMs,
+            finishedInMillis = finishedInMillis,
+            startedPauseTime = startedPauseTime,
+            elapsedPauseTime = elapsedPauseTime,
+        ),
+        timerStatus = timerStatus,
+    )
 
     private fun PomodoroSessionDomain.toEntity(sessionIdOverride: Long?): ActiveSessionEntity =
         ActiveSessionEntity(
@@ -119,31 +118,29 @@ class RoomPomodoroSessionRepository(
 
     private fun PomodoroSessionDomain.toSegmentEntities(
         sessionId: Long,
-    ): List<ActiveSessionSegmentEntity> =
-        timeline.segments.mapIndexed { index, segment ->
-            ActiveSessionSegmentEntity(
-                sessionId = sessionId,
-                segmentIndex = index,
-                type = segment.type,
-                cycleNumber = segment.cycleNumber,
-                durationEpochMs = segment.timer.durationEpochMs,
-                finishedInMillis = segment.timer.finishedInMillis,
-                startedPauseTime = segment.timer.startedPauseTime,
-                elapsedPauseTime = segment.timer.elapsedPauseTime,
-                timerStatus = segment.timerStatus,
-            )
-        }
+    ): List<ActiveSessionSegmentEntity> = timeline.segments.mapIndexed { index, segment ->
+        ActiveSessionSegmentEntity(
+            sessionId = sessionId,
+            segmentIndex = index,
+            type = segment.type,
+            cycleNumber = segment.cycleNumber,
+            durationEpochMs = segment.timer.durationEpochMs,
+            finishedInMillis = segment.timer.finishedInMillis,
+            startedPauseTime = segment.timer.startedPauseTime,
+            elapsedPauseTime = segment.timer.elapsedPauseTime,
+            timerStatus = segment.timerStatus,
+        )
+    }
 
     private fun PomodoroSessionDomain.toHourSplitEntities(
         sessionId: Long,
-    ): List<ActiveSessionHourSplitEntity> =
-        timeline.hourSplits.mapIndexed { index, minutes ->
-            ActiveSessionHourSplitEntity(
-                sessionId = sessionId,
-                position = index,
-                minutes = minutes,
-            )
-        }
+    ): List<ActiveSessionHourSplitEntity> = timeline.hourSplits.mapIndexed { index, minutes ->
+        ActiveSessionHourSplitEntity(
+            sessionId = sessionId,
+            position = index,
+            minutes = minutes,
+        )
+    }
 
     private fun PomodoroSessionDomain.toHistoryEntity(): HistorySessionEntity {
         val totalFocusMinutes =

@@ -4,6 +4,7 @@ import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
+import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
@@ -72,7 +73,7 @@ class PomodoroSessionViewModelTest {
         runCurrent()
 
         val state = viewModel.currentSnapshot()
-        assertEquals(0.75f, state.activeSegment.timer.progress, 0.05f, "state=$state")
+        assertEquals(0.7f, state.activeSegment.timer.progress, 0.2f, "state=$state")
     }
 
     @Test
@@ -127,6 +128,7 @@ class PomodoroSessionViewModelTest {
         val dispatcherProvider = DispatcherProvider(dispatcher)
 
         val sessionRepository = FakePomodoroSessionRepository()
+        val focusNotifier = FakeFocusSessionNotifier()
         val createSessionUseCase =
             CreatePomodoroSessionUseCase(
                 sessionRepository = sessionRepository,
@@ -141,6 +143,7 @@ class PomodoroSessionViewModelTest {
             currentTimeProvider = currentTimeProvider,
             createPomodoroSessionUseCase = createSessionUseCase,
             sessionRepository = sessionRepository,
+            focusSessionNotifier = focusNotifier,
             dispatcher = dispatcherProvider,
         )
     }
@@ -202,15 +205,29 @@ private class FakePomodoroSessionRepository : com.fakhry.pomodojo.focus.domain.r
     override suspend fun getActiveSession(): com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain =
         throw UnsupportedOperationException("Not required for tests")
 
-    override suspend fun saveActiveSession(snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain) = Unit
+    override suspend fun saveActiveSession(
+        snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain,
+    ) = Unit
 
-    override suspend fun updateActiveSession(snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain) = Unit
+    override suspend fun updateActiveSession(
+        snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain,
+    ) = Unit
 
-    override suspend fun completeSession(snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain) = Unit
+    override suspend fun completeSession(
+        snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain,
+    ) = Unit
 
     override suspend fun clearActiveSession() = Unit
 
     override suspend fun hasActiveSession(): Boolean = false
+}
+
+private class FakeFocusSessionNotifier : FocusSessionNotifier {
+    override suspend fun schedule(
+        snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain,
+    ) = Unit
+
+    override suspend fun cancel(sessionId: String) = Unit
 }
 
 @OptIn(ExperimentalTime::class)

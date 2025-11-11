@@ -57,7 +57,8 @@ class RoomPomodoroSessionRepositoryTest {
 
     @Test
     fun `getActiveSession throws when nothing stored`() = runTest {
-        val repository = RoomPomodoroSessionRepository(FakeFocusSessionDao(), FakeHistorySessionDao())
+        val repository =
+            RoomPomodoroSessionRepository(FakeFocusSessionDao(), FakeHistorySessionDao())
 
         assertFailsWith<IllegalStateException> {
             repository.getActiveSession()

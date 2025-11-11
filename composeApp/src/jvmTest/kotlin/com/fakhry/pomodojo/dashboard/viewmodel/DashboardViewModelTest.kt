@@ -133,8 +133,7 @@ class DashboardViewModelTest {
     private class FakeFocusRepository(private var hasActive: Boolean) : PomodoroSessionRepository {
         override suspend fun hasActiveSession(): Boolean = hasActive
 
-        override suspend fun getActiveSession(): PomodoroSessionDomain =
-            PomodoroSessionDomain()
+        override suspend fun getActiveSession(): PomodoroSessionDomain = PomodoroSessionDomain()
 
         override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
             hasActive = true

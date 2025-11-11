@@ -13,11 +13,19 @@ internal fun TimerSegmentsDomain.toTimelineSegmentUi(now: Long): TimelineSegment
         when (timerStatus) {
             TimerStatusDomain.Running -> {
                 val remainingNow = (timer.finishedInMillis - now).coerceAtLeast(0L)
-                Triple(remainingNow, timer.finishedInMillis.takeIf { it > 0L } ?: now + duration, 0L)
+                Triple(
+                    remainingNow,
+                    timer.finishedInMillis.takeIf {
+                        it > 0L
+                    } ?: now + duration,
+                    0L,
+                )
             }
 
             TimerStatusDomain.Paused -> {
-                val remainingNow = (timer.finishedInMillis - timer.startedPauseTime).coerceAtLeast(0L)
+                val remainingNow = (timer.finishedInMillis - timer.startedPauseTime).coerceAtLeast(
+                    0L,
+                )
                 Triple(remainingNow, timer.finishedInMillis, timer.startedPauseTime)
             }
 
@@ -47,25 +55,25 @@ internal fun TimerSegmentsDomain.toTimelineSegmentUi(now: Long): TimelineSegment
     )
 }
 
-internal fun TimelineSegmentUi.toDomainSegment(): TimerSegmentsDomain =
-    TimerSegmentsDomain(
-        type = type,
-        cycleNumber = cycleNumber,
-        timer =
-        TimerDomain(
-            durationEpochMs = timer.durationEpochMs,
-            finishedInMillis = timer.finishedInMillis,
-            startedPauseTime = timer.startedPauseTime,
-            elapsedPauseTime = timer.elapsedPauseTime,
-        ),
-        timerStatus = timerStatus,
-    )
+internal fun TimelineSegmentUi.toDomainSegment(): TimerSegmentsDomain = TimerSegmentsDomain(
+    type = type,
+    cycleNumber = cycleNumber,
+    timer =
+    TimerDomain(
+        durationEpochMs = timer.durationEpochMs,
+        finishedInMillis = timer.finishedInMillis,
+        startedPauseTime = timer.startedPauseTime,
+        elapsedPauseTime = timer.elapsedPauseTime,
+    ),
+    timerStatus = timerStatus,
+)
 
 internal fun List<TimelineSegmentUi>.resolveActiveIndex(): Int {
     if (isEmpty()) return 0
     val runningIndex =
         indexOfFirst {
-            it.timerStatus == TimerStatusDomain.Running || it.timerStatus == TimerStatusDomain.Paused
+            it.timerStatus == TimerStatusDomain.Running ||
+                it.timerStatus == TimerStatusDomain.Paused
         }
     if (runningIndex >= 0) return runningIndex
     return indexOfFirst { it.timerStatus != TimerStatusDomain.Completed }
