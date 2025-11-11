@@ -89,11 +89,61 @@ class RoomPomodoroSessionRepositoryTest {
 
         val history = historyDao.inserted
         assertEquals(snapshot.startedAtEpochMs, history?.dateStartedEpochMs)
-        val totalDuration = snapshot.timeline.segments.sumOf { it.timer.durationEpochMs }
+        val totalDuration =
+            snapshot.timeline.segments
+                .filter { it.timerStatus != TimerStatusDomain.Initial }
+                .sumOf { it.timer.durationEpochMs }
         assertEquals(snapshot.startedAtEpochMs + totalDuration, history?.dateFinishedEpochMs)
         assertNull(focusDao.entity)
         assertTrue(focusDao.segments.isEmpty())
         assertTrue(focusDao.hourSplits.isEmpty())
+    }
+
+    @Test
+    fun `completeSession only counts elapsed segments`() = runTest {
+        val focusDao = FakeFocusSessionDao()
+        val historyDao = FakeHistorySessionDao()
+        val repository = RoomPomodoroSessionRepository(focusDao, historyDao)
+        val focusMinutes = 25
+        val breakMinutes = 5
+        val snapshot = sampleSession(
+            focusMinutes = focusMinutes,
+            breakMinutes = breakMinutes,
+        ).copy(
+            timeline = TimelineDomain(
+                segments =
+                listOf(
+                    TimerSegmentsDomain(
+                        type = TimerType.FOCUS,
+                        cycleNumber = 1,
+                        timer = TimerDomain(durationEpochMs = focusMinutes * 60_000L),
+                        timerStatus = TimerStatusDomain.Completed,
+                    ),
+                    TimerSegmentsDomain(
+                        type = TimerType.SHORT_BREAK,
+                        cycleNumber = 1,
+                        timer = TimerDomain(durationEpochMs = breakMinutes * 60_000L),
+                        timerStatus = TimerStatusDomain.Completed,
+                    ),
+                    TimerSegmentsDomain(
+                        type = TimerType.FOCUS,
+                        cycleNumber = 2,
+                        timer = TimerDomain(durationEpochMs = focusMinutes * 60_000L),
+                        timerStatus = TimerStatusDomain.Initial,
+                    ),
+                ),
+                hourSplits = emptyList(),
+            ),
+        )
+
+        repository.saveActiveSession(snapshot)
+        repository.completeSession(snapshot)
+
+        val history = historyDao.inserted ?: error("history not inserted")
+        assertEquals(focusMinutes, history.totalFocusMinutes)
+        assertEquals(breakMinutes, history.totalBreakMinutes)
+        val elapsedMillis = (focusMinutes + breakMinutes) * 60_000L
+        assertEquals(snapshot.startedAtEpochMs + elapsedMillis, history.dateFinishedEpochMs)
     }
 
     @Test
