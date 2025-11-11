@@ -10,10 +10,10 @@ import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.focus.domain.usecase.SegmentCompletionSoundPlayer
 import com.fakhry.pomodojo.focus.domain.usecase.SystemCurrentTimeProvider
+import com.fakhry.pomodojo.focus.ui.mapper.toUiState
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
-import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.utils.DispatcherProvider
 import com.fakhry.pomodojo.utils.formatDurationMillis
 import kotlinx.collections.immutable.toPersistentList
@@ -343,27 +343,6 @@ class PomodoroSessionViewModel(
             }
         }
         return mutated
-    }
-
-    private fun PomodoroSessionDomain.toUiState(
-        segments: List<TimelineSegmentUi>,
-        activeIndex: Int,
-        isComplete: Boolean,
-    ): PomodoroSessionUiState {
-        val active = segments.getOrNull(activeIndex) ?: TimelineSegmentUi()
-        return PomodoroSessionUiState(
-            totalCycle = totalCycle,
-            startedAtEpochMs = startedAtEpochMs,
-            elapsedPauseEpochMs = elapsedPauseEpochMs,
-            activeSegment = active,
-            timeline = TimelineUiModel(
-                segments = segments.toPersistentList(),
-                hourSplits = timeline.hourSplits.toPersistentList(),
-            ),
-            quote = quote,
-            isShowConfirmEndDialog = false,
-            isComplete = isComplete,
-        )
     }
 
     private fun PomodoroSessionUiState.withUpdatedTimeline(

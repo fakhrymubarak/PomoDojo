@@ -85,6 +85,8 @@ fun PomodoroSessionScreen(
     var showEndDialog by rememberSaveable { mutableStateOf(false) }
     val state = viewModel.collectAsState().value
 
+    KeepScreenOnEffect(state.alwaysOnDisplayEnabled)
+
     BackHandler {
         viewModel.onEndClicked()
     }

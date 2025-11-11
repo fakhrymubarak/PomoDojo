@@ -30,6 +30,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -191,6 +192,7 @@ class PomodoroSessionViewModelTest {
 
         advanceTimeBy(minuteMillis)
         runCurrent()
+        advanceUntilIdle()
 
         assertEquals(1, soundPlayer.playCount)
     }
@@ -323,6 +325,7 @@ private class FakeFocusSessionNotifier : FocusSessionNotifier {
 }
 
 private class FakeSegmentCompletionSoundPlayer : SegmentCompletionSoundPlayer {
+    @Volatile
     var playCount: Int = 0
 
     override fun playSegmentCompleted() {
