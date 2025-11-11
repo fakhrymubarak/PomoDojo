@@ -6,6 +6,7 @@ import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
+import com.fakhry.pomodojo.focus.domain.usecase.SegmentCompletionSoundPlayer
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
@@ -186,6 +187,19 @@ class PomodoroSessionViewModelTest {
         )
     }
 
+    @Test
+    fun `segment completion triggers timer notification sound`() = runTest(dispatcher) {
+        val soundPlayer = FakeSegmentCompletionSoundPlayer()
+        val viewModel = createViewModel(soundPlayer = soundPlayer)
+        runCurrent()
+        viewModel.awaitSessionStarted()
+
+        advanceTimeBy(minuteMillis)
+        runCurrent()
+
+        assertEquals(1, soundPlayer.playCount)
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun TestScope.createViewModel(
         preferences: PreferencesDomain =
@@ -198,6 +212,7 @@ class PomodoroSessionViewModelTest {
                 longBreakMinutes = 1,
             ),
         sessionRepository: FakePomodoroSessionRepository = FakePomodoroSessionRepository(),
+        soundPlayer: SegmentCompletionSoundPlayer = FakeSegmentCompletionSoundPlayer(),
     ): PomodoroSessionViewModel {
         val currentTimeProvider = TestCurrentTimeProvider(testScheduler)
         val quoteRepository = FakeQuoteRepository()
@@ -220,6 +235,7 @@ class PomodoroSessionViewModelTest {
             createPomodoroSessionUseCase = createSessionUseCase,
             sessionRepository = sessionRepository,
             focusSessionNotifier = focusNotifier,
+            segmentCompletionSoundPlayer = soundPlayer,
             dispatcher = dispatcherProvider,
         )
     }
@@ -307,6 +323,14 @@ private class FakePomodoroSessionRepository(
 private class FakeFocusSessionNotifier : FocusSessionNotifier {
     override suspend fun schedule(snapshot: PomodoroSessionDomain) = Unit
     override suspend fun cancel(sessionId: String) = Unit
+}
+
+private class FakeSegmentCompletionSoundPlayer : SegmentCompletionSoundPlayer {
+    var playCount: Int = 0
+
+    override fun playSegmentCompleted() {
+        playCount += 1
+    }
 }
 
 @OptIn(ExperimentalTime::class)
