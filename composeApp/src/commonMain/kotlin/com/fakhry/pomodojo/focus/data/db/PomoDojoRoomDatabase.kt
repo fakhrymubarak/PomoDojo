@@ -5,10 +5,17 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionEntity
+import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionHourSplitEntity
+import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionSegmentEntity
 import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
 
 @Database(
-    entities = [ActiveSessionEntity::class, HistorySessionEntity::class],
+    entities = [
+        ActiveSessionEntity::class,
+        ActiveSessionSegmentEntity::class,
+        ActiveSessionHourSplitEntity::class,
+        HistorySessionEntity::class,
+    ],
     version = 1,
     exportSchema = true,
 )

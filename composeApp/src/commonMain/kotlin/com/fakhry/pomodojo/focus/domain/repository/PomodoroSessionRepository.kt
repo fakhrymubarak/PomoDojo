@@ -1,18 +1,18 @@
 package com.fakhry.pomodojo.focus.domain.repository
 
-import com.fakhry.pomodojo.focus.domain.model.ActiveFocusSessionDomain
+import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 
 /**
  * Abstraction over the storage of active pomodoro sessions.
  */
 interface PomodoroSessionRepository {
-    suspend fun getActiveSession(): ActiveFocusSessionDomain
+    suspend fun getActiveSession(): PomodoroSessionDomain
 
-    suspend fun saveActiveSession(snapshot: ActiveFocusSessionDomain)
+    suspend fun saveActiveSession(snapshot: PomodoroSessionDomain)
 
-    suspend fun updateActiveSession(snapshot: ActiveFocusSessionDomain)
+    suspend fun updateActiveSession(snapshot: PomodoroSessionDomain)
 
-    suspend fun completeSession(snapshot: ActiveFocusSessionDomain)
+    suspend fun completeSession(snapshot: PomodoroSessionDomain)
 
     suspend fun clearActiveSession()
 

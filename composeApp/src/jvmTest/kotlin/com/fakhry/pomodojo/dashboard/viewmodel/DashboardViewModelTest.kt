@@ -2,7 +2,7 @@ package com.fakhry.pomodojo.dashboard.viewmodel
 
 import com.fakhry.pomodojo.dashboard.domain.repository.PomodoroHistoryRepository
 import com.fakhry.pomodojo.dashboard.ui.viewmodel.DashboardViewModel
-import com.fakhry.pomodojo.focus.domain.model.ActiveFocusSessionDomain
+import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
@@ -133,20 +133,18 @@ class DashboardViewModelTest {
     private class FakeFocusRepository(private var hasActive: Boolean) : PomodoroSessionRepository {
         override suspend fun hasActiveSession(): Boolean = hasActive
 
-        override suspend fun getActiveSession(): ActiveFocusSessionDomain =
-            ActiveFocusSessionDomain()
+        override suspend fun getActiveSession(): PomodoroSessionDomain =
+            PomodoroSessionDomain()
 
-        override suspend fun saveActiveSession(snapshot: ActiveFocusSessionDomain) {
+        override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
             hasActive = true
         }
 
-        override suspend fun updateActiveSession(snapshot: ActiveFocusSessionDomain) {
-            hasActive =
-                snapshot.sessionStatus ==
-                com.fakhry.pomodojo.focus.domain.model.FocusTimerStatus.RUNNING
+        override suspend fun updateActiveSession(snapshot: PomodoroSessionDomain) {
+            hasActive = !hasActive
         }
 
-        override suspend fun completeSession(snapshot: ActiveFocusSessionDomain) {
+        override suspend fun completeSession(snapshot: PomodoroSessionDomain) {
             hasActive = false
         }
 

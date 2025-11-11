@@ -10,7 +10,6 @@ import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
-import com.fakhry.pomodojo.focus.domain.usecase.GetActivePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.focus.ui.PomodoroSessionViewModel
 import org.koin.core.module.dsl.singleOf
@@ -21,10 +20,9 @@ import org.koin.dsl.module
 val focusModule =
     module {
         viewModelOf(::PomodoroSessionViewModel)
-        singleOf(::RoomPomodoroSessionRepository) bind PomodoroSessionRepository::class
+        single { RoomPomodoroSessionRepository(get<PomoDojoRoomDatabase>()) } bind PomodoroSessionRepository::class
         singleOf(::StaticQuoteRepository) bind QuoteRepository::class
         singleOf(::CreatePomodoroSessionUseCase)
-        singleOf(::GetActivePomodoroSessionUseCase)
         single<PomoDojoRoomDatabase> { createDatabase() }
         single<FocusSessionNotifier> { provideFocusSessionNotifier() }
         single<CurrentTimeProvider> { SystemCurrentTimeProvider }
