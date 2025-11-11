@@ -82,6 +82,7 @@ fun PreferencesRoute(
         onToggleLongBreak = viewModel::onLongBreakEnabledToggled,
         onLongBreakAfterSelected = viewModel::onLongBreakAfterSelected,
         onLongBreakMinutesSelected = viewModel::onLongBreakMinutesSelected,
+        onAlwaysOnDisplayToggled = viewModel::onAlwaysOnDisplayToggled,
     )
 }
 
@@ -99,6 +100,7 @@ fun PreferencesScreen(
     onToggleLongBreak: (Boolean) -> Unit = {},
     onLongBreakAfterSelected: (Int) -> Unit = {},
     onLongBreakMinutesSelected: (Int) -> Unit = {},
+    onAlwaysOnDisplayToggled: (Boolean) -> Unit = {},
 ) {
     TrackRecomposition(RecompositionTags.SCREEN)
     Surface(
@@ -126,6 +128,7 @@ fun PreferencesScreen(
                     onToggleLongBreak = onToggleLongBreak,
                     onLongBreakAfterSelected = onLongBreakAfterSelected,
                     onLongBreakMinutesSelected = onLongBreakMinutesSelected,
+                    onAlwaysOnDisplayToggled = onAlwaysOnDisplayToggled,
                 )
             }
         }
@@ -182,6 +185,7 @@ private fun PreferencesContent(
     onToggleLongBreak: (Boolean) -> Unit = {},
     onLongBreakAfterSelected: (Int) -> Unit = {},
     onLongBreakMinutesSelected: (Int) -> Unit = {},
+    onAlwaysOnDisplayToggled: (Boolean) -> Unit = {},
 ) {
     TrackRecomposition(RecompositionTags.CONTENT)
     val scrollState = rememberScrollState()
@@ -215,6 +219,8 @@ private fun PreferencesContent(
         PreferenceAppearanceSection(
             themeOptions = appearanceState.themeOptions,
             onOptionSelected = onThemeSelected,
+            isAlwaysOnDisplayEnabled = appearanceState.isAlwaysOnDisplayEnabled,
+            onAlwaysOnDisplayToggled = onAlwaysOnDisplayToggled,
         )
     }
 }
@@ -247,6 +253,7 @@ private fun PreferencesContentPreview() {
                 selected = theme == preferences.appTheme,
             )
         }.toPersistentList(),
+        isAlwaysOnDisplayEnabled = preferences.alwaysOnDisplayEnabled,
         repeatCount = preferences.repeatCount,
         focusOptions = listOf(10, 25, 50).map { minutes ->
             PreferenceOption(
@@ -296,6 +303,7 @@ private fun PreferencesContentPreview() {
             timeline = previewPreferencesState.timeline,
             configState = configState,
             appearanceState = appearanceState,
+            onAlwaysOnDisplayToggled = {},
         )
     }
 }

@@ -12,6 +12,8 @@ import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -137,6 +139,34 @@ class PreferencesViewModelTest {
             updatedState.timeline.segments,
             "Timeline must change when repeat count updates.",
         )
+    }
+
+    @Test
+    fun `always on display toggle updates appearance state`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
+
+        advanceUntilIdle()
+        assertFalse(viewModel.appearanceState.value.isAlwaysOnDisplayEnabled)
+
+        viewModel.onAlwaysOnDisplayToggled(true)
+        advanceUntilIdle()
+
+        val updatedAppearance =
+            viewModel.appearanceState.filter { it.isAlwaysOnDisplayEnabled }.first()
+        assertTrue(updatedAppearance.isAlwaysOnDisplayEnabled)
     }
 
     private class FakePreferenceStorage : PreferenceStorage {

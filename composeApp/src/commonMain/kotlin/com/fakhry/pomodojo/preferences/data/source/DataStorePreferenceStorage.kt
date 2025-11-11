@@ -52,6 +52,7 @@ class DataStorePreferenceStorage(private val dataStore: DataStore<Preferences>) 
             this[PreferenceKeys.LONG_BREAK_MINUTES] ?: PreferencesDomain.DEFAULT_LONG_BREAK_MINUTES
 
         val appTheme = AppTheme.fromStorage(this[PreferenceKeys.APP_THEME])
+        val alwaysOnDisplayEnabled = this[PreferenceKeys.ALWAYS_ON_DISPLAY_ENABLED] ?: false
 
         return PreferencesDomain(
             appTheme = appTheme,
@@ -61,6 +62,7 @@ class DataStorePreferenceStorage(private val dataStore: DataStore<Preferences>) 
             longBreakEnabled = longBreakEnabled,
             longBreakAfter = longBreakAfter,
             longBreakMinutes = longBreakMinutes,
+            alwaysOnDisplayEnabled = alwaysOnDisplayEnabled,
         )
     }
 
@@ -72,6 +74,7 @@ class DataStorePreferenceStorage(private val dataStore: DataStore<Preferences>) 
         this[PreferenceKeys.LONG_BREAK_AFTER_COUNT] = preferences.longBreakAfter
         this[PreferenceKeys.LONG_BREAK_MINUTES] = preferences.longBreakMinutes
         this[PreferenceKeys.APP_THEME] = preferences.appTheme.storageValue
+        this[PreferenceKeys.ALWAYS_ON_DISPLAY_ENABLED] = preferences.alwaysOnDisplayEnabled
     }
 }
 
@@ -83,4 +86,5 @@ internal object PreferenceKeys {
     val LONG_BREAK_AFTER_COUNT = intPreferencesKey("long_break_after_count")
     val LONG_BREAK_MINUTES = intPreferencesKey("long_break_minutes")
     val APP_THEME = stringPreferencesKey("app_theme")
+    val ALWAYS_ON_DISPLAY_ENABLED = booleanPreferencesKey("always_on_display_enabled")
 }
