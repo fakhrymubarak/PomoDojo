@@ -1,14 +1,13 @@
 package com.fakhry.pomodojo.focus.ui
 
 import androidx.compose.runtime.Immutable
-import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
-import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 data class PomodoroSessionUiState(
+    val alwaysOnDisplayEnabled: Boolean = true,
     val totalCycle: Int = 0,
     val startedAtEpochMs: Long = 0L,
     val elapsedPauseEpochMs: Long = 0L,
@@ -29,24 +28,4 @@ sealed class PomodoroSessionSideEffect {
     data class ShowEndSessionDialog(val isShown: Boolean) : PomodoroSessionSideEffect()
 
     object OnSessionComplete : PomodoroSessionSideEffect()
-}
-
-fun PomodoroSessionDomain.toPomodoroUiSessionUi(now: Long): PomodoroSessionUiState {
-    val segments = timeline.segments.map { it.toTimelineSegmentUi(now) }
-    val activeIndex = segments.resolveActiveIndex()
-    val timelineUi =
-        TimelineUiModel(
-            segments = segments.toPersistentList(),
-            hourSplits = timeline.hourSplits.toPersistentList(),
-        )
-    return PomodoroSessionUiState(
-        totalCycle = totalCycle,
-        startedAtEpochMs = startedAtEpochMs,
-        elapsedPauseEpochMs = elapsedPauseEpochMs,
-        activeSegment = segments.getOrNull(activeIndex) ?: TimelineSegmentUi(),
-        timeline = timelineUi,
-        quote = quote,
-        isShowConfirmEndDialog = false,
-        isComplete = false,
-    )
 }
