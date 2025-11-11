@@ -10,7 +10,9 @@ import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
+import com.fakhry.pomodojo.focus.domain.usecase.SegmentCompletionSoundPlayer
 import com.fakhry.pomodojo.focus.domain.usecase.SystemCurrentTimeProvider
+import com.fakhry.pomodojo.focus.domain.usecase.provideSegmentCompletionSoundPlayer
 import com.fakhry.pomodojo.focus.ui.PomodoroSessionViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -24,5 +26,6 @@ val focusModule = module {
     singleOf(::CreatePomodoroSessionUseCase)
     single<PomoDojoRoomDatabase> { createDatabase() }
     single<FocusSessionNotifier> { provideFocusSessionNotifier() }
+    single<SegmentCompletionSoundPlayer> { provideSegmentCompletionSoundPlayer() }
     single<CurrentTimeProvider> { SystemCurrentTimeProvider }
 }

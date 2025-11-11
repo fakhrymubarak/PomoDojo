@@ -8,6 +8,7 @@ import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
+import com.fakhry.pomodojo.focus.domain.usecase.SegmentCompletionSoundPlayer
 import com.fakhry.pomodojo.focus.domain.usecase.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
@@ -29,6 +30,7 @@ class PomodoroSessionViewModel(
     private val createPomodoroSessionUseCase: CreatePomodoroSessionUseCase,
     private val sessionRepository: PomodoroSessionRepository,
     private val focusSessionNotifier: FocusSessionNotifier,
+    private val segmentCompletionSoundPlayer: SegmentCompletionSoundPlayer,
     private val dispatcher: DispatcherProvider,
 ) : ViewModel(), ContainerHost<PomodoroSessionUiState, PomodoroSessionSideEffect> {
     override val container =
@@ -186,6 +188,7 @@ class PomodoroSessionViewModel(
 
             var advancedSegment = false
             while (updatedSegment.timerStatus == TimerStatusDomain.Completed) {
+                segmentCompletionSoundPlayer.playSegmentCompleted()
                 advancedSegment = true
                 if (!advanceToNextSegment(now)) {
                     reduce {
