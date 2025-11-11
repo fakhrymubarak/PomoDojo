@@ -14,6 +14,7 @@ import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
 
 class RoomPomodoroSessionRepository(
@@ -143,17 +144,19 @@ class RoomPomodoroSessionRepository(
     }
 
     private fun PomodoroSessionDomain.toHistoryEntity(): HistorySessionEntity {
+        val elapsedSegments =
+            timeline.segments.filterNot { it.timerStatus == TimerStatusDomain.Initial }
         val totalFocusMinutes =
-            timeline.segments
+            elapsedSegments
                 .filter { it.type == TimerType.FOCUS }
                 .sumOf { it.timer.durationEpochMs }
                 .toMinutes()
         val totalBreakMinutes =
-            timeline.segments
+            elapsedSegments
                 .filter { it.type != TimerType.FOCUS }
                 .sumOf { it.timer.durationEpochMs }
                 .toMinutes()
-        val totalDuration = timeline.segments.sumOf { it.timer.durationEpochMs }
+        val totalDuration = elapsedSegments.sumOf { it.timer.durationEpochMs }
         val finishedAt = startedAtEpochMs + totalDuration
         return HistorySessionEntity(
             id = startedAtEpochMs,
