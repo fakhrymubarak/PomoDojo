@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.focus.ui
 
+import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
@@ -7,7 +8,11 @@ import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
@@ -39,6 +44,7 @@ import kotlin.time.Instant
 @OptIn(ExperimentalCoroutinesApi::class)
 class PomodoroSessionViewModelTest {
     private val dispatcher = StandardTestDispatcher()
+    private val minuteMillis = 60_000L
 
     @BeforeTest
     fun setUp() {
@@ -110,6 +116,76 @@ class PomodoroSessionViewModelTest {
         assertTrue(completeEffect.await() is PomodoroSessionSideEffect.OnSessionComplete)
     }
 
+    @Test
+    fun `restoring session fast forwards overdue segments`() = runTest(dispatcher) {
+        val elapsedSinceStart = 3 * minuteMillis + 30 * 1_000L
+        advanceTimeBy(elapsedSinceStart)
+
+        val storedSession =
+            activeSessionSnapshot(
+                segments =
+                listOf(
+                    timerSegment(
+                        type = TimerType.FOCUS,
+                        cycle = 1,
+                        durationMs = minuteMillis,
+                        status = TimerStatusDomain.Completed,
+                        finishedAt = 1 * minuteMillis,
+                    ),
+                    timerSegment(
+                        type = TimerType.SHORT_BREAK,
+                        cycle = 1,
+                        durationMs = minuteMillis,
+                        status = TimerStatusDomain.Running,
+                        finishedAt = 2 * minuteMillis,
+                    ),
+                    timerSegment(
+                        type = TimerType.FOCUS,
+                        cycle = 2,
+                        durationMs = minuteMillis,
+                        status = TimerStatusDomain.Initial,
+                    ),
+                    timerSegment(
+                        type = TimerType.SHORT_BREAK,
+                        cycle = 2,
+                        durationMs = minuteMillis,
+                        status = TimerStatusDomain.Initial,
+                    ),
+                ),
+            )
+        val sessionRepository = FakePomodoroSessionRepository(initialSession = storedSession)
+
+        val viewModel = createViewModel(sessionRepository = sessionRepository)
+        runCurrent()
+
+        val state = viewModel.awaitSessionStarted()
+
+        assertEquals(
+            TimerStatusDomain.Running,
+            state.activeSegment.timerStatus,
+        )
+        assertEquals(
+            TimerType.SHORT_BREAK,
+            state.activeSegment.type,
+        )
+        assertEquals(
+            "00:30",
+            state.activeSegment.timer.formattedTime,
+        )
+        assertEquals(
+            listOf(
+                TimerStatusDomain.Completed,
+                TimerStatusDomain.Completed,
+                TimerStatusDomain.Completed,
+            ),
+            state.timeline.segments.take(3).map { it.timerStatus },
+        )
+        assertEquals(
+            TimerStatusDomain.Running,
+            sessionRepository.storedSession!!.timeline.segments[3].timerStatus,
+        )
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun TestScope.createViewModel(
         preferences: PreferencesDomain =
@@ -121,13 +197,13 @@ class PomodoroSessionViewModelTest {
                 longBreakAfter = PreferencesDomain.DEFAULT_LONG_BREAK_AFTER,
                 longBreakMinutes = 1,
             ),
+        sessionRepository: FakePomodoroSessionRepository = FakePomodoroSessionRepository(),
     ): PomodoroSessionViewModel {
         val currentTimeProvider = TestCurrentTimeProvider(testScheduler)
         val quoteRepository = FakeQuoteRepository()
         val preferencesRepository = FakePreferencesRepository(preferences)
         val dispatcherProvider = DispatcherProvider(dispatcher)
 
-        val sessionRepository = FakePomodoroSessionRepository()
         val focusNotifier = FakeFocusSessionNotifier()
         val createSessionUseCase =
             CreatePomodoroSessionUseCase(
@@ -201,32 +277,35 @@ private class FakePreferencesRepository(initial: PreferencesDomain) : Preference
     }
 }
 
-private class FakePomodoroSessionRepository : com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository {
-    override suspend fun getActiveSession(): com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain =
-        throw UnsupportedOperationException("Not required for tests")
+private class FakePomodoroSessionRepository(
+    initialSession: PomodoroSessionDomain? = null,
+) : com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository {
+    var storedSession: PomodoroSessionDomain? = initialSession
 
-    override suspend fun saveActiveSession(
-        snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain,
-    ) = Unit
+    override suspend fun getActiveSession(): PomodoroSessionDomain =
+        storedSession ?: error("No active session stored for test")
 
-    override suspend fun updateActiveSession(
-        snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain,
-    ) = Unit
+    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
+        storedSession = snapshot
+    }
 
-    override suspend fun completeSession(
-        snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain,
-    ) = Unit
+    override suspend fun updateActiveSession(snapshot: PomodoroSessionDomain) {
+        storedSession = snapshot
+    }
 
-    override suspend fun clearActiveSession() = Unit
+    override suspend fun completeSession(snapshot: PomodoroSessionDomain) {
+        storedSession = null
+    }
 
-    override suspend fun hasActiveSession(): Boolean = false
+    override suspend fun clearActiveSession() {
+        storedSession = null
+    }
+
+    override suspend fun hasActiveSession(): Boolean = storedSession != null
 }
 
 private class FakeFocusSessionNotifier : FocusSessionNotifier {
-    override suspend fun schedule(
-        snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain,
-    ) = Unit
-
+    override suspend fun schedule(snapshot: PomodoroSessionDomain) = Unit
     override suspend fun cancel(sessionId: String) = Unit
 }
 
@@ -238,3 +317,36 @@ private class TestCurrentTimeProvider(private val scheduler: TestCoroutineSchedu
 
     override fun nowInstant(): Instant = Instant.fromEpochMilliseconds(now())
 }
+
+private fun activeSessionSnapshot(
+    segments: List<TimerSegmentsDomain>,
+    totalCycle: Int = 4,
+): PomodoroSessionDomain =
+    PomodoroSessionDomain(
+        totalCycle = totalCycle,
+        startedAtEpochMs = 0L,
+        elapsedPauseEpochMs = 0L,
+        timeline = TimelineDomain(
+            segments = segments,
+            hourSplits = emptyList(),
+        ),
+        quote = QuoteContent.DEFAULT_QUOTE,
+    )
+
+private fun timerSegment(
+    type: TimerType,
+    cycle: Int,
+    durationMs: Long,
+    status: TimerStatusDomain,
+    finishedAt: Long = 0L,
+): TimerSegmentsDomain =
+    TimerSegmentsDomain(
+        type = type,
+        cycleNumber = cycle,
+        timer =
+            TimerDomain(
+                durationEpochMs = durationMs,
+                finishedInMillis = finishedAt,
+            ),
+        timerStatus = status,
+    )
