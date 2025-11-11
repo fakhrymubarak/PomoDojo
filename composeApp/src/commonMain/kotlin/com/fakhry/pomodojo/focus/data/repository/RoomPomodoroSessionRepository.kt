@@ -1,97 +1,175 @@
 package com.fakhry.pomodojo.focus.data.repository
 
+import com.fakhry.pomodojo.focus.data.db.FocusSessionDao
+import com.fakhry.pomodojo.focus.data.db.HistorySessionDao
 import com.fakhry.pomodojo.focus.data.db.PomoDojoRoomDatabase
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionEntity
+import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionHourSplitEntity
+import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionSegmentEntity
+import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionWithRelations
 import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
-import com.fakhry.pomodojo.focus.domain.model.ActiveFocusSessionDomain
-import com.fakhry.pomodojo.focus.domain.model.FocusTimerStatus
+import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
+import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
-class RoomPomodoroSessionRepository(database: PomoDojoRoomDatabase) : PomodoroSessionRepository {
-    private val activeDao = database.focusSessionDao()
-    private val historyDao = database.historySessionDao()
+class RoomPomodoroSessionRepository(
+    private val focusDao: FocusSessionDao,
+    private val historyDao: HistorySessionDao,
+) : PomodoroSessionRepository {
+    constructor(database: PomoDojoRoomDatabase) : this(
+        focusDao = database.focusSessionDao(),
+        historyDao = database.historySessionDao(),
+    )
 
-    override suspend fun hasActiveSession(): Boolean = activeDao.hasActiveSession()
-
-    override suspend fun getActiveSession() = activeDao.getActiveSession().toDomain()
-
-    override suspend fun saveActiveSession(snapshot: ActiveFocusSessionDomain) {
-        activeDao.upsertActiveSession(snapshot.toEntity())
+    override suspend fun getActiveSession(): PomodoroSessionDomain {
+        val snapshot =
+            focusDao.getActiveSessionWithRelations()
+                ?: throw IllegalStateException("No active session stored in database.")
+        return snapshot.toDomain()
     }
 
-    override suspend fun updateActiveSession(snapshot: ActiveFocusSessionDomain) {
-        activeDao.upsertActiveSession(snapshot.toEntity())
+    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
+        focusDao.clearActiveSession()
+        persistSnapshot(snapshot, sessionIdOverride = null)
     }
 
-    override suspend fun completeSession(snapshot: ActiveFocusSessionDomain) {
-        @OptIn(ExperimentalTime::class)
-        val currentTime = Clock.System.now().toEpochMilliseconds()
-        val finished = snapshot.toFinishedEntity(currentTime)
-        activeDao.clearActiveSession()
-        historyDao.insertFinishedSession(finished)
+    override suspend fun updateActiveSession(snapshot: PomodoroSessionDomain) {
+        val existingId = focusDao.getActiveSessionId()
+        persistSnapshot(snapshot, sessionIdOverride = existingId)
+    }
+
+    override suspend fun completeSession(snapshot: PomodoroSessionDomain) {
+        historyDao.insertFinishedSession(snapshot.toHistoryEntity())
+        focusDao.clearActiveSession()
     }
 
     override suspend fun clearActiveSession() {
-        activeDao.clearActiveSession()
+        focusDao.clearActiveSession()
     }
 
-    private fun ActiveFocusSessionDomain.toEntity(): ActiveSessionEntity = ActiveSessionEntity(
-        startedAtEpochMs = startedAtEpochMs,
-        elapsedPausedEpochMs = elapsedPauseEpochMs,
-        pauseStartedAtEpochMs = pauseStartedAtEpochMs,
-        sessionStatus = sessionStatus.name,
-        repeatCount = repeatCount,
-        focusMinutes = focusMinutes,
-        breakMinutes = breakMinutes,
-        longBreakEnabled = longBreakEnabled,
-        longBreakMinutes = longBreakMinutes,
-        longBreakAfter = longBreakAfter,
-        quoteId = quoteId,
-    )
+    override suspend fun hasActiveSession(): Boolean = focusDao.hasActiveSession()
 
-    private fun ActiveFocusSessionDomain.toFinishedEntity(
-        finishedTime: Long,
-    ): HistorySessionEntity {
-        var totalFocusMinutes = 0
-        var totalBreakMinutes = 0
-        timelines.forEach {
-            when (it.type) {
-                TimerType.FOCUS -> totalFocusMinutes += (it.timer.durationEpochMs / 60_000L).toInt()
-                else -> totalBreakMinutes += (it.timer.durationEpochMs / 60_000L).toInt()
-            }
+    private suspend fun persistSnapshot(
+        snapshot: PomodoroSessionDomain,
+        sessionIdOverride: Long?,
+    ) {
+        val entity = snapshot.toEntity(sessionIdOverride)
+        val upsertId = focusDao.upsertActiveSession(entity)
+        val resolvedId = if (upsertId == -1L) entity.sessionId else upsertId
+        focusDao.replaceSegments(resolvedId, snapshot.toSegmentEntities(resolvedId))
+        focusDao.replaceHourSplits(resolvedId, snapshot.toHourSplitEntities(resolvedId))
+    }
+
+    private fun ActiveSessionWithRelations.toDomain(): PomodoroSessionDomain =
+        PomodoroSessionDomain(
+            totalCycle = session.totalCycle,
+            startedAtEpochMs = session.startedAtEpochMs,
+            elapsedPauseEpochMs = session.elapsedPausedEpochMs,
+            timeline =
+            TimelineDomain(
+                segments =
+                segments
+                    .sortedBy { it.segmentIndex }
+                    .map { it.toDomain() },
+                hourSplits =
+                hourSplits
+                    .sortedBy { it.position }
+                    .map { it.minutes },
+            ),
+            quote =
+            QuoteContent(
+                id = session.quoteId,
+                text = session.quoteText,
+                character = session.quoteCharacter,
+                sourceTitle = session.quoteSourceTitle,
+                metadata = session.quoteMetadata,
+            ),
+        )
+
+    private fun ActiveSessionSegmentEntity.toDomain(): TimerSegmentsDomain =
+        TimerSegmentsDomain(
+            type = type,
+            cycleNumber = cycleNumber,
+            timer =
+            TimerDomain(
+                durationEpochMs = durationEpochMs,
+                finishedInMillis = finishedInMillis,
+                startedPauseTime = startedPauseTime,
+                elapsedPauseTime = elapsedPauseTime,
+            ),
+            timerStatus = timerStatus,
+        )
+
+    private fun PomodoroSessionDomain.toEntity(sessionIdOverride: Long?): ActiveSessionEntity =
+        ActiveSessionEntity(
+            sessionId = sessionIdOverride ?: 0L,
+            totalCycle = totalCycle,
+            startedAtEpochMs = startedAtEpochMs,
+            elapsedPausedEpochMs = elapsedPauseEpochMs,
+            quoteId = quote.id,
+            quoteText = quote.text,
+            quoteCharacter = quote.character,
+            quoteSourceTitle = quote.sourceTitle,
+            quoteMetadata = quote.metadata,
+        )
+
+    private fun PomodoroSessionDomain.toSegmentEntities(
+        sessionId: Long,
+    ): List<ActiveSessionSegmentEntity> =
+        timeline.segments.mapIndexed { index, segment ->
+            ActiveSessionSegmentEntity(
+                sessionId = sessionId,
+                segmentIndex = index,
+                type = segment.type,
+                cycleNumber = segment.cycleNumber,
+                durationEpochMs = segment.timer.durationEpochMs,
+                finishedInMillis = segment.timer.finishedInMillis,
+                startedPauseTime = segment.timer.startedPauseTime,
+                elapsedPauseTime = segment.timer.elapsedPauseTime,
+                timerStatus = segment.timerStatus,
+            )
         }
 
+    private fun PomodoroSessionDomain.toHourSplitEntities(
+        sessionId: Long,
+    ): List<ActiveSessionHourSplitEntity> =
+        timeline.hourSplits.mapIndexed { index, minutes ->
+            ActiveSessionHourSplitEntity(
+                sessionId = sessionId,
+                position = index,
+                minutes = minutes,
+            )
+        }
+
+    private fun PomodoroSessionDomain.toHistoryEntity(): HistorySessionEntity {
+        val totalFocusMinutes =
+            timeline.segments
+                .filter { it.type == TimerType.FOCUS }
+                .sumOf { it.timer.durationEpochMs }
+                .toMinutes()
+        val totalBreakMinutes =
+            timeline.segments
+                .filter { it.type != TimerType.FOCUS }
+                .sumOf { it.timer.durationEpochMs }
+                .toMinutes()
+        val totalDuration = timeline.segments.sumOf { it.timer.durationEpochMs }
+        val finishedAt = startedAtEpochMs + totalDuration
         return HistorySessionEntity(
-            id = sessionId,
+            id = startedAtEpochMs,
             dateStartedEpochMs = startedAtEpochMs,
-            dateFinishedEpochMs = finishedTime,
+            dateFinishedEpochMs = finishedAt,
             totalFocusMinutes = totalFocusMinutes,
             totalBreakMinutes = totalBreakMinutes,
         )
     }
 
-    private fun ActiveSessionEntity?.toDomain() = this?.run {
-        ActiveFocusSessionDomain(
-            sessionId = sessionId,
-            startedAtEpochMs = startedAtEpochMs,
-            elapsedPauseEpochMs = elapsedPausedEpochMs,
-            pauseStartedAtEpochMs = pauseStartedAtEpochMs,
-            sessionStatus = sessionStatus.toEnumSessionStatus(),
-            repeatCount = repeatCount,
-            focusMinutes = focusMinutes,
-            breakMinutes = breakMinutes,
-            longBreakEnabled = longBreakEnabled,
-            longBreakAfter = longBreakAfter,
-            longBreakMinutes = longBreakMinutes,
-            quoteId = quoteId,
-        )
-    } ?: ActiveFocusSessionDomain()
+    private fun Long.toMinutes(): Int = (this / MILLIS_PER_MINUTE).toInt()
 
-    private fun String.toEnumSessionStatus() = when (this) {
-        FocusTimerStatus.PAUSED.name -> FocusTimerStatus.PAUSED
-        else -> FocusTimerStatus.RUNNING
+    private companion object {
+        private const val MILLIS_PER_MINUTE = 60_000L
     }
 }

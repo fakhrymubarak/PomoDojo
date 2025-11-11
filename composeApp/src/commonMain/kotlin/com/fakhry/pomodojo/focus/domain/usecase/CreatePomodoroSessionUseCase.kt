@@ -1,6 +1,7 @@
 package com.fakhry.pomodojo.focus.domain.usecase
 
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class CreatePomodoroSessionUseCase(
+    private val sessionRepository: PomodoroSessionRepository,
     private val quoteRepo: QuoteRepository,
     private val preferencesRepo: PreferencesRepository,
     private val timelineBuilder: BuildTimerSegmentsUseCase,
@@ -25,18 +27,18 @@ class CreatePomodoroSessionUseCase(
         val quote = quoteDef.await()
         val preferences = preferencesDef.await()
 
-        val activeSession =
-            PomodoroSessionDomain(
-                totalCycle = preferences.repeatCount,
-                startedAtEpochMs = now,
-                elapsedPauseEpochMs = 0L,
-                timeline =
-                TimelineDomain(
-                    segments = timelineBuilder(now, preferences),
-                    hourSplits = hourSplitter(preferences),
-                ),
-                quote = quote,
-            )
+        val activeSession = PomodoroSessionDomain(
+            totalCycle = preferences.repeatCount,
+            startedAtEpochMs = now,
+            elapsedPauseEpochMs = 0L,
+            timeline = TimelineDomain(
+                segments = timelineBuilder(now, preferences),
+                hourSplits = hourSplitter(preferences),
+            ),
+            quote = quote,
+        )
+
+        sessionRepository.saveActiveSession(activeSession)
 
         return@withContext activeSession
     }

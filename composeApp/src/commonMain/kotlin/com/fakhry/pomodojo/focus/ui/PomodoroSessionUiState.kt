@@ -3,9 +3,9 @@ package com.fakhry.pomodojo.focus.ui
 import androidx.compose.runtime.Immutable
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
-import com.fakhry.pomodojo.preferences.ui.mapper.toTimelineUi
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
+import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 data class PomodoroSessionUiState(
@@ -32,13 +32,19 @@ sealed class PomodoroSessionSideEffect {
 }
 
 fun PomodoroSessionDomain.toPomodoroUiSessionUi(now: Long): PomodoroSessionUiState {
-    val timeline = timeline.toTimelineUi(now, progress = 0f)
+    val segments = timeline.segments.map { it.toTimelineSegmentUi(now) }
+    val activeIndex = segments.resolveActiveIndex()
+    val timelineUi =
+        TimelineUiModel(
+            segments = segments.toPersistentList(),
+            hourSplits = timeline.hourSplits.toPersistentList(),
+        )
     return PomodoroSessionUiState(
         totalCycle = totalCycle,
         startedAtEpochMs = startedAtEpochMs,
         elapsedPauseEpochMs = elapsedPauseEpochMs,
-        activeSegment = timeline.segments.first(),
-        timeline = timeline,
+        activeSegment = segments.getOrNull(activeIndex) ?: TimelineSegmentUi(),
+        timeline = timelineUi,
         quote = quote,
         isShowConfirmEndDialog = false,
         isComplete = false,

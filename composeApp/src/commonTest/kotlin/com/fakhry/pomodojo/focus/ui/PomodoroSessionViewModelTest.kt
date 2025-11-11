@@ -126,8 +126,10 @@ class PomodoroSessionViewModelTest {
         val preferencesRepository = FakePreferencesRepository(preferences)
         val dispatcherProvider = DispatcherProvider(dispatcher)
 
+        val sessionRepository = FakePomodoroSessionRepository()
         val createSessionUseCase =
             CreatePomodoroSessionUseCase(
+                sessionRepository = sessionRepository,
                 quoteRepo = quoteRepository,
                 preferencesRepo = preferencesRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
@@ -138,6 +140,7 @@ class PomodoroSessionViewModelTest {
         return PomodoroSessionViewModel(
             currentTimeProvider = currentTimeProvider,
             createPomodoroSessionUseCase = createSessionUseCase,
+            sessionRepository = sessionRepository,
             dispatcher = dispatcherProvider,
         )
     }
@@ -193,6 +196,21 @@ private class FakePreferencesRepository(initial: PreferencesDomain) : Preference
     override suspend fun updateAppTheme(theme: AppTheme) {
         state.update { it.copy(appTheme = theme) }
     }
+}
+
+private class FakePomodoroSessionRepository : com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository {
+    override suspend fun getActiveSession(): com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain =
+        throw UnsupportedOperationException("Not required for tests")
+
+    override suspend fun saveActiveSession(snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain) = Unit
+
+    override suspend fun updateActiveSession(snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain) = Unit
+
+    override suspend fun completeSession(snapshot: com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain) = Unit
+
+    override suspend fun clearActiveSession() = Unit
+
+    override suspend fun hasActiveSession(): Boolean = false
 }
 
 @OptIn(ExperimentalTime::class)

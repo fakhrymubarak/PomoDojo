@@ -13,7 +13,12 @@ data class TimerSegmentsDomain(
     val timerStatus: TimerStatusDomain = TimerStatusDomain.Initial,
 )
 
-data class TimerDomain(val durationEpochMs: Long = 0L, val finishedInMillis: Long = 0L)
+data class TimerDomain(
+    val durationEpochMs: Long = 0L,
+    val finishedInMillis: Long = 0L,
+    val startedPauseTime: Long = 0L,
+    val elapsedPauseTime: Long = 0L,
+)
 
 data class TimelineDomain(
     val segments: List<TimerSegmentsDomain> = emptyList(),
