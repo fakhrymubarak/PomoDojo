@@ -89,30 +89,27 @@ class PomodoroSessionViewModelTest {
         runCurrent()
         viewModel.awaitSessionStarted()
 
-        val showDialog =
-            async {
-                viewModel.container.sideEffectFlow.first {
-                    it is PomodoroSessionSideEffect.ShowEndSessionDialog && it.isShown
-                } as PomodoroSessionSideEffect.ShowEndSessionDialog
-            }
+        val showDialog = async {
+            viewModel.container.sideEffectFlow.first {
+                it is PomodoroSessionSideEffect.ShowEndSessionDialog && it.isShown
+            } as PomodoroSessionSideEffect.ShowEndSessionDialog
+        }
         viewModel.onEndClicked()
         assertTrue(showDialog.await().isShown)
 
-        val hideDialog =
-            async {
-                viewModel.container.sideEffectFlow.first {
-                    it is PomodoroSessionSideEffect.ShowEndSessionDialog && !it.isShown
-                } as PomodoroSessionSideEffect.ShowEndSessionDialog
-            }
+        val hideDialog = async {
+            viewModel.container.sideEffectFlow.first {
+                it is PomodoroSessionSideEffect.ShowEndSessionDialog && !it.isShown
+            } as PomodoroSessionSideEffect.ShowEndSessionDialog
+        }
         viewModel.onDismissConfirmEnd()
         assertTrue(!hideDialog.await().isShown)
 
-        val completeEffect =
-            async {
-                viewModel.container.sideEffectFlow.first {
-                    it is PomodoroSessionSideEffect.OnSessionComplete
-                }
+        val completeEffect = async {
+            viewModel.container.sideEffectFlow.first {
+                it is PomodoroSessionSideEffect.OnSessionComplete
             }
+        }
         viewModel.onConfirmFinish()
         assertTrue(completeEffect.await() is PomodoroSessionSideEffect.OnSessionComplete)
     }
@@ -122,38 +119,36 @@ class PomodoroSessionViewModelTest {
         val elapsedSinceStart = 3 * minuteMillis + 30 * 1_000L
         advanceTimeBy(elapsedSinceStart)
 
-        val storedSession =
-            activeSessionSnapshot(
-                segments =
-                listOf(
-                    timerSegment(
-                        type = TimerType.FOCUS,
-                        cycle = 1,
-                        durationMs = minuteMillis,
-                        status = TimerStatusDomain.Completed,
-                        finishedAt = 1 * minuteMillis,
-                    ),
-                    timerSegment(
-                        type = TimerType.SHORT_BREAK,
-                        cycle = 1,
-                        durationMs = minuteMillis,
-                        status = TimerStatusDomain.Running,
-                        finishedAt = 2 * minuteMillis,
-                    ),
-                    timerSegment(
-                        type = TimerType.FOCUS,
-                        cycle = 2,
-                        durationMs = minuteMillis,
-                        status = TimerStatusDomain.Initial,
-                    ),
-                    timerSegment(
-                        type = TimerType.SHORT_BREAK,
-                        cycle = 2,
-                        durationMs = minuteMillis,
-                        status = TimerStatusDomain.Initial,
-                    ),
+        val storedSession = activeSessionSnapshot(
+            segments = listOf(
+                timerSegment(
+                    type = TimerType.FOCUS,
+                    cycle = 1,
+                    durationMs = minuteMillis,
+                    status = TimerStatusDomain.Completed,
+                    finishedAt = 1 * minuteMillis,
                 ),
-            )
+                timerSegment(
+                    type = TimerType.SHORT_BREAK,
+                    cycle = 1,
+                    durationMs = minuteMillis,
+                    status = TimerStatusDomain.Running,
+                    finishedAt = 2 * minuteMillis,
+                ),
+                timerSegment(
+                    type = TimerType.FOCUS,
+                    cycle = 2,
+                    durationMs = minuteMillis,
+                    status = TimerStatusDomain.Initial,
+                ),
+                timerSegment(
+                    type = TimerType.SHORT_BREAK,
+                    cycle = 2,
+                    durationMs = minuteMillis,
+                    status = TimerStatusDomain.Initial,
+                ),
+            ),
+        )
         val sessionRepository = FakePomodoroSessionRepository(initialSession = storedSession)
 
         val viewModel = createViewModel(sessionRepository = sessionRepository)
@@ -202,15 +197,14 @@ class PomodoroSessionViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun TestScope.createViewModel(
-        preferences: PreferencesDomain =
-            PreferencesDomain(
-                repeatCount = 1,
-                focusMinutes = 1,
-                breakMinutes = 1,
-                longBreakEnabled = false,
-                longBreakAfter = PreferencesDomain.DEFAULT_LONG_BREAK_AFTER,
-                longBreakMinutes = 1,
-            ),
+        preferences: PreferencesDomain = PreferencesDomain(
+            repeatCount = 1,
+            focusMinutes = 1,
+            breakMinutes = 1,
+            longBreakEnabled = false,
+            longBreakAfter = PreferencesDomain.DEFAULT_LONG_BREAK_AFTER,
+            longBreakMinutes = 1,
+        ),
         sessionRepository: FakePomodoroSessionRepository = FakePomodoroSessionRepository(),
         soundPlayer: SegmentCompletionSoundPlayer = FakeSegmentCompletionSoundPlayer(),
     ): PomodoroSessionViewModel {
@@ -220,15 +214,14 @@ class PomodoroSessionViewModelTest {
         val dispatcherProvider = DispatcherProvider(dispatcher)
 
         val focusNotifier = FakeFocusSessionNotifier()
-        val createSessionUseCase =
-            CreatePomodoroSessionUseCase(
-                sessionRepository = sessionRepository,
-                quoteRepo = quoteRepository,
-                preferencesRepo = preferencesRepository,
-                timelineBuilder = BuildTimerSegmentsUseCase(),
-                hourSplitter = BuildHourSplitTimelineUseCase(),
-                dispatcher = dispatcherProvider,
-            )
+        val createSessionUseCase = CreatePomodoroSessionUseCase(
+            sessionRepository = sessionRepository,
+            quoteRepo = quoteRepository,
+            preferencesRepo = preferencesRepository,
+            timelineBuilder = BuildTimerSegmentsUseCase(),
+            hourSplitter = BuildHourSplitTimelineUseCase(),
+            dispatcher = dispatcherProvider,
+        )
 
         return PomodoroSessionViewModel(
             currentTimeProvider = currentTimeProvider,
@@ -345,17 +338,16 @@ private class TestCurrentTimeProvider(private val scheduler: TestCoroutineSchedu
 private fun activeSessionSnapshot(
     segments: List<TimerSegmentsDomain>,
     totalCycle: Int = 4,
-): PomodoroSessionDomain =
-    PomodoroSessionDomain(
-        totalCycle = totalCycle,
-        startedAtEpochMs = 0L,
-        elapsedPauseEpochMs = 0L,
-        timeline = TimelineDomain(
-            segments = segments,
-            hourSplits = emptyList(),
-        ),
-        quote = QuoteContent.DEFAULT_QUOTE,
-    )
+): PomodoroSessionDomain = PomodoroSessionDomain(
+    totalCycle = totalCycle,
+    startedAtEpochMs = 0L,
+    elapsedPauseEpochMs = 0L,
+    timeline = TimelineDomain(
+        segments = segments,
+        hourSplits = emptyList(),
+    ),
+    quote = QuoteContent.DEFAULT_QUOTE,
+)
 
 private fun timerSegment(
     type: TimerType,
@@ -363,14 +355,12 @@ private fun timerSegment(
     durationMs: Long,
     status: TimerStatusDomain,
     finishedAt: Long = 0L,
-): TimerSegmentsDomain =
-    TimerSegmentsDomain(
-        type = type,
-        cycleNumber = cycle,
-        timer =
-            TimerDomain(
-                durationEpochMs = durationMs,
-                finishedInMillis = finishedAt,
-            ),
-        timerStatus = status,
-    )
+): TimerSegmentsDomain = TimerSegmentsDomain(
+    type = type,
+    cycleNumber = cycle,
+    timer = TimerDomain(
+        durationEpochMs = durationMs,
+        finishedInMillis = finishedAt,
+    ),
+    timerStatus = status,
+)

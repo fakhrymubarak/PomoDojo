@@ -21,7 +21,9 @@ import org.koin.dsl.module
 
 val focusModule = module {
     viewModelOf(::PomodoroSessionViewModel)
-    single { RoomPomodoroSessionRepository(get<PomoDojoRoomDatabase>()) } bind PomodoroSessionRepository::class
+    single<PomodoroSessionRepository> {
+        RoomPomodoroSessionRepository(get<PomoDojoRoomDatabase>())
+    }
     singleOf(::StaticQuoteRepository) bind QuoteRepository::class
     singleOf(::CreatePomodoroSessionUseCase)
     single<PomoDojoRoomDatabase> { createDatabase() }
