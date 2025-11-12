@@ -55,7 +55,6 @@ import com.fakhry.pomodojo.dashboard.ui.model.contributionColorMap
 import com.fakhry.pomodojo.dashboard.ui.model.previewDashboardState
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.focus_history_cell_tooltip
-import com.fakhry.pomodojo.generated.resources.focus_history_graph_content_description
 import com.fakhry.pomodojo.generated.resources.focus_history_selected_year_description
 import com.fakhry.pomodojo.generated.resources.focus_history_switch_year_description
 import com.fakhry.pomodojo.generated.resources.focus_history_total_minutes
@@ -91,10 +90,7 @@ fun PomodoroHistorySection(
             // Focus History Graph
             FocusHistoryGraph(
                 modifier = Modifier.weight(1f),
-                selectedYear = historyState.selectedYear,
-                cells = remember(historyState.selectedYear, historyState.cells) {
-                    historyState.cells
-                },
+                cells = historyState.cells,
             )
             Spacer(modifier = Modifier.width(16.dp))
             // Year Filter
@@ -123,7 +119,11 @@ private fun StatisticsCard(totalMinutes: Int) {
 }
 
 @Composable
-private fun YearFilters(years: ImmutableList<Int>, selectedYear: Int, onSelectYear: (Int) -> Unit) {
+private fun YearFilters(
+    years: ImmutableList<Int>,
+    selectedYear: Int,
+    onSelectYear: (Int) -> Unit,
+) {
     val hapticFeedback = LocalHapticFeedback.current
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -175,12 +175,8 @@ private fun YearFilters(years: ImmutableList<Int>, selectedYear: Int, onSelectYe
 @Composable
 private fun FocusHistoryGraph(
     modifier: Modifier = Modifier,
-    selectedYear: Int,
     cells: ImmutableList<ImmutableList<HistoryCell>>,
 ) {
-    val semanticDescription =
-        stringResource(Res.string.focus_history_graph_content_description, selectedYear)
-
     val columns = 8
     val cellSize = 24.dp
     val cellSpacing = 8.dp
@@ -197,7 +193,6 @@ private fun FocusHistoryGraph(
         verticalArrangement = Arrangement.spacedBy(cellSpacing),
         modifier = modifier.width(gridWidth).height(gridHeight).semantics {
             role = Role.Image
-            contentDescription = semanticDescription
         },
         contentPadding = PaddingValues(0.dp),
         userScrollEnabled = false,

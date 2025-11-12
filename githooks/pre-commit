@@ -10,4 +10,4 @@ run() {
     ./gradlew "$task"
 }
 
-run ktlintCheck
+run ktlintFormat

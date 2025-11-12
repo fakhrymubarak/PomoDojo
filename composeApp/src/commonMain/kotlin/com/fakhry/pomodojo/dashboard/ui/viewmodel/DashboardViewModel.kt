@@ -78,13 +78,10 @@ class DashboardViewModel(
     }
 
     fun selectYear(year: Int) {
-        _historyState.update { current ->
-            if (year == current.selectedYear || year !in current.availableYears) {
-                current
-            } else {
-                fetchHistory(year)
-                current.copy(selectedYear = year)
-            }
-        }
+        val current = _historyState.value
+        if (year == current.selectedYear || year !in current.availableYears) return
+
+        _historyState.update { current.copy(selectedYear = year) }
+        fetchHistory(year)
     }
 }

@@ -36,7 +36,7 @@ fun ActiveSessionWithRelations.toDomain(): PomodoroSessionDomain = PomodoroSessi
     ),
 )
 
-fun ActiveSessionSegmentEntity.toDomain(): TimerSegmentsDomain = TimerSegmentsDomain(
+private fun ActiveSessionSegmentEntity.toDomain(): TimerSegmentsDomain = TimerSegmentsDomain(
     type = type,
     cycleNumber = cycleNumber,
     timer = TimerDomain(
@@ -98,14 +98,10 @@ fun PomodoroSessionDomain.toHistoryEntity(): HistorySessionEntity {
         .filter { it.type != TimerType.FOCUS }
         .sumOf { (it.timer.durationEpochMs * it.timer.progress).toLong() }
         .toMinutes()
-    val totalDuration =
-        elapsedSegments.sumOf { (it.timer.durationEpochMs * it.timer.progress).toLong() }
 
-    val finishedAt = startedAtEpochMs + totalDuration
     return HistorySessionEntity(
         id = startedAtEpochMs,
         dateStartedEpochMs = startedAtEpochMs,
-        dateFinishedEpochMs = finishedAt,
         totalFocusMinutes = totalFocusMinutes,
         totalBreakMinutes = totalBreakMinutes,
     )
@@ -117,7 +113,7 @@ fun List<HistorySessionEntity>.mapToDomain(timeZone: TimeZone): List<HistoryDoma
 @OptIn(ExperimentalTime::class)
 private fun HistorySessionEntity.toDomain(timeZone: TimeZone): HistoryDomain {
     val date =
-        Instant.fromEpochMilliseconds(dateFinishedEpochMs).toLocalDateTime(timeZone).date.toString()
+        Instant.fromEpochMilliseconds(dateStartedEpochMs).toLocalDateTime(timeZone).date.toString()
     return HistoryDomain(
         date = date,
         focusMinutes = totalFocusMinutes,

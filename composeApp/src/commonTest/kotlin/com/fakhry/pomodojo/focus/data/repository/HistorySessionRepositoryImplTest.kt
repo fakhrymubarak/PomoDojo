@@ -17,7 +17,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlin.math.max
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
@@ -40,15 +40,15 @@ class HistorySessionRepositoryImplTest {
         val existing = HistorySessionEntity(
             id = 42L,
             dateStartedEpochMs = sessionDate,
-            dateFinishedEpochMs = sessionDate + 30 * minuteMillis,
             totalFocusMinutes = 25,
             totalBreakMinutes = 5,
         )
         fakeDao.sessions = listOf(existing)
 
         val newSessionStart = sessionDate + 5 * minuteMillis
-        val newSessionFocus = 10
-        val newSessionBreak = 3
+        val seed = Random.nextInt(1, 10)
+        val newSessionFocus = seed * 10
+        val newSessionBreak = seed * 5
         val session = pomodoroSession(
             startedAtMs = newSessionStart,
             focusMinutes = newSessionFocus,
@@ -62,11 +62,6 @@ class HistorySessionRepositoryImplTest {
         assertEquals(existing.dateStartedEpochMs, inserted.dateStartedEpochMs)
         assertEquals(existing.totalFocusMinutes + newSessionFocus, inserted.totalFocusMinutes)
         assertEquals(existing.totalBreakMinutes + newSessionBreak, inserted.totalBreakMinutes)
-        val sessionFinish = newSessionStart + (newSessionFocus + newSessionBreak) * minuteMillis
-        assertEquals(
-            max(existing.dateFinishedEpochMs, sessionFinish),
-            inserted.dateFinishedEpochMs,
-        )
     }
 
     @Test
@@ -131,7 +126,6 @@ class HistorySessionRepositoryImplTest {
         return HistorySessionEntity(
             id = 1L,
             dateStartedEpochMs = epoch,
-            dateFinishedEpochMs = epoch,
             totalFocusMinutes = focusMinutes,
             totalBreakMinutes = breakMinutes,
         )

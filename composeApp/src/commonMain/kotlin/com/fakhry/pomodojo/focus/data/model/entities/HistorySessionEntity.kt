@@ -11,8 +11,6 @@ data class HistorySessionEntity(
     val id: Long = 0L,
     @ColumnInfo(name = "date_started")
     val dateStartedEpochMs: Long = 0L,
-    @ColumnInfo(name = "date_finished")
-    val dateFinishedEpochMs: Long,
     @ColumnInfo(name = "total_focus_minutes")
     val totalFocusMinutes: Int,
     @ColumnInfo(name = "total_break_minutes")

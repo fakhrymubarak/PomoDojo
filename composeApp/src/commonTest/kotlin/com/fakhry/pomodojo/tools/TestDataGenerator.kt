@@ -57,14 +57,9 @@ object TestDataGenerator {
             // Break is half of focus (rounded down)
             val totalBreakMinutes = totalFocusMinutes / 2
 
-            // Calculate date finished (assuming total duration = focus + break in minutes)
-            val totalMinutes = totalFocusMinutes + totalBreakMinutes
-            val dateFinishedEpochMs = dateStartedEpochMs + (totalMinutes * 60 * 1000L)
-
             HistorySessionEntity(
                 id = (dayOffset + 1).toLong(),
                 dateStartedEpochMs = dateStartedEpochMs,
-                dateFinishedEpochMs = dateFinishedEpochMs,
                 totalFocusMinutes = totalFocusMinutes,
                 totalBreakMinutes = totalBreakMinutes,
             )
@@ -93,14 +88,11 @@ object TestDataGenerator {
             val dateStartedEpochMs = currentDate.atStartOfDayIn(timezone).toEpochMilliseconds()
             val totalFocusMinutes = random.nextInt(minFocusMinutes, maxFocusMinutes + 1)
             val totalBreakMinutes = totalFocusMinutes / 2
-            val totalMinutes = totalFocusMinutes + totalBreakMinutes
-            val dateFinishedEpochMs = dateStartedEpochMs + (totalMinutes * 60 * 1000L)
 
             results.add(
                 HistorySessionEntity(
                     id = id++,
                     dateStartedEpochMs = dateStartedEpochMs,
-                    dateFinishedEpochMs = dateFinishedEpochMs,
                     totalFocusMinutes = totalFocusMinutes,
                     totalBreakMinutes = totalBreakMinutes,
                 ),
@@ -117,9 +109,9 @@ object TestDataGenerator {
      */
     fun generateSQLInserts(data: List<HistorySessionEntity>): String {
         val header =
-            "INSERT INTO history_sessions (id, date_started, date_finished, total_focus_minutes, total_break_minutes) VALUES\n"
+            "INSERT INTO history_sessions (id, date_started, total_focus_minutes, total_break_minutes) VALUES\n"
         val values = data.joinToString(",\n") { entity ->
-            "(${entity.id}, ${entity.dateStartedEpochMs}, ${entity.dateFinishedEpochMs}, ${entity.totalFocusMinutes}, ${entity.totalBreakMinutes})"
+            "(${entity.id}, ${entity.dateStartedEpochMs}, ${entity.totalFocusMinutes}, ${entity.totalBreakMinutes})"
         }
         return "$header$values;"
     }
