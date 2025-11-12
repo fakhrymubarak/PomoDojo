@@ -18,7 +18,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -89,7 +88,6 @@ class HistorySessionRepositoryImpl(
     private fun HistorySessionEntity.mergeWith(other: HistorySessionEntity): HistorySessionEntity =
         copy(
             dateStartedEpochMs = min(dateStartedEpochMs, other.dateStartedEpochMs),
-            dateFinishedEpochMs = max(dateFinishedEpochMs, other.dateFinishedEpochMs),
             totalFocusMinutes = totalFocusMinutes + other.totalFocusMinutes,
             totalBreakMinutes = totalBreakMinutes + other.totalBreakMinutes,
         )

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "23f05540f210f4a156be6960eb468ce5",
+    "identityHash": "cc6a8c51572fb419bb63ae0cef0cc87b",
     "entities": [
       {
         "tableName": "active_sessions",
@@ -215,7 +215,7 @@
       },
       {
         "tableName": "history_sessions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `date_started` INTEGER NOT NULL, `date_finished` INTEGER NOT NULL, `total_focus_minutes` INTEGER NOT NULL, `total_break_minutes` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `date_started` INTEGER NOT NULL, `total_focus_minutes` INTEGER NOT NULL, `total_break_minutes` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -226,12 +226,6 @@
           {
             "fieldPath": "dateStartedEpochMs",
             "columnName": "date_started",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "dateFinishedEpochMs",
-            "columnName": "date_finished",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -258,7 +252,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '23f05540f210f4a156be6960eb468ce5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cc6a8c51572fb419bb63ae0cef0cc87b')"
     ]
   }
 }
