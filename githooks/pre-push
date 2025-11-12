@@ -13,6 +13,3 @@ run() {
 run ktlintCheck
 run check
 run :composeApp:assembleRelease
-run :composeApp:jvmJar
-run :composeApp:linkReleaseFrameworkIosArm64
-run :composeApp:linkReleaseFrameworkIosSimulatorArm64
