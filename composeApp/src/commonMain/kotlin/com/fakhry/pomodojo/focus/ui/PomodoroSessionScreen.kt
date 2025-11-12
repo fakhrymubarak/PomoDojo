@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -83,9 +84,9 @@ fun PomodoroSessionScreen(
     viewModel: PomodoroSessionViewModel = koinViewModel(),
 ) {
     var showEndDialog by rememberSaveable { mutableStateOf(false) }
-    val state = viewModel.collectAsState().value
+    val alwaysOnDisplay = viewModel.alwaysOnDisplay.collectAsState()
 
-    KeepScreenOnEffect(state.alwaysOnDisplayEnabled)
+    KeepScreenOnEffect(alwaysOnDisplay.value)
 
     BackHandler {
         viewModel.onEndClicked()
@@ -98,27 +99,6 @@ fun PomodoroSessionScreen(
         }
     }
 
-    PomodoroSessionContent(
-        state = state,
-        onTogglePause = viewModel::togglePauseResume,
-        onEnd = viewModel::onEndClicked,
-    )
-
-    if (showEndDialog) {
-        FocusConfirmDialog(
-            onConfirmFinish = viewModel::onConfirmFinish,
-            onDismiss = viewModel::onDismissConfirmEnd,
-        )
-    }
-}
-
-@Composable
-private fun PomodoroSessionContent(
-    state: PomodoroSessionUiState,
-    onTogglePause: () -> Unit = {},
-    onEnd: () -> Unit = {},
-) {
-    val activeSegment = state.activeSegment
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
@@ -127,6 +107,9 @@ private fun PomodoroSessionContent(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            val state = viewModel.collectAsState().value
+            val activeSegment = state.activeSegment
+
             PomodoroSessionHeaderSection(
                 timerType = activeSegment.type,
                 cycleNumber = activeSegment.cycleNumber,
@@ -148,10 +131,17 @@ private fun PomodoroSessionContent(
             Spacer(modifier = Modifier.height(32.dp))
             FocusControls(
                 isTimerRunning = activeSegment.timerStatus == TimerStatusDomain.RUNNING,
-                onTogglePause = onTogglePause,
-                onEnd = onEnd,
+                onTogglePause = viewModel::togglePauseResume,
+                onEnd = viewModel::onEndClicked,
             )
         }
+    }
+
+    if (showEndDialog) {
+        FocusConfirmDialog(
+            onConfirmFinish = viewModel::onConfirmFinish,
+            onDismiss = viewModel::onDismissConfirmEnd,
+        )
     }
 }
 
@@ -358,6 +348,33 @@ private fun PomodoroSessionContentPreview() {
     )
 
     PomoDojoTheme {
-        PomodoroSessionContent(state = state)
+        val activeSegment = state.activeSegment
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            PomodoroSessionHeaderSection(
+                timerType = activeSegment.type,
+                cycleNumber = activeSegment.cycleNumber,
+                totalCycle = state.totalCycle,
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            PomodoroTimerSection(
+                segmentType = activeSegment.type,
+                formattedTime = activeSegment.timer.formattedTime,
+                progress = activeSegment.timer.progress,
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            FocusQuoteBlock(modifier = Modifier.padding(horizontal = 16.dp), quote = state.quote)
+            Spacer(modifier = Modifier.height(32.dp))
+            PomodoroTimelineSessionSection(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                timeline = state.timeline,
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            FocusControls(
+                isTimerRunning = activeSegment.timerStatus == TimerStatusDomain.RUNNING,
+            )
+        }
     }
 }

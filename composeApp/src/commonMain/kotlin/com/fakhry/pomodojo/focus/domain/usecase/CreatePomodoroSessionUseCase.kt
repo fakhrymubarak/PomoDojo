@@ -28,7 +28,6 @@ class CreatePomodoroSessionUseCase(
         val preferences = preferencesDef.await()
 
         val activeSession = PomodoroSessionDomain(
-            alwaysOnDisplayEnabled = preferences.alwaysOnDisplayEnabled,
             totalCycle = preferences.repeatCount,
             startedAtEpochMs = now,
             elapsedPauseEpochMs = 0L,
