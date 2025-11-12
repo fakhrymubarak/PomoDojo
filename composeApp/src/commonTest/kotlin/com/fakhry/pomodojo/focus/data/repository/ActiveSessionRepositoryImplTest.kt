@@ -1,12 +1,10 @@
 package com.fakhry.pomodojo.focus.data.repository
 
 import com.fakhry.pomodojo.focus.data.db.FocusSessionDao
-import com.fakhry.pomodojo.focus.data.db.HistorySessionDao
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionEntity
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionHourSplitEntity
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionSegmentEntity
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionWithRelations
-import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
@@ -22,11 +20,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class RoomPomodoroSessionRepositoryTest {
+class ActiveSessionRepositoryImplTest {
     @Test
     fun `saveActiveSession persists entity graph`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = ActiveSessionRepositoryImpl(focusDao, FakeHistorySessionDao())
+        val repository = ActiveSessionRepositoryImpl(focusDao)
         val snapshot = sampleSession()
 
         repository.saveActiveSession(snapshot)
@@ -42,7 +40,7 @@ class RoomPomodoroSessionRepositoryTest {
     @Test
     fun `updateActiveSession reuses existing session id`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = ActiveSessionRepositoryImpl(focusDao, FakeHistorySessionDao())
+        val repository = ActiveSessionRepositoryImpl(focusDao)
         val initial = sampleSession(totalCycle = 3)
         repository.saveActiveSession(initial)
         val existingId = focusDao.entity?.sessionId
@@ -58,7 +56,7 @@ class RoomPomodoroSessionRepositoryTest {
     @Test
     fun `getActiveSession throws when nothing stored`() = runTest {
         val repository =
-            ActiveSessionRepositoryImpl(FakeFocusSessionDao(), FakeHistorySessionDao())
+            ActiveSessionRepositoryImpl(FakeFocusSessionDao())
 
         assertFailsWith<IllegalStateException> {
             repository.getActiveSession()
@@ -68,7 +66,7 @@ class RoomPomodoroSessionRepositoryTest {
     @Test
     fun `hasActiveSession reflects dao state`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = ActiveSessionRepositoryImpl(focusDao, FakeHistorySessionDao())
+        val repository = ActiveSessionRepositoryImpl(focusDao)
 
         assertFalse(repository.hasActiveSession())
 
@@ -78,78 +76,23 @@ class RoomPomodoroSessionRepositoryTest {
     }
 
     @Test
-    fun `completeSession logs history and clears rows`() = runTest {
+    fun `completeSession clears rows`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val historyDao = FakeHistorySessionDao()
-        val repository = ActiveSessionRepositoryImpl(focusDao, historyDao)
+        val repository = ActiveSessionRepositoryImpl(focusDao)
         val snapshot = sampleSession()
 
         repository.saveActiveSession(snapshot)
         repository.completeSession(snapshot)
 
-        val history = historyDao.inserted
-        assertEquals(snapshot.startedAtEpochMs, history?.dateStartedEpochMs)
-        val totalDuration =
-            snapshot.timeline.segments
-                .filter { it.timerStatus != TimerStatusDomain.Initial }
-                .sumOf { it.timer.durationEpochMs }
-        assertEquals(snapshot.startedAtEpochMs + totalDuration, history?.dateFinishedEpochMs)
         assertNull(focusDao.entity)
         assertTrue(focusDao.segments.isEmpty())
         assertTrue(focusDao.hourSplits.isEmpty())
     }
 
     @Test
-    fun `completeSession only counts elapsed segments`() = runTest {
-        val focusDao = FakeFocusSessionDao()
-        val historyDao = FakeHistorySessionDao()
-        val repository = ActiveSessionRepositoryImpl(focusDao, historyDao)
-        val focusMinutes = 25
-        val breakMinutes = 5
-        val snapshot = sampleSession(
-            focusMinutes = focusMinutes,
-            breakMinutes = breakMinutes,
-        ).copy(
-            timeline = TimelineDomain(
-                segments =
-                listOf(
-                    TimerSegmentsDomain(
-                        type = TimerType.FOCUS,
-                        cycleNumber = 1,
-                        timer = TimerDomain(durationEpochMs = focusMinutes * 60_000L),
-                        timerStatus = TimerStatusDomain.Completed,
-                    ),
-                    TimerSegmentsDomain(
-                        type = TimerType.SHORT_BREAK,
-                        cycleNumber = 1,
-                        timer = TimerDomain(durationEpochMs = breakMinutes * 60_000L),
-                        timerStatus = TimerStatusDomain.Completed,
-                    ),
-                    TimerSegmentsDomain(
-                        type = TimerType.FOCUS,
-                        cycleNumber = 2,
-                        timer = TimerDomain(durationEpochMs = focusMinutes * 60_000L),
-                        timerStatus = TimerStatusDomain.Initial,
-                    ),
-                ),
-                hourSplits = emptyList(),
-            ),
-        )
-
-        repository.saveActiveSession(snapshot)
-        repository.completeSession(snapshot)
-
-        val history = historyDao.inserted ?: error("history not inserted")
-        assertEquals(focusMinutes, history.totalFocusMinutes)
-        assertEquals(breakMinutes, history.totalBreakMinutes)
-        val elapsedMillis = (focusMinutes + breakMinutes) * 60_000L
-        assertEquals(snapshot.startedAtEpochMs + elapsedMillis, history.dateFinishedEpochMs)
-    }
-
-    @Test
     fun `clearActiveSession wipes entity graph`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = ActiveSessionRepositoryImpl(focusDao, FakeHistorySessionDao())
+        val repository = ActiveSessionRepositoryImpl(focusDao)
         repository.saveActiveSession(sampleSession())
         val beforeClear = focusDao.clearCount
 
@@ -279,25 +222,5 @@ class RoomPomodoroSessionRepositoryTest {
             segments.clear()
             hourSplits.clear()
         }
-    }
-
-    private class FakeHistorySessionDao : HistorySessionDao {
-        var inserted: HistorySessionEntity? = null
-
-        override suspend fun insertFinishedSession(entity: HistorySessionEntity) {
-            inserted = entity
-        }
-
-        override suspend fun getSessionsBetween(
-            startInclusive: Long,
-            endExclusive: Long,
-        ): List<HistorySessionEntity> = emptyList()
-
-        override suspend fun getTotalFocusMinutesBetween(
-            startInclusive: Long,
-            endExclusive: Long,
-        ): Int = 0
-
-        override suspend fun getAvailableYears(): List<Int> = emptyList()
     }
 }
