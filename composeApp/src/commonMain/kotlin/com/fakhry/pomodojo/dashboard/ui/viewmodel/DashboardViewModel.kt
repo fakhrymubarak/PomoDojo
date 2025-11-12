@@ -7,11 +7,10 @@ import com.fakhry.pomodojo.dashboard.ui.model.HistorySectionUi
 import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
-import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.ui.state.DomainResult
 import com.fakhry.pomodojo.utils.DispatcherProvider
-import kotlinx.coroutines.async
+import com.fakhry.pomodojo.utils.formatTimerMinutes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,32 +30,36 @@ class DashboardViewModel(
     private val _hasActiveSession = MutableStateFlow(false)
     val hasActiveSession: StateFlow<Boolean> = _hasActiveSession.asStateFlow()
 
-    private val _prefState = MutableStateFlow(PreferencesDomain())
-    val prefState: StateFlow<PreferencesDomain> = _prefState.asStateFlow()
+    private val _formattedTime = MutableStateFlow("")
+    val formattedTime = _formattedTime.asStateFlow()
 
     private val _historyState = MutableStateFlow(HistorySectionUi())
     val historyState: StateFlow<HistorySectionUi> = _historyState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            async { checkHasActiveSession() }
-            async { fetchPreferences() }
-            async { fetchHistory() }
-        }
+        checkHasActiveSession()
+        fetchPreferences()
+        fetchHistory()
     }
 
-    suspend fun checkHasActiveSession() {
+    fun checkHasActiveSession() = viewModelScope.launch(dispatcher.io) {
+        println("Trace ========= START FETCHING hasActiveSession ====")
         val hasActiveSession = focusRepository.hasActiveSession()
-        _hasActiveSession.value = hasActiveSession
+        _hasActiveSession.update { hasActiveSession }
+        println("Trace finish updating hasActiveSession")
     }
 
-    suspend fun fetchPreferences() {
+    fun fetchPreferences() = viewModelScope.launch(dispatcher.io) {
+        println("Trace ========= START FETCHING fetchPreferences ====")
         repository.preferences.collect { preferences ->
-            _prefState.value = preferences
+            _formattedTime.update { formatTimerMinutes(preferences.focusMinutes) }
+            println("Trace finish updating fetchPreferences")
         }
     }
 
     fun fetchHistory(selectedYear: Int = -1) = viewModelScope.launch(dispatcher.io) {
+        println("Trace ========= START FETCHING fetchHistory ====")
+
         @OptIn(ExperimentalTime::class)
         val now = currentTimeProvider.nowInstant().toLocalDateTime(TimeZone.UTC)
         val today = now.date
@@ -78,6 +81,7 @@ class DashboardViewModel(
 
             is DomainResult.Error -> {}
         }
+        println("Trace finish updating fetchHistory")
     }
 
     fun selectYear(year: Int) {
