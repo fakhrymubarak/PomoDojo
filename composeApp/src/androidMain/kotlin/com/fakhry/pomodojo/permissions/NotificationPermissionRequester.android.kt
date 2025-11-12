@@ -23,23 +23,21 @@ actual fun rememberNotificationPermissionRequester(): NotificationPermissionRequ
             pendingCallback = null
         }
 
-    return remember {
-        NotificationPermissionRequester { onResult ->
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                onResult(true)
-                return@NotificationPermissionRequester
-            }
-            val permission = Manifest.permission.POST_NOTIFICATIONS
-            val granted = ContextCompat.checkSelfPermission(
-                context,
-                permission,
-            ) == PackageManager.PERMISSION_GRANTED
-            if (granted) {
-                onResult(true)
-            } else {
-                pendingCallback = onResult
-                launcher.launch(permission)
-            }
+    return NotificationPermissionRequester { onResult ->
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            onResult(true)
+            return@NotificationPermissionRequester
+        }
+        val permission = Manifest.permission.POST_NOTIFICATIONS
+        val granted = ContextCompat.checkSelfPermission(
+            context,
+            permission,
+        ) == PackageManager.PERMISSION_GRANTED
+        if (granted) {
+            onResult(true)
+        } else {
+            pendingCallback = onResult
+            launcher.launch(permission)
         }
     }
 }
