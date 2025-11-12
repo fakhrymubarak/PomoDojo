@@ -124,6 +124,7 @@ private fun StatisticsCard(totalMinutes: Int) {
 
 @Composable
 private fun YearFilters(years: ImmutableList<Int>, selectedYear: Int, onSelectYear: (Int) -> Unit) {
+    val hapticFeedback = LocalHapticFeedback.current
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.End,
@@ -142,7 +143,10 @@ private fun YearFilters(years: ImmutableList<Int>, selectedYear: Int, onSelectYe
                         MaterialTheme.colorScheme.surfaceVariant
                     },
                     shape = RoundedCornerShape(16.dp),
-                ).clickable { onSelectYear(year) }.padding(horizontal = 16.dp, vertical = 8.dp)
+                ).clickable {
+                    onSelectYear(year)
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                }.padding(horizontal = 16.dp, vertical = 8.dp)
                     .semantics {
                         role = Role.Button
                         contentDescription = if (isSelected) {
