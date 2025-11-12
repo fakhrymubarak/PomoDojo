@@ -115,6 +115,97 @@ class HistorySessionRepositoryImplTest {
         assertEquals(expectedEnd, sessionsRange?.second)
     }
 
+    @Test
+    fun `insert history merges multiple sessions on same day`() = runTest(testDispatcher) {
+        val sessionDate =
+            LocalDate(2024, Month.MARCH, 15).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+        val existing1 = HistorySessionEntity(
+            id = 1L,
+            dateStartedEpochMs = sessionDate,
+            totalFocusMinutes = 50,
+            totalBreakMinutes = 10,
+        )
+        val existing2 = HistorySessionEntity(
+            id = 2L,
+            dateStartedEpochMs = sessionDate + (2 * 60 * 60_000L), // 2 hours later
+            totalFocusMinutes = 75,
+            totalBreakMinutes = 15,
+        )
+        fakeDao.sessions = listOf(existing1, existing2)
+
+        val newSessionStart = sessionDate + (4 * 60 * 60_000L) // 4 hours later
+        val session = pomodoroSession(
+            startedAtMs = newSessionStart,
+            focusMinutes = 25,
+            breakMinutes = 5,
+        )
+
+        repository.insertHistory(session)
+
+        val inserted = fakeDao.lastInserted ?: error("Expected history insert")
+        // Should take the earliest dateStarted
+        assertEquals(sessionDate, inserted.dateStartedEpochMs)
+        // Should merge all minutes
+        assertEquals(50 + 75 + 25, inserted.totalFocusMinutes)
+        assertEquals(10 + 15 + 5, inserted.totalBreakMinutes)
+    }
+
+    @Test
+    fun `insert history creates new entry when no existing entry for the day`() =
+        runTest(testDispatcher) {
+            val sessionDate =
+                LocalDate(2024, Month.APRIL, 20).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+            fakeDao.sessions = emptyList()
+
+            val session = pomodoroSession(
+                startedAtMs = sessionDate + (3 * 60 * 60_000L),
+                focusMinutes = 30,
+                breakMinutes = 6,
+            )
+
+            repository.insertHistory(session)
+
+            val inserted = fakeDao.lastInserted ?: error("Expected history insert")
+            assertEquals(30, inserted.totalFocusMinutes)
+            assertEquals(6, inserted.totalBreakMinutes)
+        }
+
+    @Test
+    fun `insert history handles sessions with zero minutes`() = runTest(testDispatcher) {
+        val sessionDate =
+            LocalDate(2024, Month.MAY, 10).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+        fakeDao.sessions = emptyList()
+
+        val session = pomodoroSession(
+            startedAtMs = sessionDate,
+            focusMinutes = 0,
+            breakMinutes = 0,
+        )
+
+        repository.insertHistory(session)
+
+        val inserted = fakeDao.lastInserted ?: error("Expected history insert")
+        assertEquals(0, inserted.totalFocusMinutes)
+        assertEquals(0, inserted.totalBreakMinutes)
+    }
+
+    @Test
+    fun `getHistory handles multiple years of data`() = runTest(testDispatcher) {
+        fakeDao.totalMinutes = 500
+        fakeDao.availableYears = listOf(2024, 2023, 2022)
+        fakeDao.sessions = listOf(
+            historyEntity(2024, Month.JANUARY, 1, 100, 20),
+            historyEntity(2024, Month.FEBRUARY, 1, 100, 20),
+            historyEntity(2024, Month.MARCH, 1, 100, 20),
+        )
+
+        val result = repository.getHistory(2024) as DomainResult.Success
+
+        assertEquals(500, result.data.focusMinutesThisYear)
+        assertEquals(listOf(2024, 2023, 2022), result.data.availableYears)
+        assertEquals(3, result.data.histories.size)
+    }
+
     private fun historyEntity(
         year: Int,
         month: Month,
@@ -173,6 +264,7 @@ class HistorySessionRepositoryImplTest {
         var availableYears: List<Int> = emptyList()
         var sessions: List<HistorySessionEntity> = emptyList()
         var lastInserted: HistorySessionEntity? = null
+        var shouldReturnError = false
 
         override suspend fun insertFinishedSession(entity: HistorySessionEntity) {
             lastInserted = entity
@@ -183,6 +275,9 @@ class HistorySessionRepositoryImplTest {
             endExclusive: Long,
         ): List<HistorySessionEntity> {
             sessionsRange = startInclusive to endExclusive
+            if (shouldReturnError) {
+                throw RuntimeException("Simulated error")
+            }
             return sessions
         }
 
@@ -191,9 +286,17 @@ class HistorySessionRepositoryImplTest {
             endExclusive: Long,
         ): Int {
             totalMinutesRange = startInclusive to endExclusive
+            if (shouldReturnError) {
+                throw RuntimeException("Simulated error")
+            }
             return totalMinutes
         }
 
-        override suspend fun getAvailableYears(): List<Int> = availableYears
+        override suspend fun getAvailableYears(): List<Int> {
+            if (shouldReturnError) {
+                throw RuntimeException("Simulated error")
+            }
+            return availableYears
+        }
     }
 }

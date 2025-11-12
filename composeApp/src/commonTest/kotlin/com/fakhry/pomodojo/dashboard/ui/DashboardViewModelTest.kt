@@ -1,5 +1,7 @@
 package com.fakhry.pomodojo.dashboard.ui
 
+import com.fakhry.pomodojo.dashboard.domain.model.HistoryDomain
+import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.dashboard.ui.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
@@ -91,6 +93,196 @@ class DashboardViewModelTest {
         assertTrue(viewModel.hasActiveSession.value)
     }
 
+    @Test
+    fun `fetchHistory with success updates history state`() = runTest(dispatcher) {
+        val repository = FakePreferencesRepository(PreferencesDomain())
+        val focusRepository = FakeFocusRepository(hasActive = false)
+        val historyData = PomodoroHistoryDomain(
+            focusMinutesThisYear = 250,
+            availableYears = listOf(2024, 2023),
+            histories = listOf(
+                HistoryDomain(date = "2024-01-15", focusMinutes = 125, breakMinutes = 25),
+                HistoryDomain(date = "2024-01-16", focusMinutes = 125, breakMinutes = 25),
+            ),
+        )
+        val historyRepository = FakeHistoryRepository(historyData)
+        val currentTimeProvider = FakeCurrentTimeProvider(year = 2024)
+        val dispatcherProvider = DispatcherProvider(dispatcher)
+
+        val viewModel =
+            DashboardViewModel(
+                historyRepo = historyRepository,
+                repository = repository,
+                focusRepository = focusRepository,
+                dispatcher = dispatcherProvider,
+                currentTimeProvider = currentTimeProvider,
+            )
+        advanceUntilIdle()
+
+        val historyState = viewModel.historyState.value
+        assertEquals(2024, historyState.selectedYear)
+        assertEquals(250, historyState.focusMinutesThisYear)
+        assertEquals(listOf(2024, 2023), historyState.availableYears)
+        assertTrue(historyState.cells.isNotEmpty())
+    }
+
+    @Test
+    fun `fetchHistory with error leaves history state empty`() = runTest(dispatcher) {
+        val repository = FakePreferencesRepository(PreferencesDomain())
+        val focusRepository = FakeFocusRepository(hasActive = false)
+        val historyRepository = FakeHistoryRepository(error = true)
+        val currentTimeProvider = FakeCurrentTimeProvider()
+        val dispatcherProvider = DispatcherProvider(dispatcher)
+
+        val viewModel =
+            DashboardViewModel(
+                historyRepo = historyRepository,
+                repository = repository,
+                focusRepository = focusRepository,
+                dispatcher = dispatcherProvider,
+                currentTimeProvider = currentTimeProvider,
+            )
+        advanceUntilIdle()
+
+        val historyState = viewModel.historyState.value
+        assertEquals(0, historyState.selectedYear)
+        assertEquals(0, historyState.focusMinutesThisYear)
+        assertTrue(historyState.availableYears.isEmpty())
+    }
+
+    @Test
+    fun `selectYear updates selected year and refetches history`() = runTest(dispatcher) {
+        val repository = FakePreferencesRepository(PreferencesDomain())
+        val focusRepository = FakeFocusRepository(hasActive = false)
+        val historyData2024 = PomodoroHistoryDomain(
+            focusMinutesThisYear = 250,
+            availableYears = listOf(2024, 2023),
+            histories = listOf(
+                HistoryDomain(date = "2024-01-15", focusMinutes = 125, breakMinutes = 25),
+            ),
+        )
+        val historyData2023 = PomodoroHistoryDomain(
+            focusMinutesThisYear = 180,
+            availableYears = listOf(2024, 2023),
+            histories = listOf(
+                HistoryDomain(date = "2023-01-15", focusMinutes = 90, breakMinutes = 18),
+            ),
+        )
+        val historyRepository = FakeHistoryRepository(historyData2024, historyData2023)
+        val currentTimeProvider = FakeCurrentTimeProvider(year = 2024)
+        val dispatcherProvider = DispatcherProvider(dispatcher)
+
+        val viewModel =
+            DashboardViewModel(
+                historyRepo = historyRepository,
+                repository = repository,
+                focusRepository = focusRepository,
+                dispatcher = dispatcherProvider,
+                currentTimeProvider = currentTimeProvider,
+            )
+        advanceUntilIdle()
+
+        assertEquals(2024, viewModel.historyState.value.selectedYear)
+        assertEquals(250, viewModel.historyState.value.focusMinutesThisYear)
+
+        viewModel.selectYear(2023)
+        advanceUntilIdle()
+
+        assertEquals(2023, viewModel.historyState.value.selectedYear)
+        assertEquals(180, viewModel.historyState.value.focusMinutesThisYear)
+    }
+
+    @Test
+    fun `selectYear with same year does not refetch`() = runTest(dispatcher) {
+        val repository = FakePreferencesRepository(PreferencesDomain())
+        val focusRepository = FakeFocusRepository(hasActive = false)
+        val historyData = PomodoroHistoryDomain(
+            focusMinutesThisYear = 250,
+            availableYears = listOf(2024),
+            histories = listOf(),
+        )
+        val historyRepository = FakeHistoryRepository(historyData)
+        val currentTimeProvider = FakeCurrentTimeProvider(year = 2024)
+        val dispatcherProvider = DispatcherProvider(dispatcher)
+
+        val viewModel =
+            DashboardViewModel(
+                historyRepo = historyRepository,
+                repository = repository,
+                focusRepository = focusRepository,
+                dispatcher = dispatcherProvider,
+                currentTimeProvider = currentTimeProvider,
+            )
+        advanceUntilIdle()
+
+        val fetchCountBefore = historyRepository.fetchCount
+        viewModel.selectYear(2024)
+        advanceUntilIdle()
+
+        assertEquals(fetchCountBefore, historyRepository.fetchCount)
+    }
+
+    @Test
+    fun `selectYear with invalid year does not update state`() = runTest(dispatcher) {
+        val repository = FakePreferencesRepository(PreferencesDomain())
+        val focusRepository = FakeFocusRepository(hasActive = false)
+        val historyData = PomodoroHistoryDomain(
+            focusMinutesThisYear = 250,
+            availableYears = listOf(2024, 2023),
+            histories = listOf(),
+        )
+        val historyRepository = FakeHistoryRepository(historyData)
+        val currentTimeProvider = FakeCurrentTimeProvider(year = 2024)
+        val dispatcherProvider = DispatcherProvider(dispatcher)
+
+        val viewModel =
+            DashboardViewModel(
+                historyRepo = historyRepository,
+                repository = repository,
+                focusRepository = focusRepository,
+                dispatcher = dispatcherProvider,
+                currentTimeProvider = currentTimeProvider,
+            )
+        advanceUntilIdle()
+
+        val stateBefore = viewModel.historyState.value
+        viewModel.selectYear(2022) // Not in available years
+        advanceUntilIdle()
+
+        assertEquals(stateBefore.selectedYear, viewModel.historyState.value.selectedYear)
+        assertEquals(
+            stateBefore.focusMinutesThisYear,
+            viewModel.historyState.value.focusMinutesThisYear,
+        )
+    }
+
+    @Test
+    fun `checkHasActiveSession updates active session state`() = runTest(dispatcher) {
+        val repository = FakePreferencesRepository(PreferencesDomain())
+        val focusRepository = FakeFocusRepository(hasActive = false)
+        val historyRepository = FakeHistoryRepository()
+        val currentTimeProvider = FakeCurrentTimeProvider()
+        val dispatcherProvider = DispatcherProvider(dispatcher)
+
+        val viewModel =
+            DashboardViewModel(
+                historyRepo = historyRepository,
+                repository = repository,
+                focusRepository = focusRepository,
+                dispatcher = dispatcherProvider,
+                currentTimeProvider = currentTimeProvider,
+            )
+        advanceUntilIdle()
+
+        assertFalse(viewModel.hasActiveSession.value)
+
+        focusRepository.setHasActive(true)
+        viewModel.checkHasActiveSession()
+        advanceUntilIdle()
+
+        assertTrue(viewModel.hasActiveSession.value)
+    }
+
     private class FakePreferencesRepository(initial: PreferencesDomain) : PreferencesRepository {
         private val state = MutableStateFlow(initial)
         val current: PreferencesDomain get() = state.value
@@ -154,17 +346,54 @@ class DashboardViewModelTest {
         override suspend fun clearActiveSession() {
             hasActive = false
         }
+
+        fun setHasActive(value: Boolean) {
+            hasActive = value
+        }
     }
 
-    private class FakeHistoryRepository : HistorySessionRepository {
-        override suspend fun getHistory(year: Int) = DomainResult.Error("not implemented", -1)
+    private class FakeHistoryRepository(
+        private val data2024: PomodoroHistoryDomain? = null,
+        private val data2023: PomodoroHistoryDomain? = null,
+        private val error: Boolean = false,
+    ) : HistorySessionRepository {
+        var fetchCount = 0
+
+        override suspend fun getHistory(year: Int): DomainResult<PomodoroHistoryDomain> {
+            fetchCount++
+            if (error) {
+                return DomainResult.Error("not implemented", -1)
+            }
+            return when (year) {
+                2024 -> data2024?.let { DomainResult.Success(it) } ?: DomainResult.Error(
+                    "No data",
+                    -1,
+                )
+
+                2023 -> data2023?.let { DomainResult.Success(it) } ?: DomainResult.Error(
+                    "No data",
+                    -1,
+                )
+
+                else -> DomainResult.Error("not implemented", -1)
+            }
+        }
+
         override suspend fun insertHistory(session: PomodoroSessionDomain) = Unit
     }
 
     @OptIn(ExperimentalTime::class)
-    private class FakeCurrentTimeProvider : CurrentTimeProvider {
+    private class FakeCurrentTimeProvider(private val year: Int = 2024) : CurrentTimeProvider {
         override fun now(): Long = 0L
 
-        override fun nowInstant(): Instant = Instant.fromEpochMilliseconds(0)
+        override fun nowInstant(): Instant {
+            // Create an instant that represents January 1st of the given year
+            val millis = when (year) {
+                2024 -> 1704067200000L // 2024-01-01 00:00:00 UTC
+                2023 -> 1672531200000L // 2023-01-01 00:00:00 UTC
+                else -> 0L
+            }
+            return Instant.fromEpochMilliseconds(millis)
+        }
     }
 }

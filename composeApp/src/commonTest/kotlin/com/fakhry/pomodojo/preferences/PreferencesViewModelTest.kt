@@ -169,8 +169,251 @@ class PreferencesViewModelTest {
         assertTrue(updatedAppearance.isAlwaysOnDisplayEnabled)
     }
 
+    @Test
+    fun `onRepeatCountChanged updates repeat count and timeline`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
+
+        advanceUntilIdle()
+        val initialSegmentCount = viewModel.state.value.timeline.segments.size
+
+        viewModel.onRepeatCountChanged(6)
+        advanceUntilIdle()
+
+        assertEquals(6, viewModel.state.value.repeatCount)
+        assertTrue(viewModel.state.value.timeline.segments.size > initialSegmentCount)
+    }
+
+    @Test
+    fun `onBreakOptionSelected updates break minutes`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
+
+        advanceUntilIdle()
+
+        viewModel.onBreakOptionSelected(10)
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.breakOptions.first { it.value == 10 }.selected)
+    }
+
+    @Test
+    fun `onLongBreakEnabledToggled enables long break`() = runTest {
+        val storage = FakePreferenceStorage()
+        storage.state.value = PreferencesDomain(longBreakEnabled = false)
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
+
+        advanceUntilIdle()
+        assertFalse(viewModel.state.value.isLongBreakEnabled)
+
+        viewModel.onLongBreakEnabledToggled(true)
+        advanceUntilIdle()
+
+        assertTrue(viewModel.state.value.isLongBreakEnabled)
+    }
+
+    @Test
+    fun `onLongBreakEnabledToggled with same value does not trigger update`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
+
+        advanceUntilIdle()
+        val initialState = viewModel.state.value
+
+        // Toggle with the same value (already true)
+        viewModel.onLongBreakEnabledToggled(true)
+        advanceUntilIdle()
+
+        // State should remain the same
+        assertEquals(initialState.isLongBreakEnabled, viewModel.state.value.isLongBreakEnabled)
+    }
+
+    @Test
+    fun `onLongBreakAfterSelected updates long break interval`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
+
+        advanceUntilIdle()
+
+        viewModel.onLongBreakAfterSelected(6)
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.longBreakAfterOptions.first { it.value == 6 }.selected)
+    }
+
+    @Test
+    fun `onLongBreakMinutesSelected updates long break duration`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
+
+        advanceUntilIdle()
+
+        viewModel.onLongBreakMinutesSelected(20)
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.longBreakOptions.first { it.value == 20 }.selected)
+    }
+
+    @Test
+    fun `onThemeSelected updates theme in appearance state`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
+
+        advanceUntilIdle()
+
+        viewModel.onThemeSelected(com.fakhry.pomodojo.preferences.domain.model.AppTheme.DARK)
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(
+            state.themeOptions.first {
+                it.value == com.fakhry.pomodojo.preferences.domain.model.AppTheme.DARK
+            }.selected,
+        )
+    }
+
+    @Test
+    fun `onAlwaysOnDisplayToggled with same value does not trigger update`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
+
+        advanceUntilIdle()
+        val initialState = viewModel.appearanceState.value
+
+        // Toggle with the same value (already false)
+        viewModel.onAlwaysOnDisplayToggled(false)
+        advanceUntilIdle()
+
+        // State should remain the same
+        assertEquals(
+            initialState.isAlwaysOnDisplayEnabled,
+            viewModel.appearanceState.value.isAlwaysOnDisplayEnabled,
+        )
+    }
+
+    @Test
+    fun `isLoadingState becomes false after initialization`() = runTest {
+        val storage = FakePreferenceStorage()
+        val repository =
+            PreferencesRepositoryImpl(
+                storage = storage,
+                cascadeResolver = PreferenceCascadeResolver(),
+            )
+        val testDispatcher = Dispatchers.Unconfined
+        val viewModel =
+            PreferencesViewModel(
+                repository = repository,
+                timelineBuilder = BuildTimerSegmentsUseCase(),
+                hourSplitter = BuildHourSplitTimelineUseCase(),
+                dispatcher = DispatcherProvider(testDispatcher),
+            )
+
+        advanceUntilIdle()
+
+        assertFalse(viewModel.isLoadingState.value)
+    }
+
     private class FakePreferenceStorage : PreferenceStorage {
-        private val state = MutableStateFlow(PreferencesDomain())
+        val state = MutableStateFlow(PreferencesDomain())
 
         override val preferences = state
 
