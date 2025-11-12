@@ -3,6 +3,12 @@ package com.fakhry.pomodojo.focus.data.repository
 import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.focus.data.db.HistorySessionDao
 import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
+import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.ui.state.DomainResult
 import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -11,6 +17,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import kotlin.math.max
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
@@ -23,6 +30,44 @@ class HistorySessionRepositoryImplTest {
         fakeDao,
         DispatcherProvider(testDispatcher),
     )
+
+    private val minuteMillis = 60_000L
+
+    @Test
+    fun `insert history will update today history item`() = runTest(testDispatcher) {
+        val sessionDate =
+            LocalDate(2024, Month.JANUARY, 10).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+        val existing = HistorySessionEntity(
+            id = 42L,
+            dateStartedEpochMs = sessionDate,
+            dateFinishedEpochMs = sessionDate + 30 * minuteMillis,
+            totalFocusMinutes = 25,
+            totalBreakMinutes = 5,
+        )
+        fakeDao.sessions = listOf(existing)
+
+        val newSessionStart = sessionDate + 5 * minuteMillis
+        val newSessionFocus = 10
+        val newSessionBreak = 3
+        val session = pomodoroSession(
+            startedAtMs = newSessionStart,
+            focusMinutes = newSessionFocus,
+            breakMinutes = newSessionBreak,
+        )
+
+        repository.insertHistory(session)
+
+        val inserted = fakeDao.lastInserted ?: error("Expected history insert")
+        assertEquals(existing.id, inserted.id)
+        assertEquals(existing.dateStartedEpochMs, inserted.dateStartedEpochMs)
+        assertEquals(existing.totalFocusMinutes + newSessionFocus, inserted.totalFocusMinutes)
+        assertEquals(existing.totalBreakMinutes + newSessionBreak, inserted.totalBreakMinutes)
+        val sessionFinish = newSessionStart + (newSessionFocus + newSessionBreak) * minuteMillis
+        assertEquals(
+            max(existing.dateFinishedEpochMs, sessionFinish),
+            inserted.dateFinishedEpochMs,
+        )
+    }
 
     @Test
     fun `maps dao output into domain model`() = runTest(testDispatcher) {
@@ -92,15 +137,50 @@ class HistorySessionRepositoryImplTest {
         )
     }
 
+    private fun pomodoroSession(
+        startedAtMs: Long,
+        focusMinutes: Int,
+        breakMinutes: Int,
+    ): PomodoroSessionDomain {
+        val segments = buildList {
+            if (focusMinutes > 0) {
+                add(timerSegment(TimerType.FOCUS, focusMinutes))
+            }
+            if (breakMinutes > 0) {
+                add(timerSegment(TimerType.SHORT_BREAK, breakMinutes))
+            }
+        }
+        return PomodoroSessionDomain(
+            totalCycle = segments.size,
+            startedAtEpochMs = startedAtMs,
+            elapsedPauseEpochMs = 0L,
+            timeline = TimelineDomain(
+                segments = segments,
+                hourSplits = emptyList(),
+            ),
+        )
+    }
+
+    private fun timerSegment(type: TimerType, minutes: Int) = TimerSegmentsDomain(
+        type = type,
+        cycleNumber = 1,
+        timer = TimerDomain(
+            durationEpochMs = minutes * minuteMillis,
+            finishedInMillis = minutes * minuteMillis,
+        ),
+        timerStatus = TimerStatusDomain.Completed,
+    )
+
     private class FakeHistorySessionDao : HistorySessionDao {
         var totalMinutes = 0
         var totalMinutesRange: Pair<Long, Long>? = null
         var sessionsRange: Pair<Long, Long>? = null
         var availableYears: List<Int> = emptyList()
         var sessions: List<HistorySessionEntity> = emptyList()
+        var lastInserted: HistorySessionEntity? = null
 
         override suspend fun insertFinishedSession(entity: HistorySessionEntity) {
-            // no-op for tests
+            lastInserted = entity
         }
 
         override suspend fun getSessionsBetween(
