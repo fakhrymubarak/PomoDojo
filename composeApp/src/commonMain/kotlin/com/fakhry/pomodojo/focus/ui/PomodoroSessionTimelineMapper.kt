@@ -11,31 +11,31 @@ internal fun TimerSegmentsDomain.toTimelineSegmentUi(now: Long): TimelineSegment
     val duration = timer.durationEpochMs
     val (remaining, finishedAt, startedPauseAt) =
         when (timerStatus) {
-            TimerStatusDomain.Running -> {
+            TimerStatusDomain.RUNNING -> {
                 val remainingNow = (timer.finishedInMillis - now).coerceAtLeast(0L)
                 Triple(
                     remainingNow,
                     timer.finishedInMillis.takeIf {
                         it > 0L
-                    } ?: now + duration,
+                    } ?: (now + duration),
                     0L,
                 )
             }
 
-            TimerStatusDomain.Paused -> {
+            TimerStatusDomain.PAUSED -> {
                 val remainingNow = (timer.finishedInMillis - timer.startedPauseTime).coerceAtLeast(
                     0L,
                 )
                 Triple(remainingNow, timer.finishedInMillis, timer.startedPauseTime)
             }
 
-            TimerStatusDomain.Completed -> Triple(0L, timer.finishedInMillis, 0L)
-            TimerStatusDomain.Initial -> Triple(duration, timer.finishedInMillis, 0L)
+            TimerStatusDomain.COMPLETED -> Triple(0L, timer.finishedInMillis, 0L)
+            TimerStatusDomain.INITIAL -> Triple(duration, timer.finishedInMillis, 0L)
         }
     val progress =
         when (timerStatus) {
-            TimerStatusDomain.Completed -> 1f
-            TimerStatusDomain.Initial -> 0f
+            TimerStatusDomain.COMPLETED -> 1f
+            TimerStatusDomain.INITIAL -> 0f
             else -> calculateTimerProgress(duration, remaining)
         }
     val timerUi =
@@ -58,8 +58,8 @@ internal fun TimerSegmentsDomain.toTimelineSegmentUi(now: Long): TimelineSegment
 internal fun TimelineSegmentUi.toDomainSegment(): TimerSegmentsDomain = TimerSegmentsDomain(
     type = type,
     cycleNumber = cycleNumber,
-    timer =
-    TimerDomain(
+    timer = TimerDomain(
+        progress = timer.progress,
         durationEpochMs = timer.durationEpochMs,
         finishedInMillis = timer.finishedInMillis,
         startedPauseTime = timer.startedPauseTime,
@@ -72,11 +72,11 @@ internal fun List<TimelineSegmentUi>.resolveActiveIndex(): Int {
     if (isEmpty()) return 0
     val runningIndex =
         indexOfFirst {
-            it.timerStatus == TimerStatusDomain.Running ||
-                it.timerStatus == TimerStatusDomain.Paused
+            it.timerStatus == TimerStatusDomain.RUNNING ||
+                it.timerStatus == TimerStatusDomain.PAUSED
         }
     if (runningIndex >= 0) return runningIndex
-    return indexOfFirst { it.timerStatus != TimerStatusDomain.Completed }
+    return indexOfFirst { it.timerStatus != TimerStatusDomain.COMPLETED }
         .takeUnless { it < 0 } ?: lastIndex.coerceAtLeast(0)
 }
 

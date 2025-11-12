@@ -99,8 +99,8 @@ private fun PomodoroSessionDomain.toNotificationSummary(
     now: Long,
 ): NotificationSummary {
     val currentSegment = timeline.segments.firstOrNull {
-        it.timerStatus == TimerStatusDomain.Running || it.timerStatus == TimerStatusDomain.Paused
-    } ?: timeline.segments.firstOrNull { it.timerStatus != TimerStatusDomain.Completed }
+        it.timerStatus == TimerStatusDomain.RUNNING || it.timerStatus == TimerStatusDomain.PAUSED
+    } ?: timeline.segments.firstOrNull { it.timerStatus != TimerStatusDomain.COMPLETED }
     val segmentLabel = currentSegment?.type?.toLabel(context)
         ?: context.getString(R.string.focus_session_live_title)
     val remaining = currentSegment?.let { segmentRemaining(it, now) } ?: 0L
@@ -116,7 +116,7 @@ private fun PomodoroSessionDomain.toNotificationSummary(
         R.string.focus_session_notification_subtitle_format,
         remaining.formatDurationMillis(),
     )
-    val segmentIndex = timeline.segments.count { it.timerStatus == TimerStatusDomain.Completed } + 1
+    val segmentIndex = timeline.segments.count { it.timerStatus == TimerStatusDomain.COMPLETED } + 1
     val body = context.getString(
         R.string.focus_session_notification_body_format,
         segmentIndex.coerceAtMost(timeline.segments.size),
@@ -131,16 +131,16 @@ private fun PomodoroSessionDomain.toNotificationSummary(
         timerText = timerText,
         body = body,
         segmentProgressPercent = segmentProgress,
-        isPaused = currentSegment?.timerStatus == TimerStatusDomain.Paused,
+        isPaused = currentSegment?.timerStatus == TimerStatusDomain.PAUSED,
     )
 }
 
 private fun segmentRemaining(segment: TimerSegmentsDomain, now: Long): Long =
     when (segment.timerStatus) {
-        TimerStatusDomain.Completed -> 0L
-        TimerStatusDomain.Initial -> segment.timer.durationEpochMs
-        TimerStatusDomain.Running -> (segment.timer.finishedInMillis - now).coerceAtLeast(0L)
-        TimerStatusDomain.Paused -> {
+        TimerStatusDomain.COMPLETED -> 0L
+        TimerStatusDomain.INITIAL -> segment.timer.durationEpochMs
+        TimerStatusDomain.RUNNING -> (segment.timer.finishedInMillis - now).coerceAtLeast(0L)
+        TimerStatusDomain.PAUSED -> {
             val remaining = segment.timer.finishedInMillis - segment.timer.startedPauseTime
             remaining.coerceAtLeast(0L)
         }

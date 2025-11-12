@@ -58,9 +58,9 @@ class PomodoroSessionViewModel(
         val active = timelineSegments.getOrNull(activeSegmentIndex) ?: return@intent
         val now = currentTimeProvider.now()
         when (active.timerStatus) {
-            TimerStatusDomain.Running -> {
+            TimerStatusDomain.RUNNING -> {
                 val refreshed = updateRunningSegment(active, now)
-                if (refreshed.timerStatus == TimerStatusDomain.Completed) {
+                if (refreshed.timerStatus == TimerStatusDomain.COMPLETED) {
                     timelineSegments[activeSegmentIndex] = refreshed
                     reduce { state.withUpdatedTimeline(refreshed) }
                     return@intent
@@ -71,7 +71,7 @@ class PomodoroSessionViewModel(
                 reduce { state.withUpdatedTimeline(paused) }
             }
 
-            TimerStatusDomain.Paused -> {
+            TimerStatusDomain.PAUSED -> {
                 val resumed = resumeSegment(active, now)
                 timelineSegments[activeSegmentIndex] = resumed
                 reduce { state.withUpdatedTimeline(resumed) }
@@ -96,8 +96,9 @@ class PomodoroSessionViewModel(
             state.copy(
                 isShowConfirmEndDialog = false,
                 isComplete = true,
-                activeSegment = timelineSegments.getOrNull(activeSegmentIndex)
-                    ?: state.activeSegment,
+                activeSegment = timelineSegments.getOrNull(
+                    activeSegmentIndex,
+                ) ?: state.activeSegment,
                 timeline = state.timeline.copy(segments = timelineSegments.toPersistentList()),
             )
         }
@@ -129,7 +130,7 @@ class PomodoroSessionViewModel(
             sessionRepository.updateActiveSession(prepared.snapshot)
         }
         when (timelineSegments.getOrNull(activeSegmentIndex)?.timerStatus) {
-            TimerStatusDomain.Running -> startTicker()
+            TimerStatusDomain.RUNNING -> startTicker()
             else -> stopTicker()
         }
     }
@@ -148,7 +149,7 @@ class PomodoroSessionViewModel(
                     hourSplits = session.timeline.hourSplits,
                 ),
             )
-        val isComplete = timelineSegments.all { it.timerStatus == TimerStatusDomain.Completed }
+        val isComplete = timelineSegments.all { it.timerStatus == TimerStatusDomain.COMPLETED }
         val uiState = refreshedSession.toUiState(timelineSegments, activeSegmentIndex, isComplete)
         return PreparedSession(
             uiState = uiState,
@@ -160,7 +161,7 @@ class PomodoroSessionViewModel(
     private fun startTicker() {
         if (tickerJob?.isActive == true) return
         val active = timelineSegments.getOrNull(activeSegmentIndex) ?: return
-        if (active.timerStatus != TimerStatusDomain.Running) return
+        if (active.timerStatus != TimerStatusDomain.RUNNING) return
         tickerJob = viewModelScope.launch(dispatcher.computation) {
             while (isActive) {
                 delay(tickIntervalMillis)
@@ -178,14 +179,14 @@ class PomodoroSessionViewModel(
         intent {
             if (state.isComplete) return@intent
             val active = timelineSegments.getOrNull(activeSegmentIndex) ?: return@intent
-            if (active.timerStatus != TimerStatusDomain.Running) return@intent
+            if (active.timerStatus != TimerStatusDomain.RUNNING) return@intent
 
             val now = currentTimeProvider.now()
             var updatedSegment = updateRunningSegment(active, now)
             timelineSegments[activeSegmentIndex] = updatedSegment
 
             var advancedSegment = false
-            while (updatedSegment.timerStatus == TimerStatusDomain.Completed) {
+            while (updatedSegment.timerStatus == TimerStatusDomain.COMPLETED) {
                 segmentCompletionSoundPlayer.playSegmentCompleted()
                 advancedSegment = true
                 if (!advanceToNextSegment(now)) {
@@ -242,7 +243,7 @@ class PomodoroSessionViewModel(
         val duration = segment.timer.durationEpochMs
         val remaining = (segment.timer.finishedInMillis - now).coerceAtLeast(0L)
         val progress = calculateTimerProgress(duration, remaining)
-        val status = if (remaining == 0L) TimerStatusDomain.Completed else TimerStatusDomain.Running
+        val status = if (remaining == 0L) TimerStatusDomain.COMPLETED else TimerStatusDomain.RUNNING
         val timer = segment.timer.copy(
             progress = progress,
             formattedTime = remaining.formatDurationMillis(),
@@ -252,7 +253,7 @@ class PomodoroSessionViewModel(
 
     private fun pauseSegment(segment: TimelineSegmentUi, now: Long): TimelineSegmentUi {
         val timer = segment.timer.copy(startedPauseTime = now)
-        return segment.copy(timer = timer, timerStatus = TimerStatusDomain.Paused)
+        return segment.copy(timer = timer, timerStatus = TimerStatusDomain.PAUSED)
     }
 
     private fun resumeSegment(segment: TimelineSegmentUi, now: Long): TimelineSegmentUi {
@@ -267,7 +268,7 @@ class PomodoroSessionViewModel(
             formattedTime = remaining.formatDurationMillis(),
             progress = calculateTimerProgress(segment.timer.durationEpochMs, remaining),
         )
-        return segment.copy(timer = timer, timerStatus = TimerStatusDomain.Running)
+        return segment.copy(timer = timer, timerStatus = TimerStatusDomain.RUNNING)
     }
 
     private fun prepareSegmentForRun(
@@ -286,17 +287,17 @@ class PomodoroSessionViewModel(
             startedPauseTime = 0L,
             elapsedPauseTime = 0L,
         )
-        val status = if (remaining == 0L) TimerStatusDomain.Completed else TimerStatusDomain.Running
+        val status = if (remaining == 0L) TimerStatusDomain.COMPLETED else TimerStatusDomain.RUNNING
         return segment.copy(timer = timer, timerStatus = status)
     }
 
     private fun finalizeSegment(segment: TimelineSegmentUi): TimelineSegmentUi {
         val timer = segment.timer.copy(
-            progress = 1f,
-            formattedTime = 0L.formatDurationMillis(),
+            progress = segment.timer.progress.coerceAtMost(1f),
+            formattedTime = segment.timer.formattedTime,
             startedPauseTime = 0L,
         )
-        return segment.copy(timer = timer, timerStatus = TimerStatusDomain.Completed)
+        return segment.copy(timer = timer, timerStatus = TimerStatusDomain.COMPLETED)
     }
 
     private fun finalizeCurrentSegment() {
@@ -309,13 +310,13 @@ class PomodoroSessionViewModel(
         while (timelineSegments.isNotEmpty()) {
             val active = timelineSegments.getOrNull(activeSegmentIndex) ?: break
             when (active.timerStatus) {
-                TimerStatusDomain.Running -> {
+                TimerStatusDomain.RUNNING -> {
                     val refreshed = updateRunningSegment(active, now)
                     if (refreshed != active) {
                         timelineSegments[activeSegmentIndex] = refreshed
                         mutated = true
                     }
-                    if (refreshed.timerStatus == TimerStatusDomain.Completed) {
+                    if (refreshed.timerStatus == TimerStatusDomain.COMPLETED) {
                         if (!advanceToNextSegment(now)) {
                             return true
                         }
@@ -325,16 +326,16 @@ class PomodoroSessionViewModel(
                     break
                 }
 
-                TimerStatusDomain.Completed -> {
+                TimerStatusDomain.COMPLETED -> {
                     if (!advanceToNextSegment(now)) {
                         return true
                     }
                     mutated = true
                 }
 
-                TimerStatusDomain.Paused -> break
+                TimerStatusDomain.PAUSED -> break
 
-                TimerStatusDomain.Initial -> {
+                TimerStatusDomain.INITIAL -> {
                     if (activeSegmentIndex == 0) {
                         timelineSegments[activeSegmentIndex] =
                             prepareSegmentForRun(active, now, now)

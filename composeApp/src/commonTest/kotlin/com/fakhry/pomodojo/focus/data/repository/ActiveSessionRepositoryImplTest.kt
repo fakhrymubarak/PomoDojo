@@ -122,7 +122,7 @@ class ActiveSessionRepositoryImplTest {
                         durationEpochMs = focusDuration,
                         finishedInMillis = startedAt + focusDuration,
                     ),
-                    timerStatus = TimerStatusDomain.Running,
+                    timerStatus = TimerStatusDomain.RUNNING,
                 ),
                 TimerSegmentsDomain(
                     type = TimerType.SHORT_BREAK,
@@ -132,7 +132,7 @@ class ActiveSessionRepositoryImplTest {
                         durationEpochMs = breakDuration,
                         finishedInMillis = startedAt + focusDuration + breakDuration,
                     ),
-                    timerStatus = TimerStatusDomain.Initial,
+                    timerStatus = TimerStatusDomain.INITIAL,
                 ),
             )
         return PomodoroSessionDomain(

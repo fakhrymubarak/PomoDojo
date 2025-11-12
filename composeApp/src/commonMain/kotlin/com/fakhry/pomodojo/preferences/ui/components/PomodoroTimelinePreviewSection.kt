@@ -205,12 +205,12 @@ private fun LegendDot(color: Color) {
 private fun PomodoroTimelinePreviewSectionPreview() {
     val timeline = TimelineUiModel(
         segments = persistentListOf(
-            TimelineSegmentUi(timerStatus = TimerStatusDomain.Completed),
+            TimelineSegmentUi(timerStatus = TimerStatusDomain.COMPLETED),
             TimelineSegmentUi(
                 type = TimerType.SHORT_BREAK,
-                timerStatus = TimerStatusDomain.Completed,
+                timerStatus = TimerStatusDomain.COMPLETED,
             ),
-            TimelineSegmentUi(timerStatus = TimerStatusDomain.Running),
+            TimelineSegmentUi(timerStatus = TimerStatusDomain.RUNNING),
             TimelineSegmentUi(
                 type = TimerType.SHORT_BREAK,
             ),
