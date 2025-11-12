@@ -165,10 +165,11 @@ class HistorySessionRepositoryImplTest {
         type = type,
         cycleNumber = 1,
         timer = TimerDomain(
+            progress = 1f,
             durationEpochMs = minutes * minuteMillis,
             finishedInMillis = minutes * minuteMillis,
         ),
-        timerStatus = TimerStatusDomain.Completed,
+        timerStatus = TimerStatusDomain.COMPLETED,
     )
 
     private class FakeHistorySessionDao : HistorySessionDao {

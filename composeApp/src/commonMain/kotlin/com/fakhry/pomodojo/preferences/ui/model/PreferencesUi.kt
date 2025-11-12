@@ -59,16 +59,13 @@ data class PreferenceOption<T>(
 /**
  * Represents a single segment in the Pomodoro timeline.
  * Each segment has a specific type and duration.
- *
- * @property duration The duration of the timeline segment in MINUTES.
- * @property progress The progress of the timeline segment from 0f to 1f.
  */
 @Immutable
 data class TimelineSegmentUi(
     val type: TimerType = TimerType.FOCUS,
     val cycleNumber: Int = 0,
     val timer: TimerUi = TimerUi(),
-    val timerStatus: TimerStatusDomain = TimerStatusDomain.Initial,
+    val timerStatus: TimerStatusDomain = TimerStatusDomain.INITIAL,
 )
 
 @Immutable

@@ -61,7 +61,7 @@ class BuildTimerSegmentsUseCase {
                 first.timer.copy(
                     finishedInMillis = now + first.timer.durationEpochMs,
                 ),
-                timerStatus = TimerStatusDomain.Running,
+                timerStatus = TimerStatusDomain.RUNNING,
             )
 
         remove(first)

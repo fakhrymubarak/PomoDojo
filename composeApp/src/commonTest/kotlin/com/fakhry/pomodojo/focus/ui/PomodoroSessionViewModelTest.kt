@@ -71,7 +71,7 @@ class PomodoroSessionViewModelTest {
         val state = viewModel.awaitSessionStarted()
 
         assertEquals(1, state.totalCycle, "state=$state")
-        assertEquals(TimerStatusDomain.Running, state.activeSegment.timerStatus, "state=$state")
+        assertEquals(TimerStatusDomain.RUNNING, state.activeSegment.timerStatus, "state=$state")
         assertEquals("01:00", state.activeSegment.timer.formattedTime, "state=$state")
         assertEquals(0f, state.activeSegment.timer.progress, "state=$state")
     }
@@ -131,27 +131,27 @@ class PomodoroSessionViewModelTest {
                     type = TimerType.FOCUS,
                     cycle = 1,
                     durationMs = minuteMillis,
-                    status = TimerStatusDomain.Completed,
+                    status = TimerStatusDomain.COMPLETED,
                     finishedAt = 1 * minuteMillis,
                 ),
                 timerSegment(
                     type = TimerType.SHORT_BREAK,
                     cycle = 1,
                     durationMs = minuteMillis,
-                    status = TimerStatusDomain.Running,
+                    status = TimerStatusDomain.RUNNING,
                     finishedAt = 2 * minuteMillis,
                 ),
                 timerSegment(
                     type = TimerType.FOCUS,
                     cycle = 2,
                     durationMs = minuteMillis,
-                    status = TimerStatusDomain.Initial,
+                    status = TimerStatusDomain.INITIAL,
                 ),
                 timerSegment(
                     type = TimerType.SHORT_BREAK,
                     cycle = 2,
                     durationMs = minuteMillis,
-                    status = TimerStatusDomain.Initial,
+                    status = TimerStatusDomain.INITIAL,
                 ),
             ),
         )
@@ -163,7 +163,7 @@ class PomodoroSessionViewModelTest {
         val state = viewModel.awaitSessionStarted()
 
         assertEquals(
-            TimerStatusDomain.Running,
+            TimerStatusDomain.RUNNING,
             state.activeSegment.timerStatus,
         )
         assertEquals(
@@ -176,14 +176,14 @@ class PomodoroSessionViewModelTest {
         )
         assertEquals(
             listOf(
-                TimerStatusDomain.Completed,
-                TimerStatusDomain.Completed,
-                TimerStatusDomain.Completed,
+                TimerStatusDomain.COMPLETED,
+                TimerStatusDomain.COMPLETED,
+                TimerStatusDomain.COMPLETED,
             ),
             state.timeline.segments.take(3).map { it.timerStatus },
         )
         assertEquals(
-            TimerStatusDomain.Running,
+            TimerStatusDomain.RUNNING,
             sessionRepository.storedSession!!.timeline.segments[3].timerStatus,
         )
     }

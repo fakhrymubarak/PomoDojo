@@ -147,7 +147,7 @@ private fun PomodoroSessionContent(
             )
             Spacer(modifier = Modifier.height(32.dp))
             FocusControls(
-                isTimerRunning = activeSegment.timerStatus == TimerStatusDomain.Running,
+                isTimerRunning = activeSegment.timerStatus == TimerStatusDomain.RUNNING,
                 onTogglePause = onTogglePause,
                 onEnd = onEnd,
             )

@@ -87,15 +87,20 @@ fun PomodoroSessionDomain.toHourSplitEntities(
 }
 
 fun PomodoroSessionDomain.toHistoryEntity(): HistorySessionEntity {
-    val elapsedSegments =
-        timeline.segments.filterNot { it.timerStatus == TimerStatusDomain.Initial }
-    val totalFocusMinutes =
-        elapsedSegments.filter { it.type == TimerType.FOCUS }.sumOf { it.timer.durationEpochMs }
-            .toMinutes()
-    val totalBreakMinutes =
-        elapsedSegments.filter { it.type != TimerType.FOCUS }.sumOf { it.timer.durationEpochMs }
-            .toMinutes()
-    val totalDuration = elapsedSegments.sumOf { it.timer.durationEpochMs }
+    val elapsedSegments = timeline.segments.filterNot {
+        it.timerStatus == TimerStatusDomain.INITIAL
+    }
+    val totalFocusMinutes = elapsedSegments
+        .filter { it.type == TimerType.FOCUS }
+        .sumOf { (it.timer.durationEpochMs * it.timer.progress).toLong() }
+        .toMinutes()
+    val totalBreakMinutes = elapsedSegments
+        .filter { it.type != TimerType.FOCUS }
+        .sumOf { (it.timer.durationEpochMs * it.timer.progress).toLong() }
+        .toMinutes()
+    val totalDuration =
+        elapsedSegments.sumOf { (it.timer.durationEpochMs * it.timer.progress).toLong() }
+
     val finishedAt = startedAtEpochMs + totalDuration
     return HistorySessionEntity(
         id = startedAtEpochMs,
