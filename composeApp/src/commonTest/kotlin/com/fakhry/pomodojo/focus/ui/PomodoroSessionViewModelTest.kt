@@ -1,7 +1,10 @@
 package com.fakhry.pomodojo.focus.ui
 
+import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
+import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
@@ -17,6 +20,7 @@ import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
+import com.fakhry.pomodojo.ui.state.DomainResult
 import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -296,7 +300,7 @@ private class FakePreferencesRepository(initial: PreferencesDomain) : Preference
 
 private class FakeActiveSessionRepository(
     initialSession: PomodoroSessionDomain? = null,
-) : com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository {
+) : ActiveSessionRepository {
     var storedSession: PomodoroSessionDomain? = initialSession
 
     override suspend fun getActiveSession(): PomodoroSessionDomain =
@@ -321,22 +325,21 @@ private class FakeActiveSessionRepository(
     override suspend fun hasActiveSession(): Boolean = storedSession != null
 }
 
-private class FakeHistorySessionRepository : com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository {
+private class FakeHistorySessionRepository : HistorySessionRepository {
     val insertedSessions = mutableListOf<PomodoroSessionDomain>()
 
     override suspend fun insertHistory(session: PomodoroSessionDomain) {
         insertedSessions.add(session)
     }
 
-    override suspend fun getHistory(year: Int): com.fakhry.pomodojo.ui.state.DomainResult<com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain> {
-        return com.fakhry.pomodojo.ui.state.DomainResult.Success(
-            com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain(
+    override suspend fun getHistory(year: Int): DomainResult.Success<PomodoroHistoryDomain> =
+        DomainResult.Success(
+            PomodoroHistoryDomain(
                 focusMinutesThisYear = 0,
                 availableYears = emptyList(),
                 histories = emptyList(),
-            )
+            ),
         )
-    }
 }
 
 private class FakeFocusSessionNotifier : FocusSessionNotifier {

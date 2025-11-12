@@ -87,9 +87,6 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.sqlite.bundled.jvm)
         }
-        jvmTest.dependencies {
-            implementation(libs.kotlinx.datetime)
-        }
     }
 }
 
@@ -186,7 +183,7 @@ tasks.register<JacocoReport>("jacocoJvmTestReport") {
         xml.required.set(true)
         html.required.set(true)
         csv.required.set(false)
-        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jvmTest"))
+        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jvmTestResult"))
     }
 
     val jvmMainCompilation =

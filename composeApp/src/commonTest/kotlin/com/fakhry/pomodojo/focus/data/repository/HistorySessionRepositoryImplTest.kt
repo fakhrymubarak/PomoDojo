@@ -1,25 +1,31 @@
-package com.fakhry.pomodojo.dashboard.data.repository
+package com.fakhry.pomodojo.focus.data.repository
 
 import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.focus.data.db.HistorySessionDao
 import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
-import com.fakhry.pomodojo.focus.data.repository.HistorySessionRepositoryImpl
 import com.fakhry.pomodojo.ui.state.DomainResult
+import com.fakhry.pomodojo.utils.DispatcherProvider
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-class PomodoroHistoryRepositoryImplTest {
+class HistorySessionRepositoryImplTest {
     private val fakeDao = FakeHistorySessionDao()
-    private val repository = HistorySessionRepositoryImpl(fakeDao)
+    private val testDispatcher = StandardTestDispatcher()
+    private val repository = HistorySessionRepositoryImpl(
+        fakeDao,
+        DispatcherProvider(testDispatcher),
+    )
 
     @Test
-    fun `maps dao output into domain model`() {
+    fun `maps dao output into domain model`() = runTest(testDispatcher) {
         fakeDao.totalMinutes = 185
         fakeDao.availableYears = listOf(2024, 2023)
         fakeDao.sessions = listOf(
@@ -52,7 +58,7 @@ class PomodoroHistoryRepositoryImplTest {
     }
 
     @Test
-    fun `queries dao with year start and end bounds`() {
+    fun `queries dao with year start and end bounds`() = runTest(testDispatcher) {
         repository.getHistory(2023)
 
         val expectedStart =

@@ -24,7 +24,6 @@ fun Long.formatDurationMillis(): String {
     return formatMmSs(m.toInt(), s.toInt())
 }
 
-
 /**
  * Converts a duration in milliseconds to minutes.
  *
