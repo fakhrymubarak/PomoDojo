@@ -8,37 +8,48 @@ import com.fakhry.pomodojo.focus.data.mapper.toHourSplitEntities
 import com.fakhry.pomodojo.focus.data.mapper.toSegmentEntities
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.utils.DispatcherProvider
+import kotlinx.coroutines.withContext
 
 class ActiveSessionRepositoryImpl(
     private val focusDao: FocusSessionDao,
+    private val dispatcher: DispatcherProvider,
 ) : ActiveSessionRepository {
-    constructor(database: PomoDojoRoomDatabase) : this(focusDao = database.focusSessionDao())
+    constructor(
+        database: PomoDojoRoomDatabase,
+        dispatcher: DispatcherProvider,
+    ) : this(focusDao = database.focusSessionDao(), dispatcher = dispatcher)
 
-    override suspend fun getActiveSession(): PomodoroSessionDomain {
+    override suspend fun getActiveSession(): PomodoroSessionDomain = withContext(dispatcher.io) {
         val snapshot = focusDao.getActiveSessionWithRelations()
             ?: throw IllegalStateException("No active session stored in database.")
-        return snapshot.toDomain()
+        return@withContext snapshot.toDomain()
     }
 
-    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
+    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) =
+        withContext(dispatcher.io) {
+            focusDao.clearActiveSession()
+            persistSnapshot(snapshot, sessionIdOverride = null)
+        }
+
+    override suspend fun updateActiveSession(snapshot: PomodoroSessionDomain) =
+        withContext(dispatcher.io) {
+            val existingId = focusDao.getActiveSessionId()
+            persistSnapshot(snapshot, sessionIdOverride = existingId)
+        }
+
+    override suspend fun completeSession(snapshot: PomodoroSessionDomain) =
+        withContext(dispatcher.io) {
+            focusDao.clearActiveSession()
+        }
+
+    override suspend fun clearActiveSession() = withContext(dispatcher.io) {
         focusDao.clearActiveSession()
-        persistSnapshot(snapshot, sessionIdOverride = null)
     }
 
-    override suspend fun updateActiveSession(snapshot: PomodoroSessionDomain) {
-        val existingId = focusDao.getActiveSessionId()
-        persistSnapshot(snapshot, sessionIdOverride = existingId)
+    override suspend fun hasActiveSession(): Boolean = withContext(dispatcher.io) {
+        focusDao.hasActiveSession()
     }
-
-    override suspend fun completeSession(snapshot: PomodoroSessionDomain) {
-        focusDao.clearActiveSession()
-    }
-
-    override suspend fun clearActiveSession() {
-        focusDao.clearActiveSession()
-    }
-
-    override suspend fun hasActiveSession(): Boolean = focusDao.hasActiveSession()
 
     private suspend fun persistSnapshot(
         snapshot: PomodoroSessionDomain,
