@@ -32,7 +32,6 @@ import com.fakhry.pomodojo.dashboard.ui.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.pomodoro_timer_start
 import com.fakhry.pomodojo.permissions.rememberNotificationPermissionRequester
-import com.fakhry.pomodojo.utils.formatTimerMinutes
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -44,8 +43,6 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = koinInject(),
 ) {
     val hasActiveSession by viewModel.hasActiveSession.collectAsState()
-    val prefState by viewModel.prefState.collectAsState()
-    val historyState by viewModel.historyState.collectAsState()
 
     val scrollState = rememberScrollState()
     val startLabel = stringResource(Res.string.pomodoro_timer_start)
@@ -71,9 +68,12 @@ fun DashboardScreen(
             verticalArrangement = Arrangement.spacedBy(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            val formattedTimer by viewModel.formattedTime.collectAsState()
+            val historyState by viewModel.historyState.collectAsState()
+
             DashboardHeader(onOpenSettings = onOpenSettings)
             PomodoroTimerSection(
-                formattedTime = formatTimerMinutes(prefState.focusMinutes),
+                formattedTime = formattedTimer,
                 progress = 1f,
             )
 
