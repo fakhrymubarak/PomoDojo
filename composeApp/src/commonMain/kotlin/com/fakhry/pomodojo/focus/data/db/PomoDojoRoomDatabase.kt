@@ -27,7 +27,7 @@ abstract class PomoDojoRoomDatabase : RoomDatabase() {
 }
 
 // The Room compiler generates the `actual` implementations.
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING", "KotlinNoActualForExpect")
 expect object PomoDojoRoomDatabaseConstructor : RoomDatabaseConstructor<PomoDojoRoomDatabase> {
     override fun initialize(): PomoDojoRoomDatabase
 }

@@ -1,9 +1,9 @@
 package com.fakhry.pomodojo.dashboard.viewmodel
 
-import com.fakhry.pomodojo.dashboard.domain.repository.PomodoroHistoryRepository
 import com.fakhry.pomodojo.dashboard.ui.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
+import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
@@ -134,7 +134,7 @@ class DashboardViewModelTest {
         }
     }
 
-    private class FakeFocusRepository(private var hasActive: Boolean) : PomodoroSessionRepository {
+    private class FakeFocusRepository(private var hasActive: Boolean) : ActiveSessionRepository {
         override suspend fun hasActiveSession(): Boolean = hasActive
 
         override suspend fun getActiveSession(): PomodoroSessionDomain = PomodoroSessionDomain()
@@ -156,7 +156,7 @@ class DashboardViewModelTest {
         }
     }
 
-    private class FakeHistoryRepository : PomodoroHistoryRepository {
+    private class FakeHistoryRepository : HistorySessionRepository {
         override fun getHistory(year: Int) = DomainResult.Error("not implemented", -1)
     }
 

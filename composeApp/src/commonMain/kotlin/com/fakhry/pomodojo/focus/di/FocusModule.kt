@@ -2,10 +2,10 @@ package com.fakhry.pomodojo.focus.di
 
 import com.fakhry.pomodojo.focus.data.db.PomoDojoRoomDatabase
 import com.fakhry.pomodojo.focus.data.db.createDatabase
-import com.fakhry.pomodojo.focus.data.repository.RoomPomodoroSessionRepository
+import com.fakhry.pomodojo.focus.data.repository.ActiveSessionRepositoryImpl
 import com.fakhry.pomodojo.focus.data.repository.StaticQuoteRepository
 import com.fakhry.pomodojo.focus.domain.provideFocusSessionNotifier
-import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
+import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
@@ -21,8 +21,8 @@ import org.koin.dsl.module
 
 val focusModule = module {
     viewModelOf(::PomodoroSessionViewModel)
-    single<PomodoroSessionRepository> {
-        RoomPomodoroSessionRepository(get<PomoDojoRoomDatabase>())
+    single<ActiveSessionRepository> {
+        ActiveSessionRepositoryImpl(get<PomoDojoRoomDatabase>())
     }
     singleOf(::StaticQuoteRepository) bind QuoteRepository::class
     singleOf(::CreatePomodoroSessionUseCase)

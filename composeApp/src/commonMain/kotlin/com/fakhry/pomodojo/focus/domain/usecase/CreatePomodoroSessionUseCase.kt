@@ -1,7 +1,7 @@
 package com.fakhry.pomodojo.focus.domain.usecase
 
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
+import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class CreatePomodoroSessionUseCase(
-    private val sessionRepository: PomodoroSessionRepository,
+    private val sessionRepository: ActiveSessionRepository,
     private val quoteRepo: QuoteRepository,
     private val preferencesRepo: PreferencesRepository,
     private val timelineBuilder: BuildTimerSegmentsUseCase,

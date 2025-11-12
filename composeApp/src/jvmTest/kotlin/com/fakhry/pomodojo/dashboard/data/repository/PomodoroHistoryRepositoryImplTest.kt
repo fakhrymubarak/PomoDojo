@@ -3,6 +3,7 @@ package com.fakhry.pomodojo.dashboard.data.repository
 import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.focus.data.db.HistorySessionDao
 import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
+import com.fakhry.pomodojo.focus.data.repository.HistorySessionRepositoryImpl
 import com.fakhry.pomodojo.ui.state.DomainResult
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -15,7 +16,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class PomodoroHistoryRepositoryImplTest {
     private val fakeDao = FakeHistorySessionDao()
-    private val repository = PomodoroHistoryRepositoryImpl(fakeDao)
+    private val repository = HistorySessionRepositoryImpl(fakeDao)
 
     @Test
     fun `maps dao output into domain model`() {
