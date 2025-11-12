@@ -409,7 +409,9 @@ class PreferencesViewModelTest {
 
         advanceUntilIdle()
 
-        assertFalse(viewModel.isLoadingState.value)
+        // Wait for the loading state to actually emit false
+        val loadingState = viewModel.isLoadingState.filter { !it }.first()
+        assertFalse(loadingState)
     }
 
     private class FakePreferenceStorage : PreferenceStorage {
