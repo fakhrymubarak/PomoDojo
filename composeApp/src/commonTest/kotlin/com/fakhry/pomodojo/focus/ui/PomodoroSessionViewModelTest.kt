@@ -35,6 +35,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlin.concurrent.Volatile
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -229,6 +230,7 @@ class PomodoroSessionViewModelTest {
             currentTimeProvider = currentTimeProvider,
             createPomodoroSessionUseCase = createSessionUseCase,
             sessionRepository = sessionRepository,
+            historyRepository = FakeHistorySessionRepository(),
             focusSessionNotifier = focusNotifier,
             segmentCompletionSoundPlayer = soundPlayer,
             dispatcher = dispatcherProvider,
@@ -317,6 +319,24 @@ private class FakeActiveSessionRepository(
     }
 
     override suspend fun hasActiveSession(): Boolean = storedSession != null
+}
+
+private class FakeHistorySessionRepository : com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository {
+    val insertedSessions = mutableListOf<PomodoroSessionDomain>()
+
+    override suspend fun insertHistory(session: PomodoroSessionDomain) {
+        insertedSessions.add(session)
+    }
+
+    override suspend fun getHistory(year: Int): com.fakhry.pomodojo.ui.state.DomainResult<com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain> {
+        return com.fakhry.pomodojo.ui.state.DomainResult.Success(
+            com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain(
+                focusMinutesThisYear = 0,
+                availableYears = emptyList(),
+                histories = emptyList(),
+            )
+        )
+    }
 }
 
 private class FakeFocusSessionNotifier : FocusSessionNotifier {

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.sessionId
 import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
@@ -29,6 +30,7 @@ class PomodoroSessionViewModel(
     private val currentTimeProvider: CurrentTimeProvider = SystemCurrentTimeProvider,
     private val createPomodoroSessionUseCase: CreatePomodoroSessionUseCase,
     private val sessionRepository: ActiveSessionRepository,
+    private val historyRepository: HistorySessionRepository,
     private val focusSessionNotifier: FocusSessionNotifier,
     private val segmentCompletionSoundPlayer: SegmentCompletionSoundPlayer,
     private val dispatcher: DispatcherProvider,
@@ -367,6 +369,7 @@ class PomodoroSessionViewModel(
         val currentState = container.stateFlow.value
         buildSessionSnapshot(currentState)?.let {
             sessionRepository.completeSession(it)
+            historyRepository.insertHistory(it)
             focusSessionNotifier.cancel(it.sessionId())
         }
     }
