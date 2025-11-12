@@ -14,12 +14,16 @@ import com.fakhry.pomodojo.focus.domain.usecase.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.focus.ui.mapper.toUiState
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.utils.DispatcherProvider
 import com.fakhry.pomodojo.utils.formatDurationMillis
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -29,6 +33,7 @@ import org.orbitmvi.orbit.viewmodel.container
 class PomodoroSessionViewModel(
     private val currentTimeProvider: CurrentTimeProvider = SystemCurrentTimeProvider,
     private val createPomodoroSessionUseCase: CreatePomodoroSessionUseCase,
+    private val preferencesRepository: PreferencesRepository,
     private val sessionRepository: ActiveSessionRepository,
     private val historyRepository: HistorySessionRepository,
     private val focusSessionNotifier: FocusSessionNotifier,
@@ -38,6 +43,9 @@ class PomodoroSessionViewModel(
     override val container =
         container<PomodoroSessionUiState, PomodoroSessionSideEffect>(PomodoroSessionUiState())
 
+    private val _alwaysOnDisplay = MutableStateFlow(true)
+    val alwaysOnDisplay = _alwaysOnDisplay.asStateFlow()
+
     private var timelineSegments: MutableList<TimelineSegmentUi> = mutableListOf()
     private var activeSegmentIndex: Int = 0
     private var tickerJob: Job? = null
@@ -45,7 +53,14 @@ class PomodoroSessionViewModel(
     private val tickIntervalMillis = 1_000L
 
     init {
+        getAlwaysOnDisplayState()
         restoreOrStartSession()
+    }
+
+    private fun getAlwaysOnDisplayState() = viewModelScope.launch(dispatcher.io) {
+        preferencesRepository.preferences.collect { preferences ->
+            _alwaysOnDisplay.update { preferences.alwaysOnDisplayEnabled }
+        }
     }
 
     fun onEndClicked() = intent {
@@ -108,30 +123,32 @@ class PomodoroSessionViewModel(
     }
 
     private fun restoreOrStartSession() = intent {
-        stopTicker()
-        val now = currentTimeProvider.now()
-        val hasStoredSession = sessionRepository.hasActiveSession()
-        val session =
-            if (hasStoredSession) {
-                sessionRepository.getActiveSession()
-            } else {
-                createPomodoroSessionUseCase(now)
-            }
-        val prepared = prepareSession(session, now)
-        reduce { prepared.uiState }
-        if (prepared.uiState.isComplete) {
+        viewModelScope.launch(dispatcher.io) {
             stopTicker()
-            completeActiveSession()
-            postSideEffect(PomodoroSessionSideEffect.OnSessionComplete)
-            return@intent
-        }
-        focusSessionNotifier.schedule(prepared.snapshot)
-        if (prepared.didMutateTimeline || hasStoredSession) {
-            sessionRepository.updateActiveSession(prepared.snapshot)
-        }
-        when (timelineSegments.getOrNull(activeSegmentIndex)?.timerStatus) {
-            TimerStatusDomain.RUNNING -> startTicker()
-            else -> stopTicker()
+            val now = currentTimeProvider.now()
+            val hasStoredSession = sessionRepository.hasActiveSession()
+            val session =
+                if (hasStoredSession) {
+                    sessionRepository.getActiveSession()
+                } else {
+                    createPomodoroSessionUseCase(now)
+                }
+            val prepared = prepareSession(session, now)
+            reduce { prepared.uiState }
+            if (prepared.uiState.isComplete) {
+                stopTicker()
+                completeActiveSession()
+                postSideEffect(PomodoroSessionSideEffect.OnSessionComplete)
+                return@launch
+            }
+            focusSessionNotifier.schedule(prepared.snapshot)
+            if (prepared.didMutateTimeline || hasStoredSession) {
+                sessionRepository.updateActiveSession(prepared.snapshot)
+            }
+            when (timelineSegments.getOrNull(activeSegmentIndex)?.timerStatus) {
+                TimerStatusDomain.RUNNING -> startTicker()
+                else -> stopTicker()
+            }
         }
     }
 

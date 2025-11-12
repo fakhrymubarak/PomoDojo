@@ -43,23 +43,17 @@ class DashboardViewModel(
     }
 
     fun checkHasActiveSession() = viewModelScope.launch(dispatcher.io) {
-        println("Trace ========= START FETCHING hasActiveSession ====")
         val hasActiveSession = focusRepository.hasActiveSession()
         _hasActiveSession.update { hasActiveSession }
-        println("Trace finish updating hasActiveSession")
     }
 
     fun fetchPreferences() = viewModelScope.launch(dispatcher.io) {
-        println("Trace ========= START FETCHING fetchPreferences ====")
         repository.preferences.collect { preferences ->
             _formattedTime.update { formatTimerMinutes(preferences.focusMinutes) }
-            println("Trace finish updating fetchPreferences")
         }
     }
 
     fun fetchHistory(selectedYear: Int = -1) = viewModelScope.launch(dispatcher.io) {
-        println("Trace ========= START FETCHING fetchHistory ====")
-
         @OptIn(ExperimentalTime::class)
         val now = currentTimeProvider.nowInstant().toLocalDateTime(TimeZone.UTC)
         val today = now.date
@@ -81,7 +75,6 @@ class DashboardViewModel(
 
             is DomainResult.Error -> {}
         }
-        println("Trace finish updating fetchHistory")
     }
 
     fun selectYear(year: Int) {

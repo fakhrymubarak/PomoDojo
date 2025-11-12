@@ -13,7 +13,6 @@ fun PomodoroSessionDomain.toUiState(
 ): PomodoroSessionUiState {
     val active = segments.getOrNull(activeIndex) ?: TimelineSegmentUi()
     return PomodoroSessionUiState(
-        alwaysOnDisplayEnabled = alwaysOnDisplayEnabled,
         totalCycle = totalCycle,
         startedAtEpochMs = startedAtEpochMs,
         elapsedPauseEpochMs = elapsedPauseEpochMs,

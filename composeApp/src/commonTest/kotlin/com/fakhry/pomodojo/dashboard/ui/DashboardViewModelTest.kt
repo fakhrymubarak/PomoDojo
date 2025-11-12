@@ -62,7 +62,7 @@ class DashboardViewModelTest {
             )
         advanceUntilIdle()
 
-        assertEquals(30, viewModel.prefState.value.focusMinutes)
+        assertEquals("30:00", viewModel.formattedTime.value)
         assertFalse(viewModel.hasActiveSession.value)
     }
 
@@ -87,7 +87,7 @@ class DashboardViewModelTest {
         repository.emit(repository.current.copy(focusMinutes = 45))
         advanceUntilIdle()
 
-        assertEquals(45, viewModel.prefState.value.focusMinutes)
+        assertEquals("45:00", viewModel.formattedTime.value)
         assertTrue(viewModel.hasActiveSession.value)
     }
 
