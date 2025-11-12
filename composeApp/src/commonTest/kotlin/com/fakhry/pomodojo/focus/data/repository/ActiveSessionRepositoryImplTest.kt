@@ -12,6 +12,8 @@ import com.fakhry.pomodojo.preferences.domain.model.TimerDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
+import com.fakhry.pomodojo.utils.DispatcherProvider
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -24,7 +26,8 @@ class ActiveSessionRepositoryImplTest {
     @Test
     fun `saveActiveSession persists entity graph`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = ActiveSessionRepositoryImpl(focusDao)
+        val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
+        val repository = ActiveSessionRepositoryImpl(focusDao, dispatcher)
         val snapshot = sampleSession()
 
         repository.saveActiveSession(snapshot)
@@ -40,7 +43,8 @@ class ActiveSessionRepositoryImplTest {
     @Test
     fun `updateActiveSession reuses existing session id`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = ActiveSessionRepositoryImpl(focusDao)
+        val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
+        val repository = ActiveSessionRepositoryImpl(focusDao, dispatcher)
         val initial = sampleSession(totalCycle = 3)
         repository.saveActiveSession(initial)
         val existingId = focusDao.entity?.sessionId
@@ -55,8 +59,9 @@ class ActiveSessionRepositoryImplTest {
 
     @Test
     fun `getActiveSession throws when nothing stored`() = runTest {
+        val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
         val repository =
-            ActiveSessionRepositoryImpl(FakeFocusSessionDao())
+            ActiveSessionRepositoryImpl(FakeFocusSessionDao(), dispatcher)
 
         assertFailsWith<IllegalStateException> {
             repository.getActiveSession()
@@ -66,7 +71,8 @@ class ActiveSessionRepositoryImplTest {
     @Test
     fun `hasActiveSession reflects dao state`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = ActiveSessionRepositoryImpl(focusDao)
+        val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
+        val repository = ActiveSessionRepositoryImpl(focusDao, dispatcher)
 
         assertFalse(repository.hasActiveSession())
 
@@ -78,7 +84,8 @@ class ActiveSessionRepositoryImplTest {
     @Test
     fun `completeSession clears rows`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = ActiveSessionRepositoryImpl(focusDao)
+        val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
+        val repository = ActiveSessionRepositoryImpl(focusDao, dispatcher)
         val snapshot = sampleSession()
 
         repository.saveActiveSession(snapshot)
@@ -92,7 +99,8 @@ class ActiveSessionRepositoryImplTest {
     @Test
     fun `clearActiveSession wipes entity graph`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = ActiveSessionRepositoryImpl(focusDao)
+        val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
+        val repository = ActiveSessionRepositoryImpl(focusDao, dispatcher)
         repository.saveActiveSession(sampleSession())
         val beforeClear = focusDao.clearCount
 
