@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
@@ -377,9 +376,9 @@ class PomodoroSessionViewModel(
         )
     }
 
-    private suspend fun persistActiveSnapshotIfNeeded() {
+    private fun persistActiveSnapshotIfNeeded() = viewModelScope.launch(dispatcher.io) {
         val currentState = container.stateFlow.value
-        if (currentState.isComplete) return
+        if (currentState.isComplete) return@launch
         buildSessionSnapshot(currentState)?.let { sessionRepository.updateActiveSession(it) }
     }
 
@@ -422,8 +421,8 @@ class PomodoroSessionViewModel(
     )
 
     override fun onCleared() {
-        super.onCleared()
+        persistActiveSnapshotIfNeeded()
         stopTicker()
-        runBlocking { persistActiveSnapshotIfNeeded() }
+        super.onCleared()
     }
 }
