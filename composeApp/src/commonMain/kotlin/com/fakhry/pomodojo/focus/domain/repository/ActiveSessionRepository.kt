@@ -5,7 +5,7 @@ import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 /**
  * Abstraction over the storage of active pomodoro sessions.
  */
-interface PomodoroSessionRepository {
+interface ActiveSessionRepository {
     suspend fun getActiveSession(): PomodoroSessionDomain
 
     suspend fun saveActiveSession(snapshot: PomodoroSessionDomain)

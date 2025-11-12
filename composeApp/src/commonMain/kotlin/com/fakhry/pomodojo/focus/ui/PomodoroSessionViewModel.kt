@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.sessionId
-import com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository
+import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
@@ -28,7 +28,7 @@ import org.orbitmvi.orbit.viewmodel.container
 class PomodoroSessionViewModel(
     private val currentTimeProvider: CurrentTimeProvider = SystemCurrentTimeProvider,
     private val createPomodoroSessionUseCase: CreatePomodoroSessionUseCase,
-    private val sessionRepository: PomodoroSessionRepository,
+    private val sessionRepository: ActiveSessionRepository,
     private val focusSessionNotifier: FocusSessionNotifier,
     private val segmentCompletionSoundPlayer: SegmentCompletionSoundPlayer,
     private val dispatcher: DispatcherProvider,

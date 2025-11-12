@@ -26,7 +26,7 @@ class RoomPomodoroSessionRepositoryTest {
     @Test
     fun `saveActiveSession persists entity graph`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = RoomPomodoroSessionRepository(focusDao, FakeHistorySessionDao())
+        val repository = ActiveSessionRepositoryImpl(focusDao, FakeHistorySessionDao())
         val snapshot = sampleSession()
 
         repository.saveActiveSession(snapshot)
@@ -42,7 +42,7 @@ class RoomPomodoroSessionRepositoryTest {
     @Test
     fun `updateActiveSession reuses existing session id`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = RoomPomodoroSessionRepository(focusDao, FakeHistorySessionDao())
+        val repository = ActiveSessionRepositoryImpl(focusDao, FakeHistorySessionDao())
         val initial = sampleSession(totalCycle = 3)
         repository.saveActiveSession(initial)
         val existingId = focusDao.entity?.sessionId
@@ -58,7 +58,7 @@ class RoomPomodoroSessionRepositoryTest {
     @Test
     fun `getActiveSession throws when nothing stored`() = runTest {
         val repository =
-            RoomPomodoroSessionRepository(FakeFocusSessionDao(), FakeHistorySessionDao())
+            ActiveSessionRepositoryImpl(FakeFocusSessionDao(), FakeHistorySessionDao())
 
         assertFailsWith<IllegalStateException> {
             repository.getActiveSession()
@@ -68,7 +68,7 @@ class RoomPomodoroSessionRepositoryTest {
     @Test
     fun `hasActiveSession reflects dao state`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = RoomPomodoroSessionRepository(focusDao, FakeHistorySessionDao())
+        val repository = ActiveSessionRepositoryImpl(focusDao, FakeHistorySessionDao())
 
         assertFalse(repository.hasActiveSession())
 
@@ -81,7 +81,7 @@ class RoomPomodoroSessionRepositoryTest {
     fun `completeSession logs history and clears rows`() = runTest {
         val focusDao = FakeFocusSessionDao()
         val historyDao = FakeHistorySessionDao()
-        val repository = RoomPomodoroSessionRepository(focusDao, historyDao)
+        val repository = ActiveSessionRepositoryImpl(focusDao, historyDao)
         val snapshot = sampleSession()
 
         repository.saveActiveSession(snapshot)
@@ -103,7 +103,7 @@ class RoomPomodoroSessionRepositoryTest {
     fun `completeSession only counts elapsed segments`() = runTest {
         val focusDao = FakeFocusSessionDao()
         val historyDao = FakeHistorySessionDao()
-        val repository = RoomPomodoroSessionRepository(focusDao, historyDao)
+        val repository = ActiveSessionRepositoryImpl(focusDao, historyDao)
         val focusMinutes = 25
         val breakMinutes = 5
         val snapshot = sampleSession(
@@ -149,7 +149,7 @@ class RoomPomodoroSessionRepositoryTest {
     @Test
     fun `clearActiveSession wipes entity graph`() = runTest {
         val focusDao = FakeFocusSessionDao()
-        val repository = RoomPomodoroSessionRepository(focusDao, FakeHistorySessionDao())
+        val repository = ActiveSessionRepositoryImpl(focusDao, FakeHistorySessionDao())
         repository.saveActiveSession(sampleSession())
         val beforeClear = focusDao.clearCount
 

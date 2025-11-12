@@ -150,7 +150,7 @@ class PomodoroSessionViewModelTest {
                 ),
             ),
         )
-        val sessionRepository = FakePomodoroSessionRepository(initialSession = storedSession)
+        val sessionRepository = FakeActiveSessionRepository(initialSession = storedSession)
 
         val viewModel = createViewModel(sessionRepository = sessionRepository)
         runCurrent()
@@ -207,7 +207,7 @@ class PomodoroSessionViewModelTest {
             longBreakAfter = PreferencesDomain.DEFAULT_LONG_BREAK_AFTER,
             longBreakMinutes = 1,
         ),
-        sessionRepository: FakePomodoroSessionRepository = FakePomodoroSessionRepository(),
+        sessionRepository: FakeActiveSessionRepository = FakeActiveSessionRepository(),
         soundPlayer: SegmentCompletionSoundPlayer = FakeSegmentCompletionSoundPlayer(),
     ): PomodoroSessionViewModel {
         val currentTimeProvider = TestCurrentTimeProvider(testScheduler)
@@ -292,9 +292,9 @@ private class FakePreferencesRepository(initial: PreferencesDomain) : Preference
     }
 }
 
-private class FakePomodoroSessionRepository(
+private class FakeActiveSessionRepository(
     initialSession: PomodoroSessionDomain? = null,
-) : com.fakhry.pomodojo.focus.domain.repository.PomodoroSessionRepository {
+) : com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository {
     var storedSession: PomodoroSessionDomain? = initialSession
 
     override suspend fun getActiveSession(): PomodoroSessionDomain =
