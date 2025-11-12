@@ -14,7 +14,7 @@
 ```
 ./gradlew :composeApp:assembleDebug   # Android debug APK + KSP/Room schema verification
 ./gradlew :composeApp:run             # Desktop JVM app (Compose for Desktop)
-./gradlew :composeApp:jvmTest         # Shared + JVM unit tests with kotlin.test/orbit
+./gradlew :composeApp:jacocoJvmTestReport  # Generates coverage in composeApp/build/reports
 ./gradlew ktlintCheck                 # Repository-wide Kotlin style checks
 ./gradlew ktlintFormat                # Auto-formats Kotlin sources (apply before committing)
 xed iosApp/iosApp.xcodeproj           # Open the Swift runner, then build via Xcode's iOSApp scheme

@@ -1,7 +1,7 @@
 package com.fakhry.pomodojo.focus.data.repository
 
 import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
-import com.fakhry.pomodojo.focus.data.db.PomoDojoRoomDatabase
+import com.fakhry.pomodojo.focus.data.db.HistorySessionDao
 import com.fakhry.pomodojo.focus.data.mapper.mapToDomain
 import com.fakhry.pomodojo.focus.data.mapper.toHistoryEntity
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
@@ -17,11 +17,10 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlin.time.ExperimentalTime
 
 class HistorySessionRepositoryImpl(
-    database: PomoDojoRoomDatabase,
+    private val historyDao: HistorySessionDao,
     private val dispatcher: DispatcherProvider,
 ) : HistorySessionRepository {
     private val timeZoneUtc = TimeZone.UTC
-    private val historyDao = database.historySessionDao()
 
     override suspend fun insertHistory(session: PomodoroSessionDomain) {
         val entity = session.toHistoryEntity()

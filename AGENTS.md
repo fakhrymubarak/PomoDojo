@@ -14,7 +14,6 @@ platform-agnostic logic and `jvmTest` for JVM-only behavior. Room schema snapsho
 ```
 ./gradlew :composeApp:assembleDebug        # Android debug build + KSP/Room schema validation
 ./gradlew :composeApp:run                  # Desktop JVM app for rapid UI iteration
-./gradlew :composeApp:jvmTest              # Executes JVM + common tests (kotlin.test/orbit)
 ./gradlew :composeApp:jacocoJvmTestReport  # Generates coverage in composeApp/build/reports
 ./gradlew ktlintCheck                      # Kotlin style verification across all source sets
 ./gradlew ktlintFormat                     # Auto-formats Kotlin files; run before large refactors

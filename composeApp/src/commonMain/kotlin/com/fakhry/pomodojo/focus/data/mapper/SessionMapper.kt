@@ -19,7 +19,6 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-
 fun ActiveSessionWithRelations.toDomain(): PomodoroSessionDomain = PomodoroSessionDomain(
     totalCycle = session.totalCycle,
     startedAtEpochMs = session.startedAtEpochMs,
@@ -62,21 +61,20 @@ fun PomodoroSessionDomain.toEntity(sessionIdOverride: Long?): ActiveSessionEntit
         quoteMetadata = quote.metadata,
     )
 
-fun PomodoroSessionDomain.toSegmentEntities(
-    sessionId: Long,
-): List<ActiveSessionSegmentEntity> = timeline.segments.mapIndexed { index, segment ->
-    ActiveSessionSegmentEntity(
-        sessionId = sessionId,
-        segmentIndex = index,
-        type = segment.type,
-        cycleNumber = segment.cycleNumber,
-        durationEpochMs = segment.timer.durationEpochMs,
-        finishedInMillis = segment.timer.finishedInMillis,
-        startedPauseTime = segment.timer.startedPauseTime,
-        elapsedPauseTime = segment.timer.elapsedPauseTime,
-        timerStatus = segment.timerStatus,
-    )
-}
+fun PomodoroSessionDomain.toSegmentEntities(sessionId: Long): List<ActiveSessionSegmentEntity> =
+    timeline.segments.mapIndexed { index, segment ->
+        ActiveSessionSegmentEntity(
+            sessionId = sessionId,
+            segmentIndex = index,
+            type = segment.type,
+            cycleNumber = segment.cycleNumber,
+            durationEpochMs = segment.timer.durationEpochMs,
+            finishedInMillis = segment.timer.finishedInMillis,
+            startedPauseTime = segment.timer.startedPauseTime,
+            elapsedPauseTime = segment.timer.elapsedPauseTime,
+            timerStatus = segment.timerStatus,
+        )
+    }
 
 fun PomodoroSessionDomain.toHourSplitEntities(
     sessionId: Long,

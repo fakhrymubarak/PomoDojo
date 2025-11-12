@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.dashboard.viewmodel
+package com.fakhry.pomodojo.dashboard.ui
 
 import com.fakhry.pomodojo.dashboard.ui.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
@@ -157,7 +157,8 @@ class DashboardViewModelTest {
     }
 
     private class FakeHistoryRepository : HistorySessionRepository {
-        override fun getHistory(year: Int) = DomainResult.Error("not implemented", -1)
+        override suspend fun getHistory(year: Int) = DomainResult.Error("not implemented", -1)
+        override suspend fun insertHistory(session: PomodoroSessionDomain) = Unit
     }
 
     @OptIn(ExperimentalTime::class)
