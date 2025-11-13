@@ -199,7 +199,9 @@ class PomodoroSessionViewModelTest {
         runCurrent()
         advanceUntilIdle()
 
-        assertEquals(1, soundPlayer.playCount)
+        // With breaks after last cycle, advanceUntilIdle() completes both segments
+        // Focus completes (1 sound) + Break completes (1 sound) = 2 sounds total
+        assertEquals(2, soundPlayer.playCount)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

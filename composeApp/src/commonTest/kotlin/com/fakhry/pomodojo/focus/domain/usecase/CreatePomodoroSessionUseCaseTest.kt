@@ -110,8 +110,8 @@ class CreatePomodoroSessionUseCaseTest {
 
         assertEquals(2, session.totalCycle)
         assertEquals(now, session.startedAtEpochMs)
-        // With 2 cycles and no long break: 2 focus + 1 short break = 3 segments
-        assertEquals(3, session.timeline.segments.size)
+        // With 2 cycles and no long break: 2 focus + 2 short breaks = 4 segments
+        assertEquals(4, session.timeline.segments.size)
     }
 
     @Test
@@ -169,8 +169,8 @@ class CreatePomodoroSessionUseCaseTest {
 
         val session = useCase(now)
 
-        // 4 focus + 2 short breaks + 1 long break = 7 segments
-        assertEquals(7, session.timeline.segments.size)
+        // 4 focus + 2 short breaks + 2 long breaks = 8 segments
+        assertEquals(8, session.timeline.segments.size)
         assertTrue(session.timeline.hourSplits.isNotEmpty())
     }
 
