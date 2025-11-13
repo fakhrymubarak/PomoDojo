@@ -21,7 +21,13 @@ internal fun PomodoroSessionDomain.toNotificationSummary(
     val remaining = currentSegment?.let { segmentRemaining(it, now) } ?: 0L
 
     // Calculate progress dynamically based on remaining time for accurate updates in background
-    val segmentProgress = (currentSegment?.timer?.progress ?: 0f) * 100
+    val segmentDuration = currentSegment?.timer?.durationEpochMs ?: 0L
+    val segmentProgress = if (segmentDuration > 0L) {
+        val elapsed = (segmentDuration - remaining).coerceAtLeast(0L)
+        ((elapsed * 100) / segmentDuration).toInt().coerceIn(0, 100)
+    } else {
+        0
+    }
 
     val isPaused = currentSegment?.timerStatus == TimerStatusDomain.PAUSED
     val formattedRemaining = remaining.formatDurationMillis()
@@ -56,6 +62,7 @@ internal fun PomodoroSessionDomain.toNotificationSummary(
         isPaused = isPaused,
         finishTimeMillis = finishTime,
         quote = quote.withAttribution(),
+        isAllSegmentsCompleted = timeline.segments.all { it.timerStatus == TimerStatusDomain.COMPLETED },
     )
 }
 

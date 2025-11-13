@@ -12,10 +12,13 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.fakhry.pomodojo.MainActivity
+import com.fakhry.pomodojo.R
 import com.fakhry.pomodojo.focus.data.db.AndroidAppDependenciesInitializer
 import com.fakhry.pomodojo.focus.domain.mapper.toNotificationSummary
+import com.fakhry.pomodojo.focus.domain.model.CompletionNotificationSummary
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
+import com.fakhry.pomodojo.focus.ui.mapper.toCompletionSummary
 import com.fakhry.pomodojo.utils.orFalse
 
 private const val CHANNEL_ID = "focus_session_channel"
@@ -81,7 +84,35 @@ class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNo
             cancelSegmentCompletionAlarm(summary.sessionId)
         }
 
-        // TODO: Update notification after all segments completed
+        Log.w(TAG, "isCompleted ${summary.isAllSegmentsCompleted}")
+        if (summary.isAllSegmentsCompleted) scheduleCompletion(snapshot.toCompletionSummary())
+    }
+
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    private fun scheduleCompletion(summary: CompletionNotificationSummary) {
+        Log.w(TAG, "isCompleted $summary")
+        val title = context.getString(R.string.focus_session_complete_title)
+        val body = context.getString(
+            R.string.focus_session_complete_body,
+            summary.completedCycles,
+            summary.totalFocusMinutes,
+            summary.totalBreakMinutes,
+        )
+
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_popup_reminder)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setAutoCancel(true)
+            .setOngoing(false)
+            .setContentIntent(pendingActivityIntent())
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setStyle(
+                NotificationCompat
+                    .BigTextStyle()
+                    .bigText(body)
+            )
+        notificationManager.notify(completedNotificationId(summary.sessionId), builder.build())
     }
 
     override suspend fun cancel(sessionId: String) {
@@ -193,12 +224,6 @@ class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNo
         Log.i(TAG, "cancelProgressUpdateAlarm: cancelled for session $sessionId")
     }
 
-    private fun completedAlarmRequestCode(sessionId: String) =
-        REQUEST_CODE_OFFSET + 1000 + sessionId.hashCode()
-
-    private fun progressAlarmRequestCode(sessionId: String) =
-        REQUEST_CODE_OFFSET + 2000 + sessionId.hashCode()
-
     private fun pendingActivityIntent(): PendingIntent {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -215,7 +240,7 @@ class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNo
         if (notificationManager.getNotificationChannel(CHANNEL_ID) == null) {
             val channel = NotificationChannelCompat.Builder(
                 CHANNEL_ID,
-                NotificationManagerCompat.IMPORTANCE_LOW,
+                NotificationManagerCompat.IMPORTANCE_DEFAULT,
             ).setName(CHANNEL_NAME)
                 .setDescription(CHANNEL_DESC)
                 .setSound(null, null)
@@ -227,3 +252,11 @@ class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNo
 }
 
 private fun sessionNotificationId(sessionId: String) = REQUEST_CODE_OFFSET + sessionId.hashCode()
+private fun completedNotificationId(sessionId: String) =
+    REQUEST_CODE_OFFSET + 3000 + sessionId.hashCode()
+
+private fun completedAlarmRequestCode(sessionId: String) =
+    REQUEST_CODE_OFFSET + 1000 + sessionId.hashCode()
+
+private fun progressAlarmRequestCode(sessionId: String) =
+    REQUEST_CODE_OFFSET + 2000 + sessionId.hashCode()
