@@ -8,7 +8,6 @@
     <string name="focus_session_phase_focus_label">Focus</string>
     <string name="focus_session_phase_short_break_label">Break</string>
     <string name="focus_session_phase_long_break_label">Long break</string>
-    <string name="focus_session_notification_title_format">Pomodoro</string>
     <string name="focus_session_notification_subtitle_format_running">%1$s remaining</string>
     <string name="focus_session_notification_subtitle_format_paused">%1$s remaining • Paused</string>
     <string name="focus_session_notification_body_format">Cycle %1$d of %2$d • %3$s</string>
