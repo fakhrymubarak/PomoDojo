@@ -10,7 +10,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.fakhry.pomodojo.MainActivity
 import com.fakhry.pomodojo.R
-import com.fakhry.pomodojo.focus.data.db.AndroidFocusDatabaseHolder
+import com.fakhry.pomodojo.focus.data.db.AndroidAppContextHolder
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.sessionId
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
@@ -24,7 +24,7 @@ private const val CHANNEL_NAME = "Focus Sessions"
 private const val REQUEST_CODE_OFFSET = 42_000
 
 actual fun provideFocusSessionNotifier(): FocusSessionNotifier {
-    val context = AndroidFocusDatabaseHolder.requireContext()
+    val context = AndroidAppContextHolder.requireContext()
     return AndroidFocusSessionNotifier(context)
 }
 
@@ -34,25 +34,41 @@ class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNo
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override suspend fun schedule(snapshot: PomodoroSessionDomain) {
         ensureChannel()
-        val summary = snapshot.toNotificationSummary(context, System.currentTimeMillis())
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+        val now = System.currentTimeMillis()
+        val summary = snapshot.toNotificationSummary(context, now)
+
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_popup_reminder)
             .setContentTitle(summary.title)
             .setContentText("")
             .setOnlyAlertOnce(true)
             .setOngoing(true)
-            .setShowWhen(false)
             .setSilent(true)
             .setProgress(100, summary.segmentProgressPercent, false)
             .setContentIntent(buildContentIntent())
-            .setStyle(
-                NotificationCompat
-                    .BigTextStyle()
-                    .setBigContentTitle(summary.title)
-                    .setSummaryText(summary.body)
-                    .bigText(summary.timerText),
-            ).build()
-        notificationManager.notify(sessionNotificationId(summary.sessionId), notification)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+
+        // Use chronometer for self-updating timer when not paused
+        if (!summary.isPaused && summary.finishTimeMillis > 0) {
+            builder
+                .setUsesChronometer(true)
+                .setChronometerCountDown(true)
+                .setShowWhen(true)
+                .setWhen(summary.finishTimeMillis)
+        } else {
+            // For paused state, show static time text
+            builder.setShowWhen(false)
+        }
+
+        builder.setStyle(
+            NotificationCompat
+                .BigTextStyle()
+                .setBigContentTitle(summary.title)
+                .setSummaryText(summary.body)
+                .bigText(summary.timerText),
+        )
+
+        notificationManager.notify(sessionNotificationId(summary.sessionId), builder.build())
     }
 
     override suspend fun cancel(sessionId: String) {
@@ -92,6 +108,7 @@ private data class NotificationSummary(
     val body: String,
     val segmentProgressPercent: Int,
     val isPaused: Boolean,
+    val finishTimeMillis: Long,
 )
 
 private fun PomodoroSessionDomain.toNotificationSummary(
@@ -101,7 +118,7 @@ private fun PomodoroSessionDomain.toNotificationSummary(
     val currentSegment = timeline.segments.firstOrNull {
         it.timerStatus == TimerStatusDomain.RUNNING || it.timerStatus == TimerStatusDomain.PAUSED
     } ?: timeline.segments.firstOrNull { it.timerStatus != TimerStatusDomain.COMPLETED }
-    val segmentLabel = currentSegment?.type?.toLabel(context)
+    val cycleLabel = currentSegment?.type?.toLabel(context)
         ?: context.getString(R.string.focus_session_live_title)
     val remaining = currentSegment?.let { segmentRemaining(it, now) } ?: 0L
     val segmentDuration = currentSegment?.timer?.durationEpochMs ?: 0L
@@ -111,27 +128,39 @@ private fun PomodoroSessionDomain.toNotificationSummary(
         val elapsed = (segmentDuration - remaining).coerceAtLeast(0L)
         ((elapsed * 100) / segmentDuration).toInt().coerceIn(0, 100)
     }
+    val isPaused = currentSegment?.timerStatus == TimerStatusDomain.PAUSED
+    val formattedRemaining = remaining.formatDurationMillis()
+    val resId = if (isPaused) {
+        R.string.focus_session_notification_subtitle_format_paused
+    } else {
+        R.string.focus_session_notification_subtitle_format_running
+    }
+    val timerText = context.getString(resId, formattedRemaining)
 
-    val timerText = context.getString(
-        R.string.focus_session_notification_subtitle_format,
-        remaining.formatDurationMillis(),
-    )
-    val segmentIndex = timeline.segments.count { it.timerStatus == TimerStatusDomain.COMPLETED } + 1
+    // Get current cycle and segment name
+    val currentCycle = currentSegment?.cycleNumber ?: 1
     val body = context.getString(
         R.string.focus_session_notification_body_format,
-        segmentIndex.coerceAtMost(timeline.segments.size),
-        timeline.segments.size,
+        currentCycle,
+        totalCycle,
+        cycleLabel,
     )
+
+    // Calculate finish time for chronometer (when the segment will complete)
+    val finishTime = if (currentSegment?.timerStatus == TimerStatusDomain.RUNNING) {
+        currentSegment.timer.finishedInMillis
+    } else {
+        0L
+    }
+
     return NotificationSummary(
         sessionId = sessionId(),
-        title = context.getString(
-            R.string.focus_session_notification_title_format,
-            segmentLabel,
-        ),
+        title = context.getString(R.string.focus_session_notification_title_format),
         timerText = timerText,
         body = body,
         segmentProgressPercent = segmentProgress,
-        isPaused = currentSegment?.timerStatus == TimerStatusDomain.PAUSED,
+        isPaused = isPaused,
+        finishTimeMillis = finishTime,
     )
 }
 
