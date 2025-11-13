@@ -10,8 +10,6 @@ fun initAndroidFocusDatabase(context: Context) {
 }
 
 internal object AndroidFocusDatabaseHolder {
-    private const val DATABASE_NAME = "pomodojo.db"
-
     private lateinit var appContext: Context
 
     val database: PomoDojoRoomDatabase by lazy {
