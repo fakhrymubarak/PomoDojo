@@ -3,7 +3,6 @@ package com.fakhry.pomodojo.focus.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.focus.domain.model.sessionId
 import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase

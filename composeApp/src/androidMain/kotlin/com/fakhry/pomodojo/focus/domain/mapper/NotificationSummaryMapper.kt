@@ -4,7 +4,6 @@ import android.content.Context
 import com.fakhry.pomodojo.R
 import com.fakhry.pomodojo.focus.domain.model.NotificationSummary
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.focus.domain.model.sessionId
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerType

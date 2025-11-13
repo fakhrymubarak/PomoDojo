@@ -93,7 +93,7 @@ class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNo
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            alarmRequestCode(sessionId),
+            completedAlarmRequestCode(sessionId),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
@@ -115,7 +115,7 @@ class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNo
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            alarmRequestCode(sessionId),
+            completedAlarmRequestCode(sessionId),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
@@ -188,7 +188,7 @@ class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNo
         Log.i(TAG, "cancelProgressUpdateAlarm: cancelled for session $sessionId")
     }
 
-    private fun alarmRequestCode(sessionId: String) =
+    private fun completedAlarmRequestCode(sessionId: String) =
         REQUEST_CODE_OFFSET + 1000 + sessionId.hashCode()
 
     private fun progressAlarmRequestCode(sessionId: String) =
