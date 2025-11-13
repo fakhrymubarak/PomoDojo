@@ -10,6 +10,13 @@ data class QuoteContent(
     val sourceTitle: String? = null,
     val metadata: String? = null,
 ) {
+    fun withAttribution() = "\"$text\" ${attribution()}"
+    fun attribution() = listOfNotNull(
+        character,
+        sourceTitle,
+        metadata,
+    ).joinToString(separator = " — ").takeIf { it.isNotBlank() }.orEmpty()
+
     companion object {
         val DEFAULT_QUOTE =
             QuoteContent(

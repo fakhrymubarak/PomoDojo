@@ -55,6 +55,7 @@ internal fun PomodoroSessionDomain.toNotificationSummary(
         segmentProgressPercent = segmentProgress.toInt(),
         isPaused = isPaused,
         finishTimeMillis = finishTime,
+        quote = quote.withAttribution(),
     )
 }
 

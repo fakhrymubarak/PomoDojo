@@ -198,12 +198,8 @@ private fun FocusQuoteBlock(modifier: Modifier, quote: QuoteContent) {
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
         )
-        val attribution = listOfNotNull(
-            quote.character,
-            quote.sourceTitle,
-            quote.metadata,
-        ).joinToString(separator = " — ").takeIf { it.isNotBlank() }
-        if (attribution != null) {
+        val attribution = quote.attribution()
+        if (attribution.isNotBlank()) {
             Text(
                 text = attribution,
                 style = MaterialTheme.typography.labelSmall.copy(
