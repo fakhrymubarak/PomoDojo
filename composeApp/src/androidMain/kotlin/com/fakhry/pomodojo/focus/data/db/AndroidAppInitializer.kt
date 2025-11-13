@@ -1,18 +1,17 @@
 package com.fakhry.pomodojo.focus.data.db
 
 import android.content.Context
+import com.fakhry.pomodojo.preferences.data.source.initAndroidPreferenceStorage
 
-fun initAndroidAppContextHolder(context: Context) {
-    AndroidAppContextHolder.initialize(context)
-}
-
-internal object AndroidAppContextHolder {
+internal object AndroidAppInitializer {
     private lateinit var appContext: Context
 
     fun initialize(context: Context) {
         if (!::appContext.isInitialized) {
             appContext = context
         }
+        initAndroidPreferenceStorage(context)
+        initAndroidFocusDatabase(context)
     }
 
     fun requireContext(): Context {

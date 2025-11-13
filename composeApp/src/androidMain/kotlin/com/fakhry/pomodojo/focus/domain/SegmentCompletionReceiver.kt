@@ -1,0 +1,201 @@
+package com.fakhry.pomodojo.focus.domain
+
+import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.util.Log
+import androidx.core.content.ContextCompat
+import com.fakhry.pomodojo.focus.data.db.AndroidAppInitializer
+import com.fakhry.pomodojo.focus.data.db.createDatabase
+import com.fakhry.pomodojo.focus.data.repository.ActiveSessionRepositoryImpl
+import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
+import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.utils.DispatcherProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+
+private const val TAG = "SegmentCompletionReceiver"
+
+/**
+ * BroadcastReceiver that handles segment completion alarms.
+ * Triggered by AlarmManager when a pomodoro segment is expected to complete.
+ */
+class SegmentCompletionReceiver : BroadcastReceiver() {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    override fun onReceive(context: Context, intent: Intent) {
+        val action = intent.action
+        if (action != ACTION_SEGMENT_COMPLETE && action != ACTION_PROGRESS_UPDATE) return
+
+        // Check notification permission
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS,
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        val pendingResult = goAsync()
+
+        scope.launch {
+            try {
+                // Initialize dependencies
+                Log.i(TAG, "onReceive: initialize dependencies")
+                AndroidAppInitializer.initialize(context)
+                val database = createDatabase()
+                val sessionRepository = ActiveSessionRepositoryImpl(database, DispatcherProvider())
+                val notifier = provideFocusSessionNotifier()
+
+                // Check if there's an active session
+                val hasSession = sessionRepository.hasActiveSession()
+                if (!hasSession) {
+                    pendingResult.finish()
+                    return@launch
+                }
+
+                // Get the current session and process segment completion
+                val session = sessionRepository.getActiveSession()
+                val now = System.currentTimeMillis()
+
+                when (action) {
+                    ACTION_SEGMENT_COMPLETE -> {
+                        // Process the session to advance segments if current one is completed
+                        val updatedSession = processSessionCompletion(session, now)
+
+                        // Update the session in repository if it was modified
+                        if (updatedSession != session) {
+                            Log.i(TAG, "onReceive: session updated, persisting to repository")
+                            sessionRepository.updateActiveSession(updatedSession)
+                        }
+
+                        // Schedule notification with the updated session
+                        notifier.schedule(updatedSession)
+                    }
+
+                    ACTION_PROGRESS_UPDATE -> {
+                        // Just refresh the notification to update progress bar
+                        Log.i(TAG, "onReceive: refreshing notification for progress update")
+                        notifier.schedule(session)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, e.message ?: "Failed to schedule segment completion alarm")
+                e.printStackTrace()
+            } finally {
+                Log.i(TAG, "onReceive: finally finish pending result")
+                pendingResult.finish()
+            }
+        }
+    }
+
+    companion object {
+        const val ACTION_SEGMENT_COMPLETE = "com.fakhry.pomodojo.SEGMENT_COMPLETE"
+        const val ACTION_PROGRESS_UPDATE = "com.fakhry.pomodojo.PROGRESS_UPDATE"
+        const val EXTRA_SESSION_ID = "session_id"
+    }
+}
+
+/**
+ * Processes the session to check if the current segment is complete and advances to the next segment if needed.
+ * Returns the updated session if any changes were made, or the original session if no changes.
+ */
+private fun processSessionCompletion(
+    session: PomodoroSessionDomain,
+    now: Long,
+): PomodoroSessionDomain {
+    val segments = session.timeline.segments.toMutableList()
+    if (segments.isEmpty()) return session
+
+    // Find the active segment index
+    var activeIndex = segments.indexOfFirst {
+        it.timerStatus == TimerStatusDomain.RUNNING || it.timerStatus == TimerStatusDomain.PAUSED
+    }
+    if (activeIndex == -1) {
+        activeIndex = segments.indexOfFirst { it.timerStatus != TimerStatusDomain.COMPLETED }
+    }
+    if (activeIndex == -1) return session // All segments completed
+
+    var modified = false
+    val activeSegment = segments[activeIndex]
+
+    // Check if current segment is completed
+    if (activeSegment.timerStatus == TimerStatusDomain.RUNNING) {
+        val remaining = (activeSegment.timer.finishedInMillis - now).coerceAtLeast(0L)
+        if (remaining == 0L) {
+            Log.i(
+                TAG,
+                "processSessionCompletion: segment $activeIndex completed, advancing to next",
+            )
+            // Segment is complete, finalize it
+            segments[activeIndex] = finalizeSegment(activeSegment)
+            modified = true
+
+            // Try to advance to the next segment
+            if (activeIndex < segments.lastIndex) {
+                val nextStartAt = activeSegment.timer.finishedInMillis.takeIf { it > 0L } ?: now
+                segments[activeIndex + 1] = prepareSegmentForRun(
+                    segments[activeIndex + 1],
+                    startedAt = nextStartAt,
+                    referenceTime = now,
+                )
+                Log.i(TAG, "processSessionCompletion: started segment ${activeIndex + 1}")
+            }
+        }
+    }
+
+    return if (modified) {
+        session.copy(
+            timeline = TimelineDomain(
+                segments = segments,
+                hourSplits = session.timeline.hourSplits,
+            ),
+        )
+    } else {
+        session
+    }
+}
+
+/**
+ * Finalizes a segment by setting its status to COMPLETED and clamping progress to 1.0
+ */
+private fun finalizeSegment(segment: TimerSegmentsDomain): TimerSegmentsDomain {
+    val timer = segment.timer.copy(
+        progress = segment.timer.progress.coerceAtMost(1f),
+        startedPauseTime = 0L,
+    )
+    return segment.copy(timer = timer, timerStatus = TimerStatusDomain.COMPLETED)
+}
+
+/**
+ * Prepares a segment to start running by calculating its finish time and setting status to RUNNING
+ */
+private fun prepareSegmentForRun(
+    segment: TimerSegmentsDomain,
+    startedAt: Long,
+    referenceTime: Long,
+): TimerSegmentsDomain {
+    val duration = segment.timer.durationEpochMs
+    val start = startedAt.takeIf { it > 0L } ?: referenceTime
+    val finishedAt = start + duration
+    val remaining = (finishedAt - referenceTime).coerceAtLeast(0L)
+    val progress = if (duration > 0L) {
+        (duration - remaining).toFloat() / duration
+    } else {
+        0f
+    }
+    val timer = segment.timer.copy(
+        progress = progress,
+        finishedInMillis = finishedAt,
+        startedPauseTime = 0L,
+        elapsedPauseTime = 0L,
+    )
+    val status = if (remaining == 0L) TimerStatusDomain.COMPLETED else TimerStatusDomain.RUNNING
+    return segment.copy(timer = timer, timerStatus = status)
+}
