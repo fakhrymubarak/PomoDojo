@@ -12,4 +12,8 @@ run() {
 
 run ktlintCheck
 run check
+run :composeApp:cleanTestDebugUnitTest
+run :composeApp:testDebugUnitTest
 run :composeApp:assembleRelease
+run :composeApp:kspKotlinIosSimulatorArm64
+run :composeApp:jvmJar
