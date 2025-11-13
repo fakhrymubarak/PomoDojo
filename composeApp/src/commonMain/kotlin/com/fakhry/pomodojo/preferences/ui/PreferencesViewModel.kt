@@ -140,11 +140,6 @@ class PreferencesViewModel(
     private fun List<TimerSegmentsDomain>.toCompletedTimeline() = map { segment ->
         segment.copy(timerStatus = TimerStatusDomain.COMPLETED)
     }
-
-    override fun onCleared() {
-        println("PreferencesViewModel onCleared")
-        super.onCleared()
-    }
 }
 
 private fun PreferencesUiModel.reuseStableListsFrom(
