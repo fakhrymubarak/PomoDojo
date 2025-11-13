@@ -7,28 +7,25 @@ import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import okio.Path.Companion.toPath
 
 internal actual fun provideDataStore(): DataStore<Preferences> =
     AndroidPreferencesDataStoreProvider.dataStore
 
-fun initAndroidPreferenceStorage(context: Context) {
-    AndroidPreferencesDataStoreProvider.initialize(context.applicationContext)
-}
-
-private object AndroidPreferencesDataStoreProvider {
-    private lateinit var appContext: Context
+internal object AndroidPreferencesDataStoreProvider {
+    private var appContext: Context? = null
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     val dataStore: DataStore<Preferences> by lazy {
-        check(::appContext.isInitialized) {
+        check(appContext != null) {
             "Android Preferences storage not initialized. Call initAndroidPreferenceStorage() first."
         }
         PreferenceDataStoreFactory.createWithPath(
             scope = scope,
             produceFile = {
-                appContext.filesDir
+                appContext!!.filesDir
                     .resolve(PREFERENCES_FILE_NAME)
                     .absolutePath
                     .toPath()
@@ -37,8 +34,13 @@ private object AndroidPreferencesDataStoreProvider {
     }
 
     fun initialize(context: Context) {
-        if (!::appContext.isInitialized) {
+        if (appContext == null) {
             appContext = context
         }
+    }
+
+    fun destroy() {
+        appContext = null
+        scope.cancel()
     }
 }

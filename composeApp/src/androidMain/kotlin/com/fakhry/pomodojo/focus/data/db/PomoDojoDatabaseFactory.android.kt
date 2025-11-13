@@ -5,35 +5,28 @@ import androidx.room.Room
 
 actual fun createDatabase(): PomoDojoRoomDatabase = AndroidFocusDatabaseHolder.database
 
-fun initAndroidFocusDatabase(context: Context) {
-    AndroidFocusDatabaseHolder.initialize(context.applicationContext)
-}
-
 internal object AndroidFocusDatabaseHolder {
-    private lateinit var appContext: Context
+    private var appContext: Context? = null
 
     val database: PomoDojoRoomDatabase by lazy {
-        check(::appContext.isInitialized) {
+        check(appContext != null) {
             "Android focus database not initialized. Call initAndroidFocusDatabase() first."
         }
         Room
             .databaseBuilder(
-                appContext,
+                appContext!!,
                 PomoDojoRoomDatabase::class.java,
                 POMO_DOJO_DATABASE_NAME,
             ).build()
     }
 
     fun initialize(context: Context) {
-        if (!::appContext.isInitialized) {
+        if (appContext == null) {
             appContext = context
         }
     }
 
-    fun requireContext(): Context {
-        check(::appContext.isInitialized) {
-            "Android focus database not initialized. Call initAndroidFocusDatabase() first."
-        }
-        return appContext
+    fun destroy() {
+        database.close()
     }
 }

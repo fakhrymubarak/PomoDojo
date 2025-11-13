@@ -20,6 +20,7 @@ import com.fakhry.pomodojo.utils.DispatcherProvider
 import com.fakhry.pomodojo.utils.formatDurationMillis
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -133,14 +134,16 @@ class PomodoroSessionViewModel(
                     createPomodoroSessionUseCase(now)
                 }
             val prepared = prepareSession(session, now)
+
             reduce { prepared.uiState }
+            async { updateNotification() }
+
             if (prepared.uiState.isComplete) {
                 stopTicker()
                 completeActiveSession()
                 postSideEffect(PomodoroSessionSideEffect.OnSessionComplete)
                 return@launch
             }
-            focusSessionNotifier.schedule(prepared.snapshot)
             if (prepared.didMutateTimeline || hasStoredSession) {
                 sessionRepository.updateActiveSession(prepared.snapshot)
             }
@@ -231,7 +234,6 @@ class PomodoroSessionViewModel(
             if (advancedSegment) {
                 persistActiveSnapshotIfNeeded()
             }
-            updateNotification()
         }
     }
 

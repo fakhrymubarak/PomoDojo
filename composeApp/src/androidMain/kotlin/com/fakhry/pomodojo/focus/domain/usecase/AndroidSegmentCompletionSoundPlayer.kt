@@ -2,22 +2,42 @@ package com.fakhry.pomodojo.focus.domain.usecase
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.util.Log
 import com.fakhry.pomodojo.R
-import com.fakhry.pomodojo.focus.data.db.AndroidFocusDatabaseHolder
 
-actual fun provideSegmentCompletionSoundPlayer(): SegmentCompletionSoundPlayer {
-    val context = AndroidFocusDatabaseHolder.requireContext()
-    return AndroidSegmentCompletionSoundPlayer(context.applicationContext)
-}
+actual fun provideSegmentCompletionSoundPlayer(): SegmentCompletionSoundPlayer =
+    AndroidSegmentCompletionSoundPlayer
 
-private class AndroidSegmentCompletionSoundPlayer(
-    private val context: Context,
-) : SegmentCompletionSoundPlayer {
+internal object AndroidSegmentCompletionSoundPlayer : SegmentCompletionSoundPlayer {
+    private var appContext: Context? = null
+
+    private var lastPlayCompletedSegment = 0L
+    private const val DEBOUNCE_COMPLETED_AUDIO = 5_000L // 5 secs
+    private const val TAG = "AndroidSegmentCompletionSoundPlayer"
+
     override fun playSegmentCompleted() {
-        val mediaPlayer = MediaPlayer.create(context, R.raw.timer_notification) ?: return
+        check(appContext != null) {
+            "Android focus database not initialized. Call initAndroidFocusDatabase() first."
+        }
+
+        val now = System.currentTimeMillis()
+        Log.d(TAG, "playSegment ${now - lastPlayCompletedSegment}")
+        if (now - lastPlayCompletedSegment <= DEBOUNCE_COMPLETED_AUDIO) return
+        val mediaPlayer = MediaPlayer.create(appContext, R.raw.timer_notification) ?: return
         mediaPlayer.setOnCompletionListener { player ->
             player.release()
         }
         mediaPlayer.start()
+        lastPlayCompletedSegment = now
+    }
+
+    fun initialize(context: Context) {
+        if (appContext == null) {
+            appContext = context
+        }
+    }
+
+    fun destroy() {
+        appContext = null
     }
 }
