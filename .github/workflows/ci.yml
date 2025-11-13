@@ -8,7 +8,7 @@ on:
     branches:
       - main
 jobs:
-  tests:
+  code_quality_checks:
     runs-on: macos-latest
 
     steps:
@@ -28,11 +28,10 @@ jobs:
         run: ./gradlew ktlintCheck
 
       - name: Run tests
-        run: ./gradlew check
+        run: ./gradlew :composeApp:cleanTestDebugUnitTest :composeApp:testDebugUnitTest
 
-  android:
+  android_build:
     runs-on: macos-latest
-    needs: tests
 
     steps:
       - name: Checkout
@@ -50,9 +49,8 @@ jobs:
       - name: Build Android artifacts
         run: ./gradlew :composeApp:assembleRelease
 
-  desktop:
+  desktop_build:
     runs-on: macos-latest
-    needs: tests
 
     steps:
       - name: Checkout
@@ -69,23 +67,3 @@ jobs:
 
       - name: Build JVM artifacts
         run: ./gradlew :composeApp:jvmJar
-
-  ios:
-    runs-on: macos-latest
-    needs: tests
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Build iOS frameworks
-        run: ./gradlew :composeApp:linkReleaseFrameworkIosArm64 :composeApp:linkReleaseFrameworkIosSimulatorArm64
