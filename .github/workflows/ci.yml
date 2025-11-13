@@ -8,7 +8,7 @@ on:
     branches:
       - main
 jobs:
-  code_quality_checks:
+  lint:
     runs-on: macos-latest
 
     steps:
@@ -26,6 +26,22 @@ jobs:
 
       - name: Run ktlint
         run: ./gradlew ktlintCheck
+
+  test:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Run tests
         run: ./gradlew :composeApp:cleanTestDebugUnitTest :composeApp:testDebugUnitTest
@@ -67,3 +83,22 @@ jobs:
 
       - name: Build JVM artifacts
         run: ./gradlew :composeApp:jvmJar
+
+  ios_build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build iOS artifacts
+        run: ./gradlew :composeApp:kspKotlinIosSimulatorArm64
