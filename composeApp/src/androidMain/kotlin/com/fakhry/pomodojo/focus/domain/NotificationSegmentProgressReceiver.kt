@@ -7,10 +7,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
-import com.fakhry.pomodojo.focus.data.db.AndroidAppInitializer
 import com.fakhry.pomodojo.focus.data.db.createDatabase
 import com.fakhry.pomodojo.focus.data.repository.ActiveSessionRepositoryImpl
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.focus.domain.usecase.provideSegmentCompletionSoundPlayer
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
@@ -20,13 +20,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-private const val TAG = "SegmentCompletionReceiver"
+private const val TAG = "NotificationSegmentProgressReceiver"
 
 /**
  * BroadcastReceiver that handles segment completion alarms.
  * Triggered by AlarmManager when a pomodoro segment is expected to complete.
  */
-class SegmentCompletionReceiver : BroadcastReceiver() {
+class NotificationSegmentProgressReceiver : BroadcastReceiver() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -47,8 +47,6 @@ class SegmentCompletionReceiver : BroadcastReceiver() {
         scope.launch {
             try {
                 // Initialize dependencies
-                Log.i(TAG, "onReceive: initialize dependencies")
-                AndroidAppInitializer.initialize(context)
                 val database = createDatabase()
                 val sessionRepository = ActiveSessionRepositoryImpl(database, DispatcherProvider())
                 val notifier = provideFocusSessionNotifier()
@@ -71,17 +69,18 @@ class SegmentCompletionReceiver : BroadcastReceiver() {
 
                         // Update the session in repository if it was modified
                         if (updatedSession != session) {
-                            Log.i(TAG, "onReceive: session updated, persisting to repository")
+                            Log.i(TAG, "onReceive: session updated")
                             sessionRepository.updateActiveSession(updatedSession)
                         }
 
                         // Schedule notification with the updated session
                         notifier.schedule(updatedSession)
+                        provideSegmentCompletionSoundPlayer().playSegmentCompleted()
                     }
 
                     ACTION_PROGRESS_UPDATE -> {
                         // Just refresh the notification to update progress bar
-                        Log.i(TAG, "onReceive: refreshing notification for progress update")
+                        Log.i(TAG, "onReceive: progress updated")
                         notifier.schedule(session)
                     }
                 }
@@ -95,7 +94,7 @@ class SegmentCompletionReceiver : BroadcastReceiver() {
         }
     }
 
-    companion object {
+    companion object Companion {
         const val ACTION_SEGMENT_COMPLETE = "com.fakhry.pomodojo.SEGMENT_COMPLETE"
         const val ACTION_PROGRESS_UPDATE = "com.fakhry.pomodojo.PROGRESS_UPDATE"
         const val EXTRA_SESSION_ID = "session_id"

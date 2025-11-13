@@ -14,6 +14,7 @@
         tools:ignore="ExactAlarmPolicy" />
 
     <application
+        android:name=".PomoDojoApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -31,7 +32,7 @@
         </activity>
 
         <receiver
-            android:name=".focus.domain.SegmentCompletionReceiver"
+            android:name=".focus.domain.NotificationSegmentProgressReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.fakhry.pomodojo.SEGMENT_COMPLETE" />
