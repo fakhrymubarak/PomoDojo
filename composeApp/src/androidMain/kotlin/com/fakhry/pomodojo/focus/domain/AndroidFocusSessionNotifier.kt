@@ -84,13 +84,12 @@ class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNo
             cancelSegmentCompletionAlarm(summary.sessionId)
         }
 
-        Log.w(TAG, "isCompleted ${summary.isAllSegmentsCompleted}")
         if (summary.isAllSegmentsCompleted) scheduleCompletion(snapshot.toCompletionSummary())
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     private fun scheduleCompletion(summary: CompletionNotificationSummary) {
-        Log.w(TAG, "isCompleted $summary")
+        notificationManager.cancel(sessionNotificationId(summary.sessionId))
         val title = context.getString(R.string.focus_session_complete_title)
         val body = context.getString(
             R.string.focus_session_complete_body,
@@ -110,7 +109,7 @@ class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNo
             .setStyle(
                 NotificationCompat
                     .BigTextStyle()
-                    .bigText(body)
+                    .bigText(body),
             )
         notificationManager.notify(completedNotificationId(summary.sessionId), builder.build())
     }

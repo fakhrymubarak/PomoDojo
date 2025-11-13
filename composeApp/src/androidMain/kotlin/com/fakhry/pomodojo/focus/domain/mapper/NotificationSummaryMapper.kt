@@ -58,11 +58,14 @@ internal fun PomodoroSessionDomain.toNotificationSummary(
         sessionId = sessionId(),
         title = title,
         timerText = timerText,
-        segmentProgressPercent = segmentProgress.toInt(),
+        segmentProgressPercent = segmentProgress,
         isPaused = isPaused,
         finishTimeMillis = finishTime,
         quote = quote.withAttribution(),
-        isAllSegmentsCompleted = timeline.segments.all { it.timerStatus == TimerStatusDomain.COMPLETED },
+        isAllSegmentsCompleted = timeline.segments.all {
+            it.timerStatus ==
+                TimerStatusDomain.COMPLETED
+        },
     )
 }
 
