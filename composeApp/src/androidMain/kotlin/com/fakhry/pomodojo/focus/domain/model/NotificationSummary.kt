@@ -7,4 +7,5 @@ internal data class NotificationSummary(
     val segmentProgressPercent: Int,
     val isPaused: Boolean,
     val finishTimeMillis: Long,
+    val quote: String,
 )

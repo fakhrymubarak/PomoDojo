@@ -60,10 +60,15 @@ class AndroidFocusSessionNotifier(private val context: Context) : FocusSessionNo
                 .setWhen(summary.finishTimeMillis)
         } else {
             // For paused state, show static time text
-            builder
-                .setShowWhen(false)
-                .setSubText(summary.timerText)
+            builder.setShowWhen(false)
         }
+
+        builder.setStyle(
+            NotificationCompat
+                .BigTextStyle()
+                .setBigContentTitle(summary.title)
+                .bigText(summary.quote),
+        )
 
         notificationManager.notify(sessionNotificationId(summary.sessionId), builder.build())
 
