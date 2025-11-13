@@ -8,4 +8,6 @@ data class PomodoroSessionDomain(
     val elapsedPauseEpochMs: Long = 0L,
     val timeline: TimelineDomain = TimelineDomain(),
     val quote: QuoteContent = QuoteContent.DEFAULT_QUOTE,
-)
+) {
+    fun sessionId() = startedAtEpochMs.toString()
+}
