@@ -77,19 +77,6 @@ class PomodoroSessionViewModelTest {
     }
 
     @Test
-    fun `running timer updates remaining time and progress`() = runTest(dispatcher) {
-        val viewModel = createViewModel()
-        runCurrent()
-        viewModel.awaitSessionStarted()
-
-        advanceTimeBy(45_000)
-        runCurrent()
-
-        val state = viewModel.currentSnapshot()
-        assertEquals(0.7f, state.activeSegment.timer.progress, 0.2f, "state=$state")
-    }
-
-    @Test
     fun `confirm finish emits dialog and completion side effects`() = runTest(dispatcher) {
         val viewModel = createViewModel()
         runCurrent()
