@@ -25,15 +25,16 @@ class BuildFocusTimelineUseCaseTest {
         val segments = timelineBuilder(0L, preferences)
         val longBreaks = segments.filter { it.type == TimerType.LONG_BREAK }
 
-        assertEquals(9, segments.size)
-        assertEquals(2, longBreaks.size)
+        // Now includes break after last focus: 5 focus + 2 long breaks + 3 short breaks = 10
+        assertEquals(10, segments.size)
+        assertEquals(2, longBreaks.size) // After 2nd and 4th focus only
         assertEquals(15, longBreaks.first().durationMinutes())
         assertEquals(15, longBreaks.last().durationMinutes())
 
-        // Ensure long breaks are placed after every second focus except the final one.
+        // Ensure long breaks are placed after every second focus
         assertEquals(TimerType.LONG_BREAK, segments[3].type)
         assertEquals(TimerType.LONG_BREAK, segments[7].type)
-        assertEquals(5 * 25 + 2 * 15 + 2 * 5, segments.sumOf { it.durationMinutes() })
+        assertEquals(5 * 25 + 2 * 15 + 3 * 5, segments.sumOf { it.durationMinutes() })
     }
 
     @Test
@@ -49,7 +50,8 @@ class BuildFocusTimelineUseCaseTest {
             )
 
         val segments = timelineBuilder(0L, preferences)
-        assertEquals(7, segments.size)
+        // Now includes break after last focus: 4 focus + 4 short breaks = 8
+        assertEquals(8, segments.size)
 
         val firstSegment = segments.first()
         assertEquals(TimerType.FOCUS, firstSegment.type)
@@ -59,11 +61,11 @@ class BuildFocusTimelineUseCaseTest {
         assertEquals(TimerType.SHORT_BREAK, firstBreak.type)
         assertEquals(5, firstBreak.durationMinutes())
 
-        val lastFocus = segments.last()
-        assertEquals(TimerType.FOCUS, lastFocus.type)
-        assertEquals(25, lastFocus.durationMinutes())
+        val lastBreak = segments.last()
+        assertEquals(TimerType.SHORT_BREAK, lastBreak.type) // Last segment is now a break
+        assertEquals(5, lastBreak.durationMinutes())
 
-        assertEquals(3, segments.count { it.type == TimerType.SHORT_BREAK })
+        assertEquals(4, segments.count { it.type == TimerType.SHORT_BREAK })
         assertFalse(segments.any { it.type == TimerType.LONG_BREAK })
     }
 
@@ -86,13 +88,15 @@ class BuildFocusTimelineUseCaseTest {
                 .filter { it.value.type == TimerType.LONG_BREAK }
                 .map { it.index }
 
-        assertEquals(listOf(3, 7), longBreaks) // after 2nd and 4th focus
+        // Long breaks after 2nd, 4th, and 6th (last) focus
+        assertEquals(listOf(3, 7, 11), longBreaks)
         assertEquals(20, segments[3].durationMinutes())
         assertEquals(20, segments[7].durationMinutes())
+        assertEquals(20, segments[11].durationMinutes())
         assertEquals(
-            preferences.repeatCount * 2 - 1,
+            preferences.repeatCount * 2,
             segments.size,
-        ) // focus blocks + breaks between them
+        ) // focus blocks + breaks after each
     }
 }
 

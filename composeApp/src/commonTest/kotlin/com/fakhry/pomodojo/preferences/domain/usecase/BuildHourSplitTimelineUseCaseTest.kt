@@ -21,7 +21,8 @@ class BuildHourSplitTimelineUseCaseTest {
 
         val result = useCase(preferences)
 
-        assertEquals(listOf(60, 60, 60, 15), result)
+        // 6*25 + 3*15 + 3*5 = 150 + 45 + 15 = 210 min = 3h 30min
+        assertEquals(listOf(60, 60, 60, 30), result)
     }
 
     @Test
@@ -38,7 +39,8 @@ class BuildHourSplitTimelineUseCaseTest {
 
         val result = useCase(preferences)
 
-        assertEquals(listOf(60, 10), result)
+        // 3*20 + 3*5 = 60 + 15 = 75 min = 1h 15min
+        assertEquals(listOf(60, 15), result)
     }
 
     @Test
@@ -55,6 +57,7 @@ class BuildHourSplitTimelineUseCaseTest {
 
         val result = useCase(preferences)
 
-        assertEquals(listOf(45), result)
+        // 1*45 + 1*10 = 55 min (long break after cycle 1)
+        assertEquals(listOf(55), result)
     }
 }

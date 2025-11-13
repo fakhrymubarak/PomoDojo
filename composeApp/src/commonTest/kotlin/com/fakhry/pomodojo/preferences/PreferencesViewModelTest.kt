@@ -50,7 +50,7 @@ class PreferencesViewModelTest {
         assertFalse(state.isLoading)
         assertEquals(PreferencesDomain.DEFAULT_REPEAT_COUNT, state.repeatCount)
         assertTrue(state.focusOptions.first { it.value == 25 }.selected)
-        assertEquals(7, state.timeline.segments.size) // 4 focus + 3 short breaks + long break
+        assertEquals(8, state.timeline.segments.size) // 4 focus + 2 long breaks + 2 short breaks
     }
 
     @Test
@@ -81,7 +81,7 @@ class PreferencesViewModelTest {
         assertTrue(state.breakOptions.first { it.value == 10 }.selected)
         assertTrue(state.longBreakAfterOptions.first { it.value == 2 }.selected)
         assertTrue(state.longBreakOptions.first { it.value == 20 }.selected)
-        assertEquals(1, state.timeline.segments.count { it.type == TimerType.LONG_BREAK })
+        assertEquals(2, state.timeline.segments.count { it.type == TimerType.LONG_BREAK })
     }
 
     @Test
