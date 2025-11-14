@@ -5,24 +5,34 @@ import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.focus.ui.mapper.toCompletionSummary
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.UserNotifications.UNMutableNotificationContent
+import platform.UserNotifications.UNNotification
 import platform.UserNotifications.UNNotificationRequest
 import platform.UserNotifications.UNNotificationSound
 import platform.UserNotifications.UNTimeIntervalNotificationTrigger
 import platform.UserNotifications.UNUserNotificationCenter
+import kotlin.coroutines.resume
 import kotlin.time.Clock
 
 actual fun provideFocusSessionNotifier(): FocusSessionNotifier = IosFocusSessionNotifier()
 
 private const val COMPLETION_NOTIFICATION_ID = "focus_session_completion_notification"
+private const val SEGMENT_COMPLETION_NOTIFICATION_ID = "focus_segment_completion_notification"
 
 @OptIn(ExperimentalForeignApi::class, kotlin.time.ExperimentalTime::class)
 class IosFocusSessionNotifier : FocusSessionNotifier {
+    private var activeLiveActivitySessionId: String? = null
     private val notificationCenter = UNUserNotificationCenter.currentNotificationCenter()
 
     override suspend fun schedule(snapshot: PomodoroSessionDomain) {
+        // Check if Live Activity is supported
+        if (!LiveActivityManager.isSupported()) {
+            println("IosFocusSessionNotifier: Live Activities not supported")
+            return
+        }
+
         val now = Clock.System.now().toEpochMilliseconds()
         val summary = snapshot.toIosNotificationSummary(now)
 
@@ -36,6 +46,7 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
                 totalFocusMinutes = completionSummary.totalFocusMinutes,
                 totalBreakMinutes = completionSummary.totalBreakMinutes,
             )
+            activeLiveActivitySessionId = null
             scheduleCompletionNotification(completionSummary)
             return
         }
@@ -57,11 +68,13 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
         val totalSeconds = (currentSegment.timer.durationEpochMs / 1000).toInt()
         val segmentType = currentSegment.type.toSegmentTypeString()
         val isPaused = currentSegment.timerStatus == TimerStatusDomain.PAUSED
-
-        // Check if Live Activity is already running
-        if (!LiveActivityManager.isSupported()) {
-            println("IosFocusSessionNotifier: Live Activities not supported")
-            return
+        val schedulePayload = snapshot.buildLiveActivitySchedulePayload(now)
+        val scheduleJson = schedulePayload?.toJsonString()
+        val sessionId = summary.sessionId
+        if (!isPaused && schedulePayload != null) {
+            scheduleSegmentCompletionChimes(sessionId, schedulePayload)
+        } else {
+            cancelSegmentCompletionChime(sessionId)
         }
 
         // Start or update Live Activity
@@ -76,10 +89,12 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
                 it.timerStatus == TimerStatusDomain.COMPLETED
             }
 
-            if (isFirstSegment && hasNoCompletedSegments) {
+            val hasStartedForSession = activeLiveActivitySessionId == sessionId
+
+            if (!hasStartedForSession && isFirstSegment && hasNoCompletedSegments) {
                 println("IosFocusSessionNotifier: Starting Live Activity")
                 LiveActivityManager.startLiveActivity(
-                    sessionId = summary.sessionId,
+                    sessionId = sessionId,
                     quote = summary.quote,
                     cycleNumber = currentSegment.cycleNumber,
                     totalCycles = snapshot.totalCycle,
@@ -87,7 +102,9 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
                     remainingSeconds = remaining,
                     totalSeconds = totalSeconds,
                     isPaused = isPaused,
+                    scheduleJson = scheduleJson,
                 )
+                activeLiveActivitySessionId = sessionId
             } else {
                 println("IosFocusSessionNotifier: Updating Live Activity")
                 LiveActivityManager.updateLiveActivity(
@@ -97,6 +114,7 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
                     remainingSeconds = remaining,
                     totalSeconds = totalSeconds,
                     isPaused = isPaused,
+                    scheduleJson = scheduleJson,
                 )
             }
         } catch (e: Exception) {
@@ -107,6 +125,8 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
     override suspend fun cancel(sessionId: String) {
         println("IosFocusSessionNotifier: Ending Live Activity for session $sessionId")
         LiveActivityManager.endLiveActivity()
+        activeLiveActivitySessionId = null
+        cancelSegmentCompletionChime(sessionId)
 
         // Also cancel any pending completion notifications
         val identifiers = listOf(COMPLETION_NOTIFICATION_ID + "_" + sessionId)
@@ -130,13 +150,7 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
         return (remainingMillis / 1000).toInt()
     }
 
-    private fun TimerType.toSegmentTypeString(): String = when (this) {
-        TimerType.FOCUS -> "focus"
-        TimerType.SHORT_BREAK -> "short_break"
-        TimerType.LONG_BREAK -> "long_break"
-    }
-
-    private fun scheduleCompletionNotification(
+    private suspend fun scheduleCompletionNotification(
         summary: com.fakhry.pomodojo.focus.domain.model.CompletionNotificationSummary,
     ) {
         val title = "Amazing work!"
@@ -174,5 +188,116 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
                 )
             }
         }
+        cancelSegmentCompletionChime(summary.sessionId)
+    }
+
+    private suspend fun scheduleSegmentCompletionChimes(
+        sessionId: String,
+        schedule: LiveActivitySchedulePayload,
+    ) {
+        cancelSegmentCompletionChime(sessionId)
+
+        val prefix = "${SEGMENT_COMPLETION_NOTIFICATION_ID}_$sessionId"
+        schedule.segments.forEachIndexed { index, entry ->
+            val completionDelay = entry.startOffsetSeconds + entry.totalSeconds
+            if (completionDelay <= 0) return@forEachIndexed
+
+            val identifier = "${prefix}_$index"
+            val nextLabel = schedule
+                .segments
+                .getOrNull(index + 1)
+                ?.type
+                ?.toReadableSegmentLabel()
+
+            scheduleSegmentCompletionChime(
+                identifier = identifier,
+                sessionId = sessionId,
+                fireInSeconds = completionDelay,
+                nextLabel = nextLabel,
+            )
+        }
+    }
+
+    private fun scheduleSegmentCompletionChime(
+        identifier: String,
+        sessionId: String,
+        fireInSeconds: Int,
+        nextLabel: String?,
+    ) {
+        if (fireInSeconds <= 0) return
+
+        val content = UNMutableNotificationContent().apply {
+            setTitle("Segment complete")
+            val body = nextLabel?.let { "Next: $it" } ?: "Time to switch modes."
+            setBody(body)
+            setSound(
+                UNNotificationSound.soundNamed(
+                    "timer_notification.wav",
+                ),
+            )
+            setUserInfo(mapOf("sessionId" to sessionId) as Map<Any?, *>)
+        }
+
+        val trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeInterval(
+            timeInterval = fireInSeconds.toDouble(),
+            repeats = false,
+        )
+
+        val request = UNNotificationRequest.requestWithIdentifier(
+            identifier = identifier,
+            content = content,
+            trigger = trigger,
+        )
+
+        notificationCenter.addNotificationRequest(request) { error ->
+            error?.let {
+                println(
+                    "IosFocusSessionNotifier: Failed to schedule segment chime: ${it.localizedDescription}",
+                )
+            }
+        }
+    }
+
+    private suspend fun cancelSegmentCompletionChime(sessionId: String) {
+        val prefix = "${SEGMENT_COMPLETION_NOTIFICATION_ID}_$sessionId"
+        val pending = fetchPendingNotificationIds(prefix)
+        if (pending.isNotEmpty()) {
+            notificationCenter.removePendingNotificationRequestsWithIdentifiers(pending)
+        }
+        val delivered = fetchDeliveredNotificationIds(prefix)
+        if (delivered.isNotEmpty()) {
+            notificationCenter.removeDeliveredNotificationsWithIdentifiers(delivered)
+        }
+    }
+
+    private suspend fun fetchPendingNotificationIds(prefix: String): List<String> =
+        suspendCancellableCoroutine { continuation ->
+            notificationCenter.getPendingNotificationRequestsWithCompletionHandler { requests ->
+                val identifiers = (requests as? List<*>)?.mapNotNull { request ->
+                    val pendingRequest = request as? UNNotificationRequest
+                    val identifier = pendingRequest?.identifier
+                    if (identifier != null && identifier.startsWith(prefix)) identifier else null
+                } ?: emptyList()
+                continuation.resume(identifiers)
+            }
+        }
+
+    private suspend fun fetchDeliveredNotificationIds(prefix: String): List<String> =
+        suspendCancellableCoroutine { continuation ->
+            notificationCenter.getDeliveredNotificationsWithCompletionHandler { notifications ->
+                val identifiers = (notifications as? List<*>)?.mapNotNull { notification ->
+                    val deliveredNotification = notification as? UNNotification
+                    val identifier = deliveredNotification?.request?.identifier
+                    if (identifier != null && identifier.startsWith(prefix)) identifier else null
+                } ?: emptyList()
+                continuation.resume(identifiers)
+            }
+        }
+
+    private fun String.toReadableSegmentLabel(): String? = when (this) {
+        "focus" -> "Focus"
+        "short_break" -> "Break"
+        "long_break" -> "Long break"
+        else -> null
     }
 }

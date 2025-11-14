@@ -2,6 +2,9 @@ package com.fakhry.pomodojo.focus.domain.usecase
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AVFAudio.AVAudioPlayer
+import platform.AVFAudio.AVAudioSession
+import platform.AVFAudio.AVAudioSessionCategoryAmbient
+import platform.AVFAudio.AVAudioSessionCategoryOptionMixWithOthers
 import platform.Foundation.NSBundle
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
@@ -10,7 +13,10 @@ actual fun provideSegmentCompletionSoundPlayer(): SegmentCompletionSoundPlayer =
     IosSegmentCompletionSoundPlayer()
 
 private class IosSegmentCompletionSoundPlayer : SegmentCompletionSoundPlayer {
-    private val player: AVAudioPlayer? = loadPlayer()
+    private val player: AVAudioPlayer? by lazy {
+        configureAudioSession()
+        loadPlayer()
+    }
 
     override fun playSegmentCompleted() {
         player?.let {
@@ -27,6 +33,16 @@ private class IosSegmentCompletionSoundPlayer : SegmentCompletionSoundPlayer {
         val audioPlayer = AVAudioPlayer(contentsOfURL = url, error = null)
         audioPlayer.prepareToPlay()
         return audioPlayer
+    }
+
+    @OptIn(ExperimentalForeignApi::class)
+    private fun configureAudioSession() {
+        val session = AVAudioSession.sharedInstance()
+        session.setCategory(
+            AVAudioSessionCategoryAmbient,
+            withOptions = AVAudioSessionCategoryOptionMixWithOthers,
+            error = null,
+        )
     }
 
     @OptIn(ExperimentalForeignApi::class)

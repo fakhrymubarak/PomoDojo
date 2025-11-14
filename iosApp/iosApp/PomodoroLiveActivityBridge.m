@@ -26,7 +26,8 @@
                            segmentType:(NSString *)segmentType
                       remainingSeconds:(NSInteger)remainingSeconds
                           totalSeconds:(NSInteger)totalSeconds
-                              isPaused:(BOOL)isPaused {
+        isPaused:(BOOL)isPaused
+    scheduleJSON:(NSString *_Nullable)scheduleJSON {
     if (@available(iOS 16.2, *)) {
         [[PomodoroLiveActivityManager shared] startLiveActivityWithSessionId:sessionId
                                                                        quote:quote
@@ -35,7 +36,8 @@
                                                                  segmentType:segmentType
                                                             remainingSeconds:remainingSeconds
                                                                 totalSeconds:totalSeconds
-                                                                    isPaused:isPaused];
+                isPaused:isPaused
+            scheduleJSON:scheduleJSON];
     } else {
         NSLog(@"PomodoroLiveActivityBridge: Live Activities not supported on this iOS version");
     }
@@ -46,14 +48,16 @@
                               segmentType:(NSString *)segmentType
                          remainingSeconds:(NSInteger)remainingSeconds
                              totalSeconds:(NSInteger)totalSeconds
-                                 isPaused:(BOOL)isPaused {
+                                 isPaused:(BOOL)isPaused
+                             scheduleJSON:(NSString *_Nullable)scheduleJSON {
     if (@available(iOS 16.2, *)) {
         [[PomodoroLiveActivityManager shared] updateLiveActivityWithCycleNumber:cycleNumber
                                                                     totalCycles:totalCycles
                                                                     segmentType:segmentType
                                                                remainingSeconds:remainingSeconds
                                                                    totalSeconds:totalSeconds
-                                                                       isPaused:isPaused];
+                isPaused:isPaused
+            scheduleJSON:scheduleJSON];
     }
 }
 

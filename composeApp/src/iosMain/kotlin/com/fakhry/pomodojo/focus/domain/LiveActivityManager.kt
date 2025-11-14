@@ -30,6 +30,7 @@ object LiveActivityManager {
         remainingSeconds: Int,
         totalSeconds: Int,
         isPaused: Boolean,
+        scheduleJson: String?,
     ) {
         try {
             println("LiveActivityManager: Starting Live Activity")
@@ -40,7 +41,7 @@ object LiveActivityManager {
 
             val bridge = PomodoroLiveActivityBridge.shared()
 
-            bridge?.startLiveActivityWithSessionId(
+            bridge.startLiveActivityWithSessionId(
                 sessionId = sessionId,
                 quote = quote,
                 cycleNumber = cycleNumber.toLong(),
@@ -49,6 +50,7 @@ object LiveActivityManager {
                 remainingSeconds = remainingSeconds.toLong(),
                 totalSeconds = totalSeconds.toLong(),
                 isPaused = isPaused,
+                scheduleJSON = scheduleJson,
             )
 
             println("LiveActivityManager: Live Activity started successfully")
@@ -65,6 +67,7 @@ object LiveActivityManager {
         remainingSeconds: Int,
         totalSeconds: Int,
         isPaused: Boolean,
+        scheduleJson: String?,
     ) {
         try {
             println("LiveActivityManager: Updating Live Activity")
@@ -73,13 +76,14 @@ object LiveActivityManager {
 
             val bridge = PomodoroLiveActivityBridge.shared()
 
-            bridge?.updateLiveActivityWithCycleNumber(
+            bridge.updateLiveActivityWithCycleNumber(
                 cycleNumber = cycleNumber.toLong(),
                 totalCycles = totalCycles.toLong(),
                 segmentType = segmentType,
                 remainingSeconds = remainingSeconds.toLong(),
                 totalSeconds = totalSeconds.toLong(),
                 isPaused = isPaused,
+                scheduleJSON = scheduleJson,
             )
         } catch (e: Exception) {
             println("LiveActivityManager: Failed to update: ${e.message}")
@@ -91,7 +95,7 @@ object LiveActivityManager {
             println("LiveActivityManager: Ending Live Activity")
 
             val bridge = PomodoroLiveActivityBridge.shared()
-            bridge?.endLiveActivity()
+            bridge.endLiveActivity()
         } catch (e: Exception) {
             println("LiveActivityManager: Failed to end: ${e.message}")
         }
@@ -110,7 +114,7 @@ object LiveActivityManager {
 
             val bridge = PomodoroLiveActivityBridge.shared()
 
-            bridge?.endLiveActivityWithCompletionCycles(
+            bridge.endLiveActivityWithCompletionCycles(
                 completedCycles = completedCycles.toLong(),
                 totalFocusMinutes = totalFocusMinutes.toLong(),
                 totalBreakMinutes = totalBreakMinutes.toLong(),

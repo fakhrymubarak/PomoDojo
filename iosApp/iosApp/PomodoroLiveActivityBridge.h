@@ -15,14 +15,16 @@ NS_ASSUME_NONNULL_BEGIN
                            segmentType:(NSString *)segmentType
                       remainingSeconds:(NSInteger)remainingSeconds
                           totalSeconds:(NSInteger)totalSeconds
-                              isPaused:(BOOL)isPaused;
+        isPaused:(BOOL)isPaused
+    scheduleJSON:(NSString *_Nullable)scheduleJSON;
 
 - (void)updateLiveActivityWithCycleNumber:(NSInteger)cycleNumber
                               totalCycles:(NSInteger)totalCycles
                               segmentType:(NSString *)segmentType
                          remainingSeconds:(NSInteger)remainingSeconds
                              totalSeconds:(NSInteger)totalSeconds
-                                 isPaused:(BOOL)isPaused;
+        isPaused:(BOOL)isPaused
+    scheduleJSON:(NSString *_Nullable)scheduleJSON;
 
 - (void)endLiveActivity;
 
