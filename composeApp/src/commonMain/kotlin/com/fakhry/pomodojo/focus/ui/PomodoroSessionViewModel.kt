@@ -232,6 +232,7 @@ class PomodoroSessionViewModel(
             reduce { state.withUpdatedTimeline(updatedSegment) }
             if (advancedSegment) {
                 persistActiveSnapshotIfNeeded()
+                updateNotification()
             }
         }
     }

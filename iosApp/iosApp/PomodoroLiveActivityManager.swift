@@ -4,6 +4,8 @@ import Foundation
 @available(iOS 16.2, *)
 @objc public class PomodoroLiveActivityManager: NSObject {
     private var currentActivity: Activity<PomodoroActivityAttributes>?
+    private var currentSessionId: String?
+    private var currentQuote: String?
 
     @objc public static let shared = PomodoroLiveActivityManager()
 
@@ -32,6 +34,10 @@ import Foundation
 
         // End any existing activity first
         endLiveActivity()
+
+        // Store session info for potential restarts
+        currentSessionId = sessionId
+        currentQuote = quote
 
         let attributes = PomodoroActivityAttributes(
             sessionId: sessionId,
@@ -74,8 +80,26 @@ import Foundation
         totalSeconds: Int,
         isPaused: Bool
     ) {
+        // If no active activity, try to restart it using stored session info
         guard let activity = currentActivity else {
-            print("PomodoroLiveActivityManager: No active Live Activity to update")
+            print("⚠️ PomodoroLiveActivityManager: No active Live Activity, attempting to restart...")
+
+            // Try to restart if we have session info
+            if let sessionId = currentSessionId, let quote = currentQuote {
+                print("   Restarting with session: \(sessionId)")
+                startLiveActivity(
+                    sessionId: sessionId,
+                    quote: quote,
+                    cycleNumber: cycleNumber,
+                    totalCycles: totalCycles,
+                    segmentType: segmentType,
+                    remainingSeconds: remainingSeconds,
+                    totalSeconds: totalSeconds,
+                    isPaused: isPaused
+                )
+            } else {
+                print("   ❌ Cannot restart: no session info stored")
+            }
             return
         }
 
@@ -106,6 +130,8 @@ import Foundation
         Task {
             await activity.end(nil, dismissalPolicy: .immediate)
             currentActivity = nil
+            currentSessionId = nil
+            currentQuote = nil
             print("PomodoroLiveActivityManager: Live Activity ended")
         }
     }
@@ -136,6 +162,8 @@ import Foundation
                 dismissalPolicy: .default
             )
             currentActivity = nil
+            currentSessionId = nil
+            currentQuote = nil
             print("PomodoroLiveActivityManager: Live Activity ended with completion")
         }
     }

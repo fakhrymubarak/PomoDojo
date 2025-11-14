@@ -46,17 +46,24 @@ struct PomodoroLiveActivityWidget: Widget {
                     VStack(spacing: 4) {
                         if context.state.isPaused {
                             Text(formatTime(seconds: context.state.remainingSeconds))
-                                .font(.system(size: 40, weight: .bold, design: .rounded))
+                                .font(.system(size: 32, weight: .bold, design: .rounded))
                                 .monospacedDigit()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .multilineTextAlignment(.center)
                             Text("Paused")
                                 .font(.caption)
                                 .foregroundColor(.orange)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .multilineTextAlignment(.center)
                         } else {
                             Text(context.state.targetEndTime, style: .timer)
-                                .font(.system(size: 40, weight: .bold, design: .rounded))
+                                .font(.system(size: 32, weight: .bold, design: .rounded))
                                 .monospacedDigit()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .multilineTextAlignment(.center)
                         }
                     }
+                    .frame(maxWidth: .infinity)
 
                     Spacer()
                 }
@@ -80,22 +87,25 @@ struct PomodoroLiveActivityWidget: Widget {
             // Dynamic Island support for iPhone 14 Pro+
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    Image(systemName: segmentIcon(for: context.state.segmentType))
-                        .foregroundColor(segmentColor(for: context.state.segmentType))
-                }
-
-                DynamicIslandExpandedRegion(.trailing) {
-                    Text("Cycle \(context.state.cycleNumber)/\(context.state.totalCycles)")
-                        .font(.caption)
+                    Text(segmentLabel(for: context.state.segmentType))
+                        .font(.headline)
+                        .fontWeight(.semibold)
                 }
 
                 DynamicIslandExpandedRegion(.center) {
-                    if context.state.isPaused {
+                    Text("Cycle \(context.state.cycleNumber)/\(context.state.totalCycles)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+
+                DynamicIslandExpandedRegion(.trailing) {
+                    HStack(spacing: 6) {
+                        if context.state.isPaused {
+                            Image(systemName: "pause.circle.fill")
+                                .foregroundColor(.orange)
+                        }
+
                         Text(formatTime(seconds: context.state.remainingSeconds))
-                            .font(.title2)
-                            .monospacedDigit()
-                    } else {
-                        Text(context.state.targetEndTime, style: .timer)
                             .font(.title2)
                             .monospacedDigit()
                     }
@@ -112,12 +122,12 @@ struct PomodoroLiveActivityWidget: Widget {
                 Image(systemName: segmentIcon(for: context.state.segmentType))
                     .foregroundColor(segmentColor(for: context.state.segmentType))
             } compactTrailing: {
-                if context.state.isPaused {
+                HStack(spacing: 2) {
+                    if context.state.isPaused {
+                        Image(systemName: "pause.circle.fill")
+                    }
+
                     Text(formatTime(seconds: context.state.remainingSeconds))
-                        .font(.caption2)
-                        .monospacedDigit()
-                } else {
-                    Text(context.state.targetEndTime, style: .timer)
                         .font(.caption2)
                         .monospacedDigit()
                 }
