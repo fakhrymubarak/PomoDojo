@@ -101,4 +101,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Build iOS artifacts
-        run: ./gradlew :composeApp:kspKotlinIosSimulatorArm64
+        run: ./gradlew :composeApp:linkDebugFrameworkIosArm64
