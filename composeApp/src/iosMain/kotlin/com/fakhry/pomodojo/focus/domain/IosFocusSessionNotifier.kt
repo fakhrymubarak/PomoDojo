@@ -171,7 +171,7 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
         }
 
         val trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeInterval(
-            timeInterval = 0.1,
+            timeInterval = 1.0,
             repeats = false,
         )
 
