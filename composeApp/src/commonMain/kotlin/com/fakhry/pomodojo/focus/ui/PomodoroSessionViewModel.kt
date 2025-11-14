@@ -96,7 +96,7 @@ class PomodoroSessionViewModel(
             else -> Unit
         }
         persistActiveSnapshotIfNeeded()
-        updateNotification()
+        updateNotification(forceUpdate = true)
     }
 
     fun onDismissConfirmEnd() = intent {
@@ -235,7 +235,7 @@ class PomodoroSessionViewModel(
             reduce { state.withUpdatedTimeline(updatedSegment) }
             if (advancedSegment) {
                 persistActiveSnapshotIfNeeded()
-                updateNotification()
+                updateNotification(forceUpdate = true)
             }
         }
     }
@@ -411,21 +411,23 @@ class PomodoroSessionViewModel(
         )
     }
 
-    private fun updateNotification() = viewModelScope.launch(dispatcher.main) {
-        val currentState = container.stateFlow.value
-        if (currentState.isComplete) {
-            focusSessionNotifier.cancel(currentState.startedAtEpochMs.toString())
-            resetNotificationThrottle()
-            return@launch
-        }
+    private fun updateNotification(forceUpdate: Boolean = false) =
+        viewModelScope.launch(dispatcher.main) {
+            val currentState = container.stateFlow.value
+            if (currentState.isComplete) {
+                focusSessionNotifier.cancel(currentState.startedAtEpochMs.toString())
+                resetNotificationThrottle()
+                return@launch
+            }
 
-        // Update notification after
-        val now = currentTimeProvider.now()
-        val isUpdateToEarly = now - lastUpdatedNotif <= TICK_UPDATE_NOTIF_INTERVAL_MILLIS
-        if (isUpdateToEarly) return@launch
-        buildSessionSnapshot(currentState)?.let { focusSessionNotifier.schedule(it) }
-        lastUpdatedNotif = now
-    }
+            // Update notification after
+            val now = currentTimeProvider.now()
+            val shouldThrottle =
+                !forceUpdate && now - lastUpdatedNotif <= TICK_UPDATE_NOTIF_INTERVAL_MILLIS
+            if (shouldThrottle) return@launch
+            buildSessionSnapshot(currentState)?.let { focusSessionNotifier.schedule(it) }
+            lastUpdatedNotif = now
+        }
 
     private fun resetNotificationThrottle() {
         lastUpdatedNotif = 0L
