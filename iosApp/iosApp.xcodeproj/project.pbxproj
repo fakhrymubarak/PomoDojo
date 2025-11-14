@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5AC3F4612F8B1D2300F7AA7D /* timer_notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = 5AC3F4602F8B1D2300F7AA7D /* timer_notification.wav */; };
+		5AC3F4622F8B1D2300F7AA7D /* timer_notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = 5AC3F4602F8B1D2300F7AA7D /* timer_notification.wav */; };
 		8FB04D842EC6F7DC0055BCFA /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FB04D832EC6F7DC0055BCFA /* WidgetKit.framework */; };
 		8FB04D862EC6F7DC0055BCFA /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FB04D852EC6F7DC0055BCFA /* SwiftUI.framework */; };
 		8FB04D952EC6F7DC0055BCFA /* PomodoroWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8FB04D812EC6F7DC0055BCFA /* PomodoroWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -37,6 +39,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5AC3F4602F8B1D2300F7AA7D /* timer_notification.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = timer_notification.wav; path = iosApp/timer_notification.wav; sourceTree = "<group>"; };
 		8FB04D812EC6F7DC0055BCFA /* PomodoroWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PomodoroWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FB04D832EC6F7DC0055BCFA /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		8FB04D852EC6F7DC0055BCFA /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -130,11 +133,20 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		8FE10A1F2F8B1D880065FF1B /* SharedResources */ = {
+			isa = PBXGroup;
+			children = (
+				5AC3F4602F8B1D2300F7AA7D /* timer_notification.wav */,
+			);
+			name = SharedResources;
+			sourceTree = "<group>";
+		};
 		B81DFA07FF2F53FFBDD8E9F4 = {
 			isa = PBXGroup;
 			children = (
 				5044667EEB36700D20E70A99 /* Configuration */,
 				3501C815BBA012C9973E3B65 /* iosApp */,
+				8FE10A1F2F8B1D880065FF1B /* SharedResources */,
 				8FB04D872EC6F7DC0055BCFA /* PomodoroWidget */,
 				8FB04D822EC6F7DC0055BCFA /* Frameworks */,
 				8EF155D43E4A03549679A6CB /* Products */,
@@ -234,6 +246,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AC3F4612F8B1D2300F7AA7D /* timer_notification.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +254,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AC3F4622F8B1D2300F7AA7D /* timer_notification.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
