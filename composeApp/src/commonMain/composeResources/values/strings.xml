@@ -55,4 +55,16 @@
     <string name="focus_session_phase_focus">Focus</string>
     <string name="focus_session_phase_break">Break</string>
     <string name="focus_session_phase_long_break">Long Break</string>
+
+    <!-- Pomodoro Complete Screen -->
+    <string name="pomodoro_complete_header_title">Pomodoro Complete</string>
+    <plurals name="pomodoro_complete_header_cycles">
+        <item quantity="one">%1$d cycle finished</item>
+        <item quantity="other">%1$d cycles finished</item>
+    </plurals>
+    <string name="pomodoro_complete_summary_title">Session recap</string>
+    <string name="pomodoro_complete_cycles_label">Cycles finished</string>
+    <string name="pomodoro_complete_focus_label">Focus minutes</string>
+    <string name="pomodoro_complete_break_label">Break minutes</string>
+    <string name="pomodoro_complete_start_another">Start another focus session</string>
 </resources>

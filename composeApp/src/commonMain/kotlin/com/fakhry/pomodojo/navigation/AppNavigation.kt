@@ -7,7 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.fakhry.pomodojo.dashboard.ui.DashboardScreen
+import com.fakhry.pomodojo.focus.ui.PomodoroCompleteScreen
+import com.fakhry.pomodojo.focus.ui.PomodoroCompletionUiState
 import com.fakhry.pomodojo.focus.ui.PomodoroSessionScreen
 import com.fakhry.pomodojo.preferences.ui.PreferencesRoute
 import kotlinx.serialization.Serializable
@@ -21,6 +24,13 @@ object AppDestination {
 
     @Serializable
     data object PomodoroSession
+
+    @Serializable
+    data class PomodoroComplete(
+        val totalCyclesFinished: Int,
+        val totalFocusMinutes: Int,
+        val totalBreakMinutes: Int,
+    )
 }
 
 private const val ANIMATION_DURATION = 500
@@ -78,7 +88,27 @@ fun AppNavHost(navController: NavHostController) {
         }
         composable<AppDestination.PomodoroSession> {
             PomodoroSessionScreen(
-                onSessionCompleted = { navController.popBackStack() },
+                onSessionCompleted = { completion ->
+                    navController.popBackStack()
+                    navController.navigate(
+                        AppDestination.PomodoroComplete(
+                            totalCyclesFinished = completion.totalCyclesFinished,
+                            totalFocusMinutes = completion.totalFocusMinutes,
+                            totalBreakMinutes = completion.totalBreakMinutes,
+                        ),
+                    )
+                },
+            )
+        }
+        composable<AppDestination.PomodoroComplete> { navBackStackEntry ->
+            val args = navBackStackEntry.toRoute<AppDestination.PomodoroComplete>()
+            PomodoroCompleteScreen(
+                uiState = PomodoroCompletionUiState(
+                    totalCyclesFinished = args.totalCyclesFinished,
+                    totalFocusMinutes = args.totalFocusMinutes,
+                    totalBreakMinutes = args.totalBreakMinutes,
+                ),
+                onStartAnotherSession = { navController.popBackStack() },
             )
         }
     }
