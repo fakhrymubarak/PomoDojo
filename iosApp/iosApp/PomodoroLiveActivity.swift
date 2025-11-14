@@ -5,6 +5,13 @@ import SwiftUI
 // MARK: - Activity Attributes
 @available(iOS 16.2, *)
 struct PomodoroActivityAttributes: ActivityAttributes {
+    public struct SegmentScheduleItem: Codable, Hashable {
+        var type: String
+        var cycleNumber: Int
+        var totalSeconds: Int
+        var startOffsetSeconds: Int
+    }
+
     public struct ContentState: Codable, Hashable {
         var cycleNumber: Int
         var totalCycles: Int
@@ -13,6 +20,8 @@ struct PomodoroActivityAttributes: ActivityAttributes {
         var totalSeconds: Int
         var isPaused: Bool
         var targetEndTime: Date
+        var scheduleGeneratedAt: Date
+        var segmentSchedule: [SegmentScheduleItem]
     }
 
     var sessionId: String
@@ -24,62 +33,64 @@ struct PomodoroActivityAttributes: ActivityAttributes {
 struct PomodoroLiveActivityWidget: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: PomodoroActivityAttributes.self) { context in
-            // Lock screen / notification area UI
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Image(systemName: segmentIcon(for: context.state.segmentType))
-                        .foregroundColor(segmentColor(for: context.state.segmentType))
+            ActiveSegmentTimelineView(state: context.state) { activeSegment in
+                // Lock screen / notification area UI
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Image(systemName: segmentIcon(for: activeSegment.type))
+                            .foregroundColor(segmentColor(for: activeSegment.type))
 
-                    Text(segmentLabel(for: context.state.segmentType))
-                        .font(.headline)
+                        Text(segmentLabel(for: activeSegment.type))
+                            .font(.headline)
 
-                    Spacer()
+                        Spacer()
 
-                    Text("Cycle \(context.state.cycleNumber)/\(context.state.totalCycles)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-
-                HStack {
-                    Spacer()
-
-                    VStack(spacing: 4) {
-                        if context.state.isPaused {
-                            Text(formatTime(seconds: context.state.remainingSeconds))
-                                .font(.system(size: 32, weight: .bold, design: .rounded))
-                                .monospacedDigit()
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .multilineTextAlignment(.center)
-                            Text("Paused")
-                                .font(.caption)
-                                .foregroundColor(.orange)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .multilineTextAlignment(.center)
-                        } else {
-                            Text(context.state.targetEndTime, style: .timer)
-                                .font(.system(size: 32, weight: .bold, design: .rounded))
-                                .monospacedDigit()
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .multilineTextAlignment(.center)
-                        }
+                        Text("Cycle \(activeSegment.cycleNumber)/\(context.state.totalCycles)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                     }
-                    .frame(maxWidth: .infinity)
 
-                    Spacer()
-                }
+                    HStack {
+                        Spacer()
 
-                ProgressView(
-                    value: Double(context.state.totalSeconds - context.state.remainingSeconds),
-                    total: Double(context.state.totalSeconds)
-                )
-                    .tint(segmentColor(for: context.state.segmentType))
-                    .scaleEffect(y: 2)
+                        VStack(spacing: 4) {
+                            if activeSegment.isPaused {
+                                Text(formatTime(seconds: activeSegment.remainingSeconds))
+                                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                                    .monospacedDigit()
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .multilineTextAlignment(.center)
+                                Text("Paused")
+                                    .font(.caption)
+                                    .foregroundColor(.orange)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .multilineTextAlignment(.center)
+                            } else {
+                                Text(activeSegment.targetEndTime, style: .timer)
+                                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                                    .monospacedDigit()
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .multilineTextAlignment(.center)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
 
-                if !context.attributes.quote.isEmpty {
-                    Text(context.attributes.quote)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
+                        Spacer()
+                    }
+
+                    ProgressView(
+                        value: Double(activeSegment.totalSeconds - activeSegment.remainingSeconds),
+                        total: Double(activeSegment.totalSeconds)
+                    )
+                        .tint(segmentColor(for: activeSegment.type))
+                        .scaleEffect(y: 2)
+
+                    if !context.attributes.quote.isEmpty {
+                        Text(context.attributes.quote)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
                 }
             }
             .padding()
@@ -87,53 +98,67 @@ struct PomodoroLiveActivityWidget: Widget {
             // Dynamic Island support for iPhone 14 Pro+
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    Text(segmentLabel(for: context.state.segmentType))
-                        .font(.headline)
-                        .fontWeight(.semibold)
+                    ActiveSegmentTimelineView(state: context.state) { activeSegment in
+                        Text(segmentLabel(for: activeSegment.type))
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                    }
                 }
 
                 DynamicIslandExpandedRegion(.center) {
-                    Text("Cycle \(context.state.cycleNumber)/\(context.state.totalCycles)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    ActiveSegmentTimelineView(state: context.state) { activeSegment in
+                        Text("Cycle \(activeSegment.cycleNumber)/\(context.state.totalCycles)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
                 }
 
                 DynamicIslandExpandedRegion(.trailing) {
-                    HStack(spacing: 6) {
-                        if context.state.isPaused {
-                            Image(systemName: "pause.circle.fill")
-                                .foregroundColor(.orange)
-                        }
+                    ActiveSegmentTimelineView(state: context.state) { activeSegment in
+                        HStack(spacing: 6) {
+                            if activeSegment.isPaused {
+                                Image(systemName: "pause.circle.fill")
+                                    .foregroundColor(.orange)
+                            }
 
-                        Text(formatTime(seconds: context.state.remainingSeconds))
-                            .font(.title2)
-                            .monospacedDigit()
+                            Text(formatTime(seconds: activeSegment.remainingSeconds))
+                                .font(.title2)
+                                .monospacedDigit()
+                        }
                     }
                 }
 
                 DynamicIslandExpandedRegion(.bottom) {
-                    ProgressView(
-                        value: Double(context.state.totalSeconds - context.state.remainingSeconds),
-                        total: Double(context.state.totalSeconds)
-                    )
-                        .tint(segmentColor(for: context.state.segmentType))
+                    ActiveSegmentTimelineView(state: context.state) { activeSegment in
+                        ProgressView(
+                            value: Double(activeSegment.totalSeconds - activeSegment.remainingSeconds),
+                            total: Double(activeSegment.totalSeconds)
+                        )
+                            .tint(segmentColor(for: activeSegment.type))
+                    }
                 }
             } compactLeading: {
-                Image(systemName: segmentIcon(for: context.state.segmentType))
-                    .foregroundColor(segmentColor(for: context.state.segmentType))
+                ActiveSegmentTimelineView(state: context.state) { activeSegment in
+                    Image(systemName: segmentIcon(for: activeSegment.type))
+                        .foregroundColor(segmentColor(for: activeSegment.type))
+                }
             } compactTrailing: {
-                HStack(spacing: 2) {
-                    if context.state.isPaused {
-                        Image(systemName: "pause.circle.fill")
-                    }
+                ActiveSegmentTimelineView(state: context.state) { activeSegment in
+                    HStack(spacing: 2) {
+                        if activeSegment.isPaused {
+                            Image(systemName: "pause.circle.fill")
+                        }
 
-                    Text(formatTime(seconds: context.state.remainingSeconds))
-                        .font(.caption2)
-                        .monospacedDigit()
+                        Text(formatTime(seconds: activeSegment.remainingSeconds))
+                            .font(.caption2)
+                            .monospacedDigit()
+                    }
                 }
             } minimal: {
-                Image(systemName: "timer")
-                    .foregroundColor(segmentColor(for: context.state.segmentType))
+                ActiveSegmentTimelineView(state: context.state) { activeSegment in
+                    Image(systemName: "timer")
+                        .foregroundColor(segmentColor(for: activeSegment.type))
+                }
             }
         }
     }
@@ -169,6 +194,88 @@ struct PomodoroLiveActivityWidget: Widget {
         let secs = seconds % 60
         return String(format: "%02d:%02d", minutes, secs)
     }
+}
+
+@available(iOS 16.2, *)
+private struct ActiveSegmentState {
+    let type: String
+    let cycleNumber: Int
+    let remainingSeconds: Int
+    let totalSeconds: Int
+    let targetEndTime: Date
+    let isPaused: Bool
+}
+
+@available(iOS 16.2, *)
+private struct ActiveSegmentTimelineView<Content: View>: View {
+    let state: PomodoroActivityAttributes.ContentState
+    private let content: (ActiveSegmentState) -> Content
+
+    init(
+        state: PomodoroActivityAttributes.ContentState,
+        @ViewBuilder content: @escaping (ActiveSegmentState) -> Content
+    ) {
+        self.state = state
+        self.content = content
+    }
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 1)) { timelineContext in
+            let activeSegment = resolveActiveSegment(
+                for: state,
+                referenceDate: timelineContext.date
+            )
+            content(activeSegment)
+        }
+    }
+}
+
+@available(iOS 16.2, *)
+private func resolveActiveSegment(
+    for state: PomodoroActivityAttributes.ContentState,
+    referenceDate: Date
+) -> ActiveSegmentState {
+    guard !state.isPaused, !state.segmentSchedule.isEmpty else {
+        return ActiveSegmentState(
+            type: state.segmentType,
+            cycleNumber: state.cycleNumber,
+            remainingSeconds: state.remainingSeconds,
+            totalSeconds: state.totalSeconds,
+            targetEndTime: state.targetEndTime,
+            isPaused: state.isPaused
+        )
+    }
+
+    let elapsedSinceGenerated = Int(referenceDate.timeIntervalSince(state.scheduleGeneratedAt))
+
+    for item in state.segmentSchedule {
+        let rawElapsed = elapsedSinceGenerated - item.startOffsetSeconds
+        let segmentElapsed = max(rawElapsed, 0)
+        if segmentElapsed < item.totalSeconds {
+            let remaining = max(0, item.totalSeconds - segmentElapsed)
+            let segmentStart = state.scheduleGeneratedAt.addingTimeInterval(
+                TimeInterval(item.startOffsetSeconds)
+            )
+            let targetEnd = segmentStart.addingTimeInterval(TimeInterval(item.totalSeconds))
+            return ActiveSegmentState(
+                type: item.type,
+                cycleNumber: item.cycleNumber,
+                remainingSeconds: remaining,
+                totalSeconds: item.totalSeconds,
+                targetEndTime: targetEnd,
+                isPaused: state.isPaused
+            )
+        }
+    }
+
+    return ActiveSegmentState(
+        type: "completed",
+        cycleNumber: state.totalCycles,
+        remainingSeconds: 0,
+        totalSeconds: 1,
+        targetEndTime: referenceDate,
+        isPaused: state.isPaused
+    )
 }
 
 // MARK: - Widget Bundle Registration

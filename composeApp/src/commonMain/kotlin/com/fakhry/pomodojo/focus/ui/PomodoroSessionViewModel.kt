@@ -19,7 +19,6 @@ import com.fakhry.pomodojo.utils.DispatcherProvider
 import com.fakhry.pomodojo.utils.formatDurationMillis
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,6 +27,9 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
+
+private const val TICK_INTERVAL_MILLIS = 1_000L
+private const val TICK_UPDATE_NOTIF_INTERVAL_MILLIS = 5_000L
 
 class PomodoroSessionViewModel(
     private val currentTimeProvider: CurrentTimeProvider = SystemCurrentTimeProvider,
@@ -48,8 +50,7 @@ class PomodoroSessionViewModel(
     private var timelineSegments: MutableList<TimelineSegmentUi> = mutableListOf()
     private var activeSegmentIndex: Int = 0
     private var tickerJob: Job? = null
-
-    private val tickIntervalMillis = 1_000L
+    private var lastUpdatedNotif = 0L
 
     init {
         getAlwaysOnDisplayState()
@@ -135,7 +136,7 @@ class PomodoroSessionViewModel(
             val prepared = prepareSession(session, now)
 
             reduce { prepared.uiState }
-            async { updateNotification() }
+            updateNotification()
 
             if (prepared.uiState.isComplete) {
                 stopTicker()
@@ -182,7 +183,7 @@ class PomodoroSessionViewModel(
         if (active.timerStatus != TimerStatusDomain.RUNNING) return
         tickerJob = viewModelScope.launch(dispatcher.computation) {
             while (isActive) {
-                delay(tickIntervalMillis)
+                delay(TICK_INTERVAL_MILLIS)
                 handleTick()
             }
         }
@@ -229,6 +230,7 @@ class PomodoroSessionViewModel(
                 timelineSegments[activeSegmentIndex] = updatedSegment
             }
 
+            updateNotification()
             reduce { state.withUpdatedTimeline(updatedSegment) }
             if (advancedSegment) {
                 persistActiveSnapshotIfNeeded()
@@ -407,13 +409,16 @@ class PomodoroSessionViewModel(
         )
     }
 
-    private suspend fun updateNotification() {
+    private fun updateNotification() = viewModelScope.launch(dispatcher.main) {
+        val now = currentTimeProvider.now()
+        if (now - lastUpdatedNotif <= TICK_UPDATE_NOTIF_INTERVAL_MILLIS) return@launch
         val currentState = container.stateFlow.value
         if (currentState.isComplete) {
             focusSessionNotifier.cancel(currentState.startedAtEpochMs.toString())
-            return
+            return@launch
         }
         buildSessionSnapshot(currentState)?.let { focusSessionNotifier.schedule(it) }
+        lastUpdatedNotif = now
     }
 
     private data class PreparedSession(
