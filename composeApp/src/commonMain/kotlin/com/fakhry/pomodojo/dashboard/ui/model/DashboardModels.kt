@@ -50,7 +50,7 @@ val previewDashboardState =
         timerMinutes = 25,
         historySection =
         HistorySectionUi(
-            focusMinutesThisYear = 512,
+            focusMinutesThisYear = "512",
             selectedYear = 2025,
             availableYears = persistentListOf(2025, 2024, 2023),
             cells =

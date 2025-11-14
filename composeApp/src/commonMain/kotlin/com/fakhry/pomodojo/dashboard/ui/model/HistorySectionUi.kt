@@ -6,7 +6,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 data class HistorySectionUi(
-    val focusMinutesThisYear: Int = 0,
+    val focusMinutesThisYear: String = "0",
     val selectedYear: Int = 0,
     val availableYears: ImmutableList<Int> = persistentListOf(),
     val cells: ImmutableList<ImmutableList<HistoryCell>> = persistentListOf(),

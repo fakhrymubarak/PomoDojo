@@ -13,6 +13,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
+import kotlin.math.absoluteValue
 
 fun PomodoroHistoryDomain.mapToHistorySectionUi(
     selectedYear: Int,
@@ -22,7 +23,7 @@ fun PomodoroHistoryDomain.mapToHistorySectionUi(
     val historyCells = buildHistoryCells(parsedEntries, selectedYear, currentDate)
 
     return HistorySectionUi(
-        focusMinutesThisYear = focusMinutesThisYear,
+        focusMinutesThisYear = formatNumberWithSeparator(focusMinutesThisYear),
         selectedYear = selectedYear,
         availableYears = availableYears.toPersistentList(),
         cells = historyCells,
@@ -169,3 +170,20 @@ private fun String.toLocalDateOrNull(): LocalDate? {
 }
 
 private fun Month.toLabel(): String = name.take(3).lowercase().replaceFirstChar { it.uppercase() }
+
+/**
+ * Formats a number with locale-appropriate thousands separators.
+ * Uses comma (,) for most locales and period (.) for European locales.
+ */
+private fun formatNumberWithSeparator(number: Int): String {
+    val separator = runCatching { platformThousandsSeparator() }.getOrDefault(',')
+    val digits = number.toLong().absoluteValue.toString()
+    if (digits.length <= 3) {
+        return if (number < 0) "-$digits" else digits
+    }
+
+    val groupedDigits = digits.reversed().chunked(3).joinToString(separator.toString()).reversed()
+    return if (number < 0) "-$groupedDigits" else groupedDigits
+}
+
+internal expect fun platformThousandsSeparator(): Char

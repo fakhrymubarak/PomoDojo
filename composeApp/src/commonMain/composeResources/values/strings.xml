@@ -4,7 +4,7 @@
     <string name="dashboard_header_title">PomoDojo</string>
     <string name="dashboard_header_content_description">PomoDojo Dashboard</string>
     <string name="dashboard_open_settings_content_description">Open settings</string>
-    <string name="focus_history_total_minutes">%1$d minutes of focus in the last year</string>
+    <string name="focus_history_total_minutes">%1$s minutes of focus in %2$d</string>
     <string name="focus_history_selected_year_description">Viewing activity for %1$d</string>
     <string name="focus_history_switch_year_description">Switch to activity from %1$d</string>
     <string name="focus_history_graph_content_description">Focus history activity graph for %1$d</string>

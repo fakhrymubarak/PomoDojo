@@ -81,7 +81,10 @@ fun PomodoroHistorySection(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        StatisticsCard(totalMinutes = historyState.focusMinutesThisYear)
+        StatisticsCard(
+            totalMinutes = historyState.focusMinutesThisYear,
+            selectedYear = historyState.selectedYear,
+        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -105,8 +108,9 @@ fun PomodoroHistorySection(
 }
 
 @Composable
-private fun StatisticsCard(totalMinutes: Int) {
-    val totalMinutesText = stringResource(Res.string.focus_history_total_minutes, totalMinutes)
+private fun StatisticsCard(totalMinutes: String, selectedYear: Int) {
+    val totalMinutesText =
+        stringResource(Res.string.focus_history_total_minutes, totalMinutes, selectedYear)
     Text(
         text = totalMinutesText,
         style = MaterialTheme.typography.bodyMedium.copy(
