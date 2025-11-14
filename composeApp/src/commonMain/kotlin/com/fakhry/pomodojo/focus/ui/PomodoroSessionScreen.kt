@@ -80,7 +80,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Suppress("NonSkippableComposable")
 @Composable
 fun PomodoroSessionScreen(
-    onSessionCompleted: () -> Unit,
+    onSessionCompleted: (PomodoroCompletionUiState) -> Unit,
     viewModel: PomodoroSessionViewModel = koinViewModel(),
 ) {
     var showEndDialog by rememberSaveable { mutableStateOf(false) }
@@ -94,7 +94,10 @@ fun PomodoroSessionScreen(
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            PomodoroSessionSideEffect.OnSessionComplete -> onSessionCompleted()
+            PomodoroSessionSideEffect.OnSessionComplete -> {
+                val completionSummary = viewModel.container.stateFlow.value.toCompletionSummary()
+                onSessionCompleted(completionSummary)
+            }
             is PomodoroSessionSideEffect.ShowEndSessionDialog -> showEndDialog = sideEffect.isShown
         }
     }
@@ -305,25 +308,32 @@ private fun FocusConfirmDialog(onConfirmFinish: () -> Unit, onDismiss: () -> Uni
 }
 
 @Composable
-private fun FocusCompletedState(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "Focus complete!",
-            style = MaterialTheme.typography.headlineMedium.copy(
-                color = MaterialTheme.colorScheme.onBackground,
-            ),
-        )
-    }
-}
-
-@Composable
 fun focusPhaseLabel(phase: TimerType) = when (phase) {
     TimerType.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
     TimerType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
     TimerType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
+}
+
+private const val MILLIS_PER_MINUTE = 60_000L
+
+private fun PomodoroSessionUiState.toCompletionSummary(): PomodoroCompletionUiState {
+    var focusMillis = 0L
+    var breakMillis = 0L
+
+    timeline.segments.forEach { segment ->
+        when (segment.type) {
+            TimerType.FOCUS -> focusMillis += segment.timer.durationEpochMs
+            TimerType.SHORT_BREAK, TimerType.LONG_BREAK ->
+                breakMillis +=
+                    segment.timer.durationEpochMs
+        }
+    }
+
+    return PomodoroCompletionUiState(
+        totalCyclesFinished = totalCycle,
+        totalFocusMinutes = (focusMillis / MILLIS_PER_MINUTE).toInt(),
+        totalBreakMinutes = (breakMillis / MILLIS_PER_MINUTE).toInt(),
+    )
 }
 
 @Preview
