@@ -203,6 +203,7 @@ class PomodoroSessionViewModel(
             val now = currentTimeProvider.now()
             var updatedSegment = updateRunningSegment(active, now)
             timelineSegments[activeSegmentIndex] = updatedSegment
+            updateNotification()
 
             var advancedSegment = false
             while (updatedSegment.timerStatus == TimerStatusDomain.COMPLETED) {
@@ -230,7 +231,6 @@ class PomodoroSessionViewModel(
                 timelineSegments[activeSegmentIndex] = updatedSegment
             }
 
-            updateNotification()
             reduce { state.withUpdatedTimeline(updatedSegment) }
             if (advancedSegment) {
                 persistActiveSnapshotIfNeeded()
@@ -418,8 +418,8 @@ class PomodoroSessionViewModel(
 
         // Update notification after
         val now = currentTimeProvider.now()
-        val isUpdateIntervalTooShort = now - lastUpdatedNotif <= TICK_UPDATE_NOTIF_INTERVAL_MILLIS
-        if (isUpdateIntervalTooShort) return@launch
+        val isUpdateToEarly = now - lastUpdatedNotif <= TICK_UPDATE_NOTIF_INTERVAL_MILLIS
+        if (isUpdateToEarly) return@launch
         buildSessionSnapshot(currentState)?.let { focusSessionNotifier.schedule(it) }
         lastUpdatedNotif = now
     }
