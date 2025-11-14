@@ -121,7 +121,7 @@ class DashboardViewModelTest {
 
         val historyState = viewModel.historyState.value
         assertEquals(2024, historyState.selectedYear)
-        assertEquals(250, historyState.focusMinutesThisYear)
+        assertEquals("250", historyState.focusMinutesThisYear)
         assertEquals(listOf(2024, 2023), historyState.availableYears)
         assertTrue(historyState.cells.isNotEmpty())
     }
@@ -146,7 +146,7 @@ class DashboardViewModelTest {
 
         val historyState = viewModel.historyState.value
         assertEquals(0, historyState.selectedYear)
-        assertEquals(0, historyState.focusMinutesThisYear)
+        assertEquals("0", historyState.focusMinutesThisYear)
         assertTrue(historyState.availableYears.isEmpty())
     }
 
@@ -183,13 +183,13 @@ class DashboardViewModelTest {
         advanceUntilIdle()
 
         assertEquals(2024, viewModel.historyState.value.selectedYear)
-        assertEquals(250, viewModel.historyState.value.focusMinutesThisYear)
+        assertEquals("250", viewModel.historyState.value.focusMinutesThisYear)
 
         viewModel.selectYear(2023)
         advanceUntilIdle()
 
         assertEquals(2023, viewModel.historyState.value.selectedYear)
-        assertEquals(180, viewModel.historyState.value.focusMinutesThisYear)
+        assertEquals("180", viewModel.historyState.value.focusMinutesThisYear)
     }
 
     @Test

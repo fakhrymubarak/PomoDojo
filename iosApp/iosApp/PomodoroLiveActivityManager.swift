@@ -6,11 +6,18 @@ import Foundation
     private var currentActivity: Activity<PomodoroActivityAttributes>?
     private var currentSessionId: String?
     private var currentQuote: String?
+    private let storage = UserDefaults.standard
+    private let sessionKey = "PomodoroLiveActivity.sessionId"
+    private let quoteKey = "PomodoroLiveActivity.quote"
+    private let activityIdKey = "PomodoroLiveActivity.activityId"
 
     @objc public static let shared = PomodoroLiveActivityManager()
 
     private override init() {
         super.init()
+        currentSessionId = storage.string(forKey: sessionKey)
+        currentQuote = storage.string(forKey: quoteKey)
+        restoreExistingActivityIfNeeded()
     }
 
     // Start a new Live Activity
@@ -57,13 +64,14 @@ import Foundation
         )
 
         do {
-            currentActivity = try Activity.request(
+            let activity = try Activity.request(
                 attributes: attributes,
                 content: .init(state: contentState, staleDate: nil),
                 pushType: nil
             )
+            adoptActivity(activity, sessionId: sessionId, quote: quote)
             print("✅ PomodoroLiveActivityManager: Live Activity started successfully!")
-            print("   Activity ID: \(currentActivity?.id ?? "nil")")
+            print("   Activity ID: \(activity.id)")
         } catch {
             print("❌ PomodoroLiveActivityManager: Failed to start Live Activity")
             print("   Error: \(error.localizedDescription)")
@@ -81,7 +89,7 @@ import Foundation
         isPaused: Bool
     ) {
         // If no active activity, try to restart it using stored session info
-        guard let activity = currentActivity else {
+        guard let activity = resolveActiveActivity() else {
             print("⚠️ PomodoroLiveActivityManager: No active Live Activity, attempting to restart...")
 
             // Try to restart if we have session info
@@ -117,13 +125,15 @@ import Foundation
 
         Task {
             await activity.update(.init(state: updatedState, staleDate: nil))
+            adoptActivity(activity)
             print("PomodoroLiveActivityManager: Live Activity updated")
         }
     }
 
     // End the Live Activity
     @objc public func endLiveActivity() {
-        guard let activity = currentActivity else {
+        guard let activity = resolveActiveActivity() else {
+            clearStoredSession()
             return
         }
 
@@ -132,6 +142,7 @@ import Foundation
             currentActivity = nil
             currentSessionId = nil
             currentQuote = nil
+            clearStoredSession()
             print("PomodoroLiveActivityManager: Live Activity ended")
         }
     }
@@ -142,7 +153,8 @@ import Foundation
         totalFocusMinutes: Int,
         totalBreakMinutes: Int
     ) {
-        guard let activity = currentActivity else {
+        guard let activity = resolveActiveActivity() else {
+            clearStoredSession()
             return
         }
 
@@ -164,6 +176,7 @@ import Foundation
             currentActivity = nil
             currentSessionId = nil
             currentQuote = nil
+            clearStoredSession()
             print("PomodoroLiveActivityManager: Live Activity ended with completion")
         }
     }
@@ -174,5 +187,69 @@ import Foundation
             return ActivityAuthorizationInfo().areActivitiesEnabled
         }
         return false
+    }
+
+    private var storedActivityId: String? {
+        storage.string(forKey: activityIdKey)
+    }
+
+    private func adoptActivity(
+        _ activity: Activity<PomodoroActivityAttributes>,
+        sessionId: String? = nil,
+        quote: String? = nil
+    ) {
+        currentActivity = activity
+        let resolvedSessionId = sessionId ?? activity.attributes.sessionId
+        let resolvedQuote = quote ?? activity.attributes.quote
+        currentSessionId = resolvedSessionId
+        currentQuote = resolvedQuote
+        persistSession(sessionId: resolvedSessionId, quote: resolvedQuote, activityId: activity.id)
+    }
+
+    private func resolveActiveActivity() -> Activity<PomodoroActivityAttributes>? {
+        if let activity = currentActivity {
+            return activity
+        }
+
+        if let targetId = storedActivityId,
+           let storedActivity = Activity<PomodoroActivityAttributes>.activities.first(where: { $0.id == targetId }) {
+            adoptActivity(storedActivity)
+            return storedActivity
+        }
+
+        if let firstActivity = Activity<PomodoroActivityAttributes>.activities.first {
+            adoptActivity(firstActivity)
+            return firstActivity
+        }
+
+        return nil
+    }
+
+    private func restoreExistingActivityIfNeeded() {
+        _ = resolveActiveActivity()
+    }
+
+    private func persistSession(sessionId: String?, quote: String?, activityId: String?) {
+        if let sessionId {
+            storage.set(sessionId, forKey: sessionKey)
+        } else {
+            storage.removeObject(forKey: sessionKey)
+        }
+
+        if let quote {
+            storage.set(quote, forKey: quoteKey)
+        } else {
+            storage.removeObject(forKey: quoteKey)
+        }
+
+        if let activityId {
+            storage.set(activityId, forKey: activityIdKey)
+        } else {
+            storage.removeObject(forKey: activityIdKey)
+        }
+    }
+
+    private func clearStoredSession() {
+        persistSession(sessionId: nil, quote: nil, activityId: nil)
     }
 }
