@@ -3,6 +3,7 @@ package com.fakhry.pomodojo.focus.domain.usecase
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AVFAudio.AVAudioPlayer
 import platform.Foundation.NSBundle
+import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 
 actual fun provideSegmentCompletionSoundPlayer(): SegmentCompletionSoundPlayer =
@@ -21,10 +22,39 @@ private class IosSegmentCompletionSoundPlayer : SegmentCompletionSoundPlayer {
 
     @OptIn(ExperimentalForeignApi::class)
     private fun loadPlayer(): AVAudioPlayer? {
-        val path = NSBundle.mainBundle.pathForResource("timer_notification", "wav") ?: return null
+        val path = resolveSoundPath() ?: return null
         val url = NSURL.fileURLWithPath(path = path)
         val audioPlayer = AVAudioPlayer(contentsOfURL = url, error = null)
         audioPlayer.prepareToPlay()
         return audioPlayer
+    }
+
+    @OptIn(ExperimentalForeignApi::class)
+    private fun resolveSoundPath(): String? {
+        val bundle = NSBundle.mainBundle
+        val soundName = "timer_notification"
+        val soundType = "wav"
+
+        val directPath = bundle.pathForResource(soundName, soundType)
+        if (directPath != null) return directPath
+
+        val composeResourcesPath =
+            bundle.pathForResource(soundName, soundType, "compose-resources")
+        if (composeResourcesPath != null) return composeResourcesPath
+
+        val nestedComposeResourcesPath =
+            bundle.pathForResource(soundName, soundType, "compose-resources/composeResources")
+        if (nestedComposeResourcesPath != null) return nestedComposeResourcesPath
+
+        val bundleResourcePath =
+            bundle.resourcePath?.let { "$it/compose-resources/$soundName.$soundType" }
+        if (
+            bundleResourcePath != null &&
+            NSFileManager.defaultManager.fileExistsAtPath(bundleResourcePath)
+        ) {
+            return bundleResourcePath
+        }
+
+        return null
     }
 }
