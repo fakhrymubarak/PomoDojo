@@ -1,8 +1,11 @@
 package com.fakhry.pomodojo.dashboard.ui.mapper
 
-import platform.Foundation.NSLocale
+import platform.Foundation.NSNumberFormatter
+import platform.Foundation.NSNumberFormatterDecimalStyle
 
 internal actual fun platformThousandsSeparator(): Char {
-    val groupingSeparator = NSLocale.currentLocale.groupingSeparator
-    return groupingSeparator?.firstOrNull() ?: ','
+    val formatter = NSNumberFormatter()
+    formatter.numberStyle = NSNumberFormatterDecimalStyle
+    val groupingSeparator = formatter.groupingSeparator
+    return groupingSeparator.firstOrNull() ?: ','
 }
