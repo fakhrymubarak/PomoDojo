@@ -27,10 +27,9 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
     private val notificationCenter = UNUserNotificationCenter.currentNotificationCenter()
 
     override suspend fun schedule(snapshot: PomodoroSessionDomain) {
-        // Check if Live Activity is supported
-        if (!LiveActivityManager.isSupported()) {
-            println("IosFocusSessionNotifier: Live Activities not supported")
-            return
+        val isLiveActivitySupported = LiveActivityManager.isSupported()
+        if (!isLiveActivitySupported) {
+            println("IosFocusSessionNotifier: LiveActivities not supported, fallback to notifs")
         }
 
         val now = Clock.System.now().toEpochMilliseconds()
@@ -41,11 +40,13 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
         // Check if all segments are completed
         if (summary.isAllSegmentsCompleted) {
             val completionSummary = snapshot.toCompletionSummary()
-            LiveActivityManager.endLiveActivityWithCompletion(
-                completedCycles = completionSummary.completedCycles,
-                totalFocusMinutes = completionSummary.totalFocusMinutes,
-                totalBreakMinutes = completionSummary.totalBreakMinutes,
-            )
+            if (isLiveActivitySupported) {
+                LiveActivityManager.endLiveActivityWithCompletion(
+                    completedCycles = completionSummary.completedCycles,
+                    totalFocusMinutes = completionSummary.totalFocusMinutes,
+                    totalBreakMinutes = completionSummary.totalBreakMinutes,
+                )
+            }
             activeLiveActivitySessionId = null
             scheduleCompletionNotification(completionSummary)
             return
@@ -78,6 +79,8 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
         }
 
         // Start or update Live Activity
+        if (!isLiveActivitySupported) return
+
         try {
             // For the first segment of the session, start the Live Activity
             // Otherwise, update the existing Live Activity
