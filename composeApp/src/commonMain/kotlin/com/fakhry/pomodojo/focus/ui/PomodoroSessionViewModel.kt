@@ -136,6 +136,7 @@ class PomodoroSessionViewModel(
             val prepared = prepareSession(session, now)
 
             reduce { prepared.uiState }
+            resetNotificationThrottle()
             updateNotification()
 
             if (prepared.uiState.isComplete) {
@@ -393,6 +394,7 @@ class PomodoroSessionViewModel(
             historyRepository.insertHistory(it)
             focusSessionNotifier.cancel(it.sessionId())
         }
+        resetNotificationThrottle()
     }
 
     private fun buildSessionSnapshot(currentState: PomodoroSessionUiState): PomodoroSessionDomain? {
@@ -413,6 +415,7 @@ class PomodoroSessionViewModel(
         val currentState = container.stateFlow.value
         if (currentState.isComplete) {
             focusSessionNotifier.cancel(currentState.startedAtEpochMs.toString())
+            resetNotificationThrottle()
             return@launch
         }
 
@@ -422,6 +425,10 @@ class PomodoroSessionViewModel(
         if (isUpdateToEarly) return@launch
         buildSessionSnapshot(currentState)?.let { focusSessionNotifier.schedule(it) }
         lastUpdatedNotif = now
+    }
+
+    private fun resetNotificationThrottle() {
+        lastUpdatedNotif = 0L
     }
 
     private data class PreparedSession(
