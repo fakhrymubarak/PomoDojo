@@ -14,9 +14,12 @@ struct iOSApp: App {
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-        // Set notification delegate to handle foreground notifications
-        UNUserNotificationCenter.current().delegate = self
+        configureNotificationCenter()
         return true
+    }
+
+    private func configureNotificationCenter() {
+        UNUserNotificationCenter.current().delegate = self
     }
 
     // Handle notification when app is in foreground
