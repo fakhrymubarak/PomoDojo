@@ -410,13 +410,16 @@ class PomodoroSessionViewModel(
     }
 
     private fun updateNotification() = viewModelScope.launch(dispatcher.main) {
-        val now = currentTimeProvider.now()
-        if (now - lastUpdatedNotif <= TICK_UPDATE_NOTIF_INTERVAL_MILLIS) return@launch
         val currentState = container.stateFlow.value
         if (currentState.isComplete) {
             focusSessionNotifier.cancel(currentState.startedAtEpochMs.toString())
             return@launch
         }
+
+        // Update notification after
+        val now = currentTimeProvider.now()
+        val isUpdateIntervalTooShort = now - lastUpdatedNotif <= TICK_UPDATE_NOTIF_INTERVAL_MILLIS
+        if (isUpdateIntervalTooShort) return@launch
         buildSessionSnapshot(currentState)?.let { focusSessionNotifier.schedule(it) }
         lastUpdatedNotif = now
     }
