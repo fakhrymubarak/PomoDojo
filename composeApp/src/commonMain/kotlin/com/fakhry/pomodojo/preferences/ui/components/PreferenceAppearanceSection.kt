@@ -104,6 +104,8 @@ private fun PreferenceToggleRow(label: String, checked: Boolean, onToggle: (Bool
             colors = SwitchDefaults.colors(
                 checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
                 checkedTrackColor = MaterialTheme.colorScheme.primary,
+                uncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                uncheckedTrackColor = MaterialTheme.colorScheme.outline,
             ),
         )
     }
