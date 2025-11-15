@@ -129,48 +129,52 @@ private fun processSessionCompletion(
     while (currentIndex <= segments.lastIndex) {
         val currentSegment = segments[currentIndex]
 
-        // Check if current segment is completed
-        if (currentSegment.timerStatus == TimerStatusDomain.RUNNING) {
-            val remaining = (currentSegment.timer.finishedInMillis - now).coerceAtLeast(0L)
-            if (remaining == 0L) {
+        val shouldAdvance = when (currentSegment.timerStatus) {
+            TimerStatusDomain.RUNNING -> {
+                val remaining = (currentSegment.timer.finishedInMillis - now).coerceAtLeast(0L)
+                if (remaining == 0L) {
+                    Log.i(
+                        TAG,
+                        "processSessionCompletion: segment $currentIndex completed, advancing to next",
+                    )
+                    segments[currentIndex] = finalizeSegment(currentSegment)
+                    modified = true
+                    true
+                } else {
+                    false
+                }
+            }
+
+            TimerStatusDomain.COMPLETED -> {
                 Log.i(
                     TAG,
-                    "processSessionCompletion: segment $currentIndex completed, advancing to next",
+                    "processSessionCompletion: segment $currentIndex already completed, advancing to next",
                 )
-                // Segment is complete, finalize it
-                segments[currentIndex] = finalizeSegment(currentSegment)
-                modified = true
-
-                // Try to advance to the next segment
-                if (currentIndex < segments.lastIndex) {
-                    val nextStartAt =
-                        currentSegment.timer.finishedInMillis.takeIf { it > 0L } ?: now
-                    val nextSegment = prepareSegmentForRun(
-                        segments[currentIndex + 1],
-                        startedAt = nextStartAt,
-                        referenceTime = now,
-                    )
-                    segments[currentIndex + 1] = nextSegment
-                    Log.i(TAG, "processSessionCompletion: started segment ${currentIndex + 1}")
-
-                    // If the next segment is already completed (overdue), continue the loop
-                    if (nextSegment.timerStatus == TimerStatusDomain.COMPLETED) {
-                        currentIndex++
-                        continue
-                    } else {
-                        // Found a segment that's still running, we're done
-                        break
-                    }
-                } else {
-                    // No more segments, we're done
-                    break
-                }
-            } else {
-                // Current segment is still running, we're done
-                break
+                true
             }
+
+            else -> false
+        }
+
+        if (!shouldAdvance || currentIndex >= segments.lastIndex) break
+
+        // Try to advance to the next segment
+        val nextStartAt = currentSegment.timer.finishedInMillis.takeIf { it > 0L } ?: now
+        val nextSegment = prepareSegmentForRun(
+            segments[currentIndex + 1],
+            startedAt = nextStartAt,
+            referenceTime = now,
+        )
+        segments[currentIndex + 1] = nextSegment
+        modified = true
+        Log.i(TAG, "processSessionCompletion: started segment ${currentIndex + 1}")
+
+        // If the next segment is already completed (overdue), continue the loop
+        if (nextSegment.timerStatus == TimerStatusDomain.COMPLETED) {
+            currentIndex++
+            continue
         } else {
-            // Current segment is not running (paused or already completed), we're done
+            // Found a segment that's still running, we're done
             break
         }
     }
