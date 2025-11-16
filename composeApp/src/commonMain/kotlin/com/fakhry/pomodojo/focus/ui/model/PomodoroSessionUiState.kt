@@ -19,6 +19,7 @@ data class PomodoroSessionUiState(
 
 sealed class PomodoroSessionSideEffect {
     data class ShowEndSessionDialog(val isShown: Boolean) : PomodoroSessionSideEffect()
-
-    object OnSessionComplete : PomodoroSessionSideEffect()
+    data class OnSessionComplete(
+        val completionResult: PomodoroCompletionUiState,
+    ) : PomodoroSessionSideEffect()
 }

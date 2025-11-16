@@ -12,6 +12,7 @@ import com.fakhry.pomodojo.focus.domain.usecase.SegmentCompletionSoundPlayer
 import com.fakhry.pomodojo.focus.domain.usecase.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.focus.ui.mapper.calculateTimerProgress
 import com.fakhry.pomodojo.focus.ui.mapper.resolveActiveIndex
+import com.fakhry.pomodojo.focus.ui.mapper.toCompletionSummary
 import com.fakhry.pomodojo.focus.ui.mapper.toDomainSegment
 import com.fakhry.pomodojo.focus.ui.mapper.toTimelineSegmentUi
 import com.fakhry.pomodojo.focus.ui.mapper.toUiState
@@ -124,7 +125,8 @@ class PomodoroSessionViewModel(
             )
         }
         postSideEffect(PomodoroSessionSideEffect.ShowEndSessionDialog(false))
-        postSideEffect(PomodoroSessionSideEffect.OnSessionComplete)
+        val completionSummary = state.toCompletionSummary()
+        postSideEffect(PomodoroSessionSideEffect.OnSessionComplete(completionSummary))
         completeActiveSession()
     }
 
@@ -148,7 +150,8 @@ class PomodoroSessionViewModel(
             if (prepared.uiState.isComplete) {
                 stopTicker()
                 completeActiveSession()
-                postSideEffect(PomodoroSessionSideEffect.OnSessionComplete)
+                val completionSummary = state.toCompletionSummary()
+                postSideEffect(PomodoroSessionSideEffect.OnSessionComplete(completionSummary))
                 return@launch
             }
             if (prepared.didMutateTimeline || hasStoredSession) {
@@ -229,7 +232,8 @@ class PomodoroSessionViewModel(
                     }
                     stopTicker()
                     completeActiveSession()
-                    postSideEffect(PomodoroSessionSideEffect.OnSessionComplete)
+                    val completionSummary = state.toCompletionSummary()
+                    postSideEffect(PomodoroSessionSideEffect.OnSessionComplete(completionSummary))
                     return@intent
                 }
 

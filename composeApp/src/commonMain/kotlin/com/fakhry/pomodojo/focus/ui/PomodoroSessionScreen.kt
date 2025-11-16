@@ -98,9 +98,8 @@ fun PomodoroSessionScreen(
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            PomodoroSessionSideEffect.OnSessionComplete -> {
-                val completionSummary = viewModel.container.stateFlow.value.toCompletionSummary()
-                onSessionCompleted(completionSummary)
+            is PomodoroSessionSideEffect.OnSessionComplete -> {
+                onSessionCompleted(sideEffect.completionResult)
             }
             is PomodoroSessionSideEffect.ShowEndSessionDialog -> showEndDialog = sideEffect.isShown
         }
@@ -316,28 +315,6 @@ fun focusPhaseLabel(phase: TimerType) = when (phase) {
     TimerType.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
     TimerType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
     TimerType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
-}
-
-private const val MILLIS_PER_MINUTE = 60_000L
-
-private fun PomodoroSessionUiState.toCompletionSummary(): PomodoroCompletionUiState {
-    var focusMillis = 0L
-    var breakMillis = 0L
-
-    timeline.segments.forEach { segment ->
-        when (segment.type) {
-            TimerType.FOCUS -> focusMillis += segment.timer.durationEpochMs
-            TimerType.SHORT_BREAK, TimerType.LONG_BREAK ->
-                breakMillis +=
-                    segment.timer.durationEpochMs
-        }
-    }
-
-    return PomodoroCompletionUiState(
-        totalCyclesFinished = totalCycle,
-        totalFocusMinutes = (focusMillis / MILLIS_PER_MINUTE).toInt(),
-        totalBreakMinutes = (breakMillis / MILLIS_PER_MINUTE).toInt(),
-    )
 }
 
 @Preview
