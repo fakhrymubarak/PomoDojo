@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -18,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +31,7 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.minutes
 import com.fakhry.pomodojo.generated.resources.pomodoro_complete_break_label
@@ -51,13 +50,6 @@ import kotlin.math.PI
 import kotlin.math.sin
 import kotlin.random.Random
 
-@Immutable
-data class PomodoroCompletionUiState(
-    val totalCyclesFinished: Int = 0,
-    val totalFocusMinutes: Int = 0,
-    val totalBreakMinutes: Int = 0,
-)
-
 @Composable
 fun PomodoroCompleteScreen(
     uiState: PomodoroCompletionUiState,
@@ -70,43 +62,61 @@ fun PomodoroCompleteScreen(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            CompletionHeader(totalCycles = uiState.totalCyclesFinished)
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = 24.dp, vertical = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize()) {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(horizontal = 24.dp, vertical = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    CelebrationCard(message = celebration)
-                    CompletionStatsCard(uiState = uiState)
-                }
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = celebration.headline,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold,
+                            ),
+                        )
+                        Text(
+                            text = celebration.subtitle,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            ),
+                        )
 
-                Button(
-                    onClick = onStartAnotherSession,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-                ) {
-                    Text(
-                        text = stringResource(Res.string.pomodoro_complete_start_another),
-                        style = MaterialTheme.typography.labelLarge.copy(
-                            fontWeight = FontWeight.Bold,
+                        CompletionStatsCard(uiState = uiState)
+                    }
+
+                    Button(
+                        onClick = onStartAnotherSession,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
                         ),
-                        modifier = Modifier.padding(vertical = 4.dp),
-                    )
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.pomodoro_complete_start_another),
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                            ),
+                            modifier = Modifier.padding(vertical = 4.dp),
+                        )
+                    }
                 }
             }
+
+            ConfettiBurst(modifier = Modifier.matchParentSize())
         }
     }
 }
@@ -140,47 +150,6 @@ private fun CompletionHeader(totalCycles: Int, modifier: Modifier = Modifier) {
                     color = MaterialTheme.colorScheme.onSecondary,
                 ),
             )
-        }
-    }
-}
-
-@Composable
-private fun CelebrationCard(message: CelebrationMessage, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant,
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            ConfettiBurst(modifier = Modifier.matchParentSize())
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(
-                    text = message.headline,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold,
-                    ),
-                )
-                Text(
-                    text = message.subtitle,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ),
-                )
-            }
         }
     }
 }
@@ -277,7 +246,10 @@ private val celebrationMessages = listOf(
     ),
 )
 
-private const val CONFETTI_COUNT = 28
+private const val CONFETTI_COUNT = 50
+private const val CONFETTI_EMISSION_DURATION_SECONDS = 5f
+private const val CONFETTI_ANIMATION_TOTAL_SECONDS =
+    CONFETTI_EMISSION_DURATION_SECONDS + 3f
 
 private data class ConfettiPiece(
     val startXFraction: Float,
@@ -288,7 +260,8 @@ private data class ConfettiPiece(
     val fallSpeedMultiplier: Float,
     val horizontalDrift: Float,
     val horizontalFrequency: Float,
-    val timeOffset: Float,
+    val startDelaySeconds: Float,
+    val wavePhase: Float,
     val color: Color,
 )
 
@@ -310,22 +283,25 @@ private fun ConfettiBurst(modifier: Modifier = Modifier) {
 
     Canvas(modifier = modifier) {
         pieces.forEach { piece ->
-            val fallProgress =
-                ((animationTimeSeconds * piece.fallSpeedMultiplier) + piece.timeOffset)
-                    .wrapToUnitInterval()
+            val timeSinceStart = animationTimeSeconds - piece.startDelaySeconds
+            if (timeSinceStart < 0f) {
+                return@forEach
+            }
+            val fallProgress = timeSinceStart * piece.fallSpeedMultiplier
             val verticalFraction = (fallProgress * 1.2f) - 0.1f
-            val swayOffset = (
-                sin(
-                    (fallProgress + piece.timeOffset) *
-                        piece.horizontalFrequency *
-                        2f * PI,
-                ).toFloat() * piece.horizontalDrift
-                )
-            val horizontalFraction = (piece.startXFraction + swayOffset).wrapToUnitInterval()
-            val rotation = piece.baseRotation + (animationTimeSeconds * piece.rotationSpeed)
+            if (verticalFraction > 1.1f) {
+                return@forEach
+            }
+
+            val swayAngle =
+                (fallProgress + piece.wavePhase) * piece.horizontalFrequency * 2f * PI
+            val horizontalFraction = (
+                piece.startXFraction + (sin(swayAngle).toFloat() * piece.horizontalDrift)
+                ).coerceIn(0f, 1f)
+            val rotation = piece.baseRotation + (timeSinceStart * piece.rotationSpeed)
 
             val pivot = Offset(horizontalFraction * size.width, verticalFraction * size.height)
-            val width = piece.widthFraction * size.width
+            val width = piece.widthFraction * size.width * 0.5f
             val height = piece.heightFraction * size.height
             withTransform({
                 rotate(degrees = rotation, pivot = pivot)
@@ -356,7 +332,8 @@ private fun generateConfettiPieces(
         fallSpeedMultiplier = random.nextFloat().times(0.6f) + 0.7f,
         horizontalDrift = random.nextFloat().times(0.15f) + 0.02f,
         horizontalFrequency = random.nextFloat().times(1.2f) + 0.6f,
-        timeOffset = random.nextFloat(),
+        startDelaySeconds = random.nextFloat() * CONFETTI_EMISSION_DURATION_SECONDS,
+        wavePhase = random.nextFloat() * (2f * PI).toFloat(),
         color = colors[random.nextInt(colors.size)],
     )
 }
@@ -366,20 +343,16 @@ private fun rememberConfettiAnimationTime(): Float {
     val elapsedSeconds = remember { mutableFloatStateOf(0f) }
     LaunchedEffect(Unit) {
         var previousFrameTime = withFrameNanos { it }
-        while (true) {
+        while (elapsedSeconds.floatValue < CONFETTI_ANIMATION_TOTAL_SECONDS) {
             val frameTime = withFrameNanos { it }
             val deltaSeconds = ((frameTime - previousFrameTime).coerceAtLeast(0L)) / 1_000_000_000f
             previousFrameTime = frameTime
-            val total = elapsedSeconds.floatValue + deltaSeconds
-            elapsedSeconds.floatValue = if (total > 120f) total - 120f else total
+            val updated = (elapsedSeconds.floatValue + deltaSeconds)
+                .coerceAtMost(CONFETTI_ANIMATION_TOTAL_SECONDS)
+            elapsedSeconds.floatValue = updated
         }
     }
     return elapsedSeconds.floatValue
-}
-
-private fun Float.wrapToUnitInterval(): Float {
-    val wrapped = this % 1f
-    return if (wrapped < 0f) wrapped + 1f else wrapped
 }
 
 @Preview

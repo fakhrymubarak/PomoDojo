@@ -10,8 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.fakhry.pomodojo.dashboard.ui.DashboardScreen
 import com.fakhry.pomodojo.focus.ui.PomodoroCompleteScreen
-import com.fakhry.pomodojo.focus.ui.PomodoroCompletionUiState
 import com.fakhry.pomodojo.focus.ui.PomodoroSessionScreen
+import com.fakhry.pomodojo.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.preferences.ui.PreferencesRoute
 import kotlinx.serialization.Serializable
 
