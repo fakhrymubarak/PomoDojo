@@ -10,6 +10,9 @@ import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.focus.domain.usecase.SegmentCompletionSoundPlayer
+import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionSideEffect
+import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionUiState
+import com.fakhry.pomodojo.focus.ui.viewmodel.PomodoroSessionViewModel
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain

@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.focus.ui
+package com.fakhry.pomodojo.focus.ui.mapper
 
 import com.fakhry.pomodojo.preferences.domain.model.TimerDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain

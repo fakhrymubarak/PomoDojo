@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.focus.ui
+package com.fakhry.pomodojo.focus.ui.model
 
 import androidx.compose.runtime.Immutable
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
@@ -15,12 +15,6 @@ data class PomodoroSessionUiState(
     val quote: QuoteContent = QuoteContent.DEFAULT_QUOTE,
     val isShowConfirmEndDialog: Boolean = false,
     val isComplete: Boolean = false,
-)
-
-@Immutable
-data class PomodoroHeaderUiState(
-    val totalCycle: Int = 0,
-    val activeSegment: TimelineSegmentUi = TimelineSegmentUi(),
 )
 
 sealed class PomodoroSessionSideEffect {

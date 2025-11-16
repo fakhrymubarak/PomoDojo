@@ -46,6 +46,9 @@ import com.fakhry.pomodojo.dashboard.ui.components.PomodoroTimerSection
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.focus.ui.components.PomodoroSessionHeaderSection
 import com.fakhry.pomodojo.focus.ui.model.PomodoroCompletionUiState
+import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionSideEffect
+import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionUiState
+import com.fakhry.pomodojo.focus.ui.viewmodel.PomodoroSessionViewModel
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.focus_session_confirm_continue
 import com.fakhry.pomodojo.generated.resources.focus_session_confirm_end_message
