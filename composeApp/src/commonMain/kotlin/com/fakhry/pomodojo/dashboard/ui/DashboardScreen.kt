@@ -42,16 +42,10 @@ fun DashboardScreen(
     onOpenSettings: () -> Unit,
     viewModel: DashboardViewModel = koinInject(),
 ) {
-    val hasActiveSession by viewModel.hasActiveSession.collectAsState()
-
     val scrollState = rememberScrollState()
     val startLabel = stringResource(Res.string.pomodoro_timer_start)
     val notificationRequester = rememberNotificationPermissionRequester()
     var pendingPermissionResult by remember { mutableStateOf<Boolean?>(null) }
-
-    LaunchedEffect(hasActiveSession) {
-        if (hasActiveSession) onStartPomodoro()
-    }
 
     LaunchedEffect(pendingPermissionResult) {
         pendingPermissionResult ?: return@LaunchedEffect

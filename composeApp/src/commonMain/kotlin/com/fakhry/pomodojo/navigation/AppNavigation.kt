@@ -18,31 +18,33 @@ private const val ANIMATION_DURATION = 500
 
 @Suppress("NonSkippableComposable")
 @Composable
-fun AppNavHost(navController: NavHostController) {
-    val enterTransition =
-        slideInHorizontally(
-            initialOffsetX = { it },
-            animationSpec = tween(ANIMATION_DURATION),
-        )
-    val exitTransition =
-        slideOutHorizontally(
-            targetOffsetX = { -it },
-            animationSpec = tween(ANIMATION_DURATION),
-        )
-    val popEnterTransition =
-        slideInHorizontally(
-            initialOffsetX = { -it },
-            animationSpec = tween(ANIMATION_DURATION),
-        )
-    val popExitTransition =
-        slideOutHorizontally(
-            targetOffsetX = { it },
-            animationSpec = tween(ANIMATION_DURATION),
-        )
+fun AppNavHost(navController: NavHostController, hasActiveSession: Boolean = false) {
+    val enterTransition = slideInHorizontally(
+        initialOffsetX = { it },
+        animationSpec = tween(ANIMATION_DURATION),
+    )
+    val exitTransition = slideOutHorizontally(
+        targetOffsetX = { -it },
+        animationSpec = tween(ANIMATION_DURATION),
+    )
+    val popEnterTransition = slideInHorizontally(
+        initialOffsetX = { -it },
+        animationSpec = tween(ANIMATION_DURATION),
+    )
+    val popExitTransition = slideOutHorizontally(
+        targetOffsetX = { it },
+        animationSpec = tween(ANIMATION_DURATION),
+    )
+
+    val startDestination = if (hasActiveSession) {
+        AppDestination.PomodoroSession
+    } else {
+        AppDestination.Dashboard
+    }
 
     NavHost(
         navController = navController,
-        startDestination = AppDestination.Dashboard,
+        startDestination = startDestination,
         enterTransition = { enterTransition },
         exitTransition = { exitTransition },
         popEnterTransition = { popEnterTransition },

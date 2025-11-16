@@ -4,7 +4,6 @@ import com.fakhry.pomodojo.dashboard.domain.model.HistoryDomain
 import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.dashboard.ui.viewmodel.DashboardViewModel
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
@@ -27,7 +26,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -49,7 +47,6 @@ class DashboardViewModelTest {
     @Test
     fun `pref state reflects initial preferences`() = runTest(dispatcher) {
         val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 30))
-        val focusRepository = FakeFocusRepository(hasActive = false)
         val historyRepository = FakeHistoryRepository()
         val dispatcherProvider = DispatcherProvider(dispatcher)
         val currentTimeProvider = FakeCurrentTimeProvider()
@@ -58,20 +55,17 @@ class DashboardViewModelTest {
             DashboardViewModel(
                 historyRepo = historyRepository,
                 repository = repository,
-                focusRepository = focusRepository,
                 dispatcher = dispatcherProvider,
                 currentTimeProvider = currentTimeProvider,
             )
         advanceUntilIdle()
 
         assertEquals("30:00", viewModel.formattedTime.value)
-        assertFalse(viewModel.hasActiveSession.value)
     }
 
     @Test
     fun `pref state updates when repository emits new value`() = runTest(dispatcher) {
         val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 25))
-        val focusRepository = FakeFocusRepository(hasActive = true)
         val historyRepository = FakeHistoryRepository()
         val dispatcherProvider = DispatcherProvider(dispatcher)
         val currentTimeProvider = FakeCurrentTimeProvider()
@@ -80,7 +74,6 @@ class DashboardViewModelTest {
             DashboardViewModel(
                 historyRepo = historyRepository,
                 repository = repository,
-                focusRepository = focusRepository,
                 dispatcher = dispatcherProvider,
                 currentTimeProvider = currentTimeProvider,
             )
@@ -90,13 +83,11 @@ class DashboardViewModelTest {
         advanceUntilIdle()
 
         assertEquals("45:00", viewModel.formattedTime.value)
-        assertTrue(viewModel.hasActiveSession.value)
     }
 
     @Test
     fun `fetchHistory with success updates history state`() = runTest(dispatcher) {
         val repository = FakePreferencesRepository(PreferencesDomain())
-        val focusRepository = FakeFocusRepository(hasActive = false)
         val historyData = PomodoroHistoryDomain(
             focusMinutesThisYear = 250,
             availableYears = listOf(2024, 2023),
@@ -113,7 +104,6 @@ class DashboardViewModelTest {
             DashboardViewModel(
                 historyRepo = historyRepository,
                 repository = repository,
-                focusRepository = focusRepository,
                 dispatcher = dispatcherProvider,
                 currentTimeProvider = currentTimeProvider,
             )
@@ -129,7 +119,6 @@ class DashboardViewModelTest {
     @Test
     fun `fetchHistory with error leaves history state empty`() = runTest(dispatcher) {
         val repository = FakePreferencesRepository(PreferencesDomain())
-        val focusRepository = FakeFocusRepository(hasActive = false)
         val historyRepository = FakeHistoryRepository(error = true)
         val currentTimeProvider = FakeCurrentTimeProvider()
         val dispatcherProvider = DispatcherProvider(dispatcher)
@@ -138,7 +127,6 @@ class DashboardViewModelTest {
             DashboardViewModel(
                 historyRepo = historyRepository,
                 repository = repository,
-                focusRepository = focusRepository,
                 dispatcher = dispatcherProvider,
                 currentTimeProvider = currentTimeProvider,
             )
@@ -153,7 +141,6 @@ class DashboardViewModelTest {
     @Test
     fun `selectYear updates selected year and refetches history`() = runTest(dispatcher) {
         val repository = FakePreferencesRepository(PreferencesDomain())
-        val focusRepository = FakeFocusRepository(hasActive = false)
         val historyData2024 = PomodoroHistoryDomain(
             focusMinutesThisYear = 250,
             availableYears = listOf(2024, 2023),
@@ -176,7 +163,6 @@ class DashboardViewModelTest {
             DashboardViewModel(
                 historyRepo = historyRepository,
                 repository = repository,
-                focusRepository = focusRepository,
                 dispatcher = dispatcherProvider,
                 currentTimeProvider = currentTimeProvider,
             )
@@ -195,7 +181,6 @@ class DashboardViewModelTest {
     @Test
     fun `selectYear with same year does not refetch`() = runTest(dispatcher) {
         val repository = FakePreferencesRepository(PreferencesDomain())
-        val focusRepository = FakeFocusRepository(hasActive = false)
         val historyData = PomodoroHistoryDomain(
             focusMinutesThisYear = 250,
             availableYears = listOf(2024),
@@ -209,7 +194,6 @@ class DashboardViewModelTest {
             DashboardViewModel(
                 historyRepo = historyRepository,
                 repository = repository,
-                focusRepository = focusRepository,
                 dispatcher = dispatcherProvider,
                 currentTimeProvider = currentTimeProvider,
             )
@@ -225,7 +209,6 @@ class DashboardViewModelTest {
     @Test
     fun `selectYear with invalid year does not update state`() = runTest(dispatcher) {
         val repository = FakePreferencesRepository(PreferencesDomain())
-        val focusRepository = FakeFocusRepository(hasActive = false)
         val historyData = PomodoroHistoryDomain(
             focusMinutesThisYear = 250,
             availableYears = listOf(2024, 2023),
@@ -239,7 +222,6 @@ class DashboardViewModelTest {
             DashboardViewModel(
                 historyRepo = historyRepository,
                 repository = repository,
-                focusRepository = focusRepository,
                 dispatcher = dispatcherProvider,
                 currentTimeProvider = currentTimeProvider,
             )
@@ -254,33 +236,6 @@ class DashboardViewModelTest {
             stateBefore.focusMinutesThisYear,
             viewModel.historyState.value.focusMinutesThisYear,
         )
-    }
-
-    @Test
-    fun `checkHasActiveSession updates active session state`() = runTest(dispatcher) {
-        val repository = FakePreferencesRepository(PreferencesDomain())
-        val focusRepository = FakeFocusRepository(hasActive = false)
-        val historyRepository = FakeHistoryRepository()
-        val currentTimeProvider = FakeCurrentTimeProvider()
-        val dispatcherProvider = DispatcherProvider(dispatcher)
-
-        val viewModel =
-            DashboardViewModel(
-                historyRepo = historyRepository,
-                repository = repository,
-                focusRepository = focusRepository,
-                dispatcher = dispatcherProvider,
-                currentTimeProvider = currentTimeProvider,
-            )
-        advanceUntilIdle()
-
-        assertFalse(viewModel.hasActiveSession.value)
-
-        focusRepository.setHasActive(true)
-        viewModel.checkHasActiveSession()
-        advanceUntilIdle()
-
-        assertTrue(viewModel.hasActiveSession.value)
     }
 
     private class FakePreferencesRepository(initial: PreferencesDomain) : PreferencesRepository {
@@ -321,34 +276,12 @@ class DashboardViewModelTest {
             state.update { it.copy(alwaysOnDisplayEnabled = enabled) }
         }
 
+        override suspend fun updateHasActiveSession(value: Boolean) {
+            state.update { it.copy(hasActiveSession = value) }
+        }
+
         fun emit(preferences: PreferencesDomain) {
             state.value = preferences
-        }
-    }
-
-    private class FakeFocusRepository(private var hasActive: Boolean) : ActiveSessionRepository {
-        override suspend fun hasActiveSession(): Boolean = hasActive
-
-        override suspend fun getActiveSession(): PomodoroSessionDomain = PomodoroSessionDomain()
-
-        override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
-            hasActive = true
-        }
-
-        override suspend fun updateActiveSession(snapshot: PomodoroSessionDomain) {
-            hasActive = !hasActive
-        }
-
-        override suspend fun completeSession(snapshot: PomodoroSessionDomain) {
-            hasActive = false
-        }
-
-        override suspend fun clearActiveSession() {
-            hasActive = false
-        }
-
-        fun setHasActive(value: Boolean) {
-            hasActive = value
         }
     }
 

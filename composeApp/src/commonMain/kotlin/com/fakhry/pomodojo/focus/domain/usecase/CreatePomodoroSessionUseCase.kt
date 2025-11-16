@@ -39,6 +39,7 @@ class CreatePomodoroSessionUseCase(
         )
 
         sessionRepository.saveActiveSession(activeSession)
+        preferencesRepo.updateHasActiveSession(true)
 
         return@withContext activeSession
     }

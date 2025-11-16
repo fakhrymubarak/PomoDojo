@@ -193,6 +193,9 @@ class CreatePomodoroSessionUseCaseTest {
         override suspend fun updateLongBreakMinutes(value: Int) {}
         override suspend fun updateAppTheme(theme: AppTheme) {}
         override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {}
+        override suspend fun updateHasActiveSession(value: Boolean) {
+            state.value = state.value.copy(hasActiveSession = value)
+        }
     }
 
     private class FakeActiveSessionRepository : ActiveSessionRepository {

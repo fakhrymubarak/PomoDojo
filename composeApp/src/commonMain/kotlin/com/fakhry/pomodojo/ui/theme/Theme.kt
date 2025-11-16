@@ -7,61 +7,60 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 
 /**
  * PomoDojo color schemes for dark and light themes.
  */
-private val DarkColorScheme =
-    darkColorScheme(
-        primary = Primary,
-        onPrimary = DarkOnPrimary,
-        primaryContainer = Primary,
-        onPrimaryContainer = DarkOnPrimary,
-        secondary = Secondary,
-        onSecondary = DarkOnPrimary,
-        secondaryContainer = Secondary,
-        onSecondaryContainer = DarkOnPrimary,
-        background = DarkBackground,
-        onBackground = DarkOnSurface,
-        surface = DarkSurface,
-        onSurface = DarkOnSurface,
-        surfaceVariant = DarkSurfaceVariant,
-        onSurfaceVariant = DarkOnSurfaceVariant,
-        outline = DarkOutline,
-        outlineVariant = DarkOutline,
-        inverseSurface = LightSurface,
-        inverseOnSurface = LightOnSurface,
-        tertiary = Secondary,
-        onTertiary = DarkOnPrimary,
-        error = Primary,
-        onError = DarkOnPrimary,
-    )
+private val DarkColorScheme = darkColorScheme(
+    primary = Primary,
+    onPrimary = DarkOnPrimary,
+    primaryContainer = Primary,
+    onPrimaryContainer = DarkOnPrimary,
+    secondary = Secondary,
+    onSecondary = DarkOnPrimary,
+    secondaryContainer = Secondary,
+    onSecondaryContainer = DarkOnPrimary,
+    background = DarkBackground,
+    onBackground = DarkOnSurface,
+    surface = DarkSurface,
+    onSurface = DarkOnSurface,
+    surfaceVariant = DarkSurfaceVariant,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    outline = DarkOutline,
+    outlineVariant = DarkOutline,
+    inverseSurface = LightSurface,
+    inverseOnSurface = LightOnSurface,
+    tertiary = Secondary,
+    onTertiary = DarkOnPrimary,
+    error = Primary,
+    onError = DarkOnPrimary,
+)
 
-private val LightColorScheme =
-    lightColorScheme(
-        primary = Primary,
-        onPrimary = LightOnPrimary,
-        primaryContainer = Primary,
-        onPrimaryContainer = LightOnPrimary,
-        secondary = Secondary,
-        onSecondary = LightOnPrimary,
-        secondaryContainer = Secondary,
-        onSecondaryContainer = LightOnPrimary,
-        background = LightBackground,
-        onBackground = LightOnBackground,
-        surface = LightSurface,
-        onSurface = LightOnSurface,
-        surfaceVariant = LightSurfaceVariant,
-        onSurfaceVariant = LightOnSurfaceVariant,
-        outline = LightOutline,
-        outlineVariant = LightOutline,
-        inverseSurface = DarkSurface,
-        inverseOnSurface = DarkOnSurface,
-        tertiary = Secondary,
-        onTertiary = LightOnPrimary,
-        error = Primary,
-        onError = LightOnPrimary,
-    )
+private val LightColorScheme = lightColorScheme(
+    primary = Primary,
+    onPrimary = LightOnPrimary,
+    primaryContainer = Primary,
+    onPrimaryContainer = LightOnPrimary,
+    secondary = Secondary,
+    onSecondary = LightOnPrimary,
+    secondaryContainer = Secondary,
+    onSecondaryContainer = LightOnPrimary,
+    background = LightBackground,
+    onBackground = LightOnBackground,
+    surface = LightSurface,
+    onSurface = LightOnSurface,
+    surfaceVariant = LightSurfaceVariant,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    outline = LightOutline,
+    outlineVariant = LightOutline,
+    inverseSurface = DarkSurface,
+    inverseOnSurface = DarkOnSurface,
+    tertiary = Secondary,
+    onTertiary = LightOnPrimary,
+    error = Primary,
+    onError = LightOnPrimary,
+)
 
 /**
  * PomoDojo Theme
@@ -69,16 +68,18 @@ private val LightColorScheme =
  * Wraps MaterialTheme with app specific typography and colors.
  */
 @Composable
-fun PomoDojoTheme(darkTheme: Boolean = true, content: @Composable () -> Unit) {
-    val targetColorScheme =
-        remember(darkTheme) {
-            if (darkTheme) DarkColorScheme else LightColorScheme
+fun PomoDojoTheme(appTheme: AppTheme = AppTheme.DARK, content: @Composable () -> Unit) {
+    val targetColorScheme = remember(appTheme) {
+        when (appTheme) {
+            AppTheme.DARK -> DarkColorScheme
+            else -> LightColorScheme
         }
-    val animatedColorScheme =
-        animateColorScheme(
-            targetScheme = targetColorScheme,
-            isLightScheme = !darkTheme,
-        )
+    }
+
+    val animatedColorScheme = animateColorScheme(
+        targetScheme = targetColorScheme,
+        isLightScheme = appTheme != AppTheme.DARK,
+    )
 
     MaterialTheme(
         colorScheme = animatedColorScheme,
@@ -102,21 +103,19 @@ private fun animateColorScheme(targetScheme: ColorScheme, isLightScheme: Boolean
     val onSecondary = animateColorAsState(targetScheme.onSecondary, label = "onSecondary").value
     val secondaryContainer =
         animateColorAsState(targetScheme.secondaryContainer, label = "secondaryContainer").value
-    val onSecondaryContainer =
-        animateColorAsState(
-            targetScheme.onSecondaryContainer,
-            label = "onSecondaryContainer",
-        ).value
+    val onSecondaryContainer = animateColorAsState(
+        targetScheme.onSecondaryContainer,
+        label = "onSecondaryContainer",
+    ).value
 
     val tertiary = animateColorAsState(targetScheme.tertiary, label = "tertiary").value
     val onTertiary = animateColorAsState(targetScheme.onTertiary, label = "onTertiary").value
     val tertiaryContainer =
         animateColorAsState(targetScheme.tertiaryContainer, label = "tertiaryContainer").value
-    val onTertiaryContainer =
-        animateColorAsState(
-            targetScheme.onTertiaryContainer,
-            label = "onTertiaryContainer",
-        ).value
+    val onTertiaryContainer = animateColorAsState(
+        targetScheme.onTertiaryContainer,
+        label = "onTertiaryContainer",
+    ).value
 
     val background = animateColorAsState(targetScheme.background, label = "background").value
     val onBackground = animateColorAsState(targetScheme.onBackground, label = "onBackground").value
@@ -126,8 +125,7 @@ private fun animateColorScheme(targetScheme: ColorScheme, isLightScheme: Boolean
         animateColorAsState(targetScheme.surfaceVariant, label = "surfaceVariant").value
     val onSurfaceVariant =
         animateColorAsState(targetScheme.onSurfaceVariant, label = "onSurfaceVariant").value
-    val surfaceTint =
-        animateColorAsState(targetScheme.surfaceTint, label = "surfaceTint").value
+    val surfaceTint = animateColorAsState(targetScheme.surfaceTint, label = "surfaceTint").value
     val inverseSurface =
         animateColorAsState(targetScheme.inverseSurface, label = "inverseSurface").value
     val inverseOnSurface =
@@ -142,11 +140,10 @@ private fun animateColorScheme(targetScheme: ColorScheme, isLightScheme: Boolean
     val onError = animateColorAsState(targetScheme.onError, label = "onError").value
     val errorContainer =
         animateColorAsState(targetScheme.errorContainer, label = "errorContainer").value
-    val onErrorContainer =
-        animateColorAsState(
-            targetScheme.onErrorContainer,
-            label = "onErrorContainer",
-        ).value
+    val onErrorContainer = animateColorAsState(
+        targetScheme.onErrorContainer,
+        label = "onErrorContainer",
+    ).value
 
     return if (isLightScheme) {
         lightColorScheme(
