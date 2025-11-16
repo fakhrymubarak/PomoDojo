@@ -43,6 +43,7 @@ import com.fakhry.pomodojo.generated.resources.pomodoro_complete_start_another
 import com.fakhry.pomodojo.generated.resources.pomodoro_complete_summary_title
 import com.fakhry.pomodojo.ui.components.BgHeaderCanvas
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
+import com.fakhry.pomodojo.utils.ui.Expanded
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -62,16 +63,18 @@ fun PomodoroCompleteScreen(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize()) {
+            CompletionHeader(totalCycles = uiState.totalCyclesFinished)
+            Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .fillMaxSize()
                         .padding(horizontal = 24.dp, vertical = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween,
                 ) {
+                    Expanded()
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -80,7 +83,7 @@ fun PomodoroCompleteScreen(
                         Text(
                             text = celebration.headline,
                             textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.titleMedium.copy(
+                            style = MaterialTheme.typography.headlineLarge.copy(
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Bold,
                             ),
@@ -94,29 +97,29 @@ fun PomodoroCompleteScreen(
                         )
 
                         CompletionStatsCard(uiState = uiState)
-                    }
 
-                    Button(
-                        onClick = onStartAnotherSession,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.pomodoro_complete_start_another),
-                            style = MaterialTheme.typography.labelLarge.copy(
-                                fontWeight = FontWeight.Bold,
+                        Button(
+                            onClick = onStartAnotherSession,
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp, top = 24.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
                             ),
-                            modifier = Modifier.padding(vertical = 4.dp),
-                        )
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.pomodoro_complete_start_another),
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                ),
+                                modifier = Modifier.padding(vertical = 4.dp),
+                            )
+                        }
                     }
+                    Expanded()
                 }
+                ConfettiBurst(modifier = Modifier.matchParentSize())
             }
-
-            ConfettiBurst(modifier = Modifier.matchParentSize())
         }
     }
 }
@@ -138,11 +141,10 @@ private fun CompletionHeader(totalCycles: Int, modifier: Modifier = Modifier) {
                     fontWeight = FontWeight.Bold,
                 ),
             )
-            val safeTotalCycles = totalCycles.coerceAtLeast(0)
             val subtitle = pluralStringResource(
                 Res.plurals.pomodoro_complete_header_cycles,
-                safeTotalCycles,
-                safeTotalCycles,
+                totalCycles,
+                totalCycles,
             )
             Text(
                 text = subtitle,
