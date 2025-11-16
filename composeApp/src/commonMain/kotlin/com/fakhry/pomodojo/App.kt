@@ -17,25 +17,21 @@ import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 
 @Composable
-@Preview
-fun App() {
+fun App(setTheme: (AppTheme) -> Unit = {}) {
     val initialThemeState = rememberInitialTheme()
-    val initialTheme =
-        initialThemeState.value ?: run {
-            PomoDojoTheme {
-                // Awaiting stored theme before starting the DI graph.
-            }
-            return
+    val initialTheme = initialThemeState.value ?: run {
+        PomoDojoTheme {
+            // Awaiting stored theme before starting the DI graph.
         }
-    val initialPreferences =
-        remember(initialTheme) {
-            PreferencesDomain(appTheme = initialTheme)
-        }
+        return
+    }
+    val initialPreferences = remember(initialTheme) {
+        PreferencesDomain(appTheme = initialTheme)
+    }
 
     KoinApplication(
         application = { modules(composeAppModules) },
@@ -45,7 +41,7 @@ fun App() {
             initial = initialPreferences,
         )
         val useDarkTheme = preferences.appTheme == AppTheme.DARK
-
+        setTheme(preferences.appTheme)
         PomoDojoTheme(darkTheme = useDarkTheme) {
             val navController = rememberNavController()
             AppNavHost(navController = navController)
@@ -57,11 +53,9 @@ fun App() {
 private fun rememberInitialTheme(): State<AppTheme?> {
     val dataStore = remember { provideDataStore() }
     return produceState(initialValue = null, key1 = dataStore) {
-        value =
-            runCatching {
-                dataStore.data
-                    .map { prefs -> AppTheme.fromStorage(prefs[PreferenceKeys.APP_THEME]) }
-                    .first()
-            }.getOrDefault(AppTheme.DARK)
+        value = runCatching {
+            dataStore.data.map { prefs -> AppTheme.fromStorage(prefs[PreferenceKeys.APP_THEME]) }
+                .first()
+        }.getOrDefault(AppTheme.DARK)
     }
 }
