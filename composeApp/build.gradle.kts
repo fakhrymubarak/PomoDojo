@@ -13,6 +13,8 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
     id("jacoco")
+    alias(libs.plugins.googleGmsGoogleServices)
+    alias(libs.plugins.googleFirebaseCrashlytics)
 }
 
 kotlin {
@@ -144,6 +146,7 @@ android {
 dependencies {
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.core)
+    implementation(libs.firebase.crashlytics)
 
     // Room KSP
     add("kspAndroid", libs.androidx.room.compiler)
