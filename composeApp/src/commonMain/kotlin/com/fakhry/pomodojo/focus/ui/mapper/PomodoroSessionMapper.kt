@@ -2,7 +2,7 @@ package com.fakhry.pomodojo.focus.ui.mapper
 
 import com.fakhry.pomodojo.focus.domain.model.CompletionNotificationSummary
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.focus.ui.PomodoroSessionUiState
+import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel

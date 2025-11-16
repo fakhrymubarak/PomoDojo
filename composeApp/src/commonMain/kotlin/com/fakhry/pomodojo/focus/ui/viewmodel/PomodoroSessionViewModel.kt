@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.focus.ui
+package com.fakhry.pomodojo.focus.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +10,13 @@ import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.focus.domain.usecase.SegmentCompletionSoundPlayer
 import com.fakhry.pomodojo.focus.domain.usecase.SystemCurrentTimeProvider
+import com.fakhry.pomodojo.focus.ui.mapper.calculateTimerProgress
+import com.fakhry.pomodojo.focus.ui.mapper.resolveActiveIndex
+import com.fakhry.pomodojo.focus.ui.mapper.toDomainSegment
+import com.fakhry.pomodojo.focus.ui.mapper.toTimelineSegmentUi
 import com.fakhry.pomodojo.focus.ui.mapper.toUiState
+import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionSideEffect
+import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository

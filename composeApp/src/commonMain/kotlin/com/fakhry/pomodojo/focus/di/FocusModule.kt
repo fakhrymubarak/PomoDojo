@@ -13,7 +13,7 @@ import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.focus.domain.usecase.SegmentCompletionSoundPlayer
 import com.fakhry.pomodojo.focus.domain.usecase.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.focus.domain.usecase.provideSegmentCompletionSoundPlayer
-import com.fakhry.pomodojo.focus.ui.PomodoroSessionViewModel
+import com.fakhry.pomodojo.focus.ui.viewmodel.PomodoroSessionViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
