@@ -2,8 +2,6 @@ package com.fakhry.pomodojo.utils
 
 import kotlin.math.ceil
 
-private const val MILLIS_PER_MINUTE = 60_000L
-
 /**
  * Formats a duration in milliseconds into a "MM:SS" string.
  *
@@ -35,4 +33,4 @@ fun Long.formatDurationMillis(): String {
  * @return An [Int] representing the number of full minutes.
  * @receiver The duration in milliseconds.
  */
-fun Long.toMinutes(): Int = (this / MILLIS_PER_MINUTE).toInt()
+fun Long.toMinutes(): Int = (this / Const.Time.MILLIS_PER_MINUTE).toInt()
