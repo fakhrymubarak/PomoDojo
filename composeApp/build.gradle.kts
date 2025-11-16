@@ -209,7 +209,18 @@ tasks.register<JacocoReport>("jacocoJvmTestReport") {
     val jvmSourceDirs =
         jvmMainCompilation.allKotlinSourceSets.flatMap { it.kotlin.sourceDirectories.files }
 
+    val jacocoClassExclusions = listOf(
+        "**/ui/**/*Screen.class",
+    )
     sourceDirectories.setFrom(files(jvmSourceDirs))
-    classDirectories.setFrom(jvmMainCompilation.output.classesDirs)
+    classDirectories.setFrom(
+        files(
+            jvmMainCompilation.output.classesDirs.files.map { dir ->
+                fileTree(dir) {
+                    exclude(jacocoClassExclusions)
+                }
+            },
+        ),
+    )
     executionData.setFrom(jacocoJvmExec)
 }
