@@ -2,6 +2,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -15,6 +16,15 @@ plugins {
     id("jacoco")
     alias(libs.plugins.googleGmsGoogleServices)
     alias(libs.plugins.googleFirebaseCrashlytics)
+}
+
+fun Project.envProps(fileName: String): Properties {
+    val props = Properties()
+    val envFile = rootProject.file(fileName)
+    if (envFile.exists()) {
+        envFile.inputStream().use { props.load(it) }
+    }
+    return props
 }
 
 kotlin {
@@ -127,6 +137,24 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+
+            val envProps = project.envProps("config/dev.props")
+            val dbName = envProps.getProperty("DB_NAME", "pomodojo_dev.db")
+            buildConfigField("String", "LOCAL_DB_NAME", "\"$dbName\"")
+        }
+        create("prod") {
+            dimension = "environment"
+            val envProps = project.envProps("config/prod.props")
+            val dbName = envProps.getProperty("DB_NAME", "pomodojo.db")
+            buildConfigField("String", "LOCAL_DB_NAME", "\"$dbName\"")
         }
     }
     buildTypes {

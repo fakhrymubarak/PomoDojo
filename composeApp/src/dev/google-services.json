@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "470777617646",
+    "project_id": "pomodojo-cdc70",
+    "storage_bucket": "pomodojo-cdc70.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:470777617646:android:35d0fca9e7a93c5cac67ff",
+        "android_client_info": {
+          "package_name": "com.fakhry.pomodojo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIaIOcYZx644LOmAw_GzGy9NibuAAFzBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:470777617646:android:583f7bd5ca846de1ac67ff",
+        "android_client_info": {
+          "package_name": "com.fakhry.pomodojo.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIaIOcYZx644LOmAw_GzGy9NibuAAFzBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
