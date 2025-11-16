@@ -21,19 +21,17 @@ class PomodoroSessionMapperTest {
 
     @Test
     fun `domain session maps to ui state with timeline metadata`() {
-        val segments =
-            listOf(
-                TimelineSegmentUi(type = TimerType.FOCUS, cycleNumber = 1),
-                TimelineSegmentUi(type = TimerType.SHORT_BREAK, cycleNumber = 1),
-            )
-        val domain =
-            PomodoroSessionDomain(
-                totalCycle = 3,
-                startedAtEpochMs = 1234L,
-                elapsedPauseEpochMs = 200L,
-                timeline = TimelineDomain(hourSplits = listOf(0, 25, 30)),
-                quote = QuoteContent(id = "quote", text = "Keep going"),
-            )
+        val segments = listOf(
+            TimelineSegmentUi(type = TimerType.FOCUS, cycleNumber = 1),
+            TimelineSegmentUi(type = TimerType.SHORT_BREAK, cycleNumber = 1),
+        )
+        val domain = PomodoroSessionDomain(
+            totalCycle = 3,
+            startedAtEpochMs = 1234L,
+            elapsedPauseEpochMs = 200L,
+            timeline = TimelineDomain(hourSplits = listOf(0, 25, 30)),
+            quote = QuoteContent(id = "quote", text = "Keep going"),
+        )
 
         val uiState = domain.toUiState(
             segments = segments,
@@ -65,20 +63,18 @@ class PomodoroSessionMapperTest {
 
     @Test
     fun `domain completion summary aggregates focus and break minutes`() {
-        val domain =
-            PomodoroSessionDomain(
-                totalCycle = 2,
-                startedAtEpochMs = 42L,
-                timeline =
-                    TimelineDomain(
-                        segments = listOf(
-                            domainSegment(TimerType.FOCUS, 25),
-                            domainSegment(TimerType.SHORT_BREAK, 5),
-                            domainSegment(TimerType.FOCUS, 15),
-                            domainSegment(TimerType.LONG_BREAK, 10),
-                        ),
-                    ),
-            )
+        val domain = PomodoroSessionDomain(
+            totalCycle = 2,
+            startedAtEpochMs = 42L,
+            timeline = TimelineDomain(
+                segments = listOf(
+                    domainSegment(TimerType.FOCUS, 25),
+                    domainSegment(TimerType.SHORT_BREAK, 5),
+                    domainSegment(TimerType.FOCUS, 15),
+                    domainSegment(TimerType.LONG_BREAK, 10),
+                ),
+            ),
+        )
 
         val summary = domain.toCompletionSummary()
 
@@ -90,23 +86,21 @@ class PomodoroSessionMapperTest {
 
     @Test
     fun `ui state completion summary uses elapsed progress`() {
-        val timeline =
-            TimelineUiModel(
-                segments = persistentListOf(
-                    uiSegment(TimerType.FOCUS, TimerStatusDomain.COMPLETED, 25, 1f),
-                    uiSegment(TimerType.SHORT_BREAK, TimerStatusDomain.COMPLETED, 10, 1f),
-                    uiSegment(TimerType.FOCUS, TimerStatusDomain.RUNNING, 25, 0.5f),
-                    uiSegment(TimerType.SHORT_BREAK, TimerStatusDomain.INITIAL, 15, 0f),
-                    uiSegment(TimerType.LONG_BREAK, TimerStatusDomain.INITIAL, 5, 0f),
-                    uiSegment(TimerType.FOCUS, TimerStatusDomain.INITIAL, 25, 0f),
-                ),
-                hourSplits = persistentListOf(0, 25),
-            )
-        val uiState =
-            PomodoroSessionUiState(
-                totalCycle = 4,
-                timeline = timeline,
-            )
+        val timeline = TimelineUiModel(
+            segments = persistentListOf(
+                uiSegment(TimerType.FOCUS, TimerStatusDomain.COMPLETED, 25, 1f),
+                uiSegment(TimerType.SHORT_BREAK, TimerStatusDomain.COMPLETED, 10, 1f),
+                uiSegment(TimerType.FOCUS, TimerStatusDomain.RUNNING, 25, 0.5f),
+                uiSegment(TimerType.SHORT_BREAK, TimerStatusDomain.INITIAL, 15, 0f),
+                uiSegment(TimerType.LONG_BREAK, TimerStatusDomain.INITIAL, 5, 0f),
+                uiSegment(TimerType.FOCUS, TimerStatusDomain.INITIAL, 25, 0f),
+            ),
+            hourSplits = persistentListOf(0, 25),
+        )
+        val uiState = PomodoroSessionUiState(
+            totalCycle = 4,
+            timeline = timeline,
+        )
 
         val summary = uiState.toCompletionSummary()
 
@@ -115,10 +109,7 @@ class PomodoroSessionMapperTest {
         assertEquals(10, summary.totalBreakMinutes)
     }
 
-    private fun domainSegment(
-        type: TimerType,
-        minutes: Int,
-    ) = TimerSegmentsDomain(
+    private fun domainSegment(type: TimerType, minutes: Int) = TimerSegmentsDomain(
         type = type,
         timer = TimerDomain(durationEpochMs = minutes.toLong() * MINUTE_MS),
     )

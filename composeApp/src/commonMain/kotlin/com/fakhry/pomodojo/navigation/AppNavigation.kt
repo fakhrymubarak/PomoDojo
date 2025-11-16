@@ -13,25 +13,6 @@ import com.fakhry.pomodojo.focus.ui.PomodoroCompleteScreen
 import com.fakhry.pomodojo.focus.ui.PomodoroSessionScreen
 import com.fakhry.pomodojo.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.preferences.ui.PreferencesRoute
-import kotlinx.serialization.Serializable
-
-object AppDestination {
-    @Serializable
-    data object Dashboard
-
-    @Serializable
-    data object Preferences
-
-    @Serializable
-    data object PomodoroSession
-
-    @Serializable
-    data class PomodoroComplete(
-        val totalCyclesFinished: Int,
-        val totalFocusMinutes: Int,
-        val totalBreakMinutes: Int,
-    )
-}
 
 private const val ANIMATION_DURATION = 500
 
@@ -90,6 +71,7 @@ fun AppNavHost(navController: NavHostController) {
             PomodoroSessionScreen(
                 onSessionCompleted = { completion ->
                     navController.popBackStack()
+                    if (completion.isEmpty()) return@PomodoroSessionScreen
                     navController.navigate(
                         AppDestination.PomodoroComplete(
                             totalCyclesFinished = completion.totalCyclesFinished,
