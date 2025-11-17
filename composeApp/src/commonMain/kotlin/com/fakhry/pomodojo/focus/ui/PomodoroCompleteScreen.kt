@@ -131,7 +131,8 @@ private fun CompletionHeader(totalCycles: Int, modifier: Modifier = Modifier) {
             modifier = modifier
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.systemBars)
-                .padding(horizontal = 24.dp, vertical = 24.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
