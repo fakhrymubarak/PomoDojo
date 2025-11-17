@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.navigation
+package com.fakhry.pomodojo.core.navigation
 
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally

@@ -8,9 +8,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
 import com.fakhry.pomodojo.core.datastore.provideDataStore
+import com.fakhry.pomodojo.core.navigation.AppNavHost
 import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.di.composeAppModules
-import com.fakhry.pomodojo.navigation.AppNavHost
 import com.fakhry.pomodojo.preferences.data.source.PreferenceKeys
 import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme

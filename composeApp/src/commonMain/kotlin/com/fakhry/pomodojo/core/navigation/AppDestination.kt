@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.navigation
+package com.fakhry.pomodojo.core.navigation
 
 import kotlinx.serialization.Serializable
 
