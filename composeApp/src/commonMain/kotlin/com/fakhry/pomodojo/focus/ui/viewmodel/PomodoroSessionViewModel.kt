@@ -18,7 +18,6 @@ import com.fakhry.pomodojo.focus.ui.mapper.toTimelineSegmentUi
 import com.fakhry.pomodojo.focus.ui.mapper.toUiState
 import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionUiState
-import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
@@ -52,7 +51,6 @@ class PomodoroSessionViewModel(
     override val container =
         container<PomodoroSessionUiState, PomodoroSessionSideEffect>(PomodoroSessionUiState())
 
-    private lateinit var preferences: PreferencesDomain
     private val _alwaysOnDisplay = MutableStateFlow(true)
     val alwaysOnDisplay = _alwaysOnDisplay.asStateFlow()
 
@@ -68,7 +66,6 @@ class PomodoroSessionViewModel(
 
     private fun getAlwaysOnDisplayState() = viewModelScope.launch(dispatcher.io) {
         preferencesRepository.preferences.collect { preferences ->
-            this@PomodoroSessionViewModel.preferences = preferences
             _alwaysOnDisplay.update { preferences.alwaysOnDisplayEnabled }
         }
     }
@@ -397,10 +394,7 @@ class PomodoroSessionViewModel(
     private fun persistActiveSnapshotIfNeeded() = viewModelScope.launch(dispatcher.io) {
         val currentState = container.stateFlow.value
         if (currentState.isComplete) return@launch
-        buildSessionSnapshot(currentState)?.let {
-            sessionRepository.updateActiveSession(it)
-            preferencesRepository.updateHasActiveSession(true)
-        }
+        buildSessionSnapshot(currentState)?.let { sessionRepository.updateActiveSession(it) }
     }
 
     private suspend fun completeActiveSession() {
@@ -409,7 +403,6 @@ class PomodoroSessionViewModel(
             sessionRepository.completeSession(it)
             historyRepository.insertHistory(it)
             focusSessionNotifier.cancel(it.sessionId())
-            preferencesRepository.updateHasActiveSession(false)
         }
         resetNotificationThrottle()
     }

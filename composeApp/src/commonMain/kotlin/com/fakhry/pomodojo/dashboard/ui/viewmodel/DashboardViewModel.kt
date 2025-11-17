@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.dashboard.ui.mapper.mapToHistorySectionUi
 import com.fakhry.pomodojo.dashboard.ui.model.HistorySectionUi
+import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
@@ -22,9 +23,12 @@ import kotlin.time.ExperimentalTime
 class DashboardViewModel(
     private val historyRepo: HistorySessionRepository,
     private val repository: PreferencesRepository,
+    private val focusRepository: ActiveSessionRepository,
     private val dispatcher: DispatcherProvider,
     private val currentTimeProvider: CurrentTimeProvider,
 ) : ViewModel() {
+    private val _hasActiveSession = MutableStateFlow(false)
+    val hasActiveSession: StateFlow<Boolean> = _hasActiveSession.asStateFlow()
 
     private val _formattedTime = MutableStateFlow("")
     val formattedTime = _formattedTime.asStateFlow()
@@ -33,8 +37,14 @@ class DashboardViewModel(
     val historyState: StateFlow<HistorySectionUi> = _historyState.asStateFlow()
 
     init {
+        checkHasActiveSession()
         fetchPreferences()
         fetchHistory()
+    }
+
+    fun checkHasActiveSession() = viewModelScope.launch(dispatcher.io) {
+        val hasActiveSession = focusRepository.hasActiveSession()
+        _hasActiveSession.update { hasActiveSession }
     }
 
     fun fetchPreferences() = viewModelScope.launch(dispatcher.io) {
