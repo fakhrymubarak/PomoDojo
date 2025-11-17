@@ -1,18 +1,19 @@
 package com.fakhry.pomodojo
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
 import com.fakhry.pomodojo.di.composeAppModules
 import com.fakhry.pomodojo.navigation.AppNavHost
 import com.fakhry.pomodojo.preferences.data.source.PreferenceKeys
+import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
 import com.fakhry.pomodojo.preferences.data.source.provideDataStore
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -22,26 +23,24 @@ import org.koin.compose.koinInject
 
 @Composable
 fun App(onThemeUpdated: (AppTheme) -> Unit = {}) {
-    val initialPreferences = remember { getPreferencesOnMainThread() }
+    val initialPrefs = remember { getPreferencesOnMainThread() }
 
     KoinApplication(
         application = { modules(composeAppModules) },
     ) {
-        val appThemeState = remember { mutableStateOf(initialPreferences.appTheme) }
-        val preferencesRepository = koinInject<PreferencesRepository>()
-        val preferences by preferencesRepository.preferences.collectAsState(
-            initial = initialPreferences,
-        )
+        val preferencesRepository = koinInject<PreferenceStorage>()
+        val preferences by preferencesRepository.preferences.collectAsState(initial = initialPrefs)
+        val appTheme by remember { derivedStateOf { preferences.appTheme } }
 
-        if (appThemeState.value != preferences.appTheme) {
-            appThemeState.value = preferences.appTheme
-            onThemeUpdated(appThemeState.value)
+        // Run side-effect only when theme actually changes
+        LaunchedEffect(appTheme) {
+            onThemeUpdated(appTheme)
         }
 
-        PomoDojoTheme(appThemeState.value) {
+        PomoDojoTheme(appTheme) {
             val navController = rememberNavController()
             AppNavHost(
-                hasActiveSession = preferences.hasActiveSession,
+                hasActiveSession = initialPrefs.hasActiveSession,
                 navController = navController,
             )
         }
