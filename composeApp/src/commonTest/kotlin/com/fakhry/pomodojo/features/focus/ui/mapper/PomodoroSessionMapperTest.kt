@@ -1,9 +1,7 @@
-package com.fakhry.pomodojo.focus.ui.mapper
+package com.fakhry.pomodojo.features.focus.ui.mapper
 
 import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
-import com.fakhry.pomodojo.features.focus.ui.mapper.toCompletionSummary
-import com.fakhry.pomodojo.features.focus.ui.mapper.toUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerDomain

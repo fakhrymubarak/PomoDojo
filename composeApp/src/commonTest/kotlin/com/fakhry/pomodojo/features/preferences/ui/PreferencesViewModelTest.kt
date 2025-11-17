@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.preferences
+package com.fakhry.pomodojo.features.preferences.ui
 
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.features.preferences.data.repository.PreferencesRepositoryImpl
@@ -9,7 +9,6 @@ import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferenceCascadeResolver
-import com.fakhry.pomodojo.features.preferences.ui.PreferencesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

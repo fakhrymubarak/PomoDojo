@@ -2,6 +2,8 @@ package com.fakhry.pomodojo.features.dashboard.ui.viewmodel
 
 import com.fakhry.pomodojo.core.framework.datetime.FakeCurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.features.dashboard.domain.model.HistoryDomain
+import com.fakhry.pomodojo.features.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.features.focus.domain.repository.FakeFocusRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.FakeHistoryRepository
 import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
@@ -23,13 +25,32 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class DashboardViewModelTest {
     private val dispatcher = StandardTestDispatcher()
-    val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 30))
-    val focusRepository = FakeFocusRepository(hasActive = false)
-    val historyRepository = FakeHistoryRepository()
-    val dispatcherProvider = DispatcherProvider(dispatcher)
-    val currentTimeProvider = FakeCurrentTimeProvider()
+    private val history2024 = PomodoroHistoryDomain(
+        focusMinutesThisYear = 250,
+        availableYears = listOf(2024, 2023),
+        histories = listOf(
+            HistoryDomain(date = "2024-01-03", focusMinutes = 60, breakMinutes = 15),
+            HistoryDomain(date = "2024-02-14", focusMinutes = 50, breakMinutes = 10),
+        ),
+    )
+    private val history2023 = PomodoroHistoryDomain(
+        focusMinutesThisYear = 180,
+        availableYears = listOf(2024, 2023),
+        histories = listOf(
+            HistoryDomain(date = "2023-01-15", focusMinutes = 45, breakMinutes = 15),
+            HistoryDomain(date = "2023-03-07", focusMinutes = 35, breakMinutes = 5),
+        ),
+    )
+    private val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 30))
+    private val focusRepository = FakeFocusRepository(hasActive = false)
+    private val historyRepository = FakeHistoryRepository(
+        data2024 = history2024,
+        data2023 = history2023,
+    )
+    private val dispatcherProvider = DispatcherProvider(dispatcher)
+    private val currentTimeProvider = FakeCurrentTimeProvider()
 
-    val viewModel = DashboardViewModel(
+    private val viewModel = DashboardViewModel(
         historyRepo = historyRepository,
         repository = repository,
         focusRepository = focusRepository,
@@ -49,7 +70,6 @@ class DashboardViewModelTest {
 
     @Test
     fun `pref state reflects initial preferences`() = runTest(dispatcher) {
-
         advanceUntilIdle()
 
         assertEquals("30:00", viewModel.formattedTime.value)
@@ -60,11 +80,14 @@ class DashboardViewModelTest {
     fun `pref state updates when repository emits new value`() = runTest(dispatcher) {
         advanceUntilIdle()
 
-        repository.emit(repository.current.copy(focusMinutes = 45))
+        repository.emit(
+            repository.current.copy(
+                focusMinutes = 45,
+            ),
+        )
         advanceUntilIdle()
 
         assertEquals("45:00", viewModel.formattedTime.value)
-        assertTrue(viewModel.hasActiveSession.value)
     }
 
     @Test
@@ -87,6 +110,14 @@ class DashboardViewModelTest {
 
     @Test
     fun `fetchHistory with error leaves history state empty`() = runTest(dispatcher) {
+        val errorRepository = FakeHistoryRepository(error = true)
+        val viewModel = DashboardViewModel(
+            historyRepo = errorRepository,
+            repository = repository,
+            focusRepository = focusRepository,
+            dispatcher = dispatcherProvider,
+            currentTimeProvider = currentTimeProvider,
+        )
         advanceUntilIdle()
 
         val historyState = viewModel.historyState.value
@@ -154,6 +185,4 @@ class DashboardViewModelTest {
 
         assertTrue(viewModel.hasActiveSession.value)
     }
-
 }
-

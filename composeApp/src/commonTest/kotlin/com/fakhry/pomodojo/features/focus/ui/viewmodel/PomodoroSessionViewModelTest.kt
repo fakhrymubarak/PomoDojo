@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.focus.ui
+package com.fakhry.pomodojo.features.focus.ui.viewmodel
 
 import com.fakhry.pomodojo.commons.domain.state.DomainResult
 import com.fakhry.pomodojo.core.framework.audio.SoundPlayer
@@ -14,7 +14,6 @@ import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
-import com.fakhry.pomodojo.features.focus.ui.viewmodel.PomodoroSessionViewModel
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain

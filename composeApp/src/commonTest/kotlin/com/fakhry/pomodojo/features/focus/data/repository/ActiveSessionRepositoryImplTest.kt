@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.focus.data.repository
+package com.fakhry.pomodojo.features.focus.data.repository
 
 import com.fakhry.pomodojo.core.database.dao.FocusSessionDao
 import com.fakhry.pomodojo.core.database.entities.ActiveSessionEntity
@@ -6,7 +6,6 @@ import com.fakhry.pomodojo.core.database.entities.ActiveSessionHourSplitEntity
 import com.fakhry.pomodojo.core.database.entities.ActiveSessionSegmentEntity
 import com.fakhry.pomodojo.core.database.entities.ActiveSessionWithRelations
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.features.focus.data.repository.ActiveSessionRepositoryImpl
 import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain

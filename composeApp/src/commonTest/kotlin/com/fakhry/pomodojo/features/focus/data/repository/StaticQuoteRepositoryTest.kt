@@ -1,6 +1,5 @@
-package com.fakhry.pomodojo.focus.data.repository
+package com.fakhry.pomodojo.features.focus.data.repository
 
-import com.fakhry.pomodojo.features.focus.data.repository.StaticQuoteRepository
 import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
