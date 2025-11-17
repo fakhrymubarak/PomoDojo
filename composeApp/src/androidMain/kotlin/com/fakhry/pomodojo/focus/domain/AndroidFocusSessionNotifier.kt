@@ -13,13 +13,13 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.fakhry.pomodojo.MainActivity
 import com.fakhry.pomodojo.R
+import com.fakhry.pomodojo.core.utils.primitives.orFalse
 import com.fakhry.pomodojo.focus.data.db.AndroidAppDependenciesInitializer
 import com.fakhry.pomodojo.focus.domain.mapper.toNotificationSummary
 import com.fakhry.pomodojo.focus.domain.model.CompletionNotificationSummary
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.focus.ui.mapper.toCompletionSummary
-import com.fakhry.pomodojo.utils.orFalse
 
 private const val CHANNEL_ID = "focus_session_channel"
 private const val CHANNEL_NAME = "Focus Sessions"

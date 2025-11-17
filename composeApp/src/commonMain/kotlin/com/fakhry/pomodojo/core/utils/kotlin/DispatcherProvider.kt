@@ -1,9 +1,7 @@
-package com.fakhry.pomodojo.utils
+package com.fakhry.pomodojo.core.utils.kotlin
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.IO
 
 data class DispatcherProvider(
@@ -11,7 +9,7 @@ data class DispatcherProvider(
     val computation: CoroutineDispatcher,
     val io: CoroutineDispatcher,
 ) {
-    constructor() : this(Main, Default, Dispatchers.IO)
+    constructor() : this(Dispatchers.Main, Dispatchers.Default, Dispatchers.IO)
 
     constructor(testDispatcher: CoroutineDispatcher) : this(
         testDispatcher,

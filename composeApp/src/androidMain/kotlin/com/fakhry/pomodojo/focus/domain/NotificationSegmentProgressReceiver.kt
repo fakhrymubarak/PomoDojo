@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.focus.data.db.createDatabase
 import com.fakhry.pomodojo.focus.data.repository.ActiveSessionRepositoryImpl
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
@@ -14,7 +15,6 @@ import com.fakhry.pomodojo.focus.domain.usecase.provideSegmentCompletionSoundPla
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

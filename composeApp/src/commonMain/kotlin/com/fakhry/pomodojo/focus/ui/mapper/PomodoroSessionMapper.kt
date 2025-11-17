@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.focus.ui.mapper
 
+import com.fakhry.pomodojo.core.utils.primitives.toMinutes
 import com.fakhry.pomodojo.focus.domain.model.CompletionNotificationSummary
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.ui.model.PomodoroCompletionUiState
@@ -8,7 +9,6 @@ import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
-import com.fakhry.pomodojo.utils.toMinutes
 import kotlinx.collections.immutable.toPersistentList
 
 fun PomodoroSessionDomain.toUiState(

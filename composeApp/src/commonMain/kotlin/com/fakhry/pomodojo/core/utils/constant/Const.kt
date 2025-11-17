@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.utils
+package com.fakhry.pomodojo.core.utils.constant
 
 object Const {
     object Time {

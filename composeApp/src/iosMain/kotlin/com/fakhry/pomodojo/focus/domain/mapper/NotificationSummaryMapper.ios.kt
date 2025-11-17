@@ -1,11 +1,11 @@
 package com.fakhry.pomodojo.focus.domain.mapper
 
+import com.fakhry.pomodojo.core.utils.primitives.formatDurationMillis
 import com.fakhry.pomodojo.focus.domain.model.NotificationSummary
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
-import com.fakhry.pomodojo.utils.formatDurationMillis
 
 internal fun PomodoroSessionDomain.toIosNotificationSummary(now: Long): NotificationSummary {
     val currentSegment = timeline.segments.firstOrNull {

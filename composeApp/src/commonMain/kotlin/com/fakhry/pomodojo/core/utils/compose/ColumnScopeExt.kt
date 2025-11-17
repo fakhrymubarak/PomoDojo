@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.utils.ui
+package com.fakhry.pomodojo.core.utils.compose
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer

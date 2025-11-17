@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.focus.data.repository
 
+import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.focus.data.db.FocusSessionDao
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionEntity
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionHourSplitEntity
@@ -12,7 +13,6 @@ import com.fakhry.pomodojo.preferences.domain.model.TimerDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
-import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

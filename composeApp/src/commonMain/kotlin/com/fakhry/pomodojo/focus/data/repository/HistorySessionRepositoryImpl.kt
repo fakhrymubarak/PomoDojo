@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.focus.data.repository
 
+import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.focus.data.db.HistorySessionDao
 import com.fakhry.pomodojo.focus.data.mapper.mapToDomain
@@ -8,7 +9,6 @@ import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.ui.state.DomainResult
-import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.DatePeriod

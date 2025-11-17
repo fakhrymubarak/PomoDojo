@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.focus.data.repository
 
+import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.focus.data.db.HistorySessionDao
 import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
@@ -10,7 +11,6 @@ import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.ui.state.DomainResult
-import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate

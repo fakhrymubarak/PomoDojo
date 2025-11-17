@@ -1,11 +1,11 @@
 package com.fakhry.pomodojo.focus.ui.mapper
 
+import com.fakhry.pomodojo.core.utils.primitives.formatDurationMillis
 import com.fakhry.pomodojo.preferences.domain.model.TimerDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.preferences.ui.model.TimerUi
-import com.fakhry.pomodojo.utils.formatDurationMillis
 
 internal fun TimerSegmentsDomain.toTimelineSegmentUi(now: Long): TimelineSegmentUi {
     val duration = timer.durationEpochMs

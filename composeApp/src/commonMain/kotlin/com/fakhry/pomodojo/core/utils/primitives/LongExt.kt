@@ -1,5 +1,7 @@
-package com.fakhry.pomodojo.utils
+package com.fakhry.pomodojo.core.utils.primitives
 
+import com.fakhry.pomodojo.core.utils.constant.Const
+import com.fakhry.pomodojo.core.utils.date.formatMmSs
 import kotlin.math.ceil
 
 /**
@@ -13,7 +15,7 @@ import kotlin.math.ceil
  *
  * @return A [String] representing the duration in MM:SS format.
  * @receiver The duration in milliseconds.
- * @see formatMmSs
+ * @see com.fakhry.pomodojo.core.utils.date.formatMmSs
  */
 fun Long.formatDurationMillis(): String {
     val totalSeconds = ceil(this / 1_000.0).toLong().coerceAtLeast(0L)

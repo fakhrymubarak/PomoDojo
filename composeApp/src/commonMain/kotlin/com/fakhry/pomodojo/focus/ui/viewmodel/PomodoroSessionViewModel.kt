@@ -2,6 +2,8 @@ package com.fakhry.pomodojo.focus.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.core.utils.primitives.formatDurationMillis
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
@@ -22,8 +24,6 @@ import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
-import com.fakhry.pomodojo.utils.DispatcherProvider
-import com.fakhry.pomodojo.utils.formatDurationMillis
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

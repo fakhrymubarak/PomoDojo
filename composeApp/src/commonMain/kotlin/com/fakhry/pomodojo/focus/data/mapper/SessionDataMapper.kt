@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.focus.data.mapper
 
+import com.fakhry.pomodojo.core.utils.primitives.toMinutes
 import com.fakhry.pomodojo.dashboard.domain.model.HistoryDomain
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionEntity
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionHourSplitEntity
@@ -13,7 +14,6 @@ import com.fakhry.pomodojo.preferences.domain.model.TimerDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
-import com.fakhry.pomodojo.utils.toMinutes
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime

@@ -2,6 +2,7 @@ package com.fakhry.pomodojo.preferences.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
@@ -17,7 +18,6 @@ import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.preferences.ui.model.toAppearanceUiState
 import com.fakhry.pomodojo.preferences.ui.model.toConfigUiState
-import com.fakhry.pomodojo.utils.DispatcherProvider
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
