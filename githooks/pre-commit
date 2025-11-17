@@ -11,3 +11,6 @@ run() {
 }
 
 run ktlintFormat
+run :composeApp:cleanJvmTest :composeApp:jacocoJvmTestCoverageVerification
+run :composeApp:cleanTestProdDebugUnitTest :composeApp:testProdDebugUnitTest
+run :composeApp:cleanIosSimulatorArm64Test :composeApp:iosSimulatorArm64Test

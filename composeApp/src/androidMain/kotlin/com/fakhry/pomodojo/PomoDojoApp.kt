@@ -1,7 +1,6 @@
 package com.fakhry.pomodojo
 
 import android.app.Application
-import com.fakhry.pomodojo.focus.data.db.AndroidAppDependenciesInitializer
 
 class PomoDojoApp : Application() {
 
