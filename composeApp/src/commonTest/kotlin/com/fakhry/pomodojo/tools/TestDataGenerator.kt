@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.tools
 
-import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
+import com.fakhry.pomodojo.core.database.entities.HistorySessionEntity
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone

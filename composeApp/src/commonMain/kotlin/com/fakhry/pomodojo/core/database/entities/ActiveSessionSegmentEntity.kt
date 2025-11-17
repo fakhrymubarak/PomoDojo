@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.focus.data.model.entities
+package com.fakhry.pomodojo.core.database.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

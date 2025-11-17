@@ -1,12 +1,12 @@
 package com.fakhry.pomodojo.focus.data.mapper
 
+import com.fakhry.pomodojo.core.database.entities.ActiveSessionEntity
+import com.fakhry.pomodojo.core.database.entities.ActiveSessionHourSplitEntity
+import com.fakhry.pomodojo.core.database.entities.ActiveSessionSegmentEntity
+import com.fakhry.pomodojo.core.database.entities.ActiveSessionWithRelations
+import com.fakhry.pomodojo.core.database.entities.HistorySessionEntity
 import com.fakhry.pomodojo.core.utils.primitives.toMinutes
 import com.fakhry.pomodojo.dashboard.domain.model.HistoryDomain
-import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionEntity
-import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionHourSplitEntity
-import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionSegmentEntity
-import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionWithRelations
-import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain

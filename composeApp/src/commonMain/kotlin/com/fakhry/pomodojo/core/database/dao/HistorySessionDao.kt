@@ -1,10 +1,10 @@
-package com.fakhry.pomodojo.focus.data.db
+package com.fakhry.pomodojo.core.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
+import com.fakhry.pomodojo.core.database.entities.HistorySessionEntity
 
 @Dao
 interface HistorySessionDao {

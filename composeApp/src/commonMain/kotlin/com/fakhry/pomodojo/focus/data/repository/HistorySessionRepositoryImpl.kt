@@ -1,12 +1,12 @@
 package com.fakhry.pomodojo.focus.data.repository
 
 import com.fakhry.pomodojo.commons.domain.state.DomainResult
+import com.fakhry.pomodojo.core.database.dao.HistorySessionDao
+import com.fakhry.pomodojo.core.database.entities.HistorySessionEntity
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
-import com.fakhry.pomodojo.focus.data.db.HistorySessionDao
 import com.fakhry.pomodojo.focus.data.mapper.mapToDomain
 import com.fakhry.pomodojo.focus.data.mapper.toHistoryEntity
-import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
 import kotlinx.coroutines.async

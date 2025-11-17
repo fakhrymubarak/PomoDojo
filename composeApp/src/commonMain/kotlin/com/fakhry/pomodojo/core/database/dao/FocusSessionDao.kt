@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.focus.data.db
+package com.fakhry.pomodojo.core.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -6,10 +6,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
-import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionEntity
-import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionHourSplitEntity
-import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionSegmentEntity
-import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionWithRelations
+import com.fakhry.pomodojo.core.database.entities.ActiveSessionEntity
+import com.fakhry.pomodojo.core.database.entities.ActiveSessionHourSplitEntity
+import com.fakhry.pomodojo.core.database.entities.ActiveSessionSegmentEntity
+import com.fakhry.pomodojo.core.database.entities.ActiveSessionWithRelations
 
 @Dao
 interface FocusSessionDao {
