@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.permissions
+package com.fakhry.pomodojo.core.utils.permissions
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

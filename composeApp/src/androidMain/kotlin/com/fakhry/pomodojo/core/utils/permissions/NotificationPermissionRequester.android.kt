@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.permissions
+package com.fakhry.pomodojo.core.utils.permissions
 
 import android.Manifest
 import android.content.pm.PackageManager
