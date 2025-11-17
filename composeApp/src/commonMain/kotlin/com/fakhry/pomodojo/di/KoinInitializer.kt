@@ -1,11 +1,11 @@
 package com.fakhry.pomodojo.di
 
+import com.fakhry.pomodojo.core.datastore.provideDataStore
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.dashboard.di.dashboardModule
 import com.fakhry.pomodojo.focus.di.focusModule
 import com.fakhry.pomodojo.preferences.data.source.DataStorePreferenceStorage
 import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
-import com.fakhry.pomodojo.preferences.data.source.provideDataStore
 import com.fakhry.pomodojo.preferences.di.preferencesModule
 import org.koin.core.module.Module
 import org.koin.dsl.module

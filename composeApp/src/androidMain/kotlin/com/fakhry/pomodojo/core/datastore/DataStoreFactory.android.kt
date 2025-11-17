@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.preferences.data.source
+package com.fakhry.pomodojo.core.datastore
 
 import android.content.Context
 import androidx.datastore.core.DataStore

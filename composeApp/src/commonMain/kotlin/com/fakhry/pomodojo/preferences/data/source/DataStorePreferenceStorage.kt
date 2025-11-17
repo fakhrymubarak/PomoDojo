@@ -13,10 +13,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-const val PREFERENCES_FILE_NAME = "pomodojo.preferences_pb"
-
-internal expect fun provideDataStore(): DataStore<Preferences>
-
 class DataStorePreferenceStorage(private val dataStore: DataStore<Preferences>) :
     PreferenceStorage {
     override val preferences: Flow<PreferencesDomain> =

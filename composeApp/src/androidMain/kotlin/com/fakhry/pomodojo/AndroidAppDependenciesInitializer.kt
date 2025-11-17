@@ -2,8 +2,8 @@ package com.fakhry.pomodojo
 
 import android.content.Context
 import com.fakhry.pomodojo.core.database.AndroidFocusDatabaseHolder
+import com.fakhry.pomodojo.core.datastore.AndroidPreferencesDataStoreProvider
 import com.fakhry.pomodojo.focus.domain.usecase.AndroidSegmentCompletionSoundPlayer
-import com.fakhry.pomodojo.preferences.data.source.AndroidPreferencesDataStoreProvider
 
 internal object AndroidAppDependenciesInitializer {
     private var appContext: Context? = null
