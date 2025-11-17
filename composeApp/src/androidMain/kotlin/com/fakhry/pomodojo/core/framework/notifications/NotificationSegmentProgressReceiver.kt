@@ -7,7 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
-import com.fakhry.pomodojo.core.database.createDatabase
+import com.fakhry.pomodojo.core.datastore.provideDataStore
 import com.fakhry.pomodojo.core.framework.audio.provideSoundPlayer
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.features.focus.data.repository.ActiveSessionRepositoryImpl
@@ -47,8 +47,8 @@ class NotificationSegmentProgressReceiver : BroadcastReceiver() {
         scope.launch {
             try {
                 // Initialize dependencies
-                val database = createDatabase()
-                val sessionRepository = ActiveSessionRepositoryImpl(database, DispatcherProvider())
+                val sessionRepository =
+                    ActiveSessionRepositoryImpl(provideDataStore(), DispatcherProvider())
                 val notifier = providePomodoroSessionNotifier()
 
                 // Check if there's an active session

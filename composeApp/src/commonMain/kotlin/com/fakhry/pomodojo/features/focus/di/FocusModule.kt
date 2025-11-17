@@ -1,5 +1,7 @@
 package com.fakhry.pomodojo.features.focus.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.fakhry.pomodojo.core.database.PomoDojoRoomDatabase
 import com.fakhry.pomodojo.core.database.createDatabase
 import com.fakhry.pomodojo.core.framework.audio.SoundPlayer
@@ -22,7 +24,7 @@ import org.koin.dsl.module
 val focusModule = module {
     viewModelOf(::PomodoroSessionViewModel)
     single<ActiveSessionRepository> {
-        ActiveSessionRepositoryImpl(get<PomoDojoRoomDatabase>(), get())
+        ActiveSessionRepositoryImpl(get<DataStore<Preferences>>(), get())
     }
     singleOf(::StaticQuoteRepository) bind QuoteRepository::class
     singleOf(::CreatePomodoroSessionUseCase)

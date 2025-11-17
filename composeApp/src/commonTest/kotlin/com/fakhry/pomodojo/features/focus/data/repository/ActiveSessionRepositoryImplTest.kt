@@ -1,10 +1,8 @@
 package com.fakhry.pomodojo.features.focus.data.repository
 
-import com.fakhry.pomodojo.core.database.dao.FocusSessionDao
-import com.fakhry.pomodojo.core.database.entities.ActiveSessionEntity
-import com.fakhry.pomodojo.core.database.entities.ActiveSessionHourSplitEntity
-import com.fakhry.pomodojo.core.database.entities.ActiveSessionSegmentEntity
-import com.fakhry.pomodojo.core.database.entities.ActiveSessionWithRelations
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
@@ -13,55 +11,49 @@ import com.fakhry.pomodojo.features.preferences.domain.model.TimerDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ActiveSessionRepositoryImplTest {
     @Test
-    fun `saveActiveSession persists entity graph`() = runTest {
-        val focusDao = FakeFocusSessionDao()
+    fun `saveActiveSession persists snapshot as json`() = runTest {
+        val dataStore = FakeDataStore()
         val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
-        val repository = ActiveSessionRepositoryImpl(focusDao, dispatcher)
+        val repository = ActiveSessionRepositoryImpl(dataStore, dispatcher)
         val snapshot = sampleSession()
 
         repository.saveActiveSession(snapshot)
 
-        assertTrue(focusDao.hasActiveSession())
         assertEquals(snapshot, repository.getActiveSession())
-        assertEquals(snapshot.timeline.segments.size, focusDao.segments.size)
-        assertEquals(snapshot.timeline.hourSplits.size, focusDao.hourSplits.size)
-        assertEquals(1, focusDao.replaceSegmentsCount)
-        assertEquals(1, focusDao.replaceHourSplitsCount)
+        assertTrue(repository.hasActiveSession())
     }
 
     @Test
-    fun `updateActiveSession reuses existing session id`() = runTest {
-        val focusDao = FakeFocusSessionDao()
+    fun `updateActiveSession overwrites stored snapshot`() = runTest {
+        val dataStore = FakeDataStore()
         val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
-        val repository = ActiveSessionRepositoryImpl(focusDao, dispatcher)
+        val repository = ActiveSessionRepositoryImpl(dataStore, dispatcher)
         val initial = sampleSession(totalCycle = 3)
         repository.saveActiveSession(initial)
-        val existingId = focusDao.entity?.sessionId
         val updated = initial.copy(totalCycle = 4, elapsedPauseEpochMs = 1_000L)
 
         repository.updateActiveSession(updated)
 
-        assertEquals(existingId, focusDao.entity?.sessionId)
         assertEquals(updated, repository.getActiveSession())
-        assertEquals(2, focusDao.replaceSegmentsCount)
     }
 
     @Test
     fun `getActiveSession throws when nothing stored`() = runTest {
         val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
         val repository =
-            ActiveSessionRepositoryImpl(FakeFocusSessionDao(), dispatcher)
+            ActiveSessionRepositoryImpl(FakeDataStore(), dispatcher)
 
         assertFailsWith<IllegalStateException> {
             repository.getActiveSession()
@@ -69,10 +61,10 @@ class ActiveSessionRepositoryImplTest {
     }
 
     @Test
-    fun `hasActiveSession reflects dao state`() = runTest {
-        val focusDao = FakeFocusSessionDao()
+    fun `hasActiveSession reflects data store state`() = runTest {
+        val dataStore = FakeDataStore()
         val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
-        val repository = ActiveSessionRepositoryImpl(focusDao, dispatcher)
+        val repository = ActiveSessionRepositoryImpl(dataStore, dispatcher)
 
         assertFalse(repository.hasActiveSession())
 
@@ -82,34 +74,31 @@ class ActiveSessionRepositoryImplTest {
     }
 
     @Test
-    fun `completeSession clears rows`() = runTest {
-        val focusDao = FakeFocusSessionDao()
+    fun `completeSession clears stored snapshot`() = runTest {
+        val dataStore = FakeDataStore()
         val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
-        val repository = ActiveSessionRepositoryImpl(focusDao, dispatcher)
+        val repository = ActiveSessionRepositoryImpl(dataStore, dispatcher)
         val snapshot = sampleSession()
 
         repository.saveActiveSession(snapshot)
         repository.completeSession(snapshot)
 
-        assertNull(focusDao.entity)
-        assertTrue(focusDao.segments.isEmpty())
-        assertTrue(focusDao.hourSplits.isEmpty())
+        assertFalse(repository.hasActiveSession())
+        assertFailsWith<IllegalStateException> {
+            repository.getActiveSession()
+        }
     }
 
     @Test
-    fun `clearActiveSession wipes entity graph`() = runTest {
-        val focusDao = FakeFocusSessionDao()
+    fun `clearActiveSession wipes stored json`() = runTest {
+        val dataStore = FakeDataStore()
         val dispatcher = DispatcherProvider(StandardTestDispatcher(testScheduler))
-        val repository = ActiveSessionRepositoryImpl(focusDao, dispatcher)
+        val repository = ActiveSessionRepositoryImpl(dataStore, dispatcher)
         repository.saveActiveSession(sampleSession())
-        val beforeClear = focusDao.clearCount
 
         repository.clearActiveSession()
 
-        assertNull(focusDao.entity)
-        assertTrue(focusDao.segments.isEmpty())
-        assertTrue(focusDao.hourSplits.isEmpty())
-        assertEquals(beforeClear + 1, focusDao.clearCount)
+        assertFalse(repository.hasActiveSession())
     }
 
     private fun sampleSession(
@@ -155,80 +144,17 @@ class ActiveSessionRepositoryImplTest {
         )
     }
 
-    private class FakeFocusSessionDao : FocusSessionDao {
-        var entity: ActiveSessionEntity? = null
-        val segments: MutableList<ActiveSessionSegmentEntity> = mutableListOf()
-        val hourSplits: MutableList<ActiveSessionHourSplitEntity> = mutableListOf()
-        var replaceSegmentsCount = 0
-        var replaceHourSplitsCount = 0
-        var clearCount = 0
-        private var nextId = 1L
+    private class FakeDataStore : DataStore<Preferences> {
+        private val state = MutableStateFlow(emptyPreferences())
 
-        override suspend fun hasActiveSession(): Boolean = entity != null
+        override val data: Flow<Preferences> = state
 
-        override suspend fun getActiveSessionWithRelations(): ActiveSessionWithRelations? =
-            entity?.let { stored ->
-                ActiveSessionWithRelations(
-                    session = stored,
-                    segments = segments.toList(),
-                    hourSplits = hourSplits.toList(),
-                )
-            }
-
-        override suspend fun getActiveSessionId(): Long? = entity?.sessionId
-
-        override suspend fun upsertActiveSession(entity: ActiveSessionEntity): Long {
-            val assignedId =
-                if (entity.sessionId == 0L) {
-                    val id = nextId++
-                    this.entity = entity.copy(sessionId = id)
-                    id
-                } else {
-                    this.entity = entity
-                    -1L
-                }
-            return assignedId
-        }
-
-        override suspend fun insertSegments(segments: List<ActiveSessionSegmentEntity>) {
-            this.segments += segments
-        }
-
-        override suspend fun insertHourSplits(entities: List<ActiveSessionHourSplitEntity>) {
-            hourSplits += entities
-        }
-
-        override suspend fun deleteSegments(sessionId: Long) {
-            segments.removeAll { it.sessionId == sessionId }
-        }
-
-        override suspend fun deleteHourSplits(sessionId: Long) {
-            hourSplits.removeAll { it.sessionId == sessionId }
-        }
-
-        override suspend fun replaceSegments(
-            sessionId: Long,
-            segments: List<ActiveSessionSegmentEntity>,
-        ) {
-            replaceSegmentsCount++
-            deleteSegments(sessionId)
-            insertSegments(segments)
-        }
-
-        override suspend fun replaceHourSplits(
-            sessionId: Long,
-            splits: List<ActiveSessionHourSplitEntity>,
-        ) {
-            replaceHourSplitsCount++
-            deleteHourSplits(sessionId)
-            insertHourSplits(splits)
-        }
-
-        override suspend fun clearActiveSession() {
-            clearCount++
-            entity = null
-            segments.clear()
-            hourSplits.clear()
+        override suspend fun updateData(
+            transform: suspend (t: Preferences) -> Preferences,
+        ): Preferences {
+            val updated = transform(state.value)
+            state.value = updated
+            return updated
         }
     }
 }

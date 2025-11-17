@@ -135,12 +135,11 @@ class PomodoroSessionViewModel(
             stopTicker()
             val now = currentTimeProvider.now()
             val hasStoredSession = sessionRepository.hasActiveSession()
-            val session =
-                if (hasStoredSession) {
-                    sessionRepository.getActiveSession()
-                } else {
-                    createPomodoroSessionUseCase(now)
-                }
+            val session = if (hasStoredSession) {
+                sessionRepository.getActiveSession()
+            } else {
+                createPomodoroSessionUseCase(now)
+            }
             val prepared = prepareSession(session, now)
 
             reduce { prepared.uiState }
@@ -165,19 +164,17 @@ class PomodoroSessionViewModel(
     }
 
     private fun prepareSession(session: PomodoroSessionDomain, now: Long): PreparedSession {
-        timelineSegments = session.timeline.segments
-            .map { it.toTimelineSegmentUi(now) }
-            .toMutableList()
+        timelineSegments =
+            session.timeline.segments.map { it.toTimelineSegmentUi(now) }.toMutableList()
         activeSegmentIndex = timelineSegments.resolveActiveIndex()
         val mutated = fastForwardTimeline(now)
         activeSegmentIndex = timelineSegments.resolveActiveIndex()
-        val refreshedSession =
-            session.copy(
-                timeline = TimelineDomain(
-                    segments = timelineSegments.map { it.toDomainSegment() },
-                    hourSplits = session.timeline.hourSplits,
-                ),
-            )
+        val refreshedSession = session.copy(
+            timeline = TimelineDomain(
+                segments = timelineSegments.map { it.toDomainSegment() },
+                hourSplits = session.timeline.hourSplits,
+            ),
+        )
         val isComplete = timelineSegments.all { it.timerStatus == TimerStatusDomain.COMPLETED }
         val uiState = refreshedSession.toUiState(timelineSegments, activeSegmentIndex, isComplete)
         return PreparedSession(
@@ -261,12 +258,11 @@ class PomodoroSessionViewModel(
         val nextStartAt = currentSegment.timer.finishedInMillis.takeIf { it > 0L } ?: referenceTime
         timelineSegments[activeSegmentIndex] = finalizeSegment(timelineSegments[activeSegmentIndex])
         activeSegmentIndex += 1
-        timelineSegments[activeSegmentIndex] =
-            prepareSegmentForRun(
-                timelineSegments[activeSegmentIndex],
-                startedAt = nextStartAt,
-                referenceTime = referenceTime,
-            )
+        timelineSegments[activeSegmentIndex] = prepareSegmentForRun(
+            timelineSegments[activeSegmentIndex],
+            startedAt = nextStartAt,
+            referenceTime = referenceTime,
+        )
         return true
     }
 

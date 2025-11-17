@@ -22,6 +22,7 @@ private object IosFocusDatabaseHolder {
                 name = dbFile,
             ).setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
+            .addMigrations(*POMO_DOJO_MIGRATIONS)
             .build()
     }
 
