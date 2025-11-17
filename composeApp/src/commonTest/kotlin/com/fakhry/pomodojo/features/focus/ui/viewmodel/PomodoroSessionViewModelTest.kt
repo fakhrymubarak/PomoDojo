@@ -193,6 +193,53 @@ class PomodoroSessionViewModelTest {
         assertEquals(2, soundPlayer.playCount)
     }
 
+    @Test
+    fun `togglePauseResume pauses and resumes the active segment`() = runTest(dispatcher) {
+        val preferencesRepository = FakePreferencesRepository(
+            PreferencesDomain(
+                repeatCount = 1,
+                focusMinutes = 1,
+                breakMinutes = 1,
+                longBreakEnabled = false,
+            ),
+        )
+        val sessionRepository = FakeActiveSessionRepository()
+        val viewModel =
+            createViewModel(
+                preferencesRepositoryOverride = preferencesRepository,
+                sessionRepository = sessionRepository,
+            )
+        runCurrent()
+        viewModel.awaitSessionStarted()
+
+        viewModel.togglePauseResume()
+        advanceUntilIdle()
+        assertTrue(sessionRepository.storedSession != null)
+        assertTrue(preferencesRepository.currentState.hasActiveSession)
+
+        viewModel.togglePauseResume()
+        runCurrent()
+        assertTrue(sessionRepository.storedSession != null)
+    }
+
+    @Test
+    fun `togglePauseResume completes running segment when timer elapsed`() = runTest(dispatcher) {
+        val sessionRepository = FakeActiveSessionRepository()
+        val viewModel = createViewModel(sessionRepository = sessionRepository)
+        runCurrent()
+        viewModel.awaitSessionStarted()
+
+        advanceTimeBy(minuteMillis)
+        runCurrent()
+
+        viewModel.togglePauseResume()
+        advanceUntilIdle()
+
+        val updatedTimeline = viewModel.container.stateFlow.value.timeline.segments
+        assertEquals(TimerStatusDomain.COMPLETED, updatedTimeline.first().timerStatus)
+        assertEquals(TimerType.SHORT_BREAK, viewModel.container.stateFlow.value.activeSegment.type)
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun TestScope.createViewModel(
         preferences: PreferencesDomain = PreferencesDomain(
@@ -205,10 +252,12 @@ class PomodoroSessionViewModelTest {
         ),
         sessionRepository: FakeActiveSessionRepository = FakeActiveSessionRepository(),
         soundPlayer: SoundPlayer = FakeSoundPlayer(),
+        preferencesRepositoryOverride: FakePreferencesRepository? = null,
     ): PomodoroSessionViewModel {
         val currentTimeProvider = TestCurrentTimeProvider(testScheduler)
         val quoteRepository = FakeQuoteRepository()
-        val preferencesRepository = FakePreferencesRepository(preferences)
+        val preferencesRepository =
+            preferencesRepositoryOverride ?: FakePreferencesRepository(preferences)
         val dispatcherProvider = DispatcherProvider(dispatcher)
 
         val focusNotifier = FakeFocusSessionNotifier()
@@ -251,6 +300,7 @@ private class FakeQuoteRepository(
 
 private class FakePreferencesRepository(initial: PreferencesDomain) : PreferencesRepository {
     private val state = MutableStateFlow(initial)
+    val currentState: PreferencesDomain get() = state.value
 
     override val preferences: Flow<PreferencesDomain> = state.asStateFlow()
 

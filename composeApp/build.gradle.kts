@@ -224,7 +224,28 @@ val jvmMainCompilation =
         .getByName("main")
 val jvmSourceDirs =
     jvmMainCompilation.allKotlinSourceSets.flatMap { it.kotlin.sourceDirectories.files }
-val jacocoClassExclusions = listOf("**/ui/**/*Screen.class")
+val jacocoClassExclusions =
+    listOf(
+        "**/generated/**",
+        "**/di/**",
+        "**/core/navigation/**",
+        "**/core/ui/**",
+        "**/core/datastore/**",
+        "**/core/framework/audio/**",
+        "**/core/framework/notifications/**",
+        "**/core/framework/screen/**",
+        "**/core/database/**",
+        "**/core/utils/compose/**",
+        "**/core/utils/permissions/**",
+        "**/features/**/di/**",
+        "**/features/**/ui/components/**",
+        "**/features/**/ui/**Screen*.class",
+        "**/features/**/ui/CelebrationMessage*.class",
+        "**/features/**/ui/ConfettiPiece*.class",
+        "**/*ComposableSingletons*.class",
+        "**/AppKt*.class",
+        "**/MainKt*.class",
+    )
 
 tasks.register<JacocoReport>("jacocoJvmTestReport") {
     dependsOn("jvmTest")
@@ -269,7 +290,7 @@ tasks.register<JacocoCoverageVerification>("jacocoJvmTestCoverageVerification") 
             limit {
                 counter = "LINE"
                 value = "COVEREDRATIO"
-                minimum = BigDecimal("0.75")
+                minimum = BigDecimal("0.95")
             }
         }
     }

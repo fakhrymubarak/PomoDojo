@@ -32,7 +32,7 @@
         </activity>
 
         <receiver
-            android:name=".focus.domain.NotificationSegmentProgressReceiver"
+            android:name=".core.framework.notifications.NotificationSegmentProgressReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.fakhry.pomodojo.SEGMENT_COMPLETE" />
