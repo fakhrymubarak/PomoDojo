@@ -217,6 +217,14 @@ tasks.withType<Test>().configureEach {
 }
 
 val jacocoJvmExec = layout.buildDirectory.file("jacoco/jvmTest.exec")
+val jvmMainCompilation =
+    kotlinExt.targets
+        .getByName("jvm")
+        .compilations
+        .getByName("main")
+val jvmSourceDirs =
+    jvmMainCompilation.allKotlinSourceSets.flatMap { it.kotlin.sourceDirectories.files }
+val jacocoClassExclusions = listOf("**/ui/**/*Screen.class")
 
 tasks.register<JacocoReport>("jacocoJvmTestReport") {
     dependsOn("jvmTest")
@@ -228,17 +236,6 @@ tasks.register<JacocoReport>("jacocoJvmTestReport") {
         html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jvmTestResult"))
     }
 
-    val jvmMainCompilation =
-        kotlinExt.targets
-            .getByName("jvm")
-            .compilations
-            .getByName("main")
-    val jvmSourceDirs =
-        jvmMainCompilation.allKotlinSourceSets.flatMap { it.kotlin.sourceDirectories.files }
-
-    val jacocoClassExclusions = listOf(
-        "**/ui/**/*Screen.class",
-    )
     sourceDirectories.setFrom(files(jvmSourceDirs))
     classDirectories.setFrom(
         files(
@@ -250,4 +247,38 @@ tasks.register<JacocoReport>("jacocoJvmTestReport") {
         ),
     )
     executionData.setFrom(jacocoJvmExec)
+}
+
+tasks.register<JacocoCoverageVerification>("jacocoJvmTestCoverageVerification") {
+    dependsOn("jvmTest")
+
+    sourceDirectories.setFrom(files(jvmSourceDirs))
+    classDirectories.setFrom(
+        files(
+            jvmMainCompilation.output.classesDirs.files.map { dir ->
+                fileTree(dir) {
+                    exclude(jacocoClassExclusions)
+                }
+            },
+        ),
+    )
+    executionData.setFrom(jacocoJvmExec)
+    violationRules {
+        rule {
+            element = "BUNDLE"
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = BigDecimal("0.75")
+            }
+        }
+    }
+}
+
+tasks.named("check").configure {
+    dependsOn("jacocoJvmTestCoverageVerification")
+}
+
+tasks.named("jacocoJvmTestCoverageVerification").configure {
+    finalizedBy("jacocoJvmTestReport")
 }

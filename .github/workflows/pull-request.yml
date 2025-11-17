@@ -34,7 +34,7 @@ jobs:
           - platform: ios
             command: ":composeApp:cleanIosSimulatorArm64Test :composeApp:iosSimulatorArm64Test"
           - platform: jvm
-            command: ":composeApp:cleanJvmTest :composeApp:jvmTest"
+            command: ":composeApp:cleanJvmTest :composeApp:jacocoJvmTestCoverageVerification"
 
     steps:
       - name: Checkout
@@ -51,6 +51,13 @@ jobs:
 
       - name: Run tests ${{ matrix.platform }}
         run: ./gradlew ${{ matrix.command }}
+
+      - name: Upload JVM coverage report
+        if: matrix.platform == 'jvm'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jvm-coverage-report
+          path: composeApp/build/reports/jacoco/jvmTestResult
 
   build:
     runs-on: macos-latest
