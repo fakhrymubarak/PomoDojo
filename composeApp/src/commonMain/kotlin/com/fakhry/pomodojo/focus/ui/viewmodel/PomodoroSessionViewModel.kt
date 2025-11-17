@@ -394,7 +394,10 @@ class PomodoroSessionViewModel(
     private fun persistActiveSnapshotIfNeeded() = viewModelScope.launch(dispatcher.io) {
         val currentState = container.stateFlow.value
         if (currentState.isComplete) return@launch
-        buildSessionSnapshot(currentState)?.let { sessionRepository.updateActiveSession(it) }
+        buildSessionSnapshot(currentState)?.let {
+            preferencesRepository.updateHasActiveSession(true)
+            sessionRepository.updateActiveSession(it)
+        }
     }
 
     private suspend fun completeActiveSession() {
@@ -403,6 +406,7 @@ class PomodoroSessionViewModel(
             sessionRepository.completeSession(it)
             historyRepository.insertHistory(it)
             focusSessionNotifier.cancel(it.sessionId())
+            preferencesRepository.updateHasActiveSession(false)
         }
         resetNotificationThrottle()
     }

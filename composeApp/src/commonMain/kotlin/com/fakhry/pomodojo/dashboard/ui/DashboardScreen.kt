@@ -33,14 +33,14 @@ import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.pomodoro_timer_start
 import com.fakhry.pomodojo.permissions.rememberNotificationPermissionRequester
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Suppress("NonSkippableComposable")
 @Composable
 fun DashboardScreen(
     onStartPomodoro: () -> Unit,
     onOpenSettings: () -> Unit,
-    viewModel: DashboardViewModel = koinInject(),
+    viewModel: DashboardViewModel = koinViewModel(),
 ) {
     val hasActiveSession by viewModel.hasActiveSession.collectAsState()
 

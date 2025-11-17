@@ -4,6 +4,9 @@
     <color name="secondary">#567D41</color>
     <color name="long_break">#FFC857</color>
 
+    <color name="splash_background_light">#F7F7F7</color>
+    <color name="splash_background_dark">#121212</color>
+
     <color name="notification_background">#121212</color>
     <color name="notification_text_primary">#FFFFFF</color>
     <color name="notification_text_secondary">#B3FFFFFF</color>

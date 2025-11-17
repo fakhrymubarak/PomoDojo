@@ -22,4 +22,6 @@ interface PreferencesRepository {
     suspend fun updateAppTheme(theme: AppTheme)
 
     suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean)
+
+    suspend fun updateHasActiveSession(value: Boolean)
 }

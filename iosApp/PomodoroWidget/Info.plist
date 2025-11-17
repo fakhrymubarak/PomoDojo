@@ -4,10 +4,11 @@
     <dict>
         <key>NSExtension</key>
         <dict>
-            <key>NSExtensionPrincipalClass</key>
-            <string>$(PRODUCT_MODULE_NAME).PomodoroWidgets</string>
-            <key>NSSupportsLiveActivities</key>
-            <true />
+            <key>NSExtensionAttributes</key>
+            <dict>
+                <key>NSSupportsLiveActivities</key>
+                <true />
+            </dict>
             <key>NSExtensionPointIdentifier</key>
             <string>com.apple.widgetkit-extension</string>
         </dict>

@@ -27,8 +27,17 @@ jobs:
       - name: Run ktlint
         run: ./gradlew ktlintCheck
 
-  test:
+  tests:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        include:
+          - platform: android
+            command: ":composeApp:cleanTestProdDebugUnitTest :composeApp:testProdDebugUnitTest"
+          - platform: ios
+            command: ":composeApp:cleanIosSimulatorArm64Test :composeApp:iosSimulatorArm64Test"
+          - platform: jvm
+            command: ":composeApp:cleanJvmTest :composeApp:jvmTest"
 
     steps:
       - name: Checkout
@@ -43,11 +52,21 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Run tests
-        run: ./gradlew :composeApp:cleanTestDebugUnitTest :composeApp:testDebugUnitTest
+      - name: Run tests ${{ matrix.platform }}
+        run: ./gradlew ${{ matrix.command }}
 
-  android_build:
+  build:
     runs-on: macos-latest
+
+    strategy:
+      matrix:
+        include:
+          - platform: android
+            command: ":composeApp:assembleRelease"
+          - platform: ios
+            command: ":composeApp:linkDebugFrameworkIosArm64"
+          - platform: jvm
+            command: ":composeApp:jvmJar"
 
     steps:
       - name: Checkout
@@ -62,43 +81,5 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Build Android artifacts
-        run: ./gradlew :composeApp:assembleRelease
-
-  desktop_build:
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Build JVM artifacts
-        run: ./gradlew :composeApp:jvmJar
-
-  ios_build:
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Build iOS artifacts
-        run: ./gradlew :composeApp:linkDebugFrameworkIosArm64
+      - name: Build ${{ matrix.platform }} artifacts
+        run: ./gradlew ${{ matrix.command }}

@@ -289,6 +289,10 @@ private class FakePreferencesRepository(initial: PreferencesDomain) : Preference
     override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {
         state.update { it.copy(alwaysOnDisplayEnabled = enabled) }
     }
+
+    override suspend fun updateHasActiveSession(value: Boolean) {
+        state.update { it.copy(hasActiveSession = value) }
+    }
 }
 
 private class FakeActiveSessionRepository(

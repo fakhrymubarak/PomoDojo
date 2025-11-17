@@ -32,4 +32,4 @@ expect object PomoDojoRoomDatabaseConstructor : RoomDatabaseConstructor<PomoDojo
     override fun initialize(): PomoDojoRoomDatabase
 }
 
-internal const val POMO_DOJO_DATABASE_NAME = "pomodojo.db"
+internal expect val POMO_DOJO_DATABASE_NAME: String

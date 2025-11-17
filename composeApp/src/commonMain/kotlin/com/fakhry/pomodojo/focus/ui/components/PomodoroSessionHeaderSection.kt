@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.focus.ui.focusPhaseLabel
-import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.focus_session_header_cycle_count
 import com.fakhry.pomodojo.generated.resources.focus_session_header_title
@@ -28,8 +27,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun PomodoroSessionHeaderSection(timerType: TimerType, cycleNumber: Int, totalCycle: Int) {
     BgHeaderCanvas {
         Column(
-            modifier = Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.systemBars)
-                .padding(horizontal = 24.dp),
+            modifier = Modifier.fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.systemBars)
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp),
+
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
@@ -60,10 +62,6 @@ fun PomodoroSessionHeaderSection(timerType: TimerType, cycleNumber: Int, totalCy
 @Preview
 @Composable
 private fun PomodoroSessionHeaderSectionPreview() {
-    val state = PomodoroSessionUiState(
-        totalCycle = 4,
-    )
-
     PomoDojoTheme {
         PomodoroSessionHeaderSection(TimerType.FOCUS, 2, 4)
     }

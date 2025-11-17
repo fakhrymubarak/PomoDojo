@@ -2,6 +2,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -13,6 +14,17 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
     id("jacoco")
+    alias(libs.plugins.googleGmsGoogleServices)
+    alias(libs.plugins.googleFirebaseCrashlytics)
+}
+
+fun Project.envProps(fileName: String): Properties {
+    val props = Properties()
+    val envFile = rootProject.file(fileName)
+    if (envFile.exists()) {
+        envFile.inputStream().use { props.load(it) }
+    }
+    return props
 }
 
 kotlin {
@@ -52,6 +64,7 @@ kotlin {
             implementation(libs.androidx.ui.tooling)
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -104,21 +117,12 @@ kotlin {
 
 android {
     namespace = "com.fakhry.pomodojo"
-    compileSdk =
-        libs.versions.android.compileSdk
-            .get()
-            .toInt()
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.fakhry.pomodojo"
-        minSdk =
-            libs.versions.android.minSdk
-                .get()
-                .toInt()
-        targetSdk =
-            libs.versions.android.targetSdk
-                .get()
-                .toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
     }
@@ -127,9 +131,31 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+
+            val envProps = project.envProps("config/dev.props")
+            val dbName = envProps.getProperty("DB_NAME", "pomodojo_dev.db")
+            buildConfigField("String", "LOCAL_DB_NAME", "\"$dbName\"")
+        }
+        create("prod") {
+            dimension = "environment"
+            val envProps = project.envProps("config/prod.props")
+            val dbName = envProps.getProperty("DB_NAME", "pomodojo.db")
+            buildConfigField("String", "LOCAL_DB_NAME", "\"$dbName\"")
+        }
+    }
     buildTypes {
-        getByName("release") {
+        getByName("debug") {
             isMinifyEnabled = false
+        }
+        getByName("release") {
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -144,6 +170,7 @@ android {
 dependencies {
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.core)
+    implementation(libs.firebase.crashlytics)
 
     // Room KSP
     add("kspAndroid", libs.androidx.room.compiler)

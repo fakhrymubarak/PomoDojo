@@ -59,6 +59,10 @@ class PreferencesRepositoryImpl(
         storage.update { it.copy(appTheme = theme) }
     }
 
+    override suspend fun updateHasActiveSession(value: Boolean) {
+        storage.update { it.copy(hasActiveSession = value) }
+    }
+
     override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {
         storage.update { it.copy(alwaysOnDisplayEnabled = enabled) }
     }

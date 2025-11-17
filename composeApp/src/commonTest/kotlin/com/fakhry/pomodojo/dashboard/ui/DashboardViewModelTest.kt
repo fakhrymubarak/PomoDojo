@@ -321,6 +321,10 @@ class DashboardViewModelTest {
             state.update { it.copy(alwaysOnDisplayEnabled = enabled) }
         }
 
+        override suspend fun updateHasActiveSession(value: Boolean) {
+            state.update { it.copy(hasActiveSession = value) }
+        }
+
         fun emit(preferences: PreferencesDomain) {
             state.value = preferences
         }
