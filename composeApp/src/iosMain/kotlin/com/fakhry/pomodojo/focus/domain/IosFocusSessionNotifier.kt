@@ -1,10 +1,11 @@
 package com.fakhry.pomodojo.focus.domain
 
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.focus.domain.mapper.toIosNotificationSummary
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
 import com.fakhry.pomodojo.focus.ui.mapper.toCompletionSummary
-import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.UserNotifications.UNMutableNotificationContent
@@ -137,10 +138,7 @@ class IosFocusSessionNotifier : FocusSessionNotifier {
         notificationCenter.removeDeliveredNotificationsWithIdentifiers(identifiers)
     }
 
-    private fun calculateRemainingSeconds(
-        segment: com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain,
-        now: Long,
-    ): Int {
+    private fun calculateRemainingSeconds(segment: TimerSegmentsDomain, now: Long): Int {
         val remainingMillis = when (segment.timerStatus) {
             TimerStatusDomain.COMPLETED -> 0L
             TimerStatusDomain.INITIAL -> segment.timer.durationEpochMs

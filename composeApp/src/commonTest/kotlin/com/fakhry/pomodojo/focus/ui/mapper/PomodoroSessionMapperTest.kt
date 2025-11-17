@@ -1,16 +1,16 @@
 package com.fakhry.pomodojo.focus.ui.mapper
 
+import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
+import com.fakhry.pomodojo.features.preferences.ui.model.TimelineSegmentUi
+import com.fakhry.pomodojo.features.preferences.ui.model.TimelineUiModel
+import com.fakhry.pomodojo.features.preferences.ui.model.TimerUi
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionUiState
-import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimerDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimerType
-import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
-import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
-import com.fakhry.pomodojo.preferences.ui.model.TimerUi
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.test.Test
 import kotlin.test.assertEquals

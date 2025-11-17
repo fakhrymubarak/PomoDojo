@@ -1,14 +1,15 @@
 package com.fakhry.pomodojo.preferences
 
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.preferences.data.repository.PreferencesRepositoryImpl
-import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
-import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimerType
-import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.preferences.domain.usecase.BuildTimerSegmentsUseCase
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferenceCascadeResolver
-import com.fakhry.pomodojo.preferences.ui.PreferencesViewModel
+import com.fakhry.pomodojo.features.preferences.data.repository.PreferencesRepositoryImpl
+import com.fakhry.pomodojo.features.preferences.data.source.PreferenceStorage
+import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
+import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferenceCascadeResolver
+import com.fakhry.pomodojo.features.preferences.ui.PreferencesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -348,13 +349,13 @@ class PreferencesViewModelTest {
 
         advanceUntilIdle()
 
-        viewModel.onThemeSelected(com.fakhry.pomodojo.preferences.domain.model.AppTheme.DARK)
+        viewModel.onThemeSelected(AppTheme.DARK)
         advanceUntilIdle()
 
         val state = viewModel.state.value
         assertTrue(
             state.themeOptions.first {
-                it.value == com.fakhry.pomodojo.preferences.domain.model.AppTheme.DARK
+                it.value == AppTheme.DARK
             }.selected,
         )
     }

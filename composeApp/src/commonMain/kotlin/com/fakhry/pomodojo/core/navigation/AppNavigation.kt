@@ -9,10 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.fakhry.pomodojo.dashboard.ui.DashboardScreen
+import com.fakhry.pomodojo.features.preferences.ui.PreferencesRoute
 import com.fakhry.pomodojo.focus.ui.PomodoroCompleteScreen
 import com.fakhry.pomodojo.focus.ui.PomodoroSessionScreen
 import com.fakhry.pomodojo.focus.ui.model.PomodoroCompletionUiState
-import com.fakhry.pomodojo.preferences.ui.PreferencesRoute
 
 private const val ANIMATION_DURATION = 500
 

@@ -5,13 +5,13 @@ import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.dashboard.domain.model.HistoryDomain
 import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.dashboard.ui.viewmodel.DashboardViewModel
+import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
-import com.fakhry.pomodojo.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

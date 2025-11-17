@@ -1,9 +1,9 @@
 package com.fakhry.pomodojo.focus.ui.model
 
 import androidx.compose.runtime.Immutable
+import com.fakhry.pomodojo.features.preferences.ui.model.TimelineSegmentUi
+import com.fakhry.pomodojo.features.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
-import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
-import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
 
 @Immutable
 data class PomodoroSessionUiState(

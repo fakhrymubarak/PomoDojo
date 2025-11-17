@@ -7,7 +7,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.fakhry.pomodojo.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
 
 /**
  * PomoDojo color schemes for dark and light themes.

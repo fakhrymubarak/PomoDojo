@@ -9,12 +9,12 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.fakhry.pomodojo.core.database.createDatabase
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.focus.data.repository.ActiveSessionRepositoryImpl
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.usecase.provideSegmentCompletionSoundPlayer
-import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimerSegmentsDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.core.utils.primitives
 
-import com.fakhry.pomodojo.core.utils.constant.Const
+import com.fakhry.pomodojo.core.utils.constant.Time
 import com.fakhry.pomodojo.core.utils.date.formatMmSs
 import kotlin.math.ceil
 
@@ -35,4 +35,4 @@ fun Long.formatDurationMillis(): String {
  * @return An [Int] representing the number of full minutes.
  * @receiver The duration in milliseconds.
  */
-fun Long.toMinutes(): Int = (this / Const.Time.MILLIS_PER_MINUTE).toInt()
+fun Long.toMinutes(): Int = (this / Time.MILLIS_PER_MINUTE).toInt()

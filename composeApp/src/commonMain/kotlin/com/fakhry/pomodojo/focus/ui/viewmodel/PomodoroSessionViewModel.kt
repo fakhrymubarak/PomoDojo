@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.core.utils.primitives.formatDurationMillis
+import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
+import com.fakhry.pomodojo.features.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
@@ -20,10 +24,6 @@ import com.fakhry.pomodojo.focus.ui.mapper.toTimelineSegmentUi
 import com.fakhry.pomodojo.focus.ui.mapper.toUiState
 import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionUiState
-import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
-import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

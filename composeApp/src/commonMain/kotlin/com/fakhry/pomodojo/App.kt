@@ -11,10 +11,10 @@ import com.fakhry.pomodojo.core.datastore.provideDataStore
 import com.fakhry.pomodojo.core.navigation.AppNavHost
 import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.di.composeAppModules
-import com.fakhry.pomodojo.preferences.data.source.PreferenceKeys
-import com.fakhry.pomodojo.preferences.data.source.PreferenceStorage
-import com.fakhry.pomodojo.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.data.source.PreferenceKeys
+import com.fakhry.pomodojo.features.preferences.data.source.PreferenceStorage
+import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking

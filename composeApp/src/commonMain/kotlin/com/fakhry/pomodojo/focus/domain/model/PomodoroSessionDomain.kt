@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.focus.domain.model
 
-import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
 
 data class PomodoroSessionDomain(
     val totalCycle: Int = 0,

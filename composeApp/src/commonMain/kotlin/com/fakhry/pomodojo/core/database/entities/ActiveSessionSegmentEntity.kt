@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
-import com.fakhry.pomodojo.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.preferences.domain.model.TimerType
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 
 @Entity(
     tableName = "active_session_segments",

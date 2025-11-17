@@ -7,10 +7,10 @@ import com.fakhry.pomodojo.core.utils.date.formatTimerMinutes
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.dashboard.ui.mapper.mapToHistorySectionUi
 import com.fakhry.pomodojo.dashboard.ui.model.HistorySectionUi
+import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

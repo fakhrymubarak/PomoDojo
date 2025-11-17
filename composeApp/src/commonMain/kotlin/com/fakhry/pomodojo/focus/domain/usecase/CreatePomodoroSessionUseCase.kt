@@ -1,13 +1,13 @@
 package com.fakhry.pomodojo.focus.domain.usecase
 
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
+import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
-import com.fakhry.pomodojo.preferences.domain.model.TimelineDomain
-import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.preferences.domain.usecase.BuildTimerSegmentsUseCase
-import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
