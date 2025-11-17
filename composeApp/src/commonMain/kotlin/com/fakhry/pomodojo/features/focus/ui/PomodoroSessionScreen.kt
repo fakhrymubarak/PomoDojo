@@ -44,7 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.core.framework.screen.KeepScreenOnEffect
 import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
-import com.fakhry.pomodojo.dashboard.ui.components.PomodoroTimerSection
+import com.fakhry.pomodojo.features.dashboard.ui.components.PomodoroTimerSection
 import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.features.focus.ui.components.PomodoroSessionHeaderSection
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState

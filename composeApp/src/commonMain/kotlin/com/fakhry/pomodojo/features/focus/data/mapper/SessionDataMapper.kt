@@ -6,7 +6,7 @@ import com.fakhry.pomodojo.core.database.entities.ActiveSessionSegmentEntity
 import com.fakhry.pomodojo.core.database.entities.ActiveSessionWithRelations
 import com.fakhry.pomodojo.core.database.entities.HistorySessionEntity
 import com.fakhry.pomodojo.core.utils.primitives.toMinutes
-import com.fakhry.pomodojo.dashboard.domain.model.HistoryDomain
+import com.fakhry.pomodojo.features.dashboard.domain.model.HistoryDomain
 import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain

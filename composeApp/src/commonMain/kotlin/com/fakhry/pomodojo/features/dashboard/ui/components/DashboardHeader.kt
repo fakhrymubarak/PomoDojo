@@ -1,0 +1,63 @@
+package com.fakhry.pomodojo.features.dashboard.ui.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.core.ui.components.BgHeaderCanvas
+import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
+import com.fakhry.pomodojo.generated.resources.Res
+import com.fakhry.pomodojo.generated.resources.dashboard_header_title
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+@Composable
+fun DashboardHeader(onOpenSettings: () -> Unit = {}) {
+    BgHeaderCanvas {
+        Row(
+            modifier = Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.systemBars)
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(Res.string.dashboard_header_title),
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    color = MaterialTheme.colorScheme.onSecondary,
+                ),
+            )
+            IconButton(
+                modifier = Modifier.size(24.dp),
+                onClick = onOpenSettings,
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Settings,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSecondary,
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun WavyHeaderPreview() {
+    PomoDojoTheme {
+        DashboardHeader()
+    }
+}

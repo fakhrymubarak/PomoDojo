@@ -3,15 +3,15 @@ package com.fakhry.pomodojo.focus.ui
 import com.fakhry.pomodojo.commons.domain.state.DomainResult
 import com.fakhry.pomodojo.core.framework.audio.SoundPlayer
 import com.fakhry.pomodojo.core.framework.datetime.CurrentTimeProvider
+import com.fakhry.pomodojo.core.framework.notifications.PomodoroSessionNotifier
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
+import com.fakhry.pomodojo.features.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUseCase
-import com.fakhry.pomodojo.features.focus.domain.usecase.PomodoroSessionNotifier
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.focus.ui.viewmodel.PomodoroSessionViewModel

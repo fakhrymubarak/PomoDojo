@@ -8,7 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.fakhry.pomodojo.dashboard.ui.DashboardScreen
+import com.fakhry.pomodojo.features.dashboard.ui.DashboardScreen
 import com.fakhry.pomodojo.features.focus.ui.PomodoroCompleteScreen
 import com.fakhry.pomodojo.features.focus.ui.PomodoroSessionScreen
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState

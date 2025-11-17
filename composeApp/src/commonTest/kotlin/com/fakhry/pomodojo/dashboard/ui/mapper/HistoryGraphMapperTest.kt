@@ -1,8 +1,9 @@
 package com.fakhry.pomodojo.dashboard.ui.mapper
 
-import com.fakhry.pomodojo.dashboard.domain.model.HistoryDomain
-import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
-import com.fakhry.pomodojo.dashboard.ui.model.HistoryCell
+import com.fakhry.pomodojo.features.dashboard.domain.model.HistoryDomain
+import com.fakhry.pomodojo.features.dashboard.domain.model.PomodoroHistoryDomain
+import com.fakhry.pomodojo.features.dashboard.ui.mapper.mapToHistorySectionUi
+import com.fakhry.pomodojo.features.dashboard.ui.model.HistoryCell
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlin.test.Test
