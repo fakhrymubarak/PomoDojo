@@ -13,13 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.core.ui.components.BgHeaderCanvas
+import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.focus.ui.focusPhaseLabel
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.focus_session_header_cycle_count
 import com.fakhry.pomodojo.generated.resources.focus_session_header_title
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
-import com.fakhry.pomodojo.ui.components.BgHeaderCanvas
-import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

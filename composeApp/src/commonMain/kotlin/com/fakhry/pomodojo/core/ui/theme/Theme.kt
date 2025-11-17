@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.ui.theme
+package com.fakhry.pomodojo.core.ui.theme
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.material3.ColorScheme

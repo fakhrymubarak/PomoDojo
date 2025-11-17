@@ -1,12 +1,12 @@
 package com.fakhry.pomodojo.dashboard.ui.model
 
-import com.fakhry.pomodojo.ui.theme.GraphLevel0
-import com.fakhry.pomodojo.ui.theme.GraphLevel1
-import com.fakhry.pomodojo.ui.theme.GraphLevel2
-import com.fakhry.pomodojo.ui.theme.GraphLevel3
-import com.fakhry.pomodojo.ui.theme.GraphLevel4
-import com.fakhry.pomodojo.ui.theme.GraphLevel5
-import com.fakhry.pomodojo.ui.theme.GraphLevel6
+import com.fakhry.pomodojo.core.ui.theme.GraphLevel0
+import com.fakhry.pomodojo.core.ui.theme.GraphLevel1
+import com.fakhry.pomodojo.core.ui.theme.GraphLevel2
+import com.fakhry.pomodojo.core.ui.theme.GraphLevel3
+import com.fakhry.pomodojo.core.ui.theme.GraphLevel4
+import com.fakhry.pomodojo.core.ui.theme.GraphLevel5
+import com.fakhry.pomodojo.core.ui.theme.GraphLevel6
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.random.Random
 

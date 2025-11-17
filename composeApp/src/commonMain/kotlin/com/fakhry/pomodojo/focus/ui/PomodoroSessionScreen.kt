@@ -42,6 +42,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.dashboard.ui.components.PomodoroTimerSection
 import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.focus.ui.components.PomodoroSessionHeaderSection
@@ -72,7 +73,6 @@ import com.fakhry.pomodojo.preferences.ui.components.TimelineLegends
 import com.fakhry.pomodojo.preferences.ui.components.TimelinePreview
 import com.fakhry.pomodojo.preferences.ui.mapper.mapToTimelineSegmentsUi
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
-import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

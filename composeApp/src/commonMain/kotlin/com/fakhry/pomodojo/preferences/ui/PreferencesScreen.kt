@@ -33,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.core.ui.components.BgHeaderCanvas
+import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.preferences_back_content_description
 import com.fakhry.pomodojo.generated.resources.preferences_title
@@ -51,8 +53,6 @@ import com.fakhry.pomodojo.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.preferences.ui.model.toAppearanceUiState
 import com.fakhry.pomodojo.preferences.ui.model.toConfigUiState
-import com.fakhry.pomodojo.ui.components.BgHeaderCanvas
-import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

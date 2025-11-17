@@ -16,13 +16,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.fakhry.pomodojo.core.ui.components.PomodoroTimerDecoration
+import com.fakhry.pomodojo.core.ui.theme.LongBreakHighlight
+import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
+import com.fakhry.pomodojo.core.ui.theme.Primary
+import com.fakhry.pomodojo.core.ui.theme.Secondary
 import com.fakhry.pomodojo.focus.ui.focusPhaseLabel
 import com.fakhry.pomodojo.preferences.domain.model.TimerType
-import com.fakhry.pomodojo.ui.components.PomodoroTimerDecoration
-import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
-import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
-import com.fakhry.pomodojo.ui.theme.Primary
-import com.fakhry.pomodojo.ui.theme.Secondary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**

@@ -31,6 +31,8 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.core.ui.components.BgHeaderCanvas
+import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.core.utils.compose.Expanded
 import com.fakhry.pomodojo.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.generated.resources.Res
@@ -42,8 +44,6 @@ import com.fakhry.pomodojo.generated.resources.pomodoro_complete_header_cycles
 import com.fakhry.pomodojo.generated.resources.pomodoro_complete_header_title
 import com.fakhry.pomodojo.generated.resources.pomodoro_complete_start_another
 import com.fakhry.pomodojo.generated.resources.pomodoro_complete_summary_title
-import com.fakhry.pomodojo.ui.components.BgHeaderCanvas
-import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

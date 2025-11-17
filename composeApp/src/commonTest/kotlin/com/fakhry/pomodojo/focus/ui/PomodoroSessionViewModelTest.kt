@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.focus.ui
 
+import com.fakhry.pomodojo.commons.domain.state.DomainResult
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
@@ -24,7 +25,6 @@ import com.fakhry.pomodojo.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.preferences.domain.usecase.PreferencesRepository
-import com.fakhry.pomodojo.ui.state.DomainResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async

@@ -26,6 +26,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.core.ui.theme.LongBreakHighlight
+import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
+import com.fakhry.pomodojo.core.ui.theme.Primary
+import com.fakhry.pomodojo.core.ui.theme.Secondary
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.minutes
 import com.fakhry.pomodojo.generated.resources.preferences_timeline_break_label
@@ -39,10 +43,6 @@ import com.fakhry.pomodojo.preferences.ui.RecompositionTags
 import com.fakhry.pomodojo.preferences.ui.TrackRecomposition
 import com.fakhry.pomodojo.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.preferences.ui.model.TimelineUiModel
-import com.fakhry.pomodojo.ui.theme.LongBreakHighlight
-import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
-import com.fakhry.pomodojo.ui.theme.Primary
-import com.fakhry.pomodojo.ui.theme.Secondary
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.pluralStringResource

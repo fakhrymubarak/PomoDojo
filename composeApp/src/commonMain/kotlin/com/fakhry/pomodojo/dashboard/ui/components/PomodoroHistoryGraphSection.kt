@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
+import com.fakhry.pomodojo.core.ui.theme.GraphLevel0
+import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.dashboard.ui.model.HistoryCell
 import com.fakhry.pomodojo.dashboard.ui.model.HistorySectionUi
 import com.fakhry.pomodojo.dashboard.ui.model.contributionColorMap
@@ -58,8 +60,6 @@ import com.fakhry.pomodojo.generated.resources.focus_history_cell_tooltip
 import com.fakhry.pomodojo.generated.resources.focus_history_selected_year_description
 import com.fakhry.pomodojo.generated.resources.focus_history_switch_year_description
 import com.fakhry.pomodojo.generated.resources.focus_history_total_minutes
-import com.fakhry.pomodojo.ui.theme.GraphLevel0
-import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
