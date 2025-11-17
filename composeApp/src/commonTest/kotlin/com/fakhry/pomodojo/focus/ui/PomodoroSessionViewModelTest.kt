@@ -1,8 +1,20 @@
 package com.fakhry.pomodojo.focus.ui
 
 import com.fakhry.pomodojo.commons.domain.state.DomainResult
+import com.fakhry.pomodojo.core.framework.audio.SoundPlayer
+import com.fakhry.pomodojo.core.framework.datetime.CurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.dashboard.domain.model.PomodoroHistoryDomain
+import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
+import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.features.focus.domain.repository.HistorySessionRepository
+import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
+import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUseCase
+import com.fakhry.pomodojo.features.focus.domain.usecase.PomodoroSessionNotifier
+import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
+import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
+import com.fakhry.pomodojo.features.focus.ui.viewmodel.PomodoroSessionViewModel
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
@@ -13,18 +25,6 @@ import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
-import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.focus.domain.model.QuoteContent
-import com.fakhry.pomodojo.focus.domain.repository.ActiveSessionRepository
-import com.fakhry.pomodojo.focus.domain.repository.HistorySessionRepository
-import com.fakhry.pomodojo.focus.domain.repository.QuoteRepository
-import com.fakhry.pomodojo.focus.domain.usecase.CreatePomodoroSessionUseCase
-import com.fakhry.pomodojo.focus.domain.usecase.CurrentTimeProvider
-import com.fakhry.pomodojo.focus.domain.usecase.FocusSessionNotifier
-import com.fakhry.pomodojo.focus.domain.usecase.SegmentCompletionSoundPlayer
-import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionSideEffect
-import com.fakhry.pomodojo.focus.ui.model.PomodoroSessionUiState
-import com.fakhry.pomodojo.focus.ui.viewmodel.PomodoroSessionViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -180,7 +180,7 @@ class PomodoroSessionViewModelTest {
 
     @Test
     fun `segment completion triggers timer notification sound`() = runTest(dispatcher) {
-        val soundPlayer = FakeSegmentCompletionSoundPlayer()
+        val soundPlayer = FakeSoundPlayer()
         val viewModel = createViewModel(soundPlayer = soundPlayer)
         runCurrent()
         viewModel.awaitSessionStarted()
@@ -205,7 +205,7 @@ class PomodoroSessionViewModelTest {
             longBreakMinutes = 1,
         ),
         sessionRepository: FakeActiveSessionRepository = FakeActiveSessionRepository(),
-        soundPlayer: SegmentCompletionSoundPlayer = FakeSegmentCompletionSoundPlayer(),
+        soundPlayer: SoundPlayer = FakeSoundPlayer(),
     ): PomodoroSessionViewModel {
         val currentTimeProvider = TestCurrentTimeProvider(testScheduler)
         val quoteRepository = FakeQuoteRepository()
@@ -228,8 +228,8 @@ class PomodoroSessionViewModelTest {
             preferencesRepository = preferencesRepository,
             sessionRepository = sessionRepository,
             historyRepository = FakeHistorySessionRepository(),
-            focusSessionNotifier = focusNotifier,
-            segmentCompletionSoundPlayer = soundPlayer,
+            pomodoroSessionNotifier = focusNotifier,
+            soundPlayer = soundPlayer,
             dispatcher = dispatcherProvider,
         )
     }
@@ -336,12 +336,12 @@ private class FakeHistorySessionRepository : HistorySessionRepository {
         )
 }
 
-private class FakeFocusSessionNotifier : FocusSessionNotifier {
+private class FakeFocusSessionNotifier : PomodoroSessionNotifier {
     override suspend fun schedule(snapshot: PomodoroSessionDomain) = Unit
     override suspend fun cancel(sessionId: String) = Unit
 }
 
-private class FakeSegmentCompletionSoundPlayer : SegmentCompletionSoundPlayer {
+private class FakeSoundPlayer : SoundPlayer {
     @Volatile
     var playCount: Int = 0
 

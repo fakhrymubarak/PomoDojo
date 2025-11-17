@@ -21,8 +21,8 @@ import com.fakhry.pomodojo.core.ui.theme.LongBreakHighlight
 import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.core.ui.theme.Primary
 import com.fakhry.pomodojo.core.ui.theme.Secondary
+import com.fakhry.pomodojo.features.focus.ui.focusPhaseLabel
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
-import com.fakhry.pomodojo.focus.ui.focusPhaseLabel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**

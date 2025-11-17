@@ -3,7 +3,7 @@ package com.fakhry.pomodojo
 import android.content.Context
 import com.fakhry.pomodojo.core.database.AndroidFocusDatabaseHolder
 import com.fakhry.pomodojo.core.datastore.AndroidPreferencesDataStoreProvider
-import com.fakhry.pomodojo.focus.domain.usecase.AndroidSegmentCompletionSoundPlayer
+import com.fakhry.pomodojo.core.framework.audio.AndroidSoundPlayer
 
 internal object AndroidAppDependenciesInitializer {
     private var appContext: Context? = null
@@ -14,7 +14,7 @@ internal object AndroidAppDependenciesInitializer {
         }
         AndroidPreferencesDataStoreProvider.initialize(context)
         AndroidFocusDatabaseHolder.initialize(context)
-        AndroidSegmentCompletionSoundPlayer.initialize(context)
+        AndroidSoundPlayer.initialize(context)
     }
 
     fun requireContext(): Context {
@@ -27,7 +27,7 @@ internal object AndroidAppDependenciesInitializer {
     fun destroy() {
         AndroidPreferencesDataStoreProvider.destroy()
         AndroidFocusDatabaseHolder.destroy()
-        AndroidSegmentCompletionSoundPlayer.destroy()
+        AndroidSoundPlayer.destroy()
         appContext = null
     }
 }

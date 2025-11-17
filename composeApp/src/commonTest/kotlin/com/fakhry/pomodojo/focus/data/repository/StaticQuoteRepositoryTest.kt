@@ -1,6 +1,7 @@
 package com.fakhry.pomodojo.focus.data.repository
 
-import com.fakhry.pomodojo.focus.domain.model.QuoteContent
+import com.fakhry.pomodojo.features.focus.data.repository.StaticQuoteRepository
+import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

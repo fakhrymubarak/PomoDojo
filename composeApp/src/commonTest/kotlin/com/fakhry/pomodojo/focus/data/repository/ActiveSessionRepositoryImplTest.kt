@@ -6,13 +6,14 @@ import com.fakhry.pomodojo.core.database.entities.ActiveSessionHourSplitEntity
 import com.fakhry.pomodojo.core.database.entities.ActiveSessionSegmentEntity
 import com.fakhry.pomodojo.core.database.entities.ActiveSessionWithRelations
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.features.focus.data.repository.ActiveSessionRepositoryImpl
+import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
-import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.focus.domain.model.QuoteContent
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
