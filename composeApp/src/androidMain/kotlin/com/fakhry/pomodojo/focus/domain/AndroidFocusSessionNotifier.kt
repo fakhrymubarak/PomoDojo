@@ -11,10 +11,10 @@ import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.fakhry.pomodojo.AndroidAppDependenciesInitializer
 import com.fakhry.pomodojo.MainActivity
 import com.fakhry.pomodojo.R
 import com.fakhry.pomodojo.core.utils.primitives.orFalse
-import com.fakhry.pomodojo.focus.data.db.AndroidAppDependenciesInitializer
 import com.fakhry.pomodojo.focus.domain.mapper.toNotificationSummary
 import com.fakhry.pomodojo.focus.domain.model.CompletionNotificationSummary
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain

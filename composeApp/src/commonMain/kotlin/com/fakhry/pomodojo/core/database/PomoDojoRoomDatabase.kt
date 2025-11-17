@@ -1,13 +1,19 @@
-package com.fakhry.pomodojo.focus.data.db
+package com.fakhry.pomodojo.core.database
 
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
+import com.fakhry.pomodojo.focus.data.db.FocusSessionDao
+import com.fakhry.pomodojo.focus.data.db.HistorySessionDao
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionEntity
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionHourSplitEntity
 import com.fakhry.pomodojo.focus.data.model.entities.ActiveSessionSegmentEntity
 import com.fakhry.pomodojo.focus.data.model.entities.HistorySessionEntity
+
+internal expect val POMO_DOJO_DATABASE_NAME: String
+
+expect fun createDatabase(): PomoDojoRoomDatabase
 
 @Database(
     entities = [
@@ -31,5 +37,3 @@ abstract class PomoDojoRoomDatabase : RoomDatabase() {
 expect object PomoDojoRoomDatabaseConstructor : RoomDatabaseConstructor<PomoDojoRoomDatabase> {
     override fun initialize(): PomoDojoRoomDatabase
 }
-
-internal expect val POMO_DOJO_DATABASE_NAME: String

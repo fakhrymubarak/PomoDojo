@@ -1,8 +1,8 @@
 package com.fakhry.pomodojo.focus.data.repository
 
+import com.fakhry.pomodojo.core.database.PomoDojoRoomDatabase
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.focus.data.db.FocusSessionDao
-import com.fakhry.pomodojo.focus.data.db.PomoDojoRoomDatabase
 import com.fakhry.pomodojo.focus.data.mapper.toDomain
 import com.fakhry.pomodojo.focus.data.mapper.toEntity
 import com.fakhry.pomodojo.focus.data.mapper.toHourSplitEntities

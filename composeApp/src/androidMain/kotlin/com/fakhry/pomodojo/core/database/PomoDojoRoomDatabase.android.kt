@@ -1,7 +1,10 @@
-package com.fakhry.pomodojo.focus.data.db
+package com.fakhry.pomodojo.core.database
 
 import android.content.Context
 import androidx.room.Room
+import com.fakhry.pomodojo.BuildConfig
+
+internal actual val POMO_DOJO_DATABASE_NAME: String = BuildConfig.LOCAL_DB_NAME
 
 actual fun createDatabase(): PomoDojoRoomDatabase = AndroidFocusDatabaseHolder.database
 
@@ -12,12 +15,11 @@ internal object AndroidFocusDatabaseHolder {
         check(appContext != null) {
             "Android focus database not initialized. Call initAndroidFocusDatabase() first."
         }
-        Room
-            .databaseBuilder(
-                appContext!!,
-                PomoDojoRoomDatabase::class.java,
-                POMO_DOJO_DATABASE_NAME,
-            ).build()
+        Room.databaseBuilder(
+            appContext!!,
+            PomoDojoRoomDatabase::class.java,
+            POMO_DOJO_DATABASE_NAME,
+        ).build()
     }
 
     fun initialize(context: Context) {

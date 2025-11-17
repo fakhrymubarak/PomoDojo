@@ -7,8 +7,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.fakhry.pomodojo.core.database.createDatabase
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.focus.data.db.createDatabase
 import com.fakhry.pomodojo.focus.data.repository.ActiveSessionRepositoryImpl
 import com.fakhry.pomodojo.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.focus.domain.usecase.provideSegmentCompletionSoundPlayer

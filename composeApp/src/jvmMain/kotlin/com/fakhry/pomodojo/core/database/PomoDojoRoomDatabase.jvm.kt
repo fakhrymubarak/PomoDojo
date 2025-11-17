@@ -1,9 +1,11 @@
-package com.fakhry.pomodojo.focus.data.db
+package com.fakhry.pomodojo.core.database
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import java.nio.file.Files
 import java.nio.file.Path
+
+internal actual val POMO_DOJO_DATABASE_NAME: String = "pomodojo.db"
 
 actual fun createDatabase(): PomoDojoRoomDatabase = DesktopFocusDatabaseHolder.database
 
@@ -16,10 +18,8 @@ private object DesktopFocusDatabaseHolder {
     }
 
     val database: PomoDojoRoomDatabase by lazy {
-        Room
-            .databaseBuilder<PomoDojoRoomDatabase>(
-                name = databasePath.toString(),
-            ).setDriver(BundledSQLiteDriver())
-            .build()
+        Room.databaseBuilder<PomoDojoRoomDatabase>(
+            name = databasePath.toString(),
+        ).setDriver(BundledSQLiteDriver()).build()
     }
 }

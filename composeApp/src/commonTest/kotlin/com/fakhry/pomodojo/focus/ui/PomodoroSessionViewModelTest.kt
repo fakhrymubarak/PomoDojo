@@ -238,9 +238,6 @@ class PomodoroSessionViewModelTest {
 private suspend fun PomodoroSessionViewModel.awaitSessionStarted(): PomodoroSessionUiState =
     container.stateFlow.first { it.totalCycle > 0 }
 
-private fun PomodoroSessionViewModel.currentSnapshot(): PomodoroSessionUiState =
-    container.stateFlow.value
-
 private class FakeQuoteRepository(
     private val quote: QuoteContent = QuoteContent(
         id = "quote-id",

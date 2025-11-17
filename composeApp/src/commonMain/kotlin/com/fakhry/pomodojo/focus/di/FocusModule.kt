@@ -1,7 +1,7 @@
 package com.fakhry.pomodojo.focus.di
 
-import com.fakhry.pomodojo.focus.data.db.PomoDojoRoomDatabase
-import com.fakhry.pomodojo.focus.data.db.createDatabase
+import com.fakhry.pomodojo.core.database.PomoDojoRoomDatabase
+import com.fakhry.pomodojo.core.database.createDatabase
 import com.fakhry.pomodojo.focus.data.repository.ActiveSessionRepositoryImpl
 import com.fakhry.pomodojo.focus.data.repository.StaticQuoteRepository
 import com.fakhry.pomodojo.focus.domain.provideFocusSessionNotifier

@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.focus.data.db
+package com.fakhry.pomodojo.core.database
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
@@ -10,11 +10,13 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
+internal actual val POMO_DOJO_DATABASE_NAME: String = "pomodojo.db"
+
 actual fun createDatabase(): PomoDojoRoomDatabase = IosFocusDatabaseHolder.database
 
 private object IosFocusDatabaseHolder {
     val database: PomoDojoRoomDatabase by lazy {
-        val dbFile = "${fileDirectory()}/$POMO_DOJO_DATABASE_NAME"
+        val dbFile = "${fileDirectory()}/${POMO_DOJO_DATABASE_NAME}"
         Room
             .databaseBuilder<PomoDojoRoomDatabase>(
                 name = dbFile,
