@@ -57,7 +57,6 @@ jobs:
 
   build:
     runs-on: macos-latest
-    needs: [ lint, tests ]
 
     strategy:
       matrix:
