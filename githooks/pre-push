@@ -12,7 +12,9 @@ run() {
 
 run ktlintCheck
 run check
-run :composeApp:jvmTest
+run :composeApp:cleanJvmTest :composeApp:jvmTest
+run :composeApp:cleanTestProdDebugUnitTest :composeApp:testProdDebugUnitTest
+run :composeApp:cleanIosSimulatorArm64Test :composeApp:iosSimulatorArm64Test
 run :composeApp:assembleRelease
 run :composeApp:linkDebugFrameworkIosArm64
 run :composeApp:jvmJar
