@@ -56,12 +56,12 @@ import com.fakhry.pomodojo.ui.theme.PomoDojoTheme
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Suppress("NonSkippableComposable")
 @Composable
 fun PreferencesRoute(
-    viewModel: PreferencesViewModel = koinInject(),
+    viewModel: PreferencesViewModel = koinViewModel(),
     onNavigateBack: () -> Unit = {},
 ) {
     val isLoading by viewModel.isLoadingState.collectAsState()
