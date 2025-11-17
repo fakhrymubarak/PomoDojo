@@ -225,27 +225,86 @@ private fun rememberCelebrationMessage(): CelebrationMessage {
 }
 
 private data class CelebrationMessage(val headline: String, val subtitle: String)
-
 private val celebrationMessages = listOf(
     CelebrationMessage(
-        headline = "Congratulations for finishing this cycle!",
+        headline = "🎉 Congratulations for finishing this cycle!",
         subtitle = "You showed up and focused. That consistency is building momentum.",
     ),
     CelebrationMessage(
-        headline = "Focus streak complete!",
+        headline = "🔥 Focus streak complete!",
         subtitle = "Enjoy that break—you've earned it.",
     ),
     CelebrationMessage(
-        headline = "Pomodoro mastered.",
+        headline = "🧠 Pomodoro mastered.",
         subtitle = "Those minutes are stacking up to serious progress.",
     ),
     CelebrationMessage(
-        headline = "Nice work staying on task!",
+        headline = "✅ Nice work staying on task!",
         subtitle = "Keep this energy going for your next deep-work sprint.",
     ),
     CelebrationMessage(
-        headline = "That was a strong focus block.",
+        headline = "💪 That was a strong focus block.",
         subtitle = "Take a breather, then crush the next cycle.",
+    ),
+    CelebrationMessage(
+        headline = "🚀 Another deep-work win!",
+        subtitle = "This block nudged you closer to the work that really matters.",
+    ),
+    CelebrationMessage(
+        headline = "🌱 Tiny habits, big results.",
+        subtitle = "Each finished cycle is planting seeds for tomorrow's wins.",
+    ),
+    CelebrationMessage(
+        headline = "⏱️ Timer down, progress up.",
+        subtitle = "Every focused minute is compounding behind the scenes.",
+    ),
+    CelebrationMessage(
+        headline = "🧩 Another piece in the puzzle.",
+        subtitle = "Keep placing pieces—your bigger picture is coming together.",
+    ),
+    CelebrationMessage(
+        headline = "🌟 You showed up for yourself.",
+        subtitle = "Protecting this time is how goals quietly become reality.",
+    ),
+    CelebrationMessage(
+        headline = "📈 Focus level up!",
+        subtitle = "Stay consistent and that line will only keep rising.",
+    ),
+    CelebrationMessage(
+        headline = "🛡️ Distractions defeated.",
+        subtitle = "You chose intention over impulse. That's rare and powerful.",
+    ),
+    CelebrationMessage(
+        headline = "🎯 Bullseye focus achieved.",
+        subtitle = "Aim, commit, execute—you're building that reflex.",
+    ),
+    CelebrationMessage(
+        headline = "🧘 Break time unlocked.",
+        subtitle = "Rest well now so your next focus round can hit even harder.",
+    ),
+    CelebrationMessage(
+        headline = "🏗️ Brick by brick, you’re building.",
+        subtitle = "Keep stacking deliberate effort; the structure is taking shape.",
+    ),
+    CelebrationMessage(
+        headline = "🏁 You crossed another finish line.",
+        subtitle = "Savor this win, then set up the next lap.",
+    ),
+    CelebrationMessage(
+        headline = "🔄 Cycle complete, growth continues.",
+        subtitle = "Every repetition tightens your focus muscle.",
+    ),
+    CelebrationMessage(
+        headline = "🌞 You made this block count.",
+        subtitle = "Even small sessions like this reshape your trajectory.",
+    ),
+    CelebrationMessage(
+        headline = "🧱 Solid block of focus logged.",
+        subtitle = "Moments like this are the foundation of long-term mastery.",
+    ),
+    CelebrationMessage(
+        headline = "✨ Future-you is already grateful.",
+        subtitle = "These sessions are the quiet investments that change everything.",
     ),
 )
 
