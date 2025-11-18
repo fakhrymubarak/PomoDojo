@@ -1,64 +1,66 @@
 package com.fakhry.pomodojo.features.focus.data.repository
 
-import com.fakhry.pomodojo.core.database.PomoDojoRoomDatabase
-import com.fakhry.pomodojo.core.database.dao.FocusSessionDao
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.features.focus.data.mapper.toData
 import com.fakhry.pomodojo.features.focus.data.mapper.toDomain
-import com.fakhry.pomodojo.features.focus.data.mapper.toEntity
-import com.fakhry.pomodojo.features.focus.data.mapper.toHourSplitEntities
-import com.fakhry.pomodojo.features.focus.data.mapper.toSegmentEntities
+import com.fakhry.pomodojo.features.focus.data.model.PomodoroSessionData
 import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 
 class ActiveSessionRepositoryImpl(
-    private val focusDao: FocusSessionDao,
+    private val dataStore: DataStore<Preferences>,
     private val dispatcher: DispatcherProvider,
+    private val json: Json =
+        Json {
+            ignoreUnknownKeys = true
+            encodeDefaults = true
+        },
 ) : ActiveSessionRepository {
-    constructor(
-        database: PomoDojoRoomDatabase,
-        dispatcher: DispatcherProvider,
-    ) : this(focusDao = database.focusSessionDao(), dispatcher = dispatcher)
 
     override suspend fun getActiveSession(): PomodoroSessionDomain = withContext(dispatcher.io) {
-        val snapshot = focusDao.getActiveSessionWithRelations()
-            ?: throw IllegalStateException("No active session stored in database.")
-        return@withContext snapshot.toDomain()
+        val snapshot =
+            dataStore.data.first()[ACTIVE_SESSION_KEY]
+                ?: throw IllegalStateException("No active session stored in database.")
+        return@withContext json.decodeFromString<PomodoroSessionData>(snapshot).toDomain()
     }
 
-    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) =
+    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
         withContext(dispatcher.io) {
-            focusDao.clearActiveSession()
-            persistSnapshot(snapshot, sessionIdOverride = null)
+            val encoded = json.encodeToString(snapshot.toData())
+            dataStore.edit { prefs ->
+                prefs[ACTIVE_SESSION_KEY] = encoded
+            }
         }
+    }
 
-    override suspend fun updateActiveSession(snapshot: PomodoroSessionDomain) =
+    override suspend fun updateActiveSession(snapshot: PomodoroSessionDomain) {
+        saveActiveSession(snapshot)
+    }
+
+    override suspend fun completeSession(snapshot: PomodoroSessionDomain) {
+        clearActiveSession()
+    }
+
+    override suspend fun clearActiveSession() {
         withContext(dispatcher.io) {
-            val existingId = focusDao.getActiveSessionId()
-            persistSnapshot(snapshot, sessionIdOverride = existingId)
+            dataStore.edit { prefs ->
+                prefs.remove(ACTIVE_SESSION_KEY)
+            }
         }
-
-    override suspend fun completeSession(snapshot: PomodoroSessionDomain) =
-        withContext(dispatcher.io) {
-            focusDao.clearActiveSession()
-        }
-
-    override suspend fun clearActiveSession() = withContext(dispatcher.io) {
-        focusDao.clearActiveSession()
     }
 
     override suspend fun hasActiveSession(): Boolean = withContext(dispatcher.io) {
-        focusDao.hasActiveSession()
+        dataStore.data.first()[ACTIVE_SESSION_KEY] != null
     }
 
-    private suspend fun persistSnapshot(
-        snapshot: PomodoroSessionDomain,
-        sessionIdOverride: Long?,
-    ) {
-        val entity = snapshot.toEntity(sessionIdOverride)
-        val upsertId = focusDao.upsertActiveSession(entity)
-        val resolvedId = if (upsertId == -1L) entity.sessionId else upsertId
-        focusDao.replaceSegments(resolvedId, snapshot.toSegmentEntities(resolvedId))
-        focusDao.replaceHourSplits(resolvedId, snapshot.toHourSplitEntities(resolvedId))
+    private companion object {
+        val ACTIVE_SESSION_KEY = stringPreferencesKey("active_session_snapshot")
     }
 }

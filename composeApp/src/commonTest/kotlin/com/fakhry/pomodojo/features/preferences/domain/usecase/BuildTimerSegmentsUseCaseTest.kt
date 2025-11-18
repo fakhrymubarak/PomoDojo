@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 import kotlin.test.Test
@@ -13,7 +13,7 @@ class BuildTimerSegmentsUseCaseTest {
     @Test
     fun `inserts long break before subsequent focus`() {
         val preferences =
-            PreferencesDomain(
+            PomodoroPreferences(
                 repeatCount = 5,
                 focusMinutes = 25,
                 breakMinutes = 5,
@@ -40,7 +40,7 @@ class BuildTimerSegmentsUseCaseTest {
     @Test
     fun `omits long break when disabled`() {
         val preferences =
-            PreferencesDomain(
+            PomodoroPreferences(
                 repeatCount = 4,
                 focusMinutes = 25,
                 breakMinutes = 5,
@@ -72,7 +72,7 @@ class BuildTimerSegmentsUseCaseTest {
     @Test
     fun `inserts long breaks at configured interval`() {
         val preferences =
-            PreferencesDomain(
+            PomodoroPreferences(
                 repeatCount = 6,
                 focusMinutes = 50,
                 breakMinutes = 10,

@@ -1,0 +1,48 @@
+name: Lint And Tests
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Run ktlint
+        run: ./gradlew ktlintCheck
+
+  tests:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Run tests
+        run: ./gradlew :composeApp:cleanJvmTest :composeApp:jacocoJvmTestCoverageVerification
+
+      - name: Upload JVM coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jvm-coverage-report
+          path: composeApp/build/reports/jacoco/jvmTestResult

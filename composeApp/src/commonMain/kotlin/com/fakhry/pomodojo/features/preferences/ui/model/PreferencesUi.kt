@@ -2,7 +2,7 @@ package com.fakhry.pomodojo.features.preferences.ui.model
 
 import androidx.compose.runtime.Immutable
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain.Companion.DEFAULT_REPEAT_COUNT
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences.Companion.DEFAULT_REPEAT_COUNT
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.features.preferences.ui.mapper.DEFAULT_REPEAT_RANGE

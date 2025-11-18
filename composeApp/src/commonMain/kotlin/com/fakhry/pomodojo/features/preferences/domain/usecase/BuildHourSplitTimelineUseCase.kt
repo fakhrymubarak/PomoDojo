@@ -1,9 +1,9 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 
 class BuildHourSplitTimelineUseCase {
-    operator fun invoke(preferences: PreferencesDomain): List<Int> {
+    operator fun invoke(preferences: PomodoroPreferences): List<Int> {
         val completedCycles = preferences.repeatCount
         val hasLongBreaks = preferences.longBreakEnabled && preferences.longBreakAfter > 0
         val longBreaks = if (hasLongBreaks) completedCycles / preferences.longBreakAfter else 0

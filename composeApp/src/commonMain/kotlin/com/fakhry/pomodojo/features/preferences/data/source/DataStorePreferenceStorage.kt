@@ -8,51 +8,67 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 class DataStorePreferenceStorage(private val dataStore: DataStore<Preferences>) :
     PreferenceStorage {
-    override val preferences: Flow<PreferencesDomain> =
+    override val preferences: Flow<PomodoroPreferences> =
         dataStore.data
-            .map { it.toDomain() }
+            .map { it.toPomodoroPreferences() }
             .distinctUntilChanged()
 
-    override suspend fun update(transform: (PreferencesDomain) -> PreferencesDomain) {
+    override val initPreferences: Flow<InitAppPreferences> =
+        dataStore.data
+            .map { it.toInitPreferences() }
+            .distinctUntilChanged()
+
+    override suspend fun updatePreferences(
+        transform: (PomodoroPreferences) -> PomodoroPreferences,
+    ) {
         dataStore.edit { prefs ->
-            val current = prefs.toDomain()
+            val current = prefs.toPomodoroPreferences()
             val updated = transform(current)
             prefs.write(updated)
         }
     }
 
-    private fun Preferences.toDomain(): PreferencesDomain {
+    override suspend fun updateInitPreferences(
+        transform: (InitAppPreferences) -> InitAppPreferences,
+    ) {
+        dataStore.edit { prefs ->
+            val current = prefs.toInitPreferences()
+            val updated = transform(current)
+            prefs.write(updated)
+        }
+    }
+
+    private fun Preferences.toPomodoroPreferences(): PomodoroPreferences {
         val repeatCount =
-            this[PreferenceKeys.REPEAT_COUNT] ?: PreferencesDomain.DEFAULT_REPEAT_COUNT
+            this[PreferenceKeys.REPEAT_COUNT] ?: PomodoroPreferences.DEFAULT_REPEAT_COUNT
 
         val focusMinutes =
-            this[PreferenceKeys.FOCUS_MINUTES] ?: PreferencesDomain.DEFAULT_FOCUS_MINUTES
+            this[PreferenceKeys.FOCUS_MINUTES] ?: PomodoroPreferences.DEFAULT_FOCUS_MINUTES
 
         val breakMinutes =
-            this[PreferenceKeys.BREAK_MINUTES] ?: PreferencesDomain.DEFAULT_BREAK_MINUTES
+            this[PreferenceKeys.BREAK_MINUTES] ?: PomodoroPreferences.DEFAULT_BREAK_MINUTES
 
         val longBreakEnabled = this[PreferenceKeys.LONG_BREAK_ENABLED] ?: true
 
         val longBreakAfter =
             this[PreferenceKeys.LONG_BREAK_AFTER_COUNT]
-                ?: PreferencesDomain.DEFAULT_LONG_BREAK_AFTER
+                ?: PomodoroPreferences.DEFAULT_LONG_BREAK_AFTER
 
         val longBreakMinutes =
-            this[PreferenceKeys.LONG_BREAK_MINUTES] ?: PreferencesDomain.DEFAULT_LONG_BREAK_MINUTES
+            this[PreferenceKeys.LONG_BREAK_MINUTES]
+                ?: PomodoroPreferences.DEFAULT_LONG_BREAK_MINUTES
 
-        val appTheme = AppTheme.fromStorage(this[PreferenceKeys.APP_THEME])
         val alwaysOnDisplayEnabled = this[PreferenceKeys.ALWAYS_ON_DISPLAY_ENABLED] ?: false
-        val hasActiveSession = this[PreferenceKeys.HAS_ACTIVE_SESSION] ?: false
 
-        return PreferencesDomain(
-            appTheme = appTheme,
+        return PomodoroPreferences(
             repeatCount = repeatCount,
             focusMinutes = focusMinutes,
             breakMinutes = breakMinutes,
@@ -60,19 +76,26 @@ class DataStorePreferenceStorage(private val dataStore: DataStore<Preferences>) 
             longBreakAfter = longBreakAfter,
             longBreakMinutes = longBreakMinutes,
             alwaysOnDisplayEnabled = alwaysOnDisplayEnabled,
-            hasActiveSession = hasActiveSession,
         )
     }
 
-    private fun MutablePreferences.write(preferences: PreferencesDomain) {
+    private fun Preferences.toInitPreferences(): InitAppPreferences = InitAppPreferences(
+        appTheme = AppTheme.fromStorage(this[PreferenceKeys.APP_THEME]),
+        hasActiveSession = this[PreferenceKeys.HAS_ACTIVE_SESSION] ?: false,
+    )
+
+    private fun MutablePreferences.write(preferences: PomodoroPreferences) {
         this[PreferenceKeys.REPEAT_COUNT] = preferences.repeatCount
         this[PreferenceKeys.FOCUS_MINUTES] = preferences.focusMinutes
         this[PreferenceKeys.BREAK_MINUTES] = preferences.breakMinutes
         this[PreferenceKeys.LONG_BREAK_ENABLED] = preferences.longBreakEnabled
         this[PreferenceKeys.LONG_BREAK_AFTER_COUNT] = preferences.longBreakAfter
         this[PreferenceKeys.LONG_BREAK_MINUTES] = preferences.longBreakMinutes
-        this[PreferenceKeys.APP_THEME] = preferences.appTheme.storageValue
         this[PreferenceKeys.ALWAYS_ON_DISPLAY_ENABLED] = preferences.alwaysOnDisplayEnabled
+    }
+
+    private fun MutablePreferences.write(preferences: InitAppPreferences) {
+        this[PreferenceKeys.APP_THEME] = preferences.appTheme.storageValue
         this[PreferenceKeys.HAS_ACTIVE_SESSION] = preferences.hasActiveSession
     }
 }

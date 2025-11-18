@@ -6,7 +6,7 @@ import com.fakhry.pomodojo.features.dashboard.domain.model.HistoryDomain
 import com.fakhry.pomodojo.features.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.features.focus.domain.repository.FakeFocusRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.FakeHistoryRepository
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.usecase.FakePreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,7 +41,7 @@ class DashboardViewModelTest {
             HistoryDomain(date = "2023-03-07", focusMinutes = 35, breakMinutes = 5),
         ),
     )
-    private val repository = FakePreferencesRepository(PreferencesDomain(focusMinutes = 30))
+    private val repository = FakePreferencesRepository(PomodoroPreferences(focusMinutes = 30))
     private val focusRepository = FakeFocusRepository(hasActive = false)
     private val historyRepository = FakeHistoryRepository(
         data2024 = history2024,

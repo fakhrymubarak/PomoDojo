@@ -1,5 +1,7 @@
 package com.fakhry.pomodojo.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.fakhry.pomodojo.core.datastore.provideDataStore
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.features.dashboard.di.dashboardModule
@@ -13,7 +15,8 @@ import org.koin.dsl.module
 private val appModule =
     module {
         single { DispatcherProvider() }
-        single<PreferenceStorage> { DataStorePreferenceStorage(provideDataStore()) }
+        single<DataStore<Preferences>> { provideDataStore() }
+        single<PreferenceStorage> { DataStorePreferenceStorage(get()) }
     }
 
 internal val composeAppModules: List<Module> =

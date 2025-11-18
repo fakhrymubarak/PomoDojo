@@ -51,7 +51,7 @@ import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.focus.ui.viewmodel.PomodoroSessionViewModel
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
@@ -321,7 +321,7 @@ fun focusPhaseLabel(phase: TimerType) = when (phase) {
 @Preview
 @Composable
 private fun PomodoroSessionContentPreview() {
-    val preferences = PreferencesDomain()
+    val preferences = PomodoroPreferences()
     val timerSegments = BuildTimerSegmentsUseCase().invoke(
         0L,
         preferences,
