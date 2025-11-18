@@ -12,9 +12,9 @@ import com.fakhry.pomodojo.core.navigation.AppNavHost
 import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.di.composeAppModules
 import com.fakhry.pomodojo.features.preferences.data.source.PreferenceKeys
-import com.fakhry.pomodojo.features.preferences.data.source.PreferenceStorage
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
+import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -23,14 +23,16 @@ import org.koin.compose.koinInject
 
 @Composable
 fun App(onThemeUpdated: (AppTheme) -> Unit = {}) {
-    val initialPrefs = remember { getPreferencesOnMainThread() }
+    val initialPrefs = remember { getInitPreferencesOnMainThread() }
 
     KoinApplication(
         application = { modules(composeAppModules) },
     ) {
-        val preferencesRepository = koinInject<PreferenceStorage>()
-        val preferences by preferencesRepository.preferences.collectAsState(initial = initialPrefs)
-        val appTheme by remember { derivedStateOf { preferences.appTheme } }
+        val initPreferencesRepository = koinInject<InitPreferencesRepository>()
+        val initPreferences by initPreferencesRepository.initPreferences.collectAsState(
+            initial = initialPrefs,
+        )
+        val appTheme by remember { derivedStateOf { initPreferences.appTheme } }
 
         // Run side-effect only when theme actually changes
         LaunchedEffect(appTheme) {
@@ -50,17 +52,17 @@ fun App(onThemeUpdated: (AppTheme) -> Unit = {}) {
 /**
  * This code should run once on MainThread to load the AppTheme and StartDestination.
  * */
-private fun getPreferencesOnMainThread(): PreferencesDomain {
+private fun getInitPreferencesOnMainThread(): InitAppPreferences {
     val preferences = runBlocking {
         runCatching {
             provideDataStore().data.map { prefs ->
                 // Take only initial data for more optimal processing
-                PreferencesDomain(
+                InitAppPreferences(
                     appTheme = AppTheme.fromStorage(prefs[PreferenceKeys.APP_THEME]),
                     hasActiveSession = prefs[PreferenceKeys.HAS_ACTIVE_SESSION] ?: false,
                 )
             }.first()
-        }.getOrDefault(PreferencesDomain())
+        }.getOrDefault(InitAppPreferences())
     }
     return preferences
 }

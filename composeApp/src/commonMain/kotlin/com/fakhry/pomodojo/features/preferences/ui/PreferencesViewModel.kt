@@ -4,11 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.features.preferences.ui.mapper.DEFAULT_REPEAT_RANGE
 import com.fakhry.pomodojo.features.preferences.ui.mapper.mapToUiModel
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -32,6 +34,7 @@ import kotlinx.coroutines.launch
 
 class PreferencesViewModel(
     private val repository: PreferencesRepository,
+    private val initPreferencesRepository: InitPreferencesRepository,
     private val timelineBuilder: BuildTimerSegmentsUseCase,
     private val hourSplitter: BuildHourSplitTimelineUseCase,
     private val dispatcher: DispatcherProvider,
@@ -47,7 +50,7 @@ class PreferencesViewModel(
             viewModelScope,
             SharingStarted.Eagerly,
             PreferencesConfigUiState(
-                repeatCount = PreferencesDomain.DEFAULT_REPEAT_COUNT,
+                repeatCount = PomodoroPreferences.DEFAULT_REPEAT_COUNT,
                 repeatRange = DEFAULT_REPEAT_RANGE,
                 focusOptions = persistentListOf(),
                 breakOptions = persistentListOf(),
@@ -68,21 +71,25 @@ class PreferencesViewModel(
 
     init {
         viewModelScope.launch(dispatcher.io) {
-            repository.preferences.collect { preferences ->
-                val mapped = preferences.mapToUiModel(
-                    timelineBuilder = {
-                        timelineBuilder(0L, it).toCompletedTimeline()
-                    },
-                    hourSplitter = hourSplitter::invoke,
-                )
-                _state.update { current ->
-                    if (current.isLoading) {
-                        mapped
-                    } else {
-                        mapped.reuseStableListsFrom(current)
+            repository.preferences
+                .combine(initPreferencesRepository.initPreferences) { pomodoro, init ->
+                    pomodoro to init
+                }.collect { (preferences, initPreferences) ->
+                    val mapped = preferences.mapToUiModel(
+                        initPreferences = initPreferences,
+                        timelineBuilder = {
+                            timelineBuilder(0L, it).toCompletedTimeline()
+                        },
+                        hourSplitter = hourSplitter::invoke,
+                    )
+                    _state.update { current ->
+                        if (current.isLoading) {
+                            mapped
+                        } else {
+                            mapped.reuseStableListsFrom(current)
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -126,7 +133,7 @@ class PreferencesViewModel(
 
     fun onThemeSelected(theme: AppTheme) {
         viewModelScope.launch(dispatcher.io) {
-            repository.updateAppTheme(theme)
+            initPreferencesRepository.updateAppTheme(theme)
         }
     }
 

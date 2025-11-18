@@ -5,10 +5,11 @@ import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +32,7 @@ class CreatePomodoroSessionUseCaseTest {
             sourceTitle = "Test Anime",
             metadata = null,
         )
-        val preferences = PreferencesDomain(
+        val preferences = PomodoroPreferences(
             focusMinutes = 25,
             breakMinutes = 5,
             repeatCount = 4,
@@ -47,6 +48,7 @@ class CreatePomodoroSessionUseCaseTest {
             sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
+            initPreferencesRepository = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
@@ -67,12 +69,13 @@ class CreatePomodoroSessionUseCaseTest {
     fun `saves session to repository`() = runTest {
         val now = 2_000_000L
         val quoteRepo = FakeQuoteRepository(QuoteContent.DEFAULT_QUOTE)
-        val preferencesRepo = FakePreferencesRepository(PreferencesDomain())
+        val preferencesRepo = FakePreferencesRepository(PomodoroPreferences())
         val sessionRepo = FakeActiveSessionRepository()
         val useCase = CreatePomodoroSessionUseCase(
             sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
+            initPreferencesRepository = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
@@ -87,7 +90,7 @@ class CreatePomodoroSessionUseCaseTest {
     @Test
     fun `creates session with custom preferences`() = runTest {
         val now = 3_000_000L
-        val customPreferences = PreferencesDomain(
+        val customPreferences = PomodoroPreferences(
             focusMinutes = 50,
             breakMinutes = 10,
             repeatCount = 2,
@@ -101,6 +104,7 @@ class CreatePomodoroSessionUseCaseTest {
             sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
+            initPreferencesRepository = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
@@ -117,7 +121,7 @@ class CreatePomodoroSessionUseCaseTest {
     @Test
     fun `timeline builder receives correct parameters`() = runTest {
         val now = 4_000_000L
-        val preferences = PreferencesDomain(
+        val preferences = PomodoroPreferences(
             focusMinutes = 30,
             breakMinutes = 10,
             repeatCount = 3,
@@ -130,6 +134,7 @@ class CreatePomodoroSessionUseCaseTest {
             sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
+            initPreferencesRepository = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
@@ -146,7 +151,7 @@ class CreatePomodoroSessionUseCaseTest {
     @Test
     fun `handles long break configuration`() = runTest {
         val now = 5_000_000L
-        val preferences = PreferencesDomain(
+        val preferences = PomodoroPreferences(
             focusMinutes = 25,
             breakMinutes = 5,
             repeatCount = 4,
@@ -162,6 +167,7 @@ class CreatePomodoroSessionUseCaseTest {
             sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
+            initPreferencesRepository = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
@@ -180,10 +186,14 @@ class CreatePomodoroSessionUseCaseTest {
         override suspend fun getById(id: String): QuoteContent = quote
     }
 
-    private class FakePreferencesRepository(initial: PreferencesDomain) : PreferencesRepository {
+    private class FakePreferencesRepository(initial: PomodoroPreferences) :
+        PreferencesRepository,
+        InitPreferencesRepository {
         private val state = MutableStateFlow(initial)
+        private val initState = MutableStateFlow(InitAppPreferences())
 
-        override val preferences: Flow<PreferencesDomain> = state.asStateFlow()
+        override val preferences: Flow<PomodoroPreferences> = state.asStateFlow()
+        override val initPreferences: Flow<InitAppPreferences> = initState.asStateFlow()
 
         override suspend fun updateRepeatCount(value: Int) {}
         override suspend fun updateFocusMinutes(value: Int) {}
@@ -191,10 +201,14 @@ class CreatePomodoroSessionUseCaseTest {
         override suspend fun updateLongBreakEnabled(enabled: Boolean) {}
         override suspend fun updateLongBreakAfter(value: Int) {}
         override suspend fun updateLongBreakMinutes(value: Int) {}
-        override suspend fun updateAppTheme(theme: AppTheme) {}
         override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {}
         override suspend fun updateHasActiveSession(value: Boolean) {
-            state.value = state.value.copy(hasActiveSession = value)
+            initState.value = initState.value.copy(hasActiveSession = value)
+        }
+
+        override suspend fun updateAppTheme(
+            theme: com.fakhry.pomodojo.features.preferences.domain.model.AppTheme,
+        ) {
         }
     }
 

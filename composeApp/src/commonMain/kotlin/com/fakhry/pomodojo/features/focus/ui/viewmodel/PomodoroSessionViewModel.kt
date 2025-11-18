@@ -22,6 +22,7 @@ import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.features.preferences.ui.model.TimelineSegmentUi
 import kotlinx.collections.immutable.toPersistentList
@@ -42,6 +43,7 @@ class PomodoroSessionViewModel(
     private val currentTimeProvider: CurrentTimeProvider = SystemCurrentTimeProvider,
     private val createPomodoroSessionUseCase: CreatePomodoroSessionUseCase,
     private val preferencesRepository: PreferencesRepository,
+    private val initPreferencesRepository: InitPreferencesRepository,
     private val sessionRepository: ActiveSessionRepository,
     private val historyRepository: HistorySessionRepository,
     private val pomodoroSessionNotifier: PomodoroSessionNotifier,
@@ -391,7 +393,7 @@ class PomodoroSessionViewModel(
         val currentState = container.stateFlow.value
         if (currentState.isComplete) return@launch
         buildSessionSnapshot(currentState)?.let {
-            preferencesRepository.updateHasActiveSession(true)
+            initPreferencesRepository.updateHasActiveSession(true)
             sessionRepository.updateActiveSession(it)
         }
     }
@@ -402,7 +404,7 @@ class PomodoroSessionViewModel(
             sessionRepository.completeSession(it)
             historyRepository.insertHistory(it)
             pomodoroSessionNotifier.cancel(it.sessionId())
-            preferencesRepository.updateHasActiveSession(false)
+            initPreferencesRepository.updateHasActiveSession(false)
         }
         resetNotificationThrottle()
     }

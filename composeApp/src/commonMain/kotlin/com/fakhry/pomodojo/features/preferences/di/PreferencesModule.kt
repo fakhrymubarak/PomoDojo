@@ -1,8 +1,10 @@
 package com.fakhry.pomodojo.features.preferences.di
 
+import com.fakhry.pomodojo.features.preferences.data.repository.InitPreferencesRepositoryImpl
 import com.fakhry.pomodojo.features.preferences.data.repository.PreferencesRepositoryImpl
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferenceCascadeResolver
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.features.preferences.ui.PreferencesViewModel
@@ -18,4 +20,5 @@ val preferencesModule = module {
     factoryOf(::BuildTimerSegmentsUseCase)
     factoryOf(::BuildHourSplitTimelineUseCase)
     singleOf(::PreferencesRepositoryImpl) bind PreferencesRepository::class
+    singleOf(::InitPreferencesRepositoryImpl) bind InitPreferencesRepository::class
 }

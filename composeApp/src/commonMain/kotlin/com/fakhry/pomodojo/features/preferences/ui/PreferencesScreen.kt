@@ -36,7 +36,8 @@ import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.core.ui.components.BgHeaderCanvas
 import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.features.preferences.ui.components.PomodoroConfigSection
@@ -236,7 +237,7 @@ private fun PreferencesHeaderPreview() {
 @Preview
 @Composable
 private fun PreferencesContentPreview() {
-    val preferences = PreferencesDomain(
+    val preferences = PomodoroPreferences(
         repeatCount = 4,
         focusMinutes = 25,
         breakMinutes = 5,
@@ -244,13 +245,17 @@ private fun PreferencesContentPreview() {
         longBreakAfter = 4,
         longBreakMinutes = 10,
     )
+    val initPreferences = InitAppPreferences(
+        appTheme = AppTheme.DARK,
+        hasActiveSession = false,
+    )
     val previewPreferencesState = PreferencesUiModel(
-        selectedTheme = preferences.appTheme,
+        selectedTheme = initPreferences.appTheme,
         themeOptions = AppTheme.entries.map { theme ->
             PreferenceOption(
                 label = theme.displayName,
                 value = theme,
-                selected = theme == preferences.appTheme,
+                selected = theme == initPreferences.appTheme,
             )
         }.toPersistentList(),
         isAlwaysOnDisplayEnabled = preferences.alwaysOnDisplayEnabled,

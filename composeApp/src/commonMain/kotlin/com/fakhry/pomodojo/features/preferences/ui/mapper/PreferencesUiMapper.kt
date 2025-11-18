@@ -1,7 +1,8 @@
 package com.fakhry.pomodojo.features.preferences.ui.mapper
 
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesUiModel
@@ -14,10 +15,11 @@ private val LONG_BREAK_AFTER = listOf(6, 4, 2)
 private val LONG_BREAK_MINUTES = listOf(4, 10, 20)
 val DEFAULT_REPEAT_RANGE = 2..8
 
-fun PreferencesDomain.mapToUiModel(
-    timelineBuilder: (PreferencesDomain) -> List<TimerSegmentsDomain>,
-    hourSplitter: (PreferencesDomain) -> List<Int>,
-) = this.run {
+fun PomodoroPreferences.mapToUiModel(
+    initPreferences: InitAppPreferences,
+    timelineBuilder: (PomodoroPreferences) -> List<TimerSegmentsDomain>,
+    hourSplitter: (PomodoroPreferences) -> List<Int>,
+): PreferencesUiModel {
     val longBreakEnabled = longBreakEnabled
     val themeOptions =
         AppTheme.entries
@@ -25,12 +27,12 @@ fun PreferencesDomain.mapToUiModel(
                 PreferenceOption(
                     label = theme.displayName,
                     value = theme,
-                    selected = appTheme == theme,
+                    selected = initPreferences.appTheme == theme,
                 )
             }.toPersistentList()
 
-    return@run PreferencesUiModel(
-        selectedTheme = appTheme,
+    return PreferencesUiModel(
+        selectedTheme = initPreferences.appTheme,
         themeOptions = themeOptions,
         isAlwaysOnDisplayEnabled = alwaysOnDisplayEnabled,
         repeatCount = repeatCount,

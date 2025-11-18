@@ -1,10 +1,12 @@
 package com.fakhry.pomodojo.features.preferences.ui
 
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.features.preferences.data.repository.InitPreferencesRepositoryImpl
 import com.fakhry.pomodojo.features.preferences.data.repository.PreferencesRepositoryImpl
 import com.fakhry.pomodojo.features.preferences.data.source.PreferenceStorage
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
@@ -34,10 +36,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -48,7 +52,7 @@ class PreferencesViewModelTest {
         val state = viewModel.state.value
 
         assertFalse(state.isLoading)
-        assertEquals(PreferencesDomain.DEFAULT_REPEAT_COUNT, state.repeatCount)
+        assertEquals(PomodoroPreferences.DEFAULT_REPEAT_COUNT, state.repeatCount)
         assertTrue(state.focusOptions.first { it.value == 25 }.selected)
         assertEquals(8, state.timeline.segments.size) // 4 focus + 2 long breaks + 2 short breaks
     }
@@ -61,10 +65,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -92,10 +98,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -149,10 +157,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -177,10 +187,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -204,10 +216,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -225,16 +239,18 @@ class PreferencesViewModelTest {
     @Test
     fun `onLongBreakEnabledToggled enables long break`() = runTest {
         val storage = FakePreferenceStorage()
-        storage.state.value = PreferencesDomain(longBreakEnabled = false)
+        storage.state.value = PomodoroPreferences(longBreakEnabled = false)
         val repository =
             PreferencesRepositoryImpl(
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -257,10 +273,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -285,10 +303,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -311,10 +331,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -337,10 +359,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -367,10 +391,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -398,10 +424,12 @@ class PreferencesViewModelTest {
                 storage = storage,
                 cascadeResolver = PreferenceCascadeResolver(),
             )
+        val initRepository = InitPreferencesRepositoryImpl(storage)
         val testDispatcher = Dispatchers.Unconfined
         val viewModel =
             PreferencesViewModel(
                 repository = repository,
+                initPreferencesRepository = initRepository,
                 timelineBuilder = BuildTimerSegmentsUseCase(),
                 hourSplitter = BuildHourSplitTimelineUseCase(),
                 dispatcher = DispatcherProvider(testDispatcher),
@@ -415,12 +443,22 @@ class PreferencesViewModelTest {
     }
 
     private class FakePreferenceStorage : PreferenceStorage {
-        val state = MutableStateFlow(PreferencesDomain())
+        val state = MutableStateFlow(PomodoroPreferences())
+        private val initState = MutableStateFlow(InitAppPreferences())
 
         override val preferences = state
+        override val initPreferences = initState
 
-        override suspend fun update(transform: (PreferencesDomain) -> PreferencesDomain) {
+        override suspend fun updatePreferences(
+            transform: (PomodoroPreferences) -> PomodoroPreferences,
+        ) {
             state.update(transform)
+        }
+
+        override suspend fun updateInitPreferences(
+            transform: (InitAppPreferences) -> InitAppPreferences,
+        ) {
+            initState.update(transform)
         }
     }
 }

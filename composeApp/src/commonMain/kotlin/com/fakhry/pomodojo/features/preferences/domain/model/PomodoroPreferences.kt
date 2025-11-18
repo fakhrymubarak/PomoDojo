@@ -1,7 +1,6 @@
 package com.fakhry.pomodojo.features.preferences.domain.model
 
-data class PreferencesDomain(
-    val appTheme: AppTheme = AppTheme.DARK,
+data class PomodoroPreferences(
     val repeatCount: Int = DEFAULT_REPEAT_COUNT,
     val focusMinutes: Int = DEFAULT_FOCUS_MINUTES,
     val breakMinutes: Int = DEFAULT_BREAK_MINUTES,
@@ -9,7 +8,6 @@ data class PreferencesDomain(
     val longBreakAfter: Int = DEFAULT_LONG_BREAK_AFTER,
     val longBreakMinutes: Int = DEFAULT_LONG_BREAK_MINUTES,
     val alwaysOnDisplayEnabled: Boolean = false,
-    val hasActiveSession: Boolean = false,
 ) {
     companion object {
         const val DEFAULT_REPEAT_COUNT = 4

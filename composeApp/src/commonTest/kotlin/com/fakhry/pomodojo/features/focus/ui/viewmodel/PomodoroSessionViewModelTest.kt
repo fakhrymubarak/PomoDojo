@@ -15,7 +15,8 @@ import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUs
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
@@ -23,6 +24,7 @@ import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -196,7 +198,7 @@ class PomodoroSessionViewModelTest {
     @Test
     fun `togglePauseResume pauses and resumes the active segment`() = runTest(dispatcher) {
         val preferencesRepository = FakePreferencesRepository(
-            PreferencesDomain(
+            PomodoroPreferences(
                 repeatCount = 1,
                 focusMinutes = 1,
                 breakMinutes = 1,
@@ -215,7 +217,7 @@ class PomodoroSessionViewModelTest {
         viewModel.togglePauseResume()
         advanceUntilIdle()
         assertTrue(sessionRepository.storedSession != null)
-        assertTrue(preferencesRepository.currentState.hasActiveSession)
+        assertTrue(preferencesRepository.currentInit.hasActiveSession)
 
         viewModel.togglePauseResume()
         runCurrent()
@@ -242,12 +244,12 @@ class PomodoroSessionViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun TestScope.createViewModel(
-        preferences: PreferencesDomain = PreferencesDomain(
+        preferences: PomodoroPreferences = PomodoroPreferences(
             repeatCount = 1,
             focusMinutes = 1,
             breakMinutes = 1,
             longBreakEnabled = false,
-            longBreakAfter = PreferencesDomain.DEFAULT_LONG_BREAK_AFTER,
+            longBreakAfter = PomodoroPreferences.DEFAULT_LONG_BREAK_AFTER,
             longBreakMinutes = 1,
         ),
         sessionRepository: FakeActiveSessionRepository = FakeActiveSessionRepository(),
@@ -265,6 +267,7 @@ class PomodoroSessionViewModelTest {
             sessionRepository = sessionRepository,
             quoteRepo = quoteRepository,
             preferencesRepo = preferencesRepository,
+            initPreferencesRepository = preferencesRepository,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = dispatcherProvider,
@@ -274,6 +277,7 @@ class PomodoroSessionViewModelTest {
             currentTimeProvider = currentTimeProvider,
             createPomodoroSessionUseCase = createSessionUseCase,
             preferencesRepository = preferencesRepository,
+            initPreferencesRepository = preferencesRepository,
             sessionRepository = sessionRepository,
             historyRepository = FakeHistorySessionRepository(),
             pomodoroSessionNotifier = focusNotifier,
@@ -298,11 +302,15 @@ private class FakeQuoteRepository(
     override suspend fun getById(id: String): QuoteContent = quote
 }
 
-private class FakePreferencesRepository(initial: PreferencesDomain) : PreferencesRepository {
+private class FakePreferencesRepository(initial: PomodoroPreferences) :
+    PreferencesRepository,
+    InitPreferencesRepository {
     private val state = MutableStateFlow(initial)
-    val currentState: PreferencesDomain get() = state.value
+    private val initState = MutableStateFlow(InitAppPreferences())
+    val currentInit: InitAppPreferences get() = initState.value
 
-    override val preferences: Flow<PreferencesDomain> = state.asStateFlow()
+    override val preferences: Flow<PomodoroPreferences> = state.asStateFlow()
+    override val initPreferences: Flow<InitAppPreferences> = initState.asStateFlow()
 
     override suspend fun updateRepeatCount(value: Int) {
         state.update { it.copy(repeatCount = value) }
@@ -328,16 +336,16 @@ private class FakePreferencesRepository(initial: PreferencesDomain) : Preference
         state.update { it.copy(longBreakMinutes = value) }
     }
 
-    override suspend fun updateAppTheme(theme: AppTheme) {
-        state.update { it.copy(appTheme = theme) }
-    }
-
     override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {
         state.update { it.copy(alwaysOnDisplayEnabled = enabled) }
     }
 
+    override suspend fun updateAppTheme(theme: AppTheme) {
+        initState.update { it.copy(appTheme = theme) }
+    }
+
     override suspend fun updateHasActiveSession(value: Boolean) {
-        state.update { it.copy(hasActiveSession = value) }
+        initState.update { it.copy(hasActiveSession = value) }
     }
 }
 

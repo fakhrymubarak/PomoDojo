@@ -1,7 +1,6 @@
 package com.fakhry.pomodojo.features.preferences.data.repository
 
 import com.fakhry.pomodojo.features.preferences.data.source.PreferenceStorage
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferenceCascadeResolver
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -13,12 +12,12 @@ class PreferencesRepositoryImpl(
     override val preferences = storage.preferences.distinctUntilChanged()
 
     override suspend fun updateRepeatCount(value: Int) {
-        storage.update { it.copy(repeatCount = value) }
+        storage.updatePreferences { it.copy(repeatCount = value) }
     }
 
     override suspend fun updateFocusMinutes(value: Int) {
         val cascade = cascadeResolver.resolveForFocus(value)
-        storage.update {
+        storage.updatePreferences {
             it.copy(
                 focusMinutes = value,
                 breakMinutes = cascade.breakMinutes,
@@ -30,7 +29,7 @@ class PreferencesRepositoryImpl(
 
     override suspend fun updateBreakMinutes(value: Int) {
         val cascade = cascadeResolver.resolveForBreak(value)
-        storage.update {
+        storage.updatePreferences {
             it.copy(
                 breakMinutes = value,
                 longBreakAfter = cascade.longBreakAfterCount,
@@ -40,26 +39,18 @@ class PreferencesRepositoryImpl(
     }
 
     override suspend fun updateLongBreakEnabled(enabled: Boolean) {
-        storage.update { it.copy(longBreakEnabled = enabled) }
+        storage.updatePreferences { it.copy(longBreakEnabled = enabled) }
     }
 
     override suspend fun updateLongBreakAfter(value: Int) {
-        storage.update { it.copy(longBreakAfter = value) }
+        storage.updatePreferences { it.copy(longBreakAfter = value) }
     }
 
     override suspend fun updateLongBreakMinutes(value: Int) {
-        storage.update { it.copy(longBreakMinutes = value) }
-    }
-
-    override suspend fun updateAppTheme(theme: AppTheme) {
-        storage.update { it.copy(appTheme = theme) }
-    }
-
-    override suspend fun updateHasActiveSession(value: Boolean) {
-        storage.update { it.copy(hasActiveSession = value) }
+        storage.updatePreferences { it.copy(longBreakMinutes = value) }
     }
 
     override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {
-        storage.update { it.copy(alwaysOnDisplayEnabled = enabled) }
+        storage.updatePreferences { it.copy(alwaysOnDisplayEnabled = enabled) }
     }
 }

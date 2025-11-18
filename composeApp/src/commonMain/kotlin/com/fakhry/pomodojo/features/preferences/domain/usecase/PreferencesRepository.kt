@@ -1,11 +1,10 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface PreferencesRepository {
-    val preferences: Flow<PreferencesDomain>
+    val preferences: Flow<PomodoroPreferences>
 
     suspend fun updateRepeatCount(value: Int)
 
@@ -19,9 +18,5 @@ interface PreferencesRepository {
 
     suspend fun updateLongBreakMinutes(value: Int)
 
-    suspend fun updateAppTheme(theme: AppTheme)
-
     suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean)
-
-    suspend fun updateHasActiveSession(value: Boolean)
 }

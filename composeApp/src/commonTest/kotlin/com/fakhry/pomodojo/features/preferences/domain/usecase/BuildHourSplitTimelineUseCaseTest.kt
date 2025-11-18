@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -9,7 +9,7 @@ class BuildHourSplitTimelineUseCaseTest {
 
     @Test
     fun `splits schedule into hours with configured long breaks`() {
-        val preferences = PreferencesDomain(
+        val preferences = PomodoroPreferences(
             repeatCount = 6,
             focusMinutes = 25,
             breakMinutes = 5,
@@ -26,7 +26,7 @@ class BuildHourSplitTimelineUseCaseTest {
 
     @Test
     fun `falls back to short breaks when long breaks disabled`() {
-        val preferences = PreferencesDomain(
+        val preferences = PomodoroPreferences(
             repeatCount = 3,
             focusMinutes = 20,
             breakMinutes = 5,
@@ -43,7 +43,7 @@ class BuildHourSplitTimelineUseCaseTest {
 
     @Test
     fun `returns remainder only when total duration below an hour`() {
-        val preferences = PreferencesDomain(
+        val preferences = PomodoroPreferences(
             repeatCount = 1,
             focusMinutes = 45,
             breakMinutes = 5,

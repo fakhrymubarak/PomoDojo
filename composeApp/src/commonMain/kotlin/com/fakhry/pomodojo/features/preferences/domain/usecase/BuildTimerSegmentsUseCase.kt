@@ -1,14 +1,14 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
 import com.fakhry.pomodojo.core.utils.constant.Time
-import com.fakhry.pomodojo.features.preferences.domain.model.PreferencesDomain
+import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 
 class BuildTimerSegmentsUseCase {
-    operator fun invoke(now: Long, preferences: PreferencesDomain): List<TimerSegmentsDomain> {
+    operator fun invoke(now: Long, preferences: PomodoroPreferences): List<TimerSegmentsDomain> {
         val segments = mutableListOf<TimerSegmentsDomain>()
         for (cycle in 1..preferences.repeatCount) {
             segments += TimerSegmentsDomain(
