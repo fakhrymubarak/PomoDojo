@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">PomoDojo</string>
+
+    <!-- Native Android Notifications Resources-->
     <string name="focus_session_complete_title">🎉 Amazing work!</string>
     <string name="focus_session_complete_body">You crushed %1$d cycles with %2$d minutes of focused work and %3$d minutes of well-deserved breaks. Keep up the momentum!</string>
     <string name="focus_session_live_title">Focus session in progress</string>
