@@ -18,11 +18,9 @@ private object IosFocusDatabaseHolder {
     val database: PomoDojoRoomDatabase by lazy {
         val dbFile = "${fileDirectory()}/${POMO_DOJO_DATABASE_NAME}"
         Room
-            .databaseBuilder<PomoDojoRoomDatabase>(
-                name = dbFile,
-            ).setDriver(BundledSQLiteDriver())
+            .databaseBuilder<PomoDojoRoomDatabase>(dbFile)
+            .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
-            .addMigrations(*POMO_DOJO_MIGRATIONS)
             .build()
     }
 
