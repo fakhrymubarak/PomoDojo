@@ -29,8 +29,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import com.fakhry.pomodojo.features.preferences.ui.RecompositionTags
-import com.fakhry.pomodojo.features.preferences.ui.TrackRecomposition
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.preferences_break_timer_title
@@ -59,7 +57,6 @@ fun ColumnScope.PomodoroConfigSection(
     onLongBreakAfterSelected: (Int) -> Unit = {},
     onLongBreakMinutesSelected: (Int) -> Unit = {},
 ) = this.run {
-    TrackRecomposition(RecompositionTags.CONFIG_SECTION)
     val visibilityLongBreakSection = remember { MutableTransitionState(isLongBreakEnabled) }
     val colorScheme = MaterialTheme.colorScheme
 
@@ -147,7 +144,6 @@ fun ColumnScope.PomodoroConfigSection(
 
 @Composable
 private fun RepeatSection(repeatCount: Int, range: IntRange, onRepeatCountChanged: (Int) -> Unit) {
-    TrackRecomposition(RecompositionTags.REPEAT_SECTION)
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = stringResource(Res.string.preferences_repeat_title),

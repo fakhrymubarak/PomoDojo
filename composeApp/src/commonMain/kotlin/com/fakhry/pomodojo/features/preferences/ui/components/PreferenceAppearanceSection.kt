@@ -24,8 +24,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.ui.RecompositionTags
-import com.fakhry.pomodojo.features.preferences.ui.TrackRecomposition
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.preferences_always_on_display_title
@@ -41,7 +39,6 @@ fun ColumnScope.PreferenceAppearanceSection(
     isAlwaysOnDisplayEnabled: Boolean,
     onAlwaysOnDisplayToggled: (Boolean) -> Unit,
 ) = this.run {
-    TrackRecomposition(RecompositionTags.APPEARANCE_SECTION)
     val colorScheme = MaterialTheme.colorScheme
 
     Text(

@@ -61,7 +61,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Suppress("NonSkippableComposable")
 @Composable
-fun PreferencesRoute(
+fun PreferencesScreen(
     viewModel: PreferencesViewModel = koinViewModel(),
     onNavigateBack: () -> Unit = {},
 ) {
@@ -70,7 +70,7 @@ fun PreferencesRoute(
     val configState by viewModel.configState.collectAsState()
     val appearanceState by viewModel.appearanceState.collectAsState()
 
-    PreferencesScreen(
+    PreferencesContent(
         isLoading = isLoading,
         timeline = timeline,
         configState = configState,
@@ -88,7 +88,7 @@ fun PreferencesRoute(
 }
 
 @Composable
-fun PreferencesScreen(
+fun PreferencesContent(
     isLoading: Boolean,
     timeline: TimelineUiModel,
     configState: PreferencesConfigUiState,
@@ -103,7 +103,6 @@ fun PreferencesScreen(
     onLongBreakMinutesSelected: (Int) -> Unit = {},
     onAlwaysOnDisplayToggled: (Boolean) -> Unit = {},
 ) {
-    TrackRecomposition(RecompositionTags.SCREEN)
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
@@ -188,7 +187,6 @@ private fun PreferencesContent(
     onLongBreakMinutesSelected: (Int) -> Unit = {},
     onAlwaysOnDisplayToggled: (Boolean) -> Unit = {},
 ) {
-    TrackRecomposition(RecompositionTags.CONTENT)
     val scrollState = rememberScrollState()
 
     Column(
