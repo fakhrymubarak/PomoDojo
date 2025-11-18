@@ -1,9 +1,9 @@
 package com.fakhry.pomodojo.core.framework.notifications
 
-import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
+import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 

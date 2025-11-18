@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.features.focus.domain.repository
 
-import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
 
 /**
  * Abstraction over the storage of active pomodoro sessions.

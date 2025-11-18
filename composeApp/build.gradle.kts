@@ -67,6 +67,7 @@ kotlin {
             implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
+            implementation(project(":shared:domain"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

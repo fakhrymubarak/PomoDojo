@@ -45,15 +45,12 @@ import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.core.framework.screen.KeepScreenOnEffect
 import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.features.dashboard.ui.components.PomodoroTimerSection
-import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.features.focus.ui.components.PomodoroSessionHeaderSection
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.focus.ui.viewmodel.PomodoroSessionViewModel
 import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.features.preferences.ui.components.TimelineHoursSplit
@@ -74,6 +71,9 @@ import com.fakhry.pomodojo.generated.resources.focus_session_phase_long_break
 import com.fakhry.pomodojo.generated.resources.focus_session_quote_content_description
 import com.fakhry.pomodojo.generated.resources.focus_session_resume_content_description
 import com.fakhry.pomodojo.generated.resources.focus_session_timeline_title
+import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.features.focus.domain.repository
 
-import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
+import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
 
 /**
  * Provides motivational quotes for focus sessions.

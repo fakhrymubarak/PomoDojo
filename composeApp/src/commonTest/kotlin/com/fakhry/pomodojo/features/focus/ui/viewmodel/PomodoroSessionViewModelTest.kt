@@ -1,13 +1,10 @@
 package com.fakhry.pomodojo.features.focus.ui.viewmodel
 
-import com.fakhry.pomodojo.commons.domain.state.DomainResult
 import com.fakhry.pomodojo.core.framework.audio.SoundPlayer
 import com.fakhry.pomodojo.core.framework.datetime.CurrentTimeProvider
 import com.fakhry.pomodojo.core.framework.notifications.PomodoroSessionNotifier
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.features.dashboard.domain.model.PomodoroHistoryDomain
-import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
 import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
@@ -17,15 +14,18 @@ import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
 import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
+import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
+import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimelineDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
+import com.fakhry.pomodojo.shared.domain.states.DomainResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async

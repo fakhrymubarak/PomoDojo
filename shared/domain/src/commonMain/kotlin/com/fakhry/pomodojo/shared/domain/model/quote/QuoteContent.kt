@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.features.focus.domain.model
+package com.fakhry.pomodojo.shared.domain.model.quote
 
 /**
  * Quote displayed during a focus session.

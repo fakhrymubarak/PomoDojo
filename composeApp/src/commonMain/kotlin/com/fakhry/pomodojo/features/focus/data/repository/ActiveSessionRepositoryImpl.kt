@@ -8,8 +8,8 @@ import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.features.focus.data.mapper.toData
 import com.fakhry.pomodojo.features.focus.data.mapper.toDomain
 import com.fakhry.pomodojo.features.focus.data.model.PomodoroSessionData
-import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json

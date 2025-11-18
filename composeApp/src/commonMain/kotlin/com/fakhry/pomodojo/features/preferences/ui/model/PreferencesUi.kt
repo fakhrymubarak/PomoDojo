@@ -3,9 +3,9 @@ package com.fakhry.pomodojo.features.preferences.ui.model
 import androidx.compose.runtime.Immutable
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences.Companion.DEFAULT_REPEAT_COUNT
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
 import com.fakhry.pomodojo.features.preferences.ui.mapper.DEFAULT_REPEAT_RANGE
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

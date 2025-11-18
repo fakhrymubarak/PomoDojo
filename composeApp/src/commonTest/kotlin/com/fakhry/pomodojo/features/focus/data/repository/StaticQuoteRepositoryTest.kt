@@ -1,6 +1,7 @@
 package com.fakhry.pomodojo.features.focus.data.repository
 
-import com.fakhry.pomodojo.features.focus.domain.model.QuoteContent
+import com.fakhry.pomodojo.core.utils.primitives.isNotEmptyAndNonNull
+import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -22,8 +23,8 @@ class StaticQuoteRepositoryTest {
         assertNotNull(quote.sourceTitle)
         assertTrue(quote.id.isNotEmpty())
         assertTrue(quote.text.isNotEmpty())
-        assertTrue(quote.character.isNotEmpty())
-        assertTrue(quote.sourceTitle.isNotEmpty())
+        assertTrue(quote.character.isNotEmptyAndNonNull())
+        assertTrue(quote.sourceTitle.isNotEmptyAndNonNull())
     }
 
     @Test

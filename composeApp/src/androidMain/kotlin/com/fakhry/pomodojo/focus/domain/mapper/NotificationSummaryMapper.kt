@@ -3,11 +3,11 @@ package com.fakhry.pomodojo.focus.domain.mapper
 import android.content.Context
 import com.fakhry.pomodojo.R
 import com.fakhry.pomodojo.core.utils.primitives.formatDurationMillis
-import com.fakhry.pomodojo.features.focus.domain.model.NotificationSummary
-import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
+import com.fakhry.pomodojo.shared.domain.model.focus.NotificationSummary
+import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 
 internal fun PomodoroSessionDomain.toNotificationSummary(
     context: Context,

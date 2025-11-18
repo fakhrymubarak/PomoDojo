@@ -2,10 +2,10 @@ package com.fakhry.pomodojo.features.preferences.domain.usecase
 
 import com.fakhry.pomodojo.core.utils.constant.Time
 import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 
 class BuildTimerSegmentsUseCase {
     operator fun invoke(now: Long, preferences: PomodoroPreferences): List<TimerSegmentsDomain> {

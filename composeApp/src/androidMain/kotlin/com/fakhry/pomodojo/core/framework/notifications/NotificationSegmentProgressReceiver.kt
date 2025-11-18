@@ -11,10 +11,10 @@ import com.fakhry.pomodojo.core.datastore.provideDataStore
 import com.fakhry.pomodojo.core.framework.audio.provideSoundPlayer
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.features.focus.data.repository.ActiveSessionRepositoryImpl
-import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
+import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimelineDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

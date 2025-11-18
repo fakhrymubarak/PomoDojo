@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.features.focus.domain.model
 
+import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

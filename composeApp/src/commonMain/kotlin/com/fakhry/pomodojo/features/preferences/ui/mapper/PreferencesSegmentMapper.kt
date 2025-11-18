@@ -1,9 +1,9 @@
 package com.fakhry.pomodojo.features.preferences.ui.mapper
 
 import com.fakhry.pomodojo.core.utils.primitives.formatDurationMillis
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.features.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.features.preferences.ui.model.TimerUi
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
 import kotlinx.collections.immutable.toPersistentList
 
 fun List<TimerSegmentsDomain>.mapToTimelineSegmentsUi(now: Long = 0L, progress: Float = 1f) =

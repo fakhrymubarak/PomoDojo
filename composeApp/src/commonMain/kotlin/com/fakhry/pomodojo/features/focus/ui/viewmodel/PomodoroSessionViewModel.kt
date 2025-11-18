@@ -8,7 +8,6 @@ import com.fakhry.pomodojo.core.framework.datetime.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.core.framework.notifications.PomodoroSessionNotifier
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.core.utils.primitives.formatDurationMillis
-import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUseCase
@@ -20,11 +19,12 @@ import com.fakhry.pomodojo.features.focus.ui.mapper.toTimelineSegmentUi
 import com.fakhry.pomodojo.features.focus.ui.mapper.toUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
-import com.fakhry.pomodojo.features.preferences.domain.model.TimelineDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerStatusDomain
 import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.features.preferences.ui.model.TimelineSegmentUi
+import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimelineDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

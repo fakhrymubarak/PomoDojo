@@ -22,7 +22,7 @@ import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
 import com.fakhry.pomodojo.core.ui.theme.Primary
 import com.fakhry.pomodojo.core.ui.theme.Secondary
 import com.fakhry.pomodojo.features.focus.ui.focusPhaseLabel
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**

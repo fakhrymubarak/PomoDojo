@@ -3,10 +3,10 @@ package com.fakhry.pomodojo.features.preferences.ui.mapper
 import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
 import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.features.preferences.ui.model.TimelineUiModel
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
 import kotlinx.collections.immutable.toPersistentList
 
 private val FOCUS_OPTIONS = listOf(10, 25, 50)

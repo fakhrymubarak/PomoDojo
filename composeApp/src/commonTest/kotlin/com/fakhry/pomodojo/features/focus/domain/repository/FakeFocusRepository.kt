@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.features.focus.domain.repository
 
-import com.fakhry.pomodojo.features.focus.domain.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
 
 class FakeFocusRepository(private var hasActive: Boolean) : ActiveSessionRepository {
     override suspend fun hasActiveSession(): Boolean = hasActive

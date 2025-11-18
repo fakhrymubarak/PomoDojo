@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.features.focus.domain.model
+package com.fakhry.pomodojo.shared.domain.model.focus
 
 /**
  * Summary data for displaying session completion notification.

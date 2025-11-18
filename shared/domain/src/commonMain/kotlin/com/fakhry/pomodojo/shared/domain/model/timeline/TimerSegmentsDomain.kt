@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.features.preferences.domain.model
+package com.fakhry.pomodojo.shared.domain.model.timeline
 
 enum class TimerType {
     FOCUS,

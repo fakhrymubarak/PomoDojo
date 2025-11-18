@@ -1,8 +1,8 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
 import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerSegmentsDomain
-import com.fakhry.pomodojo.features.preferences.domain.model.TimerType
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
