@@ -67,6 +67,7 @@ kotlin {
             implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
+            implementation(project(":core:datastore"))
             implementation(project(":shared:domain"))
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -92,10 +93,6 @@ kotlin {
             // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
-
-            // DataStore library
-            implementation(libs.androidx.datastore)
-            implementation(libs.androidx.datastore.preferences)
 
             // OrbitMVI
             implementation(libs.orbit.core)

@@ -1,8 +1,8 @@
 package com.fakhry.pomodojo.features.preferences.data.repository
 
-import com.fakhry.pomodojo.features.preferences.data.source.PreferenceStorage
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.core.datastore.PreferenceStorage
 import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
+import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 class InitPreferencesRepositoryImpl(

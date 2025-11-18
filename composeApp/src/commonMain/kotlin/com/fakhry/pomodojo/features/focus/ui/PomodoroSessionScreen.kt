@@ -50,7 +50,6 @@ import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.focus.ui.viewmodel.PomodoroSessionViewModel
-import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.features.preferences.ui.components.TimelineHoursSplit
@@ -71,6 +70,7 @@ import com.fakhry.pomodojo.generated.resources.focus_session_phase_long_break
 import com.fakhry.pomodojo.generated.resources.focus_session_quote_content_description
 import com.fakhry.pomodojo.generated.resources.focus_session_resume_content_description
 import com.fakhry.pomodojo.generated.resources.focus_session_timeline_title
+import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
 import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType

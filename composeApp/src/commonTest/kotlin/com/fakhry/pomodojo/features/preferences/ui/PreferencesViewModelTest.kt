@@ -1,22 +1,19 @@
 package com.fakhry.pomodojo.features.preferences.ui
 
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.features.preferences.data.repository.FakePreferenceStorage
 import com.fakhry.pomodojo.features.preferences.data.repository.InitPreferencesRepositoryImpl
 import com.fakhry.pomodojo.features.preferences.data.repository.PreferencesRepositoryImpl
-import com.fakhry.pomodojo.features.preferences.data.source.PreferenceStorage
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferenceCascadeResolver
+import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
+import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -239,7 +236,7 @@ class PreferencesViewModelTest {
     @Test
     fun `onLongBreakEnabledToggled enables long break`() = runTest {
         val storage = FakePreferenceStorage()
-        storage.state.value = PomodoroPreferences(longBreakEnabled = false)
+        storage.pomodoroState.value = PomodoroPreferences(longBreakEnabled = false)
         val repository =
             PreferencesRepositoryImpl(
                 storage = storage,
@@ -440,25 +437,5 @@ class PreferencesViewModelTest {
         // Wait for the loading state to actually emit false
         val loadingState = viewModel.isLoadingState.filter { !it }.first()
         assertFalse(loadingState)
-    }
-
-    private class FakePreferenceStorage : PreferenceStorage {
-        val state = MutableStateFlow(PomodoroPreferences())
-        private val initState = MutableStateFlow(InitAppPreferences())
-
-        override val preferences = state
-        override val initPreferences = initState
-
-        override suspend fun updatePreferences(
-            transform: (PomodoroPreferences) -> PomodoroPreferences,
-        ) {
-            state.update(transform)
-        }
-
-        override suspend fun updateInitPreferences(
-            transform: (InitAppPreferences) -> InitAppPreferences,
-        ) {
-            initState.update(transform)
-        }
     }
 }

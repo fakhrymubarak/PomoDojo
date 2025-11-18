@@ -6,8 +6,8 @@ import com.fakhry.pomodojo.features.dashboard.domain.model.HistoryDomain
 import com.fakhry.pomodojo.features.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.features.focus.domain.repository.FakeFocusRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.FakeHistoryRepository
-import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.usecase.FakePreferencesRepository
+import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

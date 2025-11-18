@@ -1,8 +1,8 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
+import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
+import com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences
+import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

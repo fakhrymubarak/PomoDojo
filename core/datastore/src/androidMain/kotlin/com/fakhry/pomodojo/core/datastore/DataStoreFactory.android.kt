@@ -13,7 +13,7 @@ import okio.Path.Companion.toPath
 internal actual fun provideDataStore(): DataStore<Preferences> =
     AndroidPreferencesDataStoreProvider.dataStore
 
-internal object AndroidPreferencesDataStoreProvider {
+object AndroidPreferencesDataStoreProvider {
     private var appContext: Context? = null
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)

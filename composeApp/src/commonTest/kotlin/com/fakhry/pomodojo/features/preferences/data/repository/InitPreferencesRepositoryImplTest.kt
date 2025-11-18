@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.features.preferences.data.repository
 
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
+import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

@@ -1,7 +1,7 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
 import com.fakhry.pomodojo.core.utils.constant.Time
-import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
+import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerDomain
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain

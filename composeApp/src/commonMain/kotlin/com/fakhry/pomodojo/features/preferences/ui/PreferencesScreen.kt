@@ -35,9 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.core.ui.components.BgHeaderCanvas
 import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.features.preferences.ui.components.PomodoroConfigSection
@@ -54,6 +51,9 @@ import com.fakhry.pomodojo.features.preferences.ui.model.toConfigUiState
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.preferences_back_content_description
 import com.fakhry.pomodojo.generated.resources.preferences_title
+import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
+import com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences
+import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

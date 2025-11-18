@@ -3,13 +3,14 @@ package com.fakhry.pomodojo.features.focus.domain.usecase
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
-import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
+import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
+import com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences
+import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
 import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -206,9 +207,7 @@ class CreatePomodoroSessionUseCaseTest {
             initState.value = initState.value.copy(hasActiveSession = value)
         }
 
-        override suspend fun updateAppTheme(
-            theme: com.fakhry.pomodojo.features.preferences.domain.model.AppTheme,
-        ) {
+        override suspend fun updateAppTheme(theme: AppTheme) {
         }
     }
 

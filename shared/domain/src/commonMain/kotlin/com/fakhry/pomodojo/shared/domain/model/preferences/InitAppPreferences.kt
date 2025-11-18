@@ -1,4 +1,9 @@
-package com.fakhry.pomodojo.features.preferences.domain.model
+package com.fakhry.pomodojo.shared.domain.model.preferences
+
+data class InitAppPreferences(
+    val appTheme: AppTheme = AppTheme.DARK,
+    val hasActiveSession: Boolean = false,
+)
 
 /**
  * Supported application appearance themes.

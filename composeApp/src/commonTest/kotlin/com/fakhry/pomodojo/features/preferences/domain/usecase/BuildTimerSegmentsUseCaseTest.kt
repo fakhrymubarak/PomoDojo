@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
-import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
+import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import kotlin.test.Test

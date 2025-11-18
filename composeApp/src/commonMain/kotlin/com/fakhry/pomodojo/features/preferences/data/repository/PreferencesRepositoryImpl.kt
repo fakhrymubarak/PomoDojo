@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.features.preferences.data.repository
 
-import com.fakhry.pomodojo.features.preferences.data.source.PreferenceStorage
+import com.fakhry.pomodojo.core.datastore.PreferenceStorage
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferenceCascadeResolver
 import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
 import kotlinx.coroutines.flow.distinctUntilChanged

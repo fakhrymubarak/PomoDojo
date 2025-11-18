@@ -3,8 +3,6 @@ package com.fakhry.pomodojo.features.preferences.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
@@ -17,6 +15,8 @@ import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.features.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.features.preferences.ui.model.toAppearanceUiState
 import com.fakhry.pomodojo.features.preferences.ui.model.toConfigUiState
+import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
+import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
 import kotlinx.collections.immutable.ImmutableList

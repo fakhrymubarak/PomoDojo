@@ -23,12 +23,12 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferenceOption
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.preferences_always_on_display_title
 import com.fakhry.pomodojo.generated.resources.preferences_theme_title
 import com.fakhry.pomodojo.generated.resources.preferences_title_pomodoro_appearance_config
+import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 

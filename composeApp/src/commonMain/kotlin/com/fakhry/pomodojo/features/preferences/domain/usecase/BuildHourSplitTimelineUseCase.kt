@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
-import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
+import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
 
 class BuildHourSplitTimelineUseCase {
     operator fun invoke(preferences: PomodoroPreferences): List<Int> {

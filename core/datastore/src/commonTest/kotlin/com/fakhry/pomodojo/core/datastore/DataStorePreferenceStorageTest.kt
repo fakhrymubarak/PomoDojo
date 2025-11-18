@@ -1,10 +1,10 @@
-package com.fakhry.pomodojo.features.preferences.data.source
+package com.fakhry.pomodojo.core.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.PomodoroPreferences
+import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
+import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -21,12 +21,18 @@ class DataStorePreferenceStorageTest {
 
         val preferences = storage.preferences.first()
 
-        assertEquals(PomodoroPreferences.DEFAULT_REPEAT_COUNT, preferences.repeatCount)
-        assertEquals(PomodoroPreferences.DEFAULT_FOCUS_MINUTES, preferences.focusMinutes)
-        assertEquals(PomodoroPreferences.DEFAULT_BREAK_MINUTES, preferences.breakMinutes)
+        assertEquals(PomodoroPreferences.Companion.DEFAULT_REPEAT_COUNT, preferences.repeatCount)
+        assertEquals(PomodoroPreferences.Companion.DEFAULT_FOCUS_MINUTES, preferences.focusMinutes)
+        assertEquals(PomodoroPreferences.Companion.DEFAULT_BREAK_MINUTES, preferences.breakMinutes)
         assertTrue(preferences.longBreakEnabled)
-        assertEquals(PomodoroPreferences.DEFAULT_LONG_BREAK_AFTER, preferences.longBreakAfter)
-        assertEquals(PomodoroPreferences.DEFAULT_LONG_BREAK_MINUTES, preferences.longBreakMinutes)
+        assertEquals(
+            PomodoroPreferences.Companion.DEFAULT_LONG_BREAK_AFTER,
+            preferences.longBreakAfter,
+        )
+        assertEquals(
+            PomodoroPreferences.Companion.DEFAULT_LONG_BREAK_MINUTES,
+            preferences.longBreakMinutes,
+        )
         assertFalse(preferences.alwaysOnDisplayEnabled)
     }
 
@@ -74,14 +80,14 @@ class DataStorePreferenceStorageTest {
 
         emissions.add(storage.preferences.first())
         storage.updatePreferences {
-            it.copy(focusMinutes = PomodoroPreferences.DEFAULT_FOCUS_MINUTES)
+            it.copy(focusMinutes = PomodoroPreferences.Companion.DEFAULT_FOCUS_MINUTES)
         }
         storage.updatePreferences { it.copy(focusMinutes = 50) }
         emissions.add(storage.preferences.first())
         storage.updatePreferences { it.copy(focusMinutes = 50) }
 
         assertEquals(2, emissions.size)
-        assertEquals(PomodoroPreferences.DEFAULT_FOCUS_MINUTES, emissions[0].focusMinutes)
+        assertEquals(PomodoroPreferences.Companion.DEFAULT_FOCUS_MINUTES, emissions[0].focusMinutes)
         assertEquals(50, emissions[1].focusMinutes)
     }
 

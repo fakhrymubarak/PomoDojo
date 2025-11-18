@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.features.focus.data.model
+package com.fakhry.pomodojo.core.datastore.model
 
 import kotlinx.serialization.Serializable
 
