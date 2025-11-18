@@ -92,7 +92,15 @@ fun AppNavHost(navController: NavHostController, hasActiveSession: Boolean = fal
                     totalFocusMinutes = args.totalFocusMinutes,
                     totalBreakMinutes = args.totalBreakMinutes,
                 ),
-                onStartAnotherSession = { navController.popBackStack() },
+                onStartAnotherSession = {
+                    if (startDestination != AppDestination.PomodoroComplete) {
+                        navController.navigateUp()
+                    } else {
+                        navController.navigate(AppDestination.Dashboard) {
+                            launchSingleTop = true
+                        }
+                    }
+                },
             )
         }
     }
