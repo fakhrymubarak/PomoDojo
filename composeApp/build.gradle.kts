@@ -1,6 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.util.Properties
 
@@ -13,9 +12,9 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
-    id("jacoco")
     alias(libs.plugins.googleGmsGoogleServices)
     alias(libs.plugins.googleFirebaseCrashlytics)
+    id("com.fakhry.pomodojo.jacocoMultiplatform")
 }
 
 fun Project.envProps(fileName: String): Properties {
@@ -205,99 +204,28 @@ configure<KtlintExtension> {
     }
 }
 
-val kotlinExt = extensions.getByType<KotlinMultiplatformExtension>()
-
-tasks.withType<Test>().configureEach {
-    extensions.configure(JacocoTaskExtension::class) {
-        isIncludeNoLocationClasses = true
-        excludes = listOf("jdk.internal.*")
-    }
-}
-
-val jacocoJvmExec = layout.buildDirectory.file("jacoco/jvmTest.exec")
-val jvmMainCompilation =
-    kotlinExt.targets
-        .getByName("jvm")
-        .compilations
-        .getByName("main")
-val jvmSourceDirs =
-    jvmMainCompilation.allKotlinSourceSets.flatMap { it.kotlin.sourceDirectories.files }
-val jacocoClassExclusions =
-    listOf(
-        "**/generated/**",
-        "**/di/**",
-        "**/core/navigation/**",
-        "**/core/ui/**",
-        "**/core/datastore/**",
-        "**/core/framework/audio/**",
-        "**/core/framework/notifications/**",
-        "**/core/framework/screen/**",
-        "**/core/database/**",
-        "**/core/utils/compose/**",
-        "**/core/utils/permissions/**",
-        "**/features/**/di/**",
-        "**/features/**/ui/components/**",
-        "**/features/**/ui/**Screen*.class",
-        "**/features/**/ui/CelebrationMessage*.class",
-        "**/features/**/ui/ConfettiPiece*.class",
-        "**/*ComposableSingletons*.class",
-        "**/AppKt*.class",
-        "**/MainKt*.class",
-    )
-
-tasks.register<JacocoReport>("jacocoJvmTestReport") {
-    dependsOn("jvmTest")
-
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-        csv.required.set(false)
-        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jvmTestResult"))
-    }
-
-    sourceDirectories.setFrom(files(jvmSourceDirs))
-    classDirectories.setFrom(
-        files(
-            jvmMainCompilation.output.classesDirs.files.map { dir ->
-                fileTree(dir) {
-                    exclude(jacocoClassExclusions)
-                }
-            },
+jacocoMultiplatform {
+    lineCoverageThreshold.set(BigDecimal("0.95"))
+    classExclusions.addAll(
+        listOf(
+            "**/di/**",
+            "**/core/navigation/**",
+            "**/core/ui/**",
+            "**/core/datastore/**",
+            "**/core/framework/audio/**",
+            "**/core/framework/notifications/**",
+            "**/core/framework/screen/**",
+            "**/core/database/**",
+            "**/core/utils/compose/**",
+            "**/core/utils/permissions/**",
+            "**/features/**/di/**",
+            "**/features/**/ui/components/**",
+            "**/features/**/ui/**Screen*.class",
+            "**/features/**/ui/CelebrationMessage*.class",
+            "**/features/**/ui/ConfettiPiece*.class",
+            "**/*ComposableSingletons*.class",
+            "**/AppKt*.class",
+            "**/MainKt*.class",
         ),
     )
-    executionData.setFrom(jacocoJvmExec)
-}
-
-tasks.register<JacocoCoverageVerification>("jacocoJvmTestCoverageVerification") {
-    dependsOn("jvmTest")
-
-    sourceDirectories.setFrom(files(jvmSourceDirs))
-    classDirectories.setFrom(
-        files(
-            jvmMainCompilation.output.classesDirs.files.map { dir ->
-                fileTree(dir) {
-                    exclude(jacocoClassExclusions)
-                }
-            },
-        ),
-    )
-    executionData.setFrom(jacocoJvmExec)
-    violationRules {
-        rule {
-            element = "BUNDLE"
-            limit {
-                counter = "LINE"
-                value = "COVEREDRATIO"
-                minimum = BigDecimal("0.95")
-            }
-        }
-    }
-}
-
-tasks.named("check").configure {
-    dependsOn("jacocoJvmTestCoverageVerification")
-}
-
-tasks.named("jacocoJvmTestCoverageVerification").configure {
-    finalizedBy("jacocoJvmTestReport")
 }

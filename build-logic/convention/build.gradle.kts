@@ -15,7 +15,11 @@ gradlePlugin {
     plugins {
         register("kotlinMultiplatform") {
             id = "com.fakhry.pomodojo.kotlinMultiplatform"
-            implementationClass = "com.fakhry.pomodojo.convention.KotlinMultiplatformPlugin"
+            implementationClass = "com.fakhry.pomodojo.convention.plugins.KotlinMultiplatformPlugin"
+        }
+        register("jacocoMultiplatform") {
+            id = "com.fakhry.pomodojo.jacocoMultiplatform"
+            implementationClass = "com.fakhry.pomodojo.convention.plugins.JacocoMultiplatformPlugin"
         }
     }
 }

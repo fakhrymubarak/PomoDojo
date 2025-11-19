@@ -1,9 +1,9 @@
-package com.fakhry.pomodojo.convention
+package com.fakhry.pomodojo.convention.project
 
 import com.android.build.gradle.LibraryExtension
+import com.fakhry.pomodojo.convention.libs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
-
 
 // Configuring Android
 internal fun Project.configureKotlinAndroid(

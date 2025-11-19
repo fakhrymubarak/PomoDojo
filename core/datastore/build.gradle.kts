@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.fakhry.pomodojo.kotlinMultiplatform")
+    id("com.fakhry.pomodojo.jacocoMultiplatform")
 }
 
 kotlin {

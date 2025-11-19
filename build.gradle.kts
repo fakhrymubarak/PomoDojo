@@ -33,3 +33,27 @@ subprojects {
         dependsOn(tasks.named("ktlintCheck"))
     }
 }
+
+tasks.register("ktlintCheck") {
+    dependsOn(subprojects.map { "${it.path}:ktlintCheck" })
+}
+
+tasks.register("ktlintFormat") {
+    dependsOn(subprojects.map { "${it.path}:ktlintFormat" })
+}
+
+val rootJacocoCoverage = tasks.register("jacocoJvmTestCoverageVerification")
+val rootJacocoReport = tasks.register("jacocoJvmTestReport")
+
+gradle.projectsEvaluated {
+    val coverageTasks =
+        subprojects.mapNotNull { it.tasks.findByName("jacocoJvmTestCoverageVerification") }
+    val reportTasks = subprojects.mapNotNull { it.tasks.findByName("jacocoJvmTestReport") }
+
+    rootJacocoCoverage.configure {
+        dependsOn(coverageTasks)
+    }
+    rootJacocoReport.configure {
+        dependsOn(reportTasks)
+    }
+}

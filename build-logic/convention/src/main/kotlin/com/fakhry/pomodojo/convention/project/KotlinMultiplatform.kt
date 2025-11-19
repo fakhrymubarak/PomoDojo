@@ -1,11 +1,11 @@
-package com.fakhry.pomodojo.convention
+package com.fakhry.pomodojo.convention.project
 
+import com.fakhry.pomodojo.convention.libs
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
-
 
 // Configuring Kotlin Multiplatform
 internal fun Project.configureKotlinMultiplatform(
@@ -33,7 +33,8 @@ internal fun Project.configureKotlinMultiplatform(
         }
 
         commonTest.dependencies {
-            implementation(kotlin("test"))
+            implementation(libs.findLibrary("kotlin-test").get())
+            implementation(libs.findLibrary("kotlinx-coroutines-test").get())
         }
     }
 

@@ -1,6 +1,9 @@
-package com.fakhry.pomodojo.convention
+package com.fakhry.pomodojo.convention.plugins
 
 import com.android.build.gradle.LibraryExtension
+import com.fakhry.pomodojo.convention.libs
+import com.fakhry.pomodojo.convention.project.configureKotlinAndroid
+import com.fakhry.pomodojo.convention.project.configureKotlinMultiplatform
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog

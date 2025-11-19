@@ -1,8 +1,7 @@
-package com.fakhry.pomodojo.convention
+package com.fakhry.pomodojo.convention.project
 
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension
-
 
 // Configuring Cocoapods for iOS
 internal fun Project.configureKotlinCocoapods(
