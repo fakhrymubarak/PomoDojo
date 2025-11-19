@@ -1,9 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlinSerialization)
+    id("com.fakhry.pomodojo.kotlinMultiplatform")
 }
 
 kotlin {
@@ -47,9 +45,4 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
         }
     }
-}
-
-android {
-    namespace = "com.fakhry.pomodojo.core.datastore"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
 }
