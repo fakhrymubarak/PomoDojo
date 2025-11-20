@@ -1,29 +1,9 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     id("com.fakhry.pomodojo.kotlinMultiplatform")
     id("com.fakhry.pomodojo.jacocoMultiplatform")
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
-
-    val xcfName = "shared:domainKit"
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = xcfName
-        }
-    }
-
-    jvm()
-
     sourceSets {
         commonMain.dependencies {
             implementation(project(":shared:domain"))
