@@ -2,13 +2,12 @@ package com.fakhry.pomodojo.core.database
 
 import android.content.Context
 import androidx.room.Room
-import com.fakhry.pomodojo.BuildConfig
 
 internal actual val POMO_DOJO_DATABASE_NAME: String = BuildConfig.LOCAL_DB_NAME
 
 actual fun createDatabase(): PomoDojoRoomDatabase = AndroidFocusDatabaseHolder.database
 
-internal object AndroidFocusDatabaseHolder {
+object AndroidFocusDatabaseHolder {
     private var appContext: Context? = null
 
     val database: PomoDojoRoomDatabase by lazy {

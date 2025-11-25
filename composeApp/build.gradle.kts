@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.util.Properties
 
@@ -27,11 +26,7 @@ fun Project.envProps(fileName: String): Properties {
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
+    androidTarget()
 
     listOf(
         iosArm64(),
@@ -66,6 +61,7 @@ kotlin {
             implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
+            implementation(project(":core:database"))
             implementation(project(":core:datastore"))
             implementation(project(":shared:domain"))
             implementation(compose.runtime)
@@ -156,9 +152,10 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     buildFeatures {
         buildConfig = true
     }
@@ -174,6 +171,25 @@ dependencies {
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspJvm", libs.androidx.room.compiler)
+}
+
+private val environmentAttribute =
+    Attribute.of("com.android.build.api.attributes.ProductFlavor:environment", String::class.java)
+private val legacyEnvironmentAttribute = Attribute.of("environment", String::class.java)
+
+configurations.configureEach {
+    val nameLower = name.lowercase()
+    when {
+        nameLower.startsWith("androiddev") -> {
+            attributes.attribute(environmentAttribute, "dev")
+            attributes.attribute(legacyEnvironmentAttribute, "dev")
+        }
+
+        nameLower.startsWith("androidprod") -> {
+            attributes.attribute(environmentAttribute, "prod")
+            attributes.attribute(legacyEnvironmentAttribute, "prod")
+        }
+    }
 }
 
 compose.desktop {
