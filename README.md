@@ -22,6 +22,16 @@ xed iosApp/iosApp.xcodeproj           # Open the Swift runner, then build via Xc
 
 Requirements: JDK 17+, Android SDK path defined in `local.properties`, Xcode 15+ for iOS builds.
 
+## How to Run
+
+- Android: `./gradlew :composeApp:installDebug` with an emulator/device connected, then launch the
+  PomoDojo app.
+- iOS/iPadOS: `xed iosApp/iosApp.xcodeproj` and run the `iosApp` scheme in Xcode against your target
+  simulator (iPhone or iPad) or a connected device.
+- JVM Desktop:
+  ` ./gradlew :composeApp:createDistributable && ./composeApp/build/compose/binaries/main/app/PomoDojo.app/Contents/MacOS/PomoDojo`
+  to start the Compose for Desktop app locally.
+
 ## Git Hooks
 
 Local hooks mirror CI by running `ktlintCheck`, `check`, Android/Desktop/iOS builds before every
