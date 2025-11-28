@@ -162,8 +162,6 @@ android {
 }
 
 dependencies {
-    implementation(project.dependencies.platform(libs.koin.bom))
-    implementation(libs.koin.core)
     implementation(libs.firebase.crashlytics)
 
     // Room KSP
@@ -200,6 +198,8 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "PomoDojo"
             packageVersion = "1.0.0"
+            // Include jdk.unsupported so sun.misc.Unsafe is available in the jlinked runtime.
+            modules("jdk.unsupported")
         }
     }
 }
