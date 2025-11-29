@@ -53,6 +53,10 @@ kotlin {
             implementation(project(":core:datastore"))
             implementation(project(":core:framework"))
             implementation(project(":core:designsystem"))
+            implementation(project(":feature:common"))
+            implementation(project(":feature:dashboard"))
+            implementation(project(":feature:focus"))
+            implementation(project(":feature:preferences"))
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
             implementation(compose.runtime)
@@ -197,10 +201,6 @@ compose.desktop {
             modules("jdk.unsupported")
         }
     }
-}
-
-compose.resources {
-    packageOfResClass = "com.fakhry.pomodojo.generated.resources"
 }
 
 room {

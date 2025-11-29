@@ -1,10 +1,10 @@
 package com.fakhry.pomodojo.dashboard.ui.mapper
 
 import com.fakhry.pomodojo.core.framework.formatting.platformThousandsSeparator
-import com.fakhry.pomodojo.features.dashboard.domain.model.HistoryDomain
-import com.fakhry.pomodojo.features.dashboard.domain.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.features.dashboard.ui.mapper.mapToHistorySectionUi
 import com.fakhry.pomodojo.features.dashboard.ui.model.HistoryCell
+import com.fakhry.pomodojo.shared.domain.model.history.HistoryDomain
+import com.fakhry.pomodojo.shared.domain.model.history.PomodoroHistoryDomain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlin.test.Test

@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.di
 
+import com.fakhry.pomodojo.core.database.di.databaseModule
 import com.fakhry.pomodojo.core.datastore.di.dataStoreModule
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.features.dashboard.di.dashboardModule
@@ -11,6 +12,7 @@ import org.koin.dsl.module
 private val appModule =
     module {
         single { DispatcherProvider() }
+        databaseModule
     }
 
 internal val composeAppModules: List<Module> =
