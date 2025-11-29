@@ -14,6 +14,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":shared:domain"))
+            implementation(project(":domain:preferences"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)
