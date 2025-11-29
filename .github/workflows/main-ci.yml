@@ -15,11 +15,11 @@ jobs:
       matrix:
         include:
           - platform: android
-            command: ":composeApp:assembleRelease"
+            command: "assembleRelease"
           - platform: ios
-            command: ":composeApp:linkDebugFrameworkIosArm64"
+            command: "linkDebugFrameworkIosArm64"
           - platform: jvm
-            command: ":composeApp:jvmJar"
+            command: "jvmJar"
 
     steps:
       - name: Checkout
