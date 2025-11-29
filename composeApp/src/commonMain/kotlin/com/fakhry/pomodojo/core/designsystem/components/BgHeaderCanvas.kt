@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.core.ui.components
+package com.fakhry.pomodojo.core.designsystem.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -16,7 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.unit.dp
-import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
+import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.generated.resources.Res
 import com.fakhry.pomodojo.generated.resources.dashboard_header_title
 import org.jetbrains.compose.resources.stringResource

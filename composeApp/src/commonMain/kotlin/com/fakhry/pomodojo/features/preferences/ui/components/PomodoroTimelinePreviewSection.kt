@@ -26,10 +26,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.fakhry.pomodojo.core.ui.theme.LongBreakHighlight
-import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
-import com.fakhry.pomodojo.core.ui.theme.Primary
-import com.fakhry.pomodojo.core.ui.theme.Secondary
+import com.fakhry.pomodojo.core.designsystem.theme.LongBreakHighlight
+import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
+import com.fakhry.pomodojo.core.designsystem.theme.Primary
+import com.fakhry.pomodojo.core.designsystem.theme.Secondary
 import com.fakhry.pomodojo.features.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.features.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.generated.resources.Res

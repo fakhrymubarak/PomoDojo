@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.core.ui.components
+package com.fakhry.pomodojo.core.designsystem.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
@@ -13,8 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-import com.fakhry.pomodojo.core.ui.theme.Primary
-import com.fakhry.pomodojo.core.ui.theme.Secondary
+import com.fakhry.pomodojo.core.designsystem.theme.Primary
+import com.fakhry.pomodojo.core.designsystem.theme.Secondary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.PI
 import kotlin.math.cos

@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
-import com.fakhry.pomodojo.core.ui.theme.GraphLevel0
-import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
+import com.fakhry.pomodojo.core.designsystem.theme.GraphLevel0
+import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.features.dashboard.ui.model.HistoryCell
 import com.fakhry.pomodojo.features.dashboard.ui.model.HistorySectionUi
 import com.fakhry.pomodojo.features.dashboard.ui.model.contributionColorMap

@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.core.ui.theme
+package com.fakhry.pomodojo.core.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 

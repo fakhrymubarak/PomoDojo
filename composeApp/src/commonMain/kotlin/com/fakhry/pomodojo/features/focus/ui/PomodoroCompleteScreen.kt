@@ -31,8 +31,8 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.fakhry.pomodojo.core.ui.components.BgHeaderCanvas
-import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
+import com.fakhry.pomodojo.core.designsystem.components.BgHeaderCanvas
+import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.core.utils.compose.Expanded
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.generated.resources.Res

@@ -33,8 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.fakhry.pomodojo.core.ui.components.BgHeaderCanvas
-import com.fakhry.pomodojo.core.ui.theme.PomoDojoTheme
+import com.fakhry.pomodojo.core.designsystem.components.BgHeaderCanvas
+import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.features.preferences.ui.components.PomodoroConfigSection
