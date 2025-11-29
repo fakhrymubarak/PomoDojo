@@ -8,18 +8,15 @@ dependencies {
     compileOnly(libs.android.gradlePlugin) //if targetting Android
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.compose.gradlePlugin) //if you are using Compose Multiplatform
+    implementation(project(":quality"))
 }
 
 
 gradlePlugin {
     plugins {
-        register("kotlinMultiplatform") {
-            id = "com.fakhry.pomodojo.kotlinMultiplatform"
-            implementationClass = "com.fakhry.pomodojo.convention.plugins.KotlinMultiplatformPlugin"
-        }
-        register("jacocoMultiplatform") {
-            id = "com.fakhry.pomodojo.jacocoMultiplatform"
-            implementationClass = "com.fakhry.pomodojo.convention.plugins.JacocoMultiplatformPlugin"
+        register("pomodojoLibrary") {
+            id = "com.fakhry.pomodojo.library"
+            implementationClass = "com.fakhry.pomodojo.convention.plugins.PomodojoLibraryPlugin"
         }
     }
 }

@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.util.Properties
 
 plugins {
@@ -13,7 +12,7 @@ plugins {
     alias(libs.plugins.room)
     alias(libs.plugins.googleGmsGoogleServices)
     alias(libs.plugins.googleFirebaseCrashlytics)
-    id("com.fakhry.pomodojo.jacocoMultiplatform")
+    id("com.fakhry.pomodojo.quality")
 }
 
 fun Project.envProps(fileName: String): Properties {
@@ -210,38 +209,4 @@ compose.resources {
 
 room {
     schemaDirectory("$projectDir/schemas")
-}
-
-// KTLint Excluded Linting
-configure<KtlintExtension> {
-    filter {
-        exclude("**/build/**")
-        exclude("**/build/generated/**")
-    }
-}
-
-jacocoMultiplatform {
-    lineCoverageThreshold.set(BigDecimal("0.95"))
-    classExclusions.addAll(
-        listOf(
-            "**/di/**",
-            "**/core/navigation/**",
-            "**/core/ui/**",
-            "**/core/datastore/**",
-            "**/core/framework/audio/**",
-            "**/core/framework/notifications/**",
-            "**/core/framework/screen/**",
-            "**/core/database/**",
-            "**/core/utils/compose/**",
-            "**/core/utils/permissions/**",
-            "**/features/**/di/**",
-            "**/features/**/ui/components/**",
-            "**/features/**/ui/**Screen*.class",
-            "**/features/**/ui/CelebrationMessage*.class",
-            "**/features/**/ui/ConfettiPiece*.class",
-            "**/*ComposableSingletons*.class",
-            "**/AppKt*.class",
-            "**/MainKt*.class",
-        ),
-    )
 }

@@ -1,8 +1,7 @@
 import java.util.Properties
 
 plugins {
-    id("com.fakhry.pomodojo.kotlinMultiplatform")
-    id("com.fakhry.pomodojo.jacocoMultiplatform")
+    id("com.fakhry.pomodojo.library")
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
 }

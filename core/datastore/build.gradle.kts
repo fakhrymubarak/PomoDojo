@@ -1,6 +1,5 @@
 plugins {
-    id("com.fakhry.pomodojo.kotlinMultiplatform")
-    id("com.fakhry.pomodojo.jacocoMultiplatform")
+    id("com.fakhry.pomodojo.library")
 }
 
 kotlin {

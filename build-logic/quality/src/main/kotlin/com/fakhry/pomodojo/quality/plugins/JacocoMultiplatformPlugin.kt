@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.convention.plugins
+package com.fakhry.pomodojo.quality.plugins
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
