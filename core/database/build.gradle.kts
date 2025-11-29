@@ -22,8 +22,6 @@ kotlin {
     sourceSets {
         androidMain
         commonMain.dependencies {
-            implementation(project(":shared:domain"))
-
             // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)

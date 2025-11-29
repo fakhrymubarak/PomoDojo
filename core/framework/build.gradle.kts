@@ -29,7 +29,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core:utils"))
-            implementation(project(":shared:domain"))
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
             implementation(libs.kotlinx.coroutines.core)

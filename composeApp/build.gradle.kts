@@ -55,7 +55,6 @@ kotlin {
             implementation(project(":core:designsystem"))
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
-            implementation(project(":shared:domain"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

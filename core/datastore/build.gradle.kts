@@ -7,7 +7,6 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
-            implementation(project(":shared:domain"))
             implementation(libs.kotlin.stdlib)
             implementation(libs.kotlinx.serialization.json)
 
