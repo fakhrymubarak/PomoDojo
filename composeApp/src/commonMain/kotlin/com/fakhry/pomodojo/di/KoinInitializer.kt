@@ -12,12 +12,12 @@ import org.koin.dsl.module
 private val appModule =
     module {
         single { DispatcherProvider() }
-        databaseModule
     }
 
 internal val composeAppModules: List<Module> =
     listOf(
         appModule,
+        databaseModule,
         dataStoreModule,
         dashboardModule,
         preferencesModule,
