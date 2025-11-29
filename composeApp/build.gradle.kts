@@ -36,18 +36,6 @@ kotlin {
             isStatic = true
             linkerOpts("-framework", "AVFAudio")
         }
-
-        iosTarget.compilations.getByName("main") {
-            cinterops {
-                @Suppress("unused")
-                val pomodoroLiveActivityBridge by creating {
-                    definitionFile =
-                        project.file("src/nativeInterop/cinterop/PomodoroLiveActivityBridge.def")
-                    packageName = "com.fakhry.pomodojo.liveactivity.bridge"
-                    includeDirs(project.file("../iosApp/iosApp"))
-                }
-            }
-        }
     }
 
     jvm()
@@ -62,6 +50,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":core:database"))
             implementation(project(":core:datastore"))
+            implementation(project(":core:framework"))
             implementation(project(":shared:domain"))
             implementation(compose.runtime)
             implementation(compose.foundation)
