@@ -6,11 +6,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.fakhry.pomodojo.generated.resources.PlusJakartaSans_Bold
-import com.fakhry.pomodojo.generated.resources.PlusJakartaSans_ExtraBold
-import com.fakhry.pomodojo.generated.resources.PlusJakartaSans_Regular
-import com.fakhry.pomodojo.generated.resources.PlusJakartaSans_SemiBold
-import com.fakhry.pomodojo.generated.resources.Res
+import com.fakhry.pomodojo.core.designsystem.generated.resources.PlusJakartaSans_Bold
+import com.fakhry.pomodojo.core.designsystem.generated.resources.PlusJakartaSans_ExtraBold
+import com.fakhry.pomodojo.core.designsystem.generated.resources.PlusJakartaSans_Regular
+import com.fakhry.pomodojo.core.designsystem.generated.resources.PlusJakartaSans_SemiBold
+import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
 import org.jetbrains.compose.resources.Font
 
 /**

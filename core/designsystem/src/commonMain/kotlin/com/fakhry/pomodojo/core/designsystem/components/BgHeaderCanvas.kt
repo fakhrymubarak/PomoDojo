@@ -17,9 +17,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
-import com.fakhry.pomodojo.generated.resources.Res
-import com.fakhry.pomodojo.generated.resources.dashboard_header_title
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -66,7 +63,7 @@ fun BgHeaderCanvasPreview() {
         BgHeaderCanvas {
             Text(
                 modifier = Modifier.padding(16.dp),
-                text = stringResource(Res.string.dashboard_header_title),
+                text = "Dashboard",
                 style =
                 MaterialTheme.typography.headlineMedium.copy(
                     color = MaterialTheme.colorScheme.onSecondary,

@@ -52,6 +52,7 @@ kotlin {
             implementation(project(":core:database"))
             implementation(project(":core:datastore"))
             implementation(project(":core:framework"))
+            implementation(project(":core:designsystem"))
             implementation(project(":shared:domain"))
             implementation(compose.runtime)
             implementation(compose.foundation)
