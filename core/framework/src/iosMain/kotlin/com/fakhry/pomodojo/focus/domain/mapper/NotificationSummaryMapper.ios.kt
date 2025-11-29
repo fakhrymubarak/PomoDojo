@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.focus.domain.mapper
 
-import com.fakhry.pomodojo.core.framework.util.formatDurationMillis
+import com.fakhry.pomodojo.core.utils.primitives.formatDurationMillis
 import com.fakhry.pomodojo.shared.domain.model.focus.NotificationSummary
 import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain

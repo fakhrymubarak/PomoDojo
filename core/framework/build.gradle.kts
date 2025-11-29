@@ -28,6 +28,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":core:utils"))
             implementation(project(":shared:domain"))
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
