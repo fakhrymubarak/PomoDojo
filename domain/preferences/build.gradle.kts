@@ -1,5 +1,5 @@
 plugins {
-    id("com.fakhry.pomodojo.library")
+    alias(libs.plugins.pomodojoLibrary)
 }
 
 kotlin {
