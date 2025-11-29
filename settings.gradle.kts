@@ -31,6 +31,7 @@ dependencyResolutionManagement {
 
 include(":composeApp")
 include(":shared:domain")
+include(":domain:focus")
 include(":core:datastore")
 include(":core:database")
 include(":core:framework")

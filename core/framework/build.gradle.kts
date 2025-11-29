@@ -30,6 +30,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":core:utils"))
             implementation(project(":shared:domain"))
+            implementation(project(":domain:focus"))
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(compose.runtime)
