@@ -35,6 +35,12 @@ kotlin {
     }
 }
 
+android {
+    defaultConfig {
+        consumerProguardFiles("consumer-proguard-rules.pro")
+    }
+}
+
 dependencies {
     // Room KSP
     add("kspAndroid", libs.androidx.room.compiler)
