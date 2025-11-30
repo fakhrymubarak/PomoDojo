@@ -1,12 +1,25 @@
 package com.fakhry.pomodojo.convention.plugins
 
 import com.android.build.gradle.LibraryExtension
-import com.fakhry.pomodojo.convention.libs
+import com.fakhry.pomodojo.catalog.androidLibrary
+import com.fakhry.pomodojo.catalog.koinBom
+import com.fakhry.pomodojo.catalog.koinCompose
+import com.fakhry.pomodojo.catalog.koinComposeViewmodel
+import com.fakhry.pomodojo.catalog.koinComposeViewmodelNavigation
+import com.fakhry.pomodojo.catalog.koinCore
+import com.fakhry.pomodojo.catalog.kotlinCocoapods
+import com.fakhry.pomodojo.catalog.kotlinMultiplatform
+import com.fakhry.pomodojo.catalog.kotlinSerialization
+import com.fakhry.pomodojo.catalog.kotlinTest
+import com.fakhry.pomodojo.catalog.kotlinxCoroutinesCore
+import com.fakhry.pomodojo.catalog.kotlinxCoroutinesTest
+import com.fakhry.pomodojo.catalog.kotlinxDatetime
+import com.fakhry.pomodojo.catalog.kotlinxSerializationJson
+import com.fakhry.pomodojo.catalog.libs
 import com.fakhry.pomodojo.convention.project.configureKotlinAndroid
 import com.fakhry.pomodojo.convention.project.configureKotlinCocoapods
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -19,10 +32,10 @@ class KotlinMultiplatformPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
         with(pluginManager) {
-            apply(libs.findPluginId("kotlinMultiplatform"))
-            apply(libs.findPluginId("kotlinCocoapods"))
-            apply(libs.findPluginId("androidLibrary"))
-            apply(libs.findPluginId("kotlinSerialization"))
+            apply(libs.kotlinMultiplatform)
+            apply(libs.kotlinCocoapods)
+            apply(libs.androidLibrary)
+            apply(libs.kotlinSerialization)
         }
 
         extensions.configure<KotlinMultiplatformExtension> {
@@ -48,17 +61,21 @@ class KotlinMultiplatformPlugin : Plugin<Project> {
                 }
                 commonMain {
                     dependencies {
-                        implementation(dependencies.platform(libs.findLibrary("koin-bom").get()))
-                        implementation(libs.findLibrary("koin-core").get())
-                        implementation(libs.findLibrary("kotlinx-coroutines-core").get())
-                        implementation(libs.findLibrary("kotlinx-datetime").get())
-                        implementation(libs.findLibrary("kotlinx-serialization-json").get())
+                        implementation(dependencies.platform(libs.koinBom))
+                        implementation(libs.koinCore)
+                        implementation(libs.koinCompose)
+                        implementation(libs.koinComposeViewmodel)
+                        implementation(libs.koinComposeViewmodelNavigation)
+
+                        implementation(libs.kotlinxCoroutinesCore)
+                        implementation(libs.kotlinxDatetime)
+                        implementation(libs.kotlinxSerializationJson)
                     }
                 }
 
                 commonTest.dependencies {
-                    implementation(libs.findLibrary("kotlin-test").get())
-                    implementation(libs.findLibrary("kotlinx-coroutines-test").get())
+                    implementation(libs.kotlinTest)
+                    implementation(libs.kotlinxCoroutinesTest)
                 }
             }
 
@@ -67,9 +84,4 @@ class KotlinMultiplatformPlugin : Plugin<Project> {
         }
         extensions.configure<LibraryExtension>(::configureKotlinAndroid)
     }
-
-    private fun VersionCatalog.findPluginId(string: String): String {
-        return findPlugin(string).get().get().pluginId
-    }
-
 }

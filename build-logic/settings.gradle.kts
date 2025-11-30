@@ -12,5 +12,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "build-logic"
+include(":catalog")
 include(":convention")
 include(":quality")

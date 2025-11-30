@@ -4,6 +4,7 @@ plugins {
 
 group = "com.fakhry.pomodojo.buildlogic"
 dependencies {
+    implementation(project(":catalog"))
     compileOnly(libs.detekt.gradlePlugin)
     compileOnly(libs.ktlint.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)

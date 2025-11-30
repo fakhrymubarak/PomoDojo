@@ -1,7 +1,7 @@
 package com.fakhry.pomodojo.convention.project
 
 import com.android.build.gradle.LibraryExtension
-import com.fakhry.pomodojo.convention.libs
+import com.fakhry.pomodojo.catalog.libs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 

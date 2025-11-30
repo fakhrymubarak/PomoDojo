@@ -8,22 +8,12 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":core:utils"))
-            implementation(project(":core:database"))
             implementation(project(":core:framework"))
-            implementation(project(":core:datastore"))
             implementation(project(":core:designsystem"))
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
             implementation(project(":domain:history"))
 
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
             implementation(libs.ui.backhandler)
 
             implementation(libs.androidx.lifecycle.viewmodelCompose)
