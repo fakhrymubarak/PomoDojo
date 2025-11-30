@@ -17,6 +17,7 @@ platform-agnostic logic and `jvmTest` for JVM-only behavior. Room schema snapsho
 ./gradlew :composeApp:jacocoJvmTestReport  # Generates coverage in composeApp/build/reports
 ./gradlew ktlintCheck                      # Kotlin style verification across all source sets
 ./gradlew ktlintFormat                     # Auto-formats Kotlin files; run before large refactors
+./gradlew generateProjectDependencyGraph   # Emits project-dependencies.dot under build/reports/dependency-graph
 xed iosApp/iosApp.xcodeproj                # Opens the iOS runner; build via the iOSApp scheme
 ```
 

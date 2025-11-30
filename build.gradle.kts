@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.googleGmsGoogleServices) apply false
     alias(libs.plugins.googleFirebaseCrashlytics) apply false
+    id("com.fakhry.pomodojo.dependencygraph")
 }
 
 tasks.register("ktlintCheck")

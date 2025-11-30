@@ -17,10 +17,17 @@
 ./gradlew :composeApp:jacocoJvmTestReport  # Generates coverage in composeApp/build/reports
 ./gradlew ktlintCheck                 # Repository-wide Kotlin style checks
 ./gradlew ktlintFormat                # Auto-formats Kotlin sources (apply before committing)
+./gradlew generateProjectDependencyGraph  # Writes a DOT graph of inter-module dependencies to build/reports/dependency-graph
 xed iosApp/iosApp.xcodeproj           # Open the Swift runner, then build via Xcode's iOSApp scheme
 ```
 
 Requirements: JDK 17+, Android SDK path defined in `local.properties`, Xcode 15+ for iOS builds.
+
+### Dependency Graph
+
+- Generate DOT: `./gradlew generateProjectDependencyGraph`
+- Optional PNG (requires Graphviz `dot` brew install graphviz):
+  `dot -Tpng build/reports/dependency-graph/project-dependencies.dot -o build/reports/dependency-graph/project-dependencies.png`
 
 ## How to Run
 

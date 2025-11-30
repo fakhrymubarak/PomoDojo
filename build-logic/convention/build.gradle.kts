@@ -18,5 +18,9 @@ gradlePlugin {
             id = "com.fakhry.pomodojo.library"
             implementationClass = "com.fakhry.pomodojo.convention.plugins.PomodojoLibraryPlugin"
         }
+        register("pomodojoDependencyGraph") {
+            id = "com.fakhry.pomodojo.dependencygraph"
+            implementationClass = "com.fakhry.pomodojo.convention.plugins.DependencyGraphPlugin"
+        }
     }
 }

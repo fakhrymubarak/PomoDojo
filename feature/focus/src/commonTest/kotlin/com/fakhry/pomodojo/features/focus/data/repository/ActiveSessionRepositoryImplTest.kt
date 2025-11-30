@@ -1,7 +1,7 @@
 package com.fakhry.pomodojo.features.focus.data.repository
 
+import com.fakhry.pomodojo.core.datastore.PreferenceStorage
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.features.preferences.data.repository.FakePreferenceStorage
 import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
 import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimelineDomain
@@ -9,6 +9,9 @@ import com.fakhry.pomodojo.shared.domain.model.timeline.TimerDomain
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -130,5 +133,41 @@ class ActiveSessionRepositoryImplTest {
             ),
             quote = QuoteContent.DEFAULT_QUOTE,
         )
+    }
+}
+
+private class FakePreferenceStorage : PreferenceStorage {
+    private val pomodoroState = MutableStateFlow(PomodoroSessionDomain())
+
+    override val preferences:
+        Flow<com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences>
+        get() = MutableStateFlow(
+            com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences(),
+        )
+    override val initPreferences:
+        Flow<com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences>
+        get() = MutableStateFlow(
+            com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences(),
+        )
+    override val activeSession: Flow<PomodoroSessionDomain> = pomodoroState
+
+    override suspend fun updatePreferences(
+        transform: (
+            com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences,
+        ) -> com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences,
+    ) = Unit
+
+    override suspend fun updateInitPreferences(
+        transform: (
+            com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences,
+        ) -> com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences,
+    ) = Unit
+
+    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
+        pomodoroState.update { snapshot }
+    }
+
+    override suspend fun clearActiveSession() {
+        pomodoroState.update { PomodoroSessionDomain() }
     }
 }
