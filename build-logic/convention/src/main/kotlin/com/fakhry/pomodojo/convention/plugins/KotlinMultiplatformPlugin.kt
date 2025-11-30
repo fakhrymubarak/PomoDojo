@@ -27,13 +27,25 @@ class KotlinMultiplatformPlugin : Plugin<Project> {
 
         extensions.configure<KotlinMultiplatformExtension> {
 
-            androidTarget()
+            androidTarget {
+                // Publish all environment variants so flavored modules can resolve each other
+                publishLibraryVariants("devDebug", "devRelease", "prodDebug", "prodRelease")
+            }
             iosArm64()
             iosSimulatorArm64()
             jvm()
 
             // common dependencies available in every module
             sourceSets.apply {
+                androidMain {
+
+                }
+                iosMain {
+
+                }
+                jvmMain {
+
+                }
                 commonMain {
                     dependencies {
                         implementation(dependencies.platform(libs.findLibrary("koin-bom").get()))

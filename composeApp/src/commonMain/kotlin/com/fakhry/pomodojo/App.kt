@@ -11,8 +11,8 @@ import com.fakhry.pomodojo.core.datastore.wiring.getInitPreferencesOnMainThread
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.core.navigation.AppNavHost
 import com.fakhry.pomodojo.di.composeAppModules
-import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
-import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
+import com.fakhry.pomodojo.domain.preferences.model.AppTheme
+import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 

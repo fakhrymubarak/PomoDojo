@@ -7,13 +7,13 @@ import com.fakhry.pomodojo.core.datastore.model.TimerData
 import com.fakhry.pomodojo.core.datastore.model.TimerSegmentData
 import com.fakhry.pomodojo.core.datastore.model.TimerStatusData
 import com.fakhry.pomodojo.core.datastore.model.TimerTypeData
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimelineDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 
 fun PomodoroSessionData.toDomain(): PomodoroSessionDomain = PomodoroSessionDomain(
     totalCycle = totalCycle,

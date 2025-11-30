@@ -2,6 +2,7 @@ package com.fakhry.pomodojo.features.dashboard.ui.viewmodel
 
 import com.fakhry.pomodojo.core.framework.datetime.FakeCurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.domain.common.DomainResult
 import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
@@ -10,7 +11,6 @@ import com.fakhry.pomodojo.shared.domain.model.history.HistoryDomain
 import com.fakhry.pomodojo.shared.domain.model.history.PomodoroHistoryDomain
 import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
 import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
-import com.fakhry.pomodojo.shared.domain.states.DomainResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

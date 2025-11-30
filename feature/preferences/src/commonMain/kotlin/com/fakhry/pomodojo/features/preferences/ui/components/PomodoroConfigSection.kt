@@ -29,15 +29,15 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import com.fakhry.pomodojo.features.preferences.ui.model.PreferenceOption
-import com.fakhry.pomodojo.generated.resources.Res
-import com.fakhry.pomodojo.generated.resources.preferences_break_timer_title
-import com.fakhry.pomodojo.generated.resources.preferences_enable_long_break
-import com.fakhry.pomodojo.generated.resources.preferences_focus_timer_title
-import com.fakhry.pomodojo.generated.resources.preferences_long_break_after_title
-import com.fakhry.pomodojo.generated.resources.preferences_long_break_timer_title
-import com.fakhry.pomodojo.generated.resources.preferences_repeat_title
-import com.fakhry.pomodojo.generated.resources.preferences_title_pomodoro_config
+import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
+import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_break_timer_title
+import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_enable_long_break
+import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_focus_timer_title
+import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_long_break_after_title
+import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_long_break_timer_title
+import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_repeat_title
+import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_title_pomodoro_config
+import com.fakhry.pomodojo.core.designsystem.model.PreferenceOption
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 

@@ -1,7 +1,7 @@
 package com.fakhry.pomodojo.features.focus.domain.usecase
 
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
@@ -11,7 +11,7 @@ import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
 import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
 import com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences
 import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
-import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
+import com.fakhry.pomodojo.shared.domain.repository.ActiveSessionRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -25,13 +25,13 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.core.designsystem.components.PomodoroTimerSection
+import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
+import com.fakhry.pomodojo.core.designsystem.generated.resources.pomodoro_timer_start
 import com.fakhry.pomodojo.core.utils.permissions.rememberNotificationPermissionRequester
 import com.fakhry.pomodojo.features.dashboard.ui.components.DashboardHeader
 import com.fakhry.pomodojo.features.dashboard.ui.components.PomodoroHistorySection
 import com.fakhry.pomodojo.features.dashboard.ui.viewmodel.DashboardViewModel
-import com.fakhry.pomodojo.features.focus.ui.components.PomodoroTimerSection
-import com.fakhry.pomodojo.generated.resources.Res
-import com.fakhry.pomodojo.generated.resources.pomodoro_timer_start
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

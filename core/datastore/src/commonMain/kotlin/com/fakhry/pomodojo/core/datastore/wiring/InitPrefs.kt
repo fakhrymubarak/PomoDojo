@@ -4,8 +4,8 @@ import com.fakhry.pomodojo.core.datastore.DataStorePreferenceStorage
 import com.fakhry.pomodojo.core.datastore.PreferenceKeys
 import com.fakhry.pomodojo.core.datastore.PreferenceStorage
 import com.fakhry.pomodojo.core.datastore.provideDataStore
-import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
-import com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences
+import com.fakhry.pomodojo.domain.preferences.model.AppTheme
+import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking

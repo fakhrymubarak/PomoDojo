@@ -2,8 +2,8 @@ package com.fakhry.pomodojo.features.focus.data.repository
 
 import com.fakhry.pomodojo.core.datastore.PreferenceStorage
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 

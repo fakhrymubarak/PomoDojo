@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
+import com.fakhry.pomodojo.domain.preferences.usecase.PreferenceCascadeResolver
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

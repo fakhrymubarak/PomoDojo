@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.core.framework.notifications
 
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 
 expect fun providePomodoroSessionNotifier(): PomodoroSessionNotifier
 

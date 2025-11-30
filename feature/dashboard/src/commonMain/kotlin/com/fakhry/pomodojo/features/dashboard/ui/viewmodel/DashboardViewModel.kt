@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.core.framework.datetime.CurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.date.formatTimerMinutes
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.domain.common.DomainResult
+import com.fakhry.pomodojo.domain.history.repository.HistorySessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
 import com.fakhry.pomodojo.features.dashboard.ui.mapper.mapToHistorySectionUi
 import com.fakhry.pomodojo.features.dashboard.ui.model.HistorySectionUi
-import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
-import com.fakhry.pomodojo.features.focus.domain.repository.HistorySessionRepository
-import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
-import com.fakhry.pomodojo.shared.domain.states.DomainResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -10,10 +10,10 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.fakhry.pomodojo.core.datastore.mapper.toData
 import com.fakhry.pomodojo.core.datastore.mapper.toDomain
 import com.fakhry.pomodojo.core.datastore.model.PomodoroSessionData
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
-import com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences
-import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.preferences.model.AppTheme
+import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
+import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map

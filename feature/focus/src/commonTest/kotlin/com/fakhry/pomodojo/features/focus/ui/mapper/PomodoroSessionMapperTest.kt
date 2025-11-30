@@ -1,16 +1,16 @@
 package com.fakhry.pomodojo.features.focus.ui.mapper
 
+import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.preferences.ui.model.TimelineSegmentUi
 import com.fakhry.pomodojo.features.preferences.ui.model.TimelineUiModel
 import com.fakhry.pomodojo.features.preferences.ui.model.TimerUi
 import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimelineDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -2,6 +2,7 @@ package com.fakhry.pomodojo.features.focus.domain.repository
 
 import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
 import com.fakhry.pomodojo.shared.domain.model.history.PomodoroHistoryDomain
+import com.fakhry.pomodojo.shared.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.shared.domain.states.DomainResult
 
 class FakeHistoryRepository(

@@ -1,7 +1,7 @@
 package com.fakhry.pomodojo.features.focus.data.repository
 
 import com.fakhry.pomodojo.core.utils.primitives.isNotEmptyAndNonNull
-import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
+import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

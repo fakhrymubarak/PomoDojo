@@ -2,13 +2,13 @@ package com.fakhry.pomodojo.features.focus.data.repository
 
 import com.fakhry.pomodojo.core.datastore.PreferenceStorage
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimelineDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update

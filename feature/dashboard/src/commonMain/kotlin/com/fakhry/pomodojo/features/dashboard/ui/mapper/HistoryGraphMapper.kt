@@ -1,11 +1,11 @@
 package com.fakhry.pomodojo.features.dashboard.ui.mapper
 
 import com.fakhry.pomodojo.core.framework.formatting.platformThousandsSeparator
+import com.fakhry.pomodojo.domain.history.model.HistoryDomain
+import com.fakhry.pomodojo.domain.history.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.features.dashboard.ui.model.HistoryCell
 import com.fakhry.pomodojo.features.dashboard.ui.model.HistorySectionUi
 import com.fakhry.pomodojo.features.dashboard.ui.model.intensityLevelForMinutes
-import com.fakhry.pomodojo.shared.domain.model.history.HistoryDomain
-import com.fakhry.pomodojo.shared.domain.model.history.PomodoroHistoryDomain
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList

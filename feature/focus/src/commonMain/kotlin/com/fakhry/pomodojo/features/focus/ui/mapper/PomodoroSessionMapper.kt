@@ -1,13 +1,13 @@
 package com.fakhry.pomodojo.features.focus.ui.mapper
 
+import com.fakhry.pomodojo.core.designsystem.model.TimelineSegmentUi
+import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
 import com.fakhry.pomodojo.core.utils.primitives.toMinutes
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
-import com.fakhry.pomodojo.features.preferences.ui.model.TimelineSegmentUi
-import com.fakhry.pomodojo.features.preferences.ui.model.TimelineUiModel
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import kotlinx.collections.immutable.toPersistentList
 
 fun PomodoroSessionDomain.toUiState(

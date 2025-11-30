@@ -1,15 +1,15 @@
 package com.fakhry.pomodojo.features.preferences.ui
 
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
+import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.domain.preferences.usecase.PreferenceCascadeResolver
 import com.fakhry.pomodojo.features.preferences.data.repository.FakePreferenceStorage
 import com.fakhry.pomodojo.features.preferences.data.repository.InitPreferencesRepositoryImpl
 import com.fakhry.pomodojo.features.preferences.data.repository.PreferencesRepositoryImpl
-import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
-import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferenceCascadeResolver
 import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
 import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filter

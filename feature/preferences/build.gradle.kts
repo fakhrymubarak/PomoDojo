@@ -6,19 +6,14 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
-    iosArm64()
-    iosSimulatorArm64()
-    jvm()
-
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core:utils"))
             implementation(project(":core:datastore"))
             implementation(project(":core:designsystem"))
-            implementation(project(":feature:common"))
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
+            implementation(project(":data:preferences"))
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -46,19 +41,5 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.orbit.test)
         }
-    }
-}
-
-android {
-    namespace = "com.fakhry.pomodojo.feature.preferences"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-    flavorDimensions += "environment"
-    productFlavors {
-        create("dev") { dimension = "environment" }
-        create("prod") { dimension = "environment" }
     }
 }

@@ -6,14 +6,11 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
-    iosArm64()
-    iosSimulatorArm64()
-    jvm()
-
     sourceSets {
         commonMain.dependencies {
             implementation(project(":domain:preferences"))
+            implementation(project(":domain:focus"))
+            implementation(project(":core:utils"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)
@@ -21,6 +18,7 @@ kotlin {
             implementation(compose.animation)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.kotlinx.collections.immutable)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -30,13 +28,5 @@ kotlin {
 
 compose.resources {
     packageOfResClass = "com.fakhry.pomodojo.core.designsystem.generated.resources"
-}
-
-android {
-    namespace = "com.fakhry.pomodojo.core.designsystem"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
+    publicResClass = true
 }

@@ -6,8 +6,6 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
-
     listOf(
         iosArm64(),
         iosSimulatorArm64(),
@@ -23,9 +21,6 @@ kotlin {
             }
         }
     }
-
-    jvm()
-
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core:utils"))
@@ -48,20 +43,5 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
         }
-    }
-}
-
-android {
-    namespace = "com.fakhry.pomodojo.core.framework"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
-    flavorDimensions += "environment"
-    productFlavors {
-        create("dev") { dimension = "environment" }
-        create("prod") { dimension = "environment" }
     }
 }

@@ -59,31 +59,19 @@ android {
         buildConfig = true
     }
 
-    flavorDimensions += "environment"
     productFlavors {
-        create("dev") {
-            dimension = "environment"
+        getByName("dev") {
             val envProps = project.envProps("config/dev.props")
             val dbName = envProps.getProperty("DB_NAME", "pomodojo_dev.db")
             buildConfigField("String", "LOCAL_DB_NAME", "\"$dbName\"")
         }
-        create("prod") {
-            dimension = "environment"
+        getByName("prod") {
             val envProps = project.envProps("config/prod.props")
             val dbName = envProps.getProperty("DB_NAME", "pomodojo.db")
             buildConfigField("String", "LOCAL_DB_NAME", "\"$dbName\"")
         }
     }
 
-    buildTypes {
-        getByName("debug") {
-            isMinifyEnabled = false
-        }
-        getByName("release") {
-            isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("debug")
-        }
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

@@ -9,10 +9,10 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.fakhry.pomodojo.core.datastore.wiring.prefStorageFactory
 import com.fakhry.pomodojo.core.framework.audio.provideSoundPlayer
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimelineDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerSegmentsDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

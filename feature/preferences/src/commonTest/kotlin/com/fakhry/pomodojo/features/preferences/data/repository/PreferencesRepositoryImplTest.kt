@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.features.preferences.data.repository
 
-import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferenceCascadeResolver
+import com.fakhry.pomodojo.domain.preferences.usecase.PreferenceCascadeResolver
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

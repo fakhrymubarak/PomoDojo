@@ -2,14 +2,20 @@ package com.fakhry.pomodojo.features.focus.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakhry.pomodojo.core.designsystem.model.TimelineSegmentUi
 import com.fakhry.pomodojo.core.framework.audio.SoundPlayer
 import com.fakhry.pomodojo.core.framework.datetime.CurrentTimeProvider
 import com.fakhry.pomodojo.core.framework.datetime.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.core.framework.notifications.PomodoroSessionNotifier
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.core.utils.primitives.formatDurationMillis
-import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
-import com.fakhry.pomodojo.features.focus.domain.repository.HistorySessionRepository
+import com.fakhry.pomodojo.domain.history.repository.HistorySessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
+import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
 import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.features.focus.ui.mapper.calculateTimerProgress
 import com.fakhry.pomodojo.features.focus.ui.mapper.resolveActiveIndex
@@ -19,12 +25,6 @@ import com.fakhry.pomodojo.features.focus.ui.mapper.toTimelineSegmentUi
 import com.fakhry.pomodojo.features.focus.ui.mapper.toUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
-import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
-import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
-import com.fakhry.pomodojo.features.preferences.ui.model.TimelineSegmentUi
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimelineDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -166,8 +166,9 @@ class PomodoroSessionViewModel(
     }
 
     private fun prepareSession(session: PomodoroSessionDomain, now: Long): PreparedSession {
-        timelineSegments =
-            session.timeline.segments.map { it.toTimelineSegmentUi(now) }.toMutableList()
+        timelineSegments = session.timeline.segments.map {
+            it.toTimelineSegmentUi(now)
+        }.toMutableList()
         activeSegmentIndex = timelineSegments.resolveActiveIndex()
         val mutated = fastForwardTimeline(now)
         activeSegmentIndex = timelineSegments.resolveActiveIndex()

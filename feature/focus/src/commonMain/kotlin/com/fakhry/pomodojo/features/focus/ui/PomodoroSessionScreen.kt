@@ -42,38 +42,34 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.core.designsystem.components.PomodoroTimerSection
+import com.fakhry.pomodojo.core.designsystem.components.TimelineHoursSplit
+import com.fakhry.pomodojo.core.designsystem.components.TimelineLegends
+import com.fakhry.pomodojo.core.designsystem.components.TimelinePreview
+import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_continue
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_end_message
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_end_title
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_finish
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_end_content_description
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_pause_content_description
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_quote_content_description
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_resume_content_description
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_timeline_title
+import com.fakhry.pomodojo.core.designsystem.mapper.mapToTimelineSegmentsUi
+import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.core.framework.screen.KeepScreenOnEffect
+import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.focus.ui.components.PomodoroSessionHeaderSection
-import com.fakhry.pomodojo.features.focus.ui.components.PomodoroTimerSection
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.focus.ui.viewmodel.PomodoroSessionViewModel
-import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
-import com.fakhry.pomodojo.features.preferences.ui.components.TimelineHoursSplit
-import com.fakhry.pomodojo.features.preferences.ui.components.TimelineLegends
-import com.fakhry.pomodojo.features.preferences.ui.components.TimelinePreview
-import com.fakhry.pomodojo.features.preferences.ui.mapper.mapToTimelineSegmentsUi
-import com.fakhry.pomodojo.features.preferences.ui.model.TimelineUiModel
-import com.fakhry.pomodojo.generated.resources.Res
-import com.fakhry.pomodojo.generated.resources.focus_session_confirm_continue
-import com.fakhry.pomodojo.generated.resources.focus_session_confirm_end_message
-import com.fakhry.pomodojo.generated.resources.focus_session_confirm_end_title
-import com.fakhry.pomodojo.generated.resources.focus_session_confirm_finish
-import com.fakhry.pomodojo.generated.resources.focus_session_end_content_description
-import com.fakhry.pomodojo.generated.resources.focus_session_pause_content_description
-import com.fakhry.pomodojo.generated.resources.focus_session_phase_break
-import com.fakhry.pomodojo.generated.resources.focus_session_phase_focus
-import com.fakhry.pomodojo.generated.resources.focus_session_phase_long_break
-import com.fakhry.pomodojo.generated.resources.focus_session_quote_content_description
-import com.fakhry.pomodojo.generated.resources.focus_session_resume_content_description
-import com.fakhry.pomodojo.generated.resources.focus_session_timeline_title
-import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
-import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerStatusDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -311,14 +307,6 @@ private fun FocusConfirmDialog(onConfirmFinish: () -> Unit, onDismiss: () -> Uni
         },
     )
 }
-
-@Composable
-fun focusPhaseLabel(phase: TimerType) = when (phase) {
-    TimerType.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
-    TimerType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
-    TimerType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
-}
-
 @Preview
 @Composable
 private fun PomodoroSessionContentPreview() {

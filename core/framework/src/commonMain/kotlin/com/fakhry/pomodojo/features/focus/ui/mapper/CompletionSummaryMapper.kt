@@ -1,8 +1,8 @@
 package com.fakhry.pomodojo.features.focus.ui.mapper
 
-import com.fakhry.pomodojo.shared.domain.model.focus.CompletionNotificationSummary
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.timeline.TimerType
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.notification.CompletionNotificationSummary
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 
 /**
  * Converts PomodoroSessionDomain to CompletionNotificationSummary.

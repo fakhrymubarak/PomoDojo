@@ -1,5 +1,7 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
+import com.fakhry.pomodojo.domain.model.preferences.repository.PreferencesRepository
+import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
 import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
 import com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences
 import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences

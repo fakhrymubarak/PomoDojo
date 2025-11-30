@@ -2,8 +2,8 @@
 
 package com.fakhry.pomodojo.features.focus.data.repository
 
+import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
-import com.fakhry.pomodojo.shared.domain.model.quote.QuoteContent
 import kotlin.random.Random
 
 class StaticQuoteRepository : QuoteRepository {

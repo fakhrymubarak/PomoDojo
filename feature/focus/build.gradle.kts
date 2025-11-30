@@ -6,11 +6,6 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
-    iosArm64()
-    iosSimulatorArm64()
-    jvm()
-
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core:utils"))
@@ -18,10 +13,9 @@ kotlin {
             implementation(project(":core:framework"))
             implementation(project(":core:datastore"))
             implementation(project(":core:designsystem"))
-            implementation(project(":feature:common"))
-            implementation(project(":feature:preferences"))
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
+            implementation(project(":domain:history"))
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -56,19 +50,5 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.room.runtime)
         }
-    }
-}
-
-android {
-    namespace = "com.fakhry.pomodojo.feature.focus"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-    flavorDimensions += "environment"
-    productFlavors {
-        create("dev") { dimension = "environment" }
-        create("prod") { dimension = "environment" }
     }
 }

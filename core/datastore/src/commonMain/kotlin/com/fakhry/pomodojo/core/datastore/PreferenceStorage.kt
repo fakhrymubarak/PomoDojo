@@ -1,8 +1,8 @@
 package com.fakhry.pomodojo.core.datastore
 
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences
-import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
+import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface PreferenceStorage {

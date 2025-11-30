@@ -8,11 +8,9 @@ import com.fakhry.pomodojo.core.framework.datetime.CurrentTimeProvider
 import com.fakhry.pomodojo.core.framework.datetime.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.core.framework.notifications.PomodoroSessionNotifier
 import com.fakhry.pomodojo.core.framework.notifications.providePomodoroSessionNotifier
+import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.features.focus.data.repository.ActiveSessionRepositoryImpl
-import com.fakhry.pomodojo.features.focus.data.repository.HistorySessionRepositoryImpl
 import com.fakhry.pomodojo.features.focus.data.repository.StaticQuoteRepository
-import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
-import com.fakhry.pomodojo.features.focus.domain.repository.HistorySessionRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.features.focus.ui.viewmodel.PomodoroSessionViewModel
@@ -26,7 +24,6 @@ val focusModule = module {
     single<ActiveSessionRepository> {
         ActiveSessionRepositoryImpl(get(), get())
     }
-    singleOf(::HistorySessionRepositoryImpl) bind HistorySessionRepository::class
     singleOf(::StaticQuoteRepository) bind QuoteRepository::class
     singleOf(::CreatePomodoroSessionUseCase)
     single<PomoDojoRoomDatabase> { createDatabase() }
