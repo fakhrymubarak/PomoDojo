@@ -1,7 +1,5 @@
 package com.fakhry.pomodojo.features.focus.di
 
-import com.fakhry.pomodojo.core.database.PomoDojoRoomDatabase
-import com.fakhry.pomodojo.core.database.createDatabase
 import com.fakhry.pomodojo.core.framework.audio.SoundPlayer
 import com.fakhry.pomodojo.core.framework.audio.provideSoundPlayer
 import com.fakhry.pomodojo.core.framework.datetime.CurrentTimeProvider
@@ -19,14 +17,13 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val focusModule = module {
+val pomodoroFeatureModule = module {
     viewModelOf(::PomodoroSessionViewModel)
     single<ActiveSessionRepository> {
         ActiveSessionRepositoryImpl(get(), get())
     }
     singleOf(::StaticQuoteRepository) bind QuoteRepository::class
     singleOf(::CreatePomodoroSessionUseCase)
-    single<PomoDojoRoomDatabase> { createDatabase() }
     single<PomodoroSessionNotifier> { providePomodoroSessionNotifier() }
     single<SoundPlayer> { provideSoundPlayer() }
     single<CurrentTimeProvider> { SystemCurrentTimeProvider }
