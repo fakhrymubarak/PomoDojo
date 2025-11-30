@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <receiver
+            android:name=".notifications.NotificationSegmentProgressReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.fakhry.pomodojo.SEGMENT_COMPLETE" />
+                <action android:name="com.fakhry.pomodojo.PROGRESS_UPDATE" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

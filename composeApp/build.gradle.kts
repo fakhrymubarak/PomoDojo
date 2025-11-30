@@ -48,18 +48,15 @@ kotlin {
             implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
-            implementation(project(":core:database"))
             implementation(project(":core:datastore"))
             implementation(project(":core:di"))
-            implementation(project(":core:utils"))
-            implementation(project(":core:framework"))
             implementation(project(":core:designsystem"))
+            implementation(project(":core:framework"))
             implementation(project(":feature:dashboard"))
             implementation(project(":feature:focus"))
             implementation(project(":feature:preferences"))
-            implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
-            implementation(project(":data:history"))
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -67,6 +64,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.datetime)
@@ -74,21 +72,10 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
-            implementation(libs.koin.compose.viewmodel.navigation)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ui.backhandler)
-
-            // Room
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.sqlite.bundled)
-
-            // OrbitMVI
-            implementation(libs.orbit.core)
-            implementation(libs.orbit.viewmodel)
-            implementation(libs.orbit.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

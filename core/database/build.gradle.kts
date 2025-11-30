@@ -16,9 +16,6 @@ fun Project.envProps(fileName: String): Properties {
 }
 
 kotlin {
-    androidTarget {
-        publishLibraryVariants("devDebug", "devRelease", "prodDebug", "prodRelease")
-    }
     sourceSets {
         androidMain
         commonMain.dependencies {

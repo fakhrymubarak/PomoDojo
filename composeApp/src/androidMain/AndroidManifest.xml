@@ -30,15 +30,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <receiver
-            android:name=".core.framework.notifications.NotificationSegmentProgressReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.fakhry.pomodojo.SEGMENT_COMPLETE" />
-                <action android:name="com.fakhry.pomodojo.PROGRESS_UPDATE" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>
