@@ -8,6 +8,8 @@ kotlin {
             implementation(project(":domain:preferences"))
             implementation(project(":core:utils"))
             implementation(project(":core:datastore"))
+
+            implementation(libs.androidx.datastore.preferences)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlin.stdlib)
         }

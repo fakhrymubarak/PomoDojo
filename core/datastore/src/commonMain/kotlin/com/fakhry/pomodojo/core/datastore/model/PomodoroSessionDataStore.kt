@@ -3,7 +3,7 @@ package com.fakhry.pomodojo.core.datastore.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PomodoroSessionData(
+data class PomodoroSessionDataStore(
     val totalCycle: Int = 0,
     val startedAtEpochMs: Long = 0L,
     val elapsedPauseEpochMs: Long = 0L,

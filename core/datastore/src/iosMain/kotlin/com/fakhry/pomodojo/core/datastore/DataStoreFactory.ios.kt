@@ -12,7 +12,7 @@ import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSUserDomainMask
 
-internal actual fun provideDataStore(): DataStore<Preferences> =
+internal actual fun createDatastore(): DataStore<Preferences> =
     IosPreferencesDataStoreProvider.dataStore
 
 private object IosPreferencesDataStoreProvider {

@@ -8,8 +8,5 @@ kotlin {
             implementation(project(":domain:common"))
             implementation(project(":domain:focus"))
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
     }
 }

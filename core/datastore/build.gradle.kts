@@ -5,8 +5,6 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":domain:focus"))
-            implementation(project(":domain:preferences"))
             implementation(libs.kotlin.stdlib)
             implementation(libs.kotlinx.serialization.json)
 

@@ -10,7 +10,8 @@ kotlin {
             implementation(project(":domain:common"))
             implementation(project(":core:database"))
             implementation(project(":core:utils"))
-            implementation(libs.kotlin.stdlib)
+
+            implementation(libs.androidx.datastore.preferences)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

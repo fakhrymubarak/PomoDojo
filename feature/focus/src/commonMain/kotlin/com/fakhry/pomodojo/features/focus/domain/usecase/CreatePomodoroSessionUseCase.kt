@@ -6,7 +6,6 @@ import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
 import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
-import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
 import kotlinx.coroutines.async
@@ -17,7 +16,6 @@ class CreatePomodoroSessionUseCase(
     private val sessionRepository: ActiveSessionRepository,
     private val quoteRepo: QuoteRepository,
     private val preferencesRepo: PreferencesRepository,
-    private val initPreferencesRepository: InitPreferencesRepository,
     private val timelineBuilder: BuildTimerSegmentsUseCase,
     private val hourSplitter: BuildHourSplitTimelineUseCase,
     private val dispatcher: DispatcherProvider,
@@ -41,7 +39,6 @@ class CreatePomodoroSessionUseCase(
         )
 
         sessionRepository.saveActiveSession(activeSession)
-        initPreferencesRepository.updateHasActiveSession(true)
 
         return@withContext activeSession
     }

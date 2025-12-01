@@ -1,11 +1,12 @@
 package com.fakhry.pomodojo.domain.pomodoro.usecase
 
-import com.fakhry.pomodojo.core.utils.constant.Time
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
+
+private const val MILLIS_PER_MINUTE = 60_000L
 
 class BuildTimerSegmentsUseCase {
     operator fun invoke(now: Long, preferences: PomodoroPreferences): List<TimerSegmentsDomain> {
@@ -15,7 +16,7 @@ class BuildTimerSegmentsUseCase {
                 type = TimerType.FOCUS,
                 cycleNumber = cycle,
                 timer = TimerDomain(
-                    durationEpochMs = preferences.focusMinutes * Time.MILLIS_PER_MINUTE,
+                    durationEpochMs = preferences.focusMinutes * MILLIS_PER_MINUTE,
                 ),
             )
             val isLongBreakPoint =
@@ -26,7 +27,7 @@ class BuildTimerSegmentsUseCase {
                     type = TimerType.LONG_BREAK,
                     cycleNumber = cycle,
                     timer = TimerDomain(
-                        durationEpochMs = preferences.longBreakMinutes * Time.MILLIS_PER_MINUTE,
+                        durationEpochMs = preferences.longBreakMinutes * MILLIS_PER_MINUTE,
                     ),
                 )
             } else {
@@ -34,7 +35,7 @@ class BuildTimerSegmentsUseCase {
                     type = TimerType.SHORT_BREAK,
                     cycleNumber = cycle,
                     timer = TimerDomain(
-                        durationEpochMs = preferences.breakMinutes * Time.MILLIS_PER_MINUTE,
+                        durationEpochMs = preferences.breakMinutes * MILLIS_PER_MINUTE,
                     ),
                 )
             }

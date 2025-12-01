@@ -26,6 +26,7 @@ kotlin {
             implementation(project(":core:utils"))
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
+            implementation(project(":data:pomodoro"))
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(compose.runtime)

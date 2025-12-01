@@ -6,8 +6,8 @@ import com.fakhry.pomodojo.core.designsystem.model.PreferencesUiModel
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
-import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
+import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
 import kotlinx.collections.immutable.toPersistentList
 
 private val FOCUS_OPTIONS = listOf(10, 25, 50)
@@ -26,12 +26,12 @@ fun PomodoroPreferences.mapToUiModel(
         PreferenceOption(
             label = theme.displayName,
             value = theme,
-            selected = initPreferences.appTheme == theme,
+            selected = initPreferences.appTheme == theme.storageValue,
         )
     }.toPersistentList()
 
     return PreferencesUiModel(
-        selectedTheme = initPreferences.appTheme,
+        selectedTheme = AppTheme.fromStorage(initPreferences.appTheme),
         themeOptions = themeOptions,
         isAlwaysOnDisplayEnabled = alwaysOnDisplayEnabled,
         repeatCount = repeatCount,

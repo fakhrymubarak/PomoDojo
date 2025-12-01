@@ -10,7 +10,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import okio.Path.Companion.toPath
 
-internal actual fun provideDataStore(): DataStore<Preferences> =
+internal actual fun createDatastore(): DataStore<Preferences> =
     AndroidPreferencesDataStoreProvider.dataStore
 
 object AndroidPreferencesDataStoreProvider {

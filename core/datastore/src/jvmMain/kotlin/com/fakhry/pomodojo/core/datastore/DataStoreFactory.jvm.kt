@@ -10,7 +10,7 @@ import okio.Path
 import okio.Path.Companion.toPath
 import java.io.File
 
-internal actual fun provideDataStore(): DataStore<Preferences> =
+internal actual fun createDatastore(): DataStore<Preferences> =
     DesktopPreferencesDataStoreProvider.dataStore
 
 private object DesktopPreferencesDataStoreProvider {

@@ -1,6 +1,8 @@
-package com.fakhry.pomodojo.core.datastore.mapper
+package com.fakhry.pomodojo.data.pomodoro.mapper
 
-import com.fakhry.pomodojo.core.datastore.model.PomodoroSessionData
+import androidx.datastore.preferences.core.Preferences
+import com.fakhry.pomodojo.core.datastore.PreferenceKeys
+import com.fakhry.pomodojo.core.datastore.model.PomodoroSessionDataStore
 import com.fakhry.pomodojo.core.datastore.model.QuoteContentData
 import com.fakhry.pomodojo.core.datastore.model.TimelineData
 import com.fakhry.pomodojo.core.datastore.model.TimerData
@@ -14,8 +16,22 @@ import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
+import kotlinx.serialization.json.Json
 
-fun PomodoroSessionData.toDomain(): PomodoroSessionDomain = PomodoroSessionDomain(
+fun Preferences.toPomodoroSession(json: Json): PomodoroSessionDomain {
+    val snapshot = this[PreferenceKeys.ACTIVE_SESSION_KEY] ?: return PomodoroSessionDomain()
+    return json.decodeFromString<PomodoroSessionDataStore>(snapshot).toDomain()
+}
+
+fun PomodoroSessionDomain.toDataStore(): PomodoroSessionDataStore = PomodoroSessionDataStore(
+    totalCycle = totalCycle,
+    startedAtEpochMs = startedAtEpochMs,
+    elapsedPauseEpochMs = elapsedPauseEpochMs,
+    timeline = timeline.toData(),
+    quote = quote.toData(),
+)
+
+private fun PomodoroSessionDataStore.toDomain(): PomodoroSessionDomain = PomodoroSessionDomain(
     totalCycle = totalCycle,
     startedAtEpochMs = startedAtEpochMs,
     elapsedPauseEpochMs = elapsedPauseEpochMs,
@@ -64,13 +80,6 @@ private fun TimerStatusData.toDomain(): TimerStatusDomain = when (this) {
     TimerStatusData.PAUSED -> TimerStatusDomain.PAUSED
 }
 
-fun PomodoroSessionDomain.toData(): PomodoroSessionData = PomodoroSessionData(
-    totalCycle = totalCycle,
-    startedAtEpochMs = startedAtEpochMs,
-    elapsedPauseEpochMs = elapsedPauseEpochMs,
-    timeline = timeline.toData(),
-    quote = quote.toData(),
-)
 
 private fun TimelineDomain.toData(): TimelineData = TimelineData(
     segments = segments.map { it.toData() },

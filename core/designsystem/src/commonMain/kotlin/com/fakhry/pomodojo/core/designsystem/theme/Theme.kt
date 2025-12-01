@@ -7,7 +7,6 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.fakhry.pomodojo.domain.preferences.model.AppTheme
 
 /**
  * PomoDojo color schemes for dark and light themes.
@@ -68,17 +67,17 @@ private val LightColorScheme = lightColorScheme(
  * Wraps MaterialTheme with app specific typography and colors.
  */
 @Composable
-fun PomoDojoTheme(appTheme: AppTheme = AppTheme.DARK, content: @Composable () -> Unit) {
+fun PomoDojoTheme(appTheme: String = "dark", content: @Composable () -> Unit) {
     val targetColorScheme = remember(appTheme) {
         when (appTheme) {
-            AppTheme.DARK -> DarkColorScheme
+            "dark" -> DarkColorScheme
             else -> LightColorScheme
         }
     }
 
     val animatedColorScheme = animateColorScheme(
         targetScheme = targetColorScheme,
-        isLightScheme = appTheme != AppTheme.DARK,
+        isLightScheme = appTheme != "dark",
     )
 
     MaterialTheme(

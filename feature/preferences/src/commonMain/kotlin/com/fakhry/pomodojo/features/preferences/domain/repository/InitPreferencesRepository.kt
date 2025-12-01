@@ -1,7 +1,7 @@
-package com.fakhry.pomodojo.domain.preferences.repository
+package com.fakhry.pomodojo.features.preferences.domain.repository
 
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
-import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
+import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface InitPreferencesRepository {

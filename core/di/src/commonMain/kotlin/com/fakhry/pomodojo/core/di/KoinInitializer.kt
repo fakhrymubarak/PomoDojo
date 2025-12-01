@@ -4,6 +4,7 @@ import com.fakhry.pomodojo.core.database.di.databaseModule
 import com.fakhry.pomodojo.core.datastore.di.dataStoreModule
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.data.history.di.historyDataModule
+import com.fakhry.pomodojo.data.pomodoro.di.pomodoroDataModule
 import com.fakhry.pomodojo.data.preferences.di.preferencesDataModule
 import com.fakhry.pomodojo.domain.pomodoro.di.focusDomainModule
 import com.fakhry.pomodojo.domain.preferences.di.preferencesDomainModule
@@ -38,6 +39,7 @@ private val domainModule: List<Module> = listOf(
 private val dataModule: List<Module> = listOf(
     historyDataModule,
     preferencesDataModule,
+    pomodoroDataModule,
 )
 
 private val coreModule: List<Module> = listOf(

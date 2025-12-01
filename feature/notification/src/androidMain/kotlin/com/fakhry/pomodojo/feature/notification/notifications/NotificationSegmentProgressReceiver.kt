@@ -7,7 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
-import com.fakhry.pomodojo.core.datastore.wiring.prefStorageFactory
+import com.fakhry.pomodojo.data.pomodoro.wiring.activeSessionStoreFactory
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
@@ -16,7 +16,6 @@ import com.fakhry.pomodojo.feature.notification.audio.provideSoundPlayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -47,12 +46,13 @@ class NotificationSegmentProgressReceiver : BroadcastReceiver() {
         scope.launch {
             try {
                 // Initialize dependencies
-                val preferenceStorage = prefStorageFactory()
+                val preferenceStorage = activeSessionStoreFactory()
                 val notifier = providePomodoroSessionNotifier()
 
                 val session = withContext(Dispatchers.IO) {
-                    preferenceStorage.activeSession.first()
+                    preferenceStorage.getActiveSession()
                 }
+
                 if (session == PomodoroSessionDomain()) {
                     Log.i(TAG, "onReceive: no active session")
                     pendingResult.finish()

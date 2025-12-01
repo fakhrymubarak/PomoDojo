@@ -1,11 +1,11 @@
 package com.fakhry.pomodojo.feature.notification.notifications
 
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.notification.CompletionNotificationSummary
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
-import com.fakhry.pomodojo.features.focus.ui.mapper.toCompletionSummary
-import com.fakhry.pomodojo.focus.domain.mapper.toIosNotificationSummary
-import com.fakhry.pomodojo.shared.domain.model.focus.CompletionNotificationSummary
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
+import com.fakhry.pomodojo.feature.notification.mapper.toCompletionSummary
+import com.fakhry.pomodojo.feature.notification.mapper.toIosNotificationSummary
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.UserNotifications.UNMutableNotificationContent

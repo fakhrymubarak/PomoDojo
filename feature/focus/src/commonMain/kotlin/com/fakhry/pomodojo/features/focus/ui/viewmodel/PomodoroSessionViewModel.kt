@@ -12,7 +12,6 @@ import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
-import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
 import com.fakhry.pomodojo.feature.notification.audio.SoundPlayer
 import com.fakhry.pomodojo.feature.notification.notifications.PomodoroSessionNotifier
@@ -43,7 +42,6 @@ class PomodoroSessionViewModel(
     private val currentTimeProvider: CurrentTimeProvider = SystemCurrentTimeProvider,
     private val createPomodoroSessionUseCase: CreatePomodoroSessionUseCase,
     private val preferencesRepository: PreferencesRepository,
-    private val initPreferencesRepository: InitPreferencesRepository,
     private val sessionRepository: ActiveSessionRepository,
     private val historyRepository: HistorySessionRepository,
     private val pomodoroSessionNotifier: PomodoroSessionNotifier,
@@ -156,7 +154,7 @@ class PomodoroSessionViewModel(
                 return@launch
             }
             if (prepared.didMutateTimeline || hasStoredSession) {
-                sessionRepository.updateActiveSession(prepared.snapshot)
+                sessionRepository.saveActiveSession(prepared.snapshot)
             }
             when (timelineSegments.getOrNull(activeSegmentIndex)?.timerStatus) {
                 TimerStatusDomain.RUNNING -> startTicker()
@@ -394,18 +392,16 @@ class PomodoroSessionViewModel(
         val currentState = container.stateFlow.value
         if (currentState.isComplete) return@launch
         buildSessionSnapshot(currentState)?.let {
-            initPreferencesRepository.updateHasActiveSession(true)
-            sessionRepository.updateActiveSession(it)
+            sessionRepository.saveActiveSession(it)
         }
     }
 
     private suspend fun completeActiveSession() {
         val currentState = container.stateFlow.value
         buildSessionSnapshot(currentState)?.let {
-            sessionRepository.completeSession(it)
+            sessionRepository.clearActiveSession()
             historyRepository.insertHistory(it)
             pomodoroSessionNotifier.cancel(it.sessionId())
-            initPreferencesRepository.updateHasActiveSession(false)
         }
         resetNotificationThrottle()
     }

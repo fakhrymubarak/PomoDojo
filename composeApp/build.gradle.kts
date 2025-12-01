@@ -48,14 +48,12 @@ kotlin {
             implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
-            implementation(project(":core:datastore"))
             implementation(project(":core:di"))
             implementation(project(":core:designsystem"))
             implementation(project(":feature:notification"))
             implementation(project(":feature:dashboard"))
             implementation(project(":feature:focus"))
             implementation(project(":feature:preferences"))
-            implementation(project(":domain:preferences"))
 
             implementation(compose.runtime)
             implementation(compose.foundation)

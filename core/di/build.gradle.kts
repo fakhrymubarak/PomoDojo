@@ -9,8 +9,9 @@ kotlin {
             implementation(project(":core:datastore"))
             implementation(project(":core:database"))
 
-            implementation(project(":data:history"))
+            implementation(project(":data:pomodoro"))
             implementation(project(":data:preferences"))
+            implementation(project(":data:history"))
 
             implementation(project(":domain:preferences"))
             implementation(project(":domain:focus"))

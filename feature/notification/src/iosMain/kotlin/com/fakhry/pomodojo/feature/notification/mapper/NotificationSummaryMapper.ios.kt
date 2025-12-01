@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.focus.domain.mapper
+package com.fakhry.pomodojo.feature.notification.mapper
 
 import com.fakhry.pomodojo.core.utils.primitives.formatDurationMillis
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain

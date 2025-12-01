@@ -10,10 +10,6 @@ interface ActiveSessionRepository {
 
     suspend fun saveActiveSession(snapshot: PomodoroSessionDomain)
 
-    suspend fun updateActiveSession(snapshot: PomodoroSessionDomain)
-
-    suspend fun completeSession(snapshot: PomodoroSessionDomain)
-
     suspend fun clearActiveSession()
 
     suspend fun hasActiveSession(): Boolean

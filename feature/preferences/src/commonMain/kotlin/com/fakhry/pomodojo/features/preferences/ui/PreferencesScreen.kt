@@ -49,8 +49,8 @@ import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
-import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
+import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
 import com.fakhry.pomodojo.features.preferences.ui.components.PomodoroConfigSection
 import com.fakhry.pomodojo.features.preferences.ui.components.PomodoroTimelinePreviewSection
 import com.fakhry.pomodojo.features.preferences.ui.components.PreferenceAppearanceSection
@@ -244,16 +244,17 @@ private fun PreferencesContentPreview() {
         longBreakMinutes = 10,
     )
     val initPreferences = InitAppPreferences(
-        appTheme = AppTheme.DARK,
+        appTheme = "dark",
         hasActiveSession = false,
     )
+    val appTheme = AppTheme.fromStorage(initPreferences.appTheme)
     val previewPreferencesState = PreferencesUiModel(
-        selectedTheme = initPreferences.appTheme,
+        selectedTheme = appTheme,
         themeOptions = AppTheme.entries.map { theme ->
             PreferenceOption(
                 label = theme.displayName,
                 value = theme,
-                selected = theme == initPreferences.appTheme,
+                selected = theme == appTheme,
             )
         }.toPersistentList(),
         isAlwaysOnDisplayEnabled = preferences.alwaysOnDisplayEnabled,
