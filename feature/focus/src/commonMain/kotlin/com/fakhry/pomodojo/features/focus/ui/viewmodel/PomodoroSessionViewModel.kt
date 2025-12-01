@@ -3,10 +3,8 @@ package com.fakhry.pomodojo.features.focus.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.core.designsystem.model.TimelineSegmentUi
-import com.fakhry.pomodojo.core.framework.audio.SoundPlayer
-import com.fakhry.pomodojo.core.framework.datetime.CurrentTimeProvider
-import com.fakhry.pomodojo.core.framework.datetime.SystemCurrentTimeProvider
-import com.fakhry.pomodojo.core.framework.notifications.PomodoroSessionNotifier
+import com.fakhry.pomodojo.core.utils.date.CurrentTimeProvider
+import com.fakhry.pomodojo.core.utils.date.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.core.utils.primitives.formatDurationMillis
 import com.fakhry.pomodojo.domain.history.repository.HistorySessionRepository
@@ -16,6 +14,8 @@ import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
+import com.fakhry.pomodojo.feature.notification.audio.SoundPlayer
+import com.fakhry.pomodojo.feature.notification.notifications.PomodoroSessionNotifier
 import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.features.focus.ui.mapper.calculateTimerProgress
 import com.fakhry.pomodojo.features.focus.ui.mapper.resolveActiveIndex

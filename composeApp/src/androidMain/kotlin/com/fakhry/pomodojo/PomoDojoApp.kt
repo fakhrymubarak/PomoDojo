@@ -1,6 +1,7 @@
 package com.fakhry.pomodojo
 
 import android.app.Application
+import com.fakhry.pomodojo.feature.notification.AndroidAppDependenciesInitializer
 
 class PomoDojoApp : Application() {
 

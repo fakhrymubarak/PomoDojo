@@ -51,7 +51,7 @@ kotlin {
             implementation(project(":core:datastore"))
             implementation(project(":core:di"))
             implementation(project(":core:designsystem"))
-            implementation(project(":core:framework"))
+            implementation(project(":feature:notification"))
             implementation(project(":feature:dashboard"))
             implementation(project(":feature:focus"))
             implementation(project(":feature:preferences"))

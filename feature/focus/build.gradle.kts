@@ -5,7 +5,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":core:framework"))
+            implementation(project(":feature:notification"))
             implementation(project(":core:datastore"))
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))

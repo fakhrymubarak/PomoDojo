@@ -2,7 +2,7 @@ package com.fakhry.pomodojo.features.dashboard.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fakhry.pomodojo.core.framework.datetime.CurrentTimeProvider
+import com.fakhry.pomodojo.core.utils.date.CurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.date.formatTimerMinutes
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.domain.common.DomainResult
