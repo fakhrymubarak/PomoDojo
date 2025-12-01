@@ -48,7 +48,7 @@ kotlin {
             implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
-            implementation(project(":core:di"))
+            implementation(project(":app:di"))
             implementation(project(":core:designsystem"))
             implementation(project(":feature:notification"))
             implementation(project(":feature:dashboard"))

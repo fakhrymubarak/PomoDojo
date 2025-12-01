@@ -7,8 +7,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
+import com.fakhry.pomodojo.app.di.getAppModules
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
-import com.fakhry.pomodojo.core.di.getAppModules
 import com.fakhry.pomodojo.core.navigation.AppNavHost
 import com.fakhry.pomodojo.features.preferences.data.getInitPreferencesOnMainThread
 import com.fakhry.pomodojo.features.preferences.domain.repository.InitPreferencesRepository

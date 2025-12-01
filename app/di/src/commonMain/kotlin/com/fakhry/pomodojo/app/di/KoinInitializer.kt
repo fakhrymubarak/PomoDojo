@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.core.di
+package com.fakhry.pomodojo.app.di
 
 import com.fakhry.pomodojo.core.database.di.databaseModule
 import com.fakhry.pomodojo.core.datastore.di.dataStoreModule
