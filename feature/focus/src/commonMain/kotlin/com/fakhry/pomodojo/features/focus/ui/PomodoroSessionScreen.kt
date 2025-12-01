@@ -56,23 +56,15 @@ import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_p
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_quote_content_description
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_resume_content_description
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_timeline_title
-import com.fakhry.pomodojo.core.designsystem.mapper.mapToTimelineSegmentsUi
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
-import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
+import com.fakhry.pomodojo.core.designsystem.model.TimerStatusUi
 import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
-import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
-import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.feature.notification.screen.KeepScreenOnEffect
 import com.fakhry.pomodojo.features.focus.ui.components.PomodoroSessionHeaderSection
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
-import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.focus.ui.viewmodel.PomodoroSessionViewModel
-import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -134,7 +126,7 @@ fun PomodoroSessionScreen(
             )
             Spacer(modifier = Modifier.height(32.dp))
             FocusControls(
-                isTimerRunning = activeSegment.timerStatus == TimerStatusDomain.RUNNING,
+                isTimerRunning = activeSegment.timerStatus == TimerStatusUi.RUNNING,
                 onTogglePause = viewModel::togglePauseResume,
                 onEnd = viewModel::onEndClicked,
             )
@@ -306,52 +298,4 @@ private fun FocusConfirmDialog(onConfirmFinish: () -> Unit, onDismiss: () -> Uni
             }
         },
     )
-}
-@Preview
-@Composable
-private fun PomodoroSessionContentPreview() {
-    val preferences = PomodoroPreferences()
-    val timerSegments = BuildTimerSegmentsUseCase().invoke(
-        0L,
-        preferences,
-    ).mapToTimelineSegmentsUi(1_000L)
-    val state = PomodoroSessionUiState(
-        totalCycle = 4,
-        activeSegment = timerSegments.first(),
-        timeline = TimelineUiModel(
-            segments = timerSegments,
-            hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
-        ),
-    )
-
-    PomoDojoTheme {
-        val activeSegment = state.activeSegment
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            PomodoroSessionHeaderSection(
-                timerType = activeSegment.type,
-                cycleNumber = activeSegment.cycleNumber,
-                totalCycle = state.totalCycle,
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-            PomodoroTimerSection(
-                segmentType = activeSegment.type,
-                formattedTime = activeSegment.timer.formattedTime,
-                progress = activeSegment.timer.progress,
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-            FocusQuoteBlock(modifier = Modifier.padding(horizontal = 16.dp), quote = state.quote)
-            Spacer(modifier = Modifier.height(32.dp))
-            PomodoroTimelineSessionSection(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                timeline = state.timeline,
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-            FocusControls(
-                isTimerRunning = activeSegment.timerStatus == TimerStatusDomain.RUNNING,
-            )
-        }
-    }
 }

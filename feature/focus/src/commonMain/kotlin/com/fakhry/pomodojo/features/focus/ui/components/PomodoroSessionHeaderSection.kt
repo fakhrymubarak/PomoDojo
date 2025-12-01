@@ -18,13 +18,13 @@ import com.fakhry.pomodojo.core.designsystem.components.focusPhaseLabel
 import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_header_cycle_count
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_header_title
+import com.fakhry.pomodojo.core.designsystem.model.TimerTypeUi
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
-import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun PomodoroSessionHeaderSection(timerType: TimerType, cycleNumber: Int, totalCycle: Int) {
+fun PomodoroSessionHeaderSection(timerType: TimerTypeUi, cycleNumber: Int, totalCycle: Int) {
     BgHeaderCanvas {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -63,6 +63,6 @@ fun PomodoroSessionHeaderSection(timerType: TimerType, cycleNumber: Int, totalCy
 @Composable
 private fun PomodoroSessionHeaderSectionPreview() {
     PomoDojoTheme {
-        PomodoroSessionHeaderSection(TimerType.FOCUS, 2, 4)
+        PomodoroSessionHeaderSection(TimerTypeUi.FOCUS, 2, 4)
     }
 }

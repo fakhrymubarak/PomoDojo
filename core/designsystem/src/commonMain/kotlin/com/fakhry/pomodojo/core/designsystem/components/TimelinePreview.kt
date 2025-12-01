@@ -30,12 +30,12 @@ import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_tim
 import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_timeline_long_break_label
 import com.fakhry.pomodojo.core.designsystem.model.TimelineSegmentUi
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
+import com.fakhry.pomodojo.core.designsystem.model.TimerStatusUi
+import com.fakhry.pomodojo.core.designsystem.model.TimerTypeUi
 import com.fakhry.pomodojo.core.designsystem.theme.LongBreakHighlight
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.core.designsystem.theme.Primary
 import com.fakhry.pomodojo.core.designsystem.theme.Secondary
-import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
-import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.pluralStringResource
@@ -52,9 +52,9 @@ fun ColumnScope.TimelinePreview(segments: ImmutableList<TimelineSegmentUi>) = th
         segments.forEachIndexed { index, segment ->
             val progress = segment.timer.progress.coerceIn(0f, 1f)
             val color = when (segment.type) {
-                TimerType.FOCUS -> Secondary
-                TimerType.SHORT_BREAK -> Primary
-                TimerType.LONG_BREAK -> LongBreakHighlight
+                TimerTypeUi.FOCUS -> Secondary
+                TimerTypeUi.SHORT_BREAK -> Primary
+                TimerTypeUi.LONG_BREAK -> LongBreakHighlight
             }
             Box(
                 modifier = Modifier.fillMaxHeight().weight(segment.timer.durationEpochMs.toFloat())
@@ -162,18 +162,18 @@ private fun LegendDot(color: Color) {
 private fun PomodoroTimelinePreviewSectionPreview() {
     val timeline = TimelineUiModel(
         segments = persistentListOf(
-            TimelineSegmentUi(timerStatus = TimerStatusDomain.COMPLETED),
+            TimelineSegmentUi(timerStatus = TimerStatusUi.COMPLETED),
             TimelineSegmentUi(
-                type = TimerType.SHORT_BREAK,
-                timerStatus = TimerStatusDomain.COMPLETED,
+                type = TimerTypeUi.SHORT_BREAK,
+                timerStatus = TimerStatusUi.COMPLETED,
             ),
-            TimelineSegmentUi(timerStatus = TimerStatusDomain.RUNNING),
+            TimelineSegmentUi(timerStatus = TimerStatusUi.RUNNING),
             TimelineSegmentUi(
-                type = TimerType.SHORT_BREAK,
+                type = TimerTypeUi.SHORT_BREAK,
             ),
             TimelineSegmentUi(),
             TimelineSegmentUi(
-                type = TimerType.LONG_BREAK,
+                type = TimerTypeUi.LONG_BREAK,
             ),
             TimelineSegmentUi(),
         ),

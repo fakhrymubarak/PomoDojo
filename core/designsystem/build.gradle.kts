@@ -8,8 +8,6 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":domain:preferences"))
-            implementation(project(":domain:focus"))
             implementation(project(":core:utils"))
             implementation(compose.runtime)
             implementation(compose.foundation)

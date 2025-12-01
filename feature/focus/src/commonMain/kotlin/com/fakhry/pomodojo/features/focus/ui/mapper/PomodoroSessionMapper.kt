@@ -2,10 +2,10 @@ package com.fakhry.pomodojo.features.focus.ui.mapper
 
 import com.fakhry.pomodojo.core.designsystem.model.TimelineSegmentUi
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
+import com.fakhry.pomodojo.core.designsystem.model.TimerStatusUi
+import com.fakhry.pomodojo.core.designsystem.model.TimerTypeUi
 import com.fakhry.pomodojo.core.utils.primitives.toMinutes
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
-import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import kotlinx.collections.immutable.toPersistentList
@@ -33,20 +33,20 @@ fun PomodoroSessionDomain.toUiState(
 
 fun PomodoroSessionUiState.toCompletionSummary(): PomodoroCompletionUiState {
     val elapsedSegments = timeline.segments.filterNot {
-        it.timerStatus == TimerStatusDomain.INITIAL
+        it.timerStatus == TimerStatusUi.INITIAL
     }
     val totalFocusMinutes = elapsedSegments
-        .filter { it.type == TimerType.FOCUS }
+        .filter { it.type == TimerTypeUi.FOCUS }
         .sumOf { (it.timer.durationEpochMs * it.timer.progress).toLong() }
         .toMinutes()
     val totalBreakMinutes = elapsedSegments
-        .filter { it.type != TimerType.FOCUS }
+        .filter { it.type != TimerTypeUi.FOCUS }
         .sumOf { (it.timer.durationEpochMs * it.timer.progress).toLong() }
         .toMinutes()
 
     val totalCycleFinished = elapsedSegments
-        .filter { it.type != TimerType.FOCUS }
-        .count { it.timerStatus == TimerStatusDomain.COMPLETED }
+        .filter { it.type != TimerTypeUi.FOCUS }
+        .count { it.timerStatus == TimerStatusUi.COMPLETED }
 
     return PomodoroCompletionUiState(
         totalCyclesFinished = totalCycleFinished,

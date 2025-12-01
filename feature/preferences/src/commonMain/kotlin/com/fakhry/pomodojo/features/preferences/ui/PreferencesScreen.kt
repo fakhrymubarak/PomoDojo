@@ -37,14 +37,8 @@ import com.fakhry.pomodojo.core.designsystem.components.BgHeaderCanvas
 import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
 import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_back_content_description
 import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_title
-import com.fakhry.pomodojo.core.designsystem.mapper.mapToTimelineSegmentsUi
 import com.fakhry.pomodojo.core.designsystem.model.PreferenceOption
-import com.fakhry.pomodojo.core.designsystem.model.PreferencesAppearanceUiState
-import com.fakhry.pomodojo.core.designsystem.model.PreferencesConfigUiState
-import com.fakhry.pomodojo.core.designsystem.model.PreferencesUiModel
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
-import com.fakhry.pomodojo.core.designsystem.model.toAppearanceUiState
-import com.fakhry.pomodojo.core.designsystem.model.toConfigUiState
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
@@ -54,6 +48,12 @@ import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
 import com.fakhry.pomodojo.features.preferences.ui.components.PomodoroConfigSection
 import com.fakhry.pomodojo.features.preferences.ui.components.PomodoroTimelinePreviewSection
 import com.fakhry.pomodojo.features.preferences.ui.components.PreferenceAppearanceSection
+import com.fakhry.pomodojo.features.preferences.ui.mapper.mapToTimelineSegmentsUi
+import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesAppearanceUiState
+import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesConfigUiState
+import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesUiModel
+import com.fakhry.pomodojo.features.preferences.ui.model.toAppearanceUiState
+import com.fakhry.pomodojo.features.preferences.ui.model.toConfigUiState
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

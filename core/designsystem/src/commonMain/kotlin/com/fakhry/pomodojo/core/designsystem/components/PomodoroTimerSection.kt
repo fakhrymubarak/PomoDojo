@@ -20,11 +20,11 @@ import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_phase_break
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_phase_focus
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_phase_long_break
+import com.fakhry.pomodojo.core.designsystem.model.TimerTypeUi
 import com.fakhry.pomodojo.core.designsystem.theme.LongBreakHighlight
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.core.designsystem.theme.Primary
 import com.fakhry.pomodojo.core.designsystem.theme.Secondary
-import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -34,14 +34,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun PomodoroTimerSection(
-    segmentType: TimerType = TimerType.FOCUS,
+    segmentType: TimerTypeUi = TimerTypeUi.FOCUS,
     formattedTime: String = "00:00",
     progress: Float = 0.5f,
 ) {
     val color = when (segmentType) {
-        TimerType.FOCUS -> Secondary
-        TimerType.SHORT_BREAK -> Primary
-        TimerType.LONG_BREAK -> LongBreakHighlight
+        TimerTypeUi.FOCUS -> Secondary
+        TimerTypeUi.SHORT_BREAK -> Primary
+        TimerTypeUi.LONG_BREAK -> LongBreakHighlight
     }
 
     Box(
@@ -71,7 +71,7 @@ fun PomodoroTimerSection(
 }
 
 @Composable
-private fun FocusPhaseChip(phase: TimerType, color: Color) {
+private fun FocusPhaseChip(phase: TimerTypeUi, color: Color) {
     Surface(
         color = color.copy(alpha = 0.12f),
         shape = CircleShape,
@@ -93,7 +93,7 @@ fun PomodoroTimerSectionFocusPreview() {
     PomoDojoTheme {
         Column {
             PomodoroTimerSection(
-                segmentType = TimerType.FOCUS,
+                segmentType = TimerTypeUi.FOCUS,
             )
         }
     }
@@ -105,7 +105,7 @@ fun PomodoroTimerSectionBreakPreview() {
     PomoDojoTheme {
         Column {
             PomodoroTimerSection(
-                segmentType = TimerType.SHORT_BREAK,
+                segmentType = TimerTypeUi.SHORT_BREAK,
             )
         }
     }
@@ -117,7 +117,7 @@ fun PomodoroTimerSectionLongBreakPreview() {
     PomoDojoTheme {
         Column {
             PomodoroTimerSection(
-                segmentType = TimerType.LONG_BREAK,
+                segmentType = TimerTypeUi.LONG_BREAK,
             )
         }
     }
@@ -125,8 +125,8 @@ fun PomodoroTimerSectionLongBreakPreview() {
 
 
 @Composable
-fun focusPhaseLabel(phase: TimerType) = when (phase) {
-    TimerType.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
-    TimerType.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
-    TimerType.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
+fun focusPhaseLabel(phase: TimerTypeUi) = when (phase) {
+    TimerTypeUi.FOCUS -> stringResource(Res.string.focus_session_phase_focus)
+    TimerTypeUi.SHORT_BREAK -> stringResource(Res.string.focus_session_phase_break)
+    TimerTypeUi.LONG_BREAK -> stringResource(Res.string.focus_session_phase_long_break)
 }

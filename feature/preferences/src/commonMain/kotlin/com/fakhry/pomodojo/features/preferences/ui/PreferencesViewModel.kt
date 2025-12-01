@@ -2,12 +2,7 @@ package com.fakhry.pomodojo.features.preferences.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fakhry.pomodojo.core.designsystem.model.PreferencesAppearanceUiState
-import com.fakhry.pomodojo.core.designsystem.model.PreferencesConfigUiState
-import com.fakhry.pomodojo.core.designsystem.model.PreferencesUiModel
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
-import com.fakhry.pomodojo.core.designsystem.model.toAppearanceUiState
-import com.fakhry.pomodojo.core.designsystem.model.toConfigUiState
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
@@ -19,6 +14,11 @@ import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
 import com.fakhry.pomodojo.features.preferences.domain.repository.InitPreferencesRepository
 import com.fakhry.pomodojo.features.preferences.ui.mapper.DEFAULT_REPEAT_RANGE
 import com.fakhry.pomodojo.features.preferences.ui.mapper.mapToUiModel
+import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesAppearanceUiState
+import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesConfigUiState
+import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesUiModel
+import com.fakhry.pomodojo.features.preferences.ui.model.toAppearanceUiState
+import com.fakhry.pomodojo.features.preferences.ui.model.toConfigUiState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
