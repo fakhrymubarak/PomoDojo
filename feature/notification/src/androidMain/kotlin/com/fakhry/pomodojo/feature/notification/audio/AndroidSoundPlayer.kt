@@ -4,21 +4,20 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.util.Log
 import com.fakhry.pomodojo.feature.notification.R
+import org.koin.core.context.GlobalContext
 
-actual fun provideSoundPlayer(): SoundPlayer = AndroidSoundPlayer
+actual fun provideSoundPlayer(): SoundPlayer {
+    val koin = GlobalContext.get()
+    return koin.get<AndroidSoundPlayer>()
+}
 
-internal object AndroidSoundPlayer : SoundPlayer {
-    private var appContext: Context? = null
+private const val DEBOUNCE_COMPLETED_AUDIO = 5_000L // 5 secs
+private const val TAG = "AndroidSegmentCompletionSoundPlayer"
 
+class AndroidSoundPlayer(private var appContext: Context) : SoundPlayer {
     private var lastPlayCompletedSegment = 0L
-    private const val DEBOUNCE_COMPLETED_AUDIO = 5_000L // 5 secs
-    private const val TAG = "AndroidSegmentCompletionSoundPlayer"
 
     override fun playSegmentCompleted() {
-        check(appContext != null) {
-            "Android focus database not initialized. Call initAndroidFocusDatabase() first."
-        }
-
         val now = System.currentTimeMillis()
         Log.d(TAG, "playSegment ${now - lastPlayCompletedSegment}")
         if (now - lastPlayCompletedSegment <= DEBOUNCE_COMPLETED_AUDIO) return
@@ -28,15 +27,5 @@ internal object AndroidSoundPlayer : SoundPlayer {
         }
         mediaPlayer.start()
         lastPlayCompletedSegment = now
-    }
-
-    fun initialize(context: Context) {
-        if (appContext == null) {
-            appContext = context
-        }
-    }
-
-    fun destroy() {
-        appContext = null
     }
 }

@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.pomodojoLibrary)
+    alias(libs.plugins.pomodojoFeatures)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeMultiplatform)
 }
@@ -27,15 +27,9 @@ kotlin {
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
             implementation(project(":data:pomodoro"))
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.serialization.json)
-            implementation(compose.runtime)
-            implementation(compose.ui)
         }
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
-            implementation(project(":core:datastore"))
-            implementation(project(":core:database"))
         }
         jvmMain.dependencies {
             implementation(libs.kotlinx.coroutinesSwing)

@@ -27,5 +27,11 @@ kotlin {
             implementation(libs.koin.compose.viewmodel.navigation)
             implementation(project.dependencies.platform(libs.koin.bom))
         }
+
+        androidMain.dependencies {
+            implementation(project(":core:datastore"))
+            implementation(project(":core:database"))
+            implementation(project(":feature:notification"))
+        }
     }
 }

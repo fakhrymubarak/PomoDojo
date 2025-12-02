@@ -13,9 +13,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.notification.CompletionNotificationSummary
-import com.fakhry.pomodojo.feature.notification.AndroidAppDependenciesInitializer
 import com.fakhry.pomodojo.feature.notification.R
 import com.fakhry.pomodojo.feature.notification.mapper.toCompletionSummary
+import org.koin.core.context.GlobalContext
 
 private const val CHANNEL_ID = "focus_session_channel"
 private const val CHANNEL_NAME = "Focus Sessions"
@@ -24,8 +24,9 @@ private const val REQUEST_CODE_OFFSET = 42_000
 private const val PROGRESS_UPDATE_INTERVAL_MS = 10_000L // Update progress every 10 seconds
 
 actual fun providePomodoroSessionNotifier(): PomodoroSessionNotifier {
-    val context = AndroidAppDependenciesInitializer.requireContext()
-    return AndroidFocusSessionNotifier(context)
+    val koin = GlobalContext.get()
+    val notifier: AndroidFocusSessionNotifier = koin.get()
+    return notifier
 }
 
 private const val TAG = "AndroidFocusSessionNotifier"
@@ -33,7 +34,6 @@ private const val TAG = "AndroidFocusSessionNotifier"
 class AndroidFocusSessionNotifier(private val context: Context) : PomodoroSessionNotifier {
     private val notificationManager = NotificationManagerCompat.from(context)
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
-
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override suspend fun schedule(snapshot: PomodoroSessionDomain) {
         ensureChannel()

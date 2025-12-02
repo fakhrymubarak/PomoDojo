@@ -62,6 +62,7 @@ class DependencyGraphPlugin : Plugin<Project> {
                         .forEach { dependency ->
                             val from = project.path
                             val to = dependency.copy().path
+                            if (from == to) return@forEach // Safety: plugin wiring can add reflexive configs
                             edgeSet += from to to
                             nodeSet += from
                             nodeSet += to

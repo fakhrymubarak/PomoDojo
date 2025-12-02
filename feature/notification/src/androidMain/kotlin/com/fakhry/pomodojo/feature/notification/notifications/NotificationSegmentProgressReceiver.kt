@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.core.context.GlobalContext
 
 private const val TAG = "NotificationSegmentProgressReceiver"
 
@@ -47,7 +48,9 @@ class NotificationSegmentProgressReceiver : BroadcastReceiver() {
             try {
                 // Initialize dependencies
                 val preferenceStorage = activeSessionStoreFactory()
-                val notifier = providePomodoroSessionNotifier()
+
+                val koin = GlobalContext.get()
+                val notifier: AndroidFocusSessionNotifier = koin.get()
 
                 val session = withContext(Dispatchers.IO) {
                     preferenceStorage.getActiveSession()
