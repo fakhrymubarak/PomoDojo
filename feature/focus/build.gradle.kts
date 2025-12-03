@@ -5,10 +5,11 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":feature:notification"))
+            implementation(project(":core:notification"))
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
             implementation(project(":domain:history"))
+            implementation(project(":feature:notification"))
 
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.orbit.core)

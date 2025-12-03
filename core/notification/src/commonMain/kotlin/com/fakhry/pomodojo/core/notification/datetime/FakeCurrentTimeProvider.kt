@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.feature.notification.datetime
+package com.fakhry.pomodojo.core.notification.datetime
 
 import com.fakhry.pomodojo.core.utils.date.CurrentTimeProvider
 import kotlin.time.ExperimentalTime
@@ -9,7 +9,6 @@ class FakeCurrentTimeProvider(private val year: Int = 2024) : CurrentTimeProvide
     override fun now(): Long = 0L
 
     override fun nowInstant(): Instant {
-        // Create an instant that represents January 1st of the given year
         val millis = when (year) {
             2024 -> 1704067200000L // 2024-01-01 00:00:00 UTC
             2023 -> 1672531200000L // 2023-01-01 00:00:00 UTC

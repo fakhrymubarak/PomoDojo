@@ -2,9 +2,10 @@ package com.fakhry.pomodojo.features.focus.ui.viewmodel
 
 import com.fakhry.pomodojo.core.designsystem.model.TimerStatusUi
 import com.fakhry.pomodojo.core.designsystem.model.TimerTypeUi
+import com.fakhry.pomodojo.core.notification.PomodoroSessionNotifier
+import com.fakhry.pomodojo.core.notification.SoundPlayer
 import com.fakhry.pomodojo.core.utils.date.CurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.domain.common.DomainResult
 import com.fakhry.pomodojo.domain.history.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.domain.history.repository.HistorySessionRepository
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
@@ -19,8 +20,6 @@ import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
-import com.fakhry.pomodojo.feature.notification.audio.SoundPlayer
-import com.fakhry.pomodojo.feature.notification.notifications.PomodoroSessionNotifier
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
@@ -362,8 +361,10 @@ private class FakeHistorySessionRepository : HistorySessionRepository {
         insertedSessions.add(session)
     }
 
-    override suspend fun getHistory(year: Int): DomainResult<PomodoroHistoryDomain> =
-        DomainResult.Success(
+    override suspend fun getHistory(
+        year: Int,
+    ): com.fakhry.pomodojo.domain.common.DomainResult<PomodoroHistoryDomain> =
+        com.fakhry.pomodojo.domain.common.DomainResult.Success(
             PomodoroHistoryDomain(
                 focusMinutesThisYear = 0,
                 availableYears = emptyList(),

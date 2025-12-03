@@ -1,8 +1,8 @@
 package com.fakhry.pomodojo.features.dashboard.ui.mapper
 
+import com.fakhry.pomodojo.core.notification.formatting.platformThousandsSeparator
 import com.fakhry.pomodojo.domain.history.model.HistoryDomain
 import com.fakhry.pomodojo.domain.history.model.PomodoroHistoryDomain
-import com.fakhry.pomodojo.feature.notification.formatting.platformThousandsSeparator
 import com.fakhry.pomodojo.features.dashboard.ui.model.HistoryCell
 import com.fakhry.pomodojo.features.dashboard.ui.model.HistorySectionUi
 import com.fakhry.pomodojo.features.dashboard.ui.model.intensityLevelForMinutes

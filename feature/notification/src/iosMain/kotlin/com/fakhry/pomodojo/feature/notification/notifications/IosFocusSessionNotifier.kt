@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo.feature.notification.notifications
 
+import com.fakhry.pomodojo.core.notification.PomodoroSessionNotifier
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.notification.CompletionNotificationSummary
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain

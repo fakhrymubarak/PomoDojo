@@ -7,11 +7,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
-import com.fakhry.pomodojo.data.pomodoro.wiring.activeSessionStoreFactory
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.feature.notification.audio.provideSoundPlayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,13 +47,12 @@ class NotificationSegmentProgressReceiver : BroadcastReceiver() {
         scope.launch {
             try {
                 // Initialize dependencies
-                val preferenceStorage = activeSessionStoreFactory()
-
                 val koin = GlobalContext.get()
                 val notifier: AndroidFocusSessionNotifier = koin.get()
+                val sessionRepository: ActiveSessionRepository = koin.get()
 
                 val session = withContext(Dispatchers.IO) {
-                    preferenceStorage.getActiveSession()
+                    sessionRepository.getActiveSession()
                 }
 
                 if (session == PomodoroSessionDomain()) {
@@ -72,7 +71,7 @@ class NotificationSegmentProgressReceiver : BroadcastReceiver() {
                         if (updatedSession != session) {
                             Log.i(TAG, "onReceive: session updated")
                             withContext(Dispatchers.IO) {
-                                preferenceStorage.saveActiveSession(updatedSession)
+                                sessionRepository.saveActiveSession(updatedSession)
                             }
                         }
 

@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.feature.notification.formatting
+package com.fakhry.pomodojo.core.notification.formatting
 
 import platform.Foundation.NSNumberFormatter
 import platform.Foundation.NSNumberFormatterDecimalStyle
@@ -6,6 +6,6 @@ import platform.Foundation.NSNumberFormatterDecimalStyle
 actual fun platformThousandsSeparator(): Char {
     val formatter = NSNumberFormatter()
     formatter.numberStyle = NSNumberFormatterDecimalStyle
-    val groupingSeparator = formatter.groupingSeparator
-    return groupingSeparator.firstOrNull() ?: ','
+    val separator = formatter.groupingSeparator ?: ","
+    return separator.firstOrNull() ?: ','
 }

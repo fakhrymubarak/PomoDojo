@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.core.designsystem.model.TimelineSegmentUi
 import com.fakhry.pomodojo.core.designsystem.model.TimerStatusUi
+import com.fakhry.pomodojo.core.notification.PomodoroSessionNotifier
+import com.fakhry.pomodojo.core.notification.SoundPlayer
 import com.fakhry.pomodojo.core.utils.date.CurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.date.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
@@ -13,8 +15,6 @@ import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
 import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
-import com.fakhry.pomodojo.feature.notification.audio.SoundPlayer
-import com.fakhry.pomodojo.feature.notification.notifications.PomodoroSessionNotifier
 import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.features.focus.ui.mapper.calculateTimerProgress
 import com.fakhry.pomodojo.features.focus.ui.mapper.resolveActiveIndex

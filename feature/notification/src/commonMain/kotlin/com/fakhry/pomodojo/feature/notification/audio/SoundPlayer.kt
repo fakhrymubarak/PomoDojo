@@ -1,7 +1,5 @@
 package com.fakhry.pomodojo.feature.notification.audio
 
-interface SoundPlayer {
-    fun playSegmentCompleted()
-}
+import com.fakhry.pomodojo.core.notification.SoundPlayer
 
 expect fun provideSoundPlayer(): SoundPlayer

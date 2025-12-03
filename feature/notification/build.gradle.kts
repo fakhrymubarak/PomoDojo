@@ -24,9 +24,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core:utils"))
+            implementation(project(":core:notification"))
             implementation(project(":domain:focus"))
             implementation(project(":domain:preferences"))
-            implementation(project(":data:pomodoro"))
         }
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)

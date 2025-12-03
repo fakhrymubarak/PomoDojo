@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.feature.notification.formatting
+package com.fakhry.pomodojo.core.notification.formatting
 
 import java.text.DecimalFormatSymbols
 
