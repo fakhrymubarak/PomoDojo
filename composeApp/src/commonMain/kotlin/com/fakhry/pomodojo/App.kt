@@ -7,38 +7,32 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
-import com.fakhry.pomodojo.app.di.getAppModules
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.core.navigation.AppNavHost
 import com.fakhry.pomodojo.features.preferences.data.getInitPreferencesOnMainThread
 import com.fakhry.pomodojo.features.preferences.domain.repository.InitPreferencesRepository
-import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 
 @Composable
 fun App(onThemeUpdated: (String) -> Unit = {}) {
     val initialPrefs = remember { getInitPreferencesOnMainThread() }
 
-    KoinApplication(
-        application = { modules(getAppModules()) },
-    ) {
-        val initPreferencesRepository = koinInject<InitPreferencesRepository>()
-        val initPreferences by initPreferencesRepository.initPreferences.collectAsState(
-            initial = initialPrefs,
+    val initPreferencesRepository = koinInject<InitPreferencesRepository>()
+    val initPreferences by initPreferencesRepository.initPreferences.collectAsState(
+        initial = initialPrefs,
+    )
+    val appTheme by remember { derivedStateOf { initPreferences.appTheme } }
+
+    // Run side-effect only when theme actually changes
+    LaunchedEffect(appTheme) {
+        onThemeUpdated(appTheme)
+    }
+
+    PomoDojoTheme(appTheme) {
+        val navController = rememberNavController()
+        AppNavHost(
+            hasActiveSession = initialPrefs.hasActiveSession,
+            navController = navController,
         )
-        val appTheme by remember { derivedStateOf { initPreferences.appTheme } }
-
-        // Run side-effect only when theme actually changes
-        LaunchedEffect(appTheme) {
-            onThemeUpdated(appTheme)
-        }
-
-        PomoDojoTheme(appTheme) {
-            val navController = rememberNavController()
-            AppNavHost(
-                hasActiveSession = initialPrefs.hasActiveSession,
-                navController = navController,
-            )
-        }
     }
 }
