@@ -4,13 +4,13 @@ import com.fakhry.pomodojo.core.database.dao.HistorySessionDao
 import com.fakhry.pomodojo.core.database.entities.HistorySessionEntity
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.domain.common.DomainResult
+import com.fakhry.pomodojo.domain.history.model.PomodoroHistoryDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.history.PomodoroHistoryDomain
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate

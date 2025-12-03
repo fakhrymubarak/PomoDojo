@@ -97,5 +97,4 @@ class PreferencesRepositoryImpl(
             alwaysOnDisplayEnabled = alwaysOnDisplayEnabled,
         )
     }
-
 }

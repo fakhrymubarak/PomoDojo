@@ -1,10 +1,10 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
-import com.fakhry.pomodojo.domain.model.preferences.repository.PreferencesRepository
-import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
-import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
-import com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences
-import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
+import com.fakhry.pomodojo.domain.preferences.model.AppTheme
+import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
+import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
+import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
+import com.fakhry.pomodojo.features.preferences.domain.repository.InitPreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,7 +46,7 @@ class FakePreferencesRepository(
     }
 
     override suspend fun updateAppTheme(theme: AppTheme) {
-        initState.update { it.copy(appTheme = theme) }
+        initState.update { it.copy(appTheme = theme.storageValue) }
     }
 
     override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {

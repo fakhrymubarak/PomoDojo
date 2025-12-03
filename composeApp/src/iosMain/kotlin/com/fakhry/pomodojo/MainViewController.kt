@@ -6,12 +6,10 @@ import org.koin.compose.KoinApplication
 import platform.UIKit.UIViewController
 
 @Suppress("ktlint:standard:function-naming", "FunctionName", "unused")
-fun MainViewController(): UIViewController {
-    return ComposeUIViewController {
-        KoinApplication(application = {
-            modules(getAppModules())
-        }) {
-            App()
-        }
+fun MainViewController(): UIViewController = ComposeUIViewController {
+    KoinApplication(application = {
+        modules(getAppModules())
+    }) {
+        App()
     }
 }

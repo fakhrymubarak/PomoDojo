@@ -20,10 +20,10 @@ class ActiveSessionRepositoryImpl(
         encodeDefaults = true
     }
 
-    override suspend fun getActiveSession(): PomodoroSessionDomain {
-        return dataStore.data.map { it.toPomodoroSession(json) }.firstOrNull()
-            ?: PomodoroSessionDomain()
-    }
+    override suspend fun getActiveSession(): PomodoroSessionDomain = dataStore.data.map {
+        it.toPomodoroSession(json)
+    }.firstOrNull()
+        ?: PomodoroSessionDomain()
 
     override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
         val encoded = json.encodeToString(snapshot.toDataStore())
@@ -40,7 +40,5 @@ class ActiveSessionRepositoryImpl(
         }
     }
 
-    override suspend fun hasActiveSession(): Boolean {
-        return getActiveSession() != PomodoroSessionDomain()
-    }
+    override suspend fun hasActiveSession(): Boolean = getActiveSession() != PomodoroSessionDomain()
 }

@@ -1,7 +1,7 @@
 package com.fakhry.pomodojo.features.preferences.domain.usecase
 
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
+import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

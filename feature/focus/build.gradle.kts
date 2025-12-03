@@ -17,6 +17,9 @@ kotlin {
         }
 
         commonTest.dependencies {
+            implementation(project(":domain:common"))
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
             implementation(libs.orbit.test)
         }
     }

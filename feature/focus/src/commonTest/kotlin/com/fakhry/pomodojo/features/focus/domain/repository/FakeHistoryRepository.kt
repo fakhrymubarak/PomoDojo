@@ -1,9 +1,9 @@
 package com.fakhry.pomodojo.features.focus.domain.repository
 
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.history.PomodoroHistoryDomain
-import com.fakhry.pomodojo.shared.domain.repository.HistorySessionRepository
-import com.fakhry.pomodojo.shared.domain.states.DomainResult
+import com.fakhry.pomodojo.domain.common.DomainResult
+import com.fakhry.pomodojo.domain.history.model.PomodoroHistoryDomain
+import com.fakhry.pomodojo.domain.history.repository.HistorySessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 
 class FakeHistoryRepository(
     private val data2024: PomodoroHistoryDomain? = null,

@@ -1,16 +1,15 @@
 package com.fakhry.pomodojo.features.dashboard.ui.viewmodel
 
-import com.fakhry.pomodojo.core.framework.datetime.FakeCurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.domain.common.DomainResult
-import com.fakhry.pomodojo.features.focus.domain.repository.ActiveSessionRepository
-import com.fakhry.pomodojo.features.focus.domain.repository.HistorySessionRepository
-import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
-import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
-import com.fakhry.pomodojo.shared.domain.model.history.HistoryDomain
-import com.fakhry.pomodojo.shared.domain.model.history.PomodoroHistoryDomain
-import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
-import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
+import com.fakhry.pomodojo.domain.history.model.HistoryDomain
+import com.fakhry.pomodojo.domain.history.model.PomodoroHistoryDomain
+import com.fakhry.pomodojo.domain.history.repository.HistorySessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
+import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
+import com.fakhry.pomodojo.feature.notification.datetime.FakeCurrentTimeProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -195,35 +194,26 @@ class DashboardViewModelTest {
 }
 
 private class FakeFocusRepository(private var hasActive: Boolean) : ActiveSessionRepository {
+    private var session: PomodoroSessionDomain? = if (hasActive) PomodoroSessionDomain() else null
+
     override suspend fun hasActiveSession(): Boolean = hasActive
 
-    override suspend fun getActiveSession() =
-        com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain()
+    override suspend fun getActiveSession(): PomodoroSessionDomain =
+        session ?: PomodoroSessionDomain()
 
-    override suspend fun saveActiveSession(
-        snapshot: com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain,
-    ) {
+    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
+        session = snapshot
         hasActive = true
     }
 
-    override suspend fun updateActiveSession(
-        snapshot: com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain,
-    ) {
-        hasActive = !hasActive
-    }
-
-    override suspend fun completeSession(
-        snapshot: com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain,
-    ) {
-        hasActive = false
-    }
-
     override suspend fun clearActiveSession() {
+        session = null
         hasActive = false
     }
 
     fun setHasActive(value: Boolean) {
         hasActive = value
+        session = if (value) PomodoroSessionDomain() else null
     }
 }
 
@@ -244,24 +234,16 @@ private class FakeHistoryRepository(
         }
     }
 
-    override suspend fun insertHistory(
-        session: com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain,
-    ) = Unit
+    override suspend fun insertHistory(session: PomodoroSessionDomain) = Unit
 }
 
 private class FakePreferencesRepository(
     initial: PomodoroPreferences = PomodoroPreferences(),
-    initialInit: com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences =
-        com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences(),
-) : PreferencesRepository, InitPreferencesRepository {
+) : PreferencesRepository {
     private val pomodoroState = MutableStateFlow(initial)
-    private val initState = MutableStateFlow(initialInit)
     val current: PomodoroPreferences get() = pomodoroState.value
 
     override val preferences: Flow<PomodoroPreferences> = pomodoroState.asStateFlow()
-    override val initPreferences:
-        Flow<com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences> =
-        initState.asStateFlow()
 
     override suspend fun updateRepeatCount(value: Int) {
         pomodoroState.update { it.copy(repeatCount = value) }
@@ -287,16 +269,8 @@ private class FakePreferencesRepository(
         pomodoroState.update { it.copy(longBreakMinutes = value) }
     }
 
-    override suspend fun updateAppTheme(theme: AppTheme) {
-        initState.update { it.copy(appTheme = theme) }
-    }
-
     override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {
         pomodoroState.update { it.copy(alwaysOnDisplayEnabled = enabled) }
-    }
-
-    override suspend fun updateHasActiveSession(value: Boolean) {
-        initState.update { it.copy(hasActiveSession = value) }
     }
 
     fun emit(preferences: PomodoroPreferences) {

@@ -1,17 +1,14 @@
 package com.fakhry.pomodojo.features.focus.domain.usecase
 
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
+import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
+import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
-import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
-import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
-import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
-import com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences
-import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
-import com.fakhry.pomodojo.shared.domain.repository.ActiveSessionRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,7 +46,6 @@ class CreatePomodoroSessionUseCaseTest {
             sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
-            initPreferencesRepository = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
@@ -76,7 +72,6 @@ class CreatePomodoroSessionUseCaseTest {
             sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
-            initPreferencesRepository = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
@@ -105,7 +100,6 @@ class CreatePomodoroSessionUseCaseTest {
             sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
-            initPreferencesRepository = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
@@ -135,7 +129,6 @@ class CreatePomodoroSessionUseCaseTest {
             sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
-            initPreferencesRepository = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
@@ -168,7 +161,6 @@ class CreatePomodoroSessionUseCaseTest {
             sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
-            initPreferencesRepository = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
@@ -180,61 +172,63 @@ class CreatePomodoroSessionUseCaseTest {
         assertEquals(8, session.timeline.segments.size)
         assertTrue(session.timeline.hourSplits.isNotEmpty())
     }
+}
 
-    private class FakeQuoteRepository(private val quote: QuoteContent) : QuoteRepository {
-        override suspend fun randomQuote(): QuoteContent = quote
+private class FakeQuoteRepository(private val quote: QuoteContent) : QuoteRepository {
+    override suspend fun randomQuote(): QuoteContent = quote
 
-        override suspend fun getById(id: String): QuoteContent = quote
+    override suspend fun getById(id: String): QuoteContent = quote
+}
+
+private class FakePreferencesRepository(initial: PomodoroPreferences) : PreferencesRepository {
+    private val state = MutableStateFlow(initial)
+
+    override val preferences: Flow<PomodoroPreferences> = state.asStateFlow()
+
+    override suspend fun updateRepeatCount(value: Int) {
+        state.value = state.value.copy(repeatCount = value)
     }
 
-    private class FakePreferencesRepository(initial: PomodoroPreferences) :
-        PreferencesRepository,
-        InitPreferencesRepository {
-        private val state = MutableStateFlow(initial)
-        private val initState = MutableStateFlow(InitAppPreferences())
-
-        override val preferences: Flow<PomodoroPreferences> = state.asStateFlow()
-        override val initPreferences: Flow<InitAppPreferences> = initState.asStateFlow()
-
-        override suspend fun updateRepeatCount(value: Int) {}
-        override suspend fun updateFocusMinutes(value: Int) {}
-        override suspend fun updateBreakMinutes(value: Int) {}
-        override suspend fun updateLongBreakEnabled(enabled: Boolean) {}
-        override suspend fun updateLongBreakAfter(value: Int) {}
-        override suspend fun updateLongBreakMinutes(value: Int) {}
-        override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {}
-        override suspend fun updateHasActiveSession(value: Boolean) {
-            initState.value = initState.value.copy(hasActiveSession = value)
-        }
-
-        override suspend fun updateAppTheme(theme: AppTheme) {
-        }
+    override suspend fun updateFocusMinutes(value: Int) {
+        state.value = state.value.copy(focusMinutes = value)
     }
 
-    private class FakeActiveSessionRepository : ActiveSessionRepository {
-        var saveSessionCalled = false
-        var lastSavedSession: PomodoroSessionDomain? = null
+    override suspend fun updateBreakMinutes(value: Int) {
+        state.value = state.value.copy(breakMinutes = value)
+    }
 
-        override suspend fun hasActiveSession(): Boolean = lastSavedSession != null
+    override suspend fun updateLongBreakEnabled(enabled: Boolean) {
+        state.value = state.value.copy(longBreakEnabled = enabled)
+    }
 
-        override suspend fun getActiveSession(): PomodoroSessionDomain =
-            lastSavedSession ?: PomodoroSessionDomain()
+    override suspend fun updateLongBreakAfter(value: Int) {
+        state.value = state.value.copy(longBreakAfter = value)
+    }
 
-        override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
-            saveSessionCalled = true
-            lastSavedSession = snapshot
-        }
+    override suspend fun updateLongBreakMinutes(value: Int) {
+        state.value = state.value.copy(longBreakMinutes = value)
+    }
 
-        override suspend fun updateActiveSession(snapshot: PomodoroSessionDomain) {
-            lastSavedSession = snapshot
-        }
+    override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {
+        state.value = state.value.copy(alwaysOnDisplayEnabled = enabled)
+    }
+}
 
-        override suspend fun completeSession(snapshot: PomodoroSessionDomain) {
-            lastSavedSession = null
-        }
+private class FakeActiveSessionRepository : ActiveSessionRepository {
+    var saveSessionCalled = false
+    var lastSavedSession: PomodoroSessionDomain? = null
 
-        override suspend fun clearActiveSession() {
-            lastSavedSession = null
-        }
+    override suspend fun hasActiveSession(): Boolean = lastSavedSession != null
+
+    override suspend fun getActiveSession(): PomodoroSessionDomain =
+        lastSavedSession ?: PomodoroSessionDomain()
+
+    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
+        saveSessionCalled = true
+        lastSavedSession = snapshot
+    }
+
+    override suspend fun clearActiveSession() {
+        lastSavedSession = null
     }
 }

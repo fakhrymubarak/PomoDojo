@@ -41,7 +41,6 @@ data class PreferencesAppearanceUiState(
     val isAlwaysOnDisplayEnabled: Boolean,
 )
 
-
 fun PreferencesUiModel.toConfigUiState() = PreferencesConfigUiState(
     repeatCount = repeatCount,
     repeatRange = repeatRange,

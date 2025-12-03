@@ -14,7 +14,7 @@
 ```
 ./gradlew :composeApp:assembleDebug   # Android debug APK + KSP/Room schema verification
 ./gradlew :composeApp:run             # Desktop JVM app (Compose for Desktop)
-./gradlew :composeApp:jacocoJvmTestReport  # Generates coverage in composeApp/build/reports
+./gradlew jacocoJvmTestReport  # Generates coverage in composeApp/build/reports
 ./gradlew ktlintCheck                 # Repository-wide Kotlin style checks
 ./gradlew ktlintFormat                # Auto-formats Kotlin sources (apply before committing)
 ./gradlew generateProjectDependencyGraph  # Writes a DOT graph of inter-module dependencies to build/reports/dependency-graph

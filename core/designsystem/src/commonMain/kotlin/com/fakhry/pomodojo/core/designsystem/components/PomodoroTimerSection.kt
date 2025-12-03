@@ -123,7 +123,6 @@ fun PomodoroTimerSectionLongBreakPreview() {
     }
 }
 
-
 @Composable
 fun focusPhaseLabel(phase: TimerTypeUi) = when (phase) {
     TimerTypeUi.FOCUS -> stringResource(Res.string.focus_session_phase_focus)

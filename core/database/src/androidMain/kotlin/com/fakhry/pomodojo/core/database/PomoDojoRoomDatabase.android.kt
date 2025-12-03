@@ -20,5 +20,4 @@ class AndroidFocusDatabaseHolder(appContext: Context) {
             POMO_DOJO_DATABASE_NAME,
         ).build()
     }
-
 }

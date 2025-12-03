@@ -97,7 +97,6 @@ private fun TimerType.toTypeUi() = when (this) {
     TimerType.LONG_BREAK -> TimerTypeUi.LONG_BREAK
 }
 
-
 private fun TimerStatusUi.toStatusDomain() = when (this) {
     TimerStatusUi.INITIAL -> TimerStatusDomain.INITIAL
     TimerStatusUi.COMPLETED -> TimerStatusDomain.COMPLETED
@@ -110,5 +109,3 @@ private fun TimerTypeUi.toTypeDomain() = when (this) {
     TimerTypeUi.SHORT_BREAK -> TimerType.SHORT_BREAK
     TimerTypeUi.LONG_BREAK -> TimerType.LONG_BREAK
 }
-
-

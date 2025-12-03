@@ -42,7 +42,6 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-
 @Composable
 fun ColumnScope.TimelinePreview(segments: ImmutableList<TimelineSegmentUi>) = this.run {
     Spacer(modifier = Modifier.height(12.dp))

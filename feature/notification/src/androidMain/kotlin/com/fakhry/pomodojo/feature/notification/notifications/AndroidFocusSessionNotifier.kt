@@ -34,6 +34,7 @@ private const val TAG = "AndroidFocusSessionNotifier"
 class AndroidFocusSessionNotifier(private val context: Context) : PomodoroSessionNotifier {
     private val notificationManager = NotificationManagerCompat.from(context)
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override suspend fun schedule(snapshot: PomodoroSessionDomain) {
         ensureChannel()

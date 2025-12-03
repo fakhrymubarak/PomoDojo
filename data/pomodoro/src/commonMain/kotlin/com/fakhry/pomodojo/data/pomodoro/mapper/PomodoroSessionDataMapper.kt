@@ -80,7 +80,6 @@ private fun TimerStatusData.toDomain(): TimerStatusDomain = when (this) {
     TimerStatusData.PAUSED -> TimerStatusDomain.PAUSED
 }
 
-
 private fun TimelineDomain.toData(): TimelineData = TimelineData(
     segments = segments.map { it.toData() },
     hourSplits = hourSplits,

@@ -3,7 +3,7 @@ package com.fakhry.pomodojo.features.preferences.domain.usecase
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
-import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
+import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

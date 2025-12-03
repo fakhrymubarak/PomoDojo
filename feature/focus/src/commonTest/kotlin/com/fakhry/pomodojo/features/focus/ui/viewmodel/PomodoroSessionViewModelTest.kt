@@ -1,37 +1,37 @@
 package com.fakhry.pomodojo.features.focus.ui.viewmodel
 
-import com.fakhry.pomodojo.core.framework.audio.SoundPlayer
-import com.fakhry.pomodojo.core.framework.datetime.CurrentTimeProvider
-import com.fakhry.pomodojo.core.framework.notifications.PomodoroSessionNotifier
+import com.fakhry.pomodojo.core.designsystem.model.TimerStatusUi
+import com.fakhry.pomodojo.core.designsystem.model.TimerTypeUi
+import com.fakhry.pomodojo.core.utils.date.CurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
+import com.fakhry.pomodojo.domain.common.DomainResult
+import com.fakhry.pomodojo.domain.history.model.PomodoroHistoryDomain
+import com.fakhry.pomodojo.domain.history.repository.HistorySessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
+import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
+import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
+import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
+import com.fakhry.pomodojo.feature.notification.audio.SoundPlayer
+import com.fakhry.pomodojo.feature.notification.notifications.PomodoroSessionNotifier
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
-import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.features.preferences.domain.usecase.BuildTimerSegmentsUseCase
-import com.fakhry.pomodojo.features.preferences.domain.usecase.InitPreferencesRepository
-import com.fakhry.pomodojo.features.preferences.domain.usecase.PreferencesRepository
-import com.fakhry.pomodojo.shared.domain.model.focus.PomodoroSessionDomain
-import com.fakhry.pomodojo.shared.domain.model.history.PomodoroHistoryDomain
-import com.fakhry.pomodojo.shared.domain.model.preferences.AppTheme
-import com.fakhry.pomodojo.shared.domain.model.preferences.InitAppPreferences
-import com.fakhry.pomodojo.shared.domain.model.preferences.PomodoroPreferences
-import com.fakhry.pomodojo.shared.domain.repository.ActiveSessionRepository
-import com.fakhry.pomodojo.shared.domain.repository.HistorySessionRepository
-import com.fakhry.pomodojo.shared.domain.states.DomainResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -75,7 +75,7 @@ class PomodoroSessionViewModelTest {
         val state = viewModel.awaitSessionStarted()
 
         assertEquals(1, state.totalCycle, "state=$state")
-        assertEquals(TimerStatusDomain.RUNNING, state.activeSegment.timerStatus, "state=$state")
+        assertEquals(TimerStatusUi.RUNNING, state.activeSegment.timerStatus, "state=$state")
         assertEquals("01:00", state.activeSegment.timer.formattedTime, "state=$state")
         assertEquals(0f, state.activeSegment.timer.progress, "state=$state")
     }
@@ -87,25 +87,25 @@ class PomodoroSessionViewModelTest {
         viewModel.awaitSessionStarted()
 
         val showDialog = async {
-            viewModel.container.sideEffectFlow.first {
-                it is PomodoroSessionSideEffect.ShowEndSessionDialog && it.isShown
-            } as PomodoroSessionSideEffect.ShowEndSessionDialog
+            viewModel.container.sideEffectFlow
+                .filterIsInstance<PomodoroSessionSideEffect.ShowEndSessionDialog>()
+                .first { it.isShown }
         }
         viewModel.onEndClicked()
         assertTrue(showDialog.await().isShown)
 
         val hideDialog = async {
-            viewModel.container.sideEffectFlow.first {
-                it is PomodoroSessionSideEffect.ShowEndSessionDialog && !it.isShown
-            } as PomodoroSessionSideEffect.ShowEndSessionDialog
+            viewModel.container.sideEffectFlow
+                .filterIsInstance<PomodoroSessionSideEffect.ShowEndSessionDialog>()
+                .first { !it.isShown }
         }
         viewModel.onDismissConfirmEnd()
         assertTrue(!hideDialog.await().isShown)
 
         val completeEffect = async {
-            viewModel.container.sideEffectFlow.first {
-                it is PomodoroSessionSideEffect.OnSessionComplete
-            }
+            viewModel.container.sideEffectFlow
+                .filterIsInstance<PomodoroSessionSideEffect.OnSessionComplete>()
+                .first()
         }
         viewModel.onConfirmFinish()
         assertTrue(completeEffect.await() is PomodoroSessionSideEffect.OnSessionComplete)
@@ -154,11 +154,11 @@ class PomodoroSessionViewModelTest {
         val state = viewModel.awaitSessionStarted()
 
         assertEquals(
-            TimerStatusDomain.RUNNING,
+            TimerStatusUi.RUNNING,
             state.activeSegment.timerStatus,
         )
         assertEquals(
-            TimerType.SHORT_BREAK,
+            TimerTypeUi.SHORT_BREAK,
             state.activeSegment.type,
         )
         assertEquals(
@@ -167,9 +167,9 @@ class PomodoroSessionViewModelTest {
         )
         assertEquals(
             listOf(
-                TimerStatusDomain.COMPLETED,
-                TimerStatusDomain.COMPLETED,
-                TimerStatusDomain.COMPLETED,
+                TimerStatusUi.COMPLETED,
+                TimerStatusUi.COMPLETED,
+                TimerStatusUi.COMPLETED,
             ),
             state.timeline.segments.take(3).map { it.timerStatus },
         )
@@ -217,7 +217,6 @@ class PomodoroSessionViewModelTest {
         viewModel.togglePauseResume()
         advanceUntilIdle()
         assertTrue(sessionRepository.storedSession != null)
-        assertTrue(preferencesRepository.currentInit.hasActiveSession)
 
         viewModel.togglePauseResume()
         runCurrent()
@@ -238,8 +237,11 @@ class PomodoroSessionViewModelTest {
         advanceUntilIdle()
 
         val updatedTimeline = viewModel.container.stateFlow.value.timeline.segments
-        assertEquals(TimerStatusDomain.COMPLETED, updatedTimeline.first().timerStatus)
-        assertEquals(TimerType.SHORT_BREAK, viewModel.container.stateFlow.value.activeSegment.type)
+        assertEquals(TimerStatusUi.COMPLETED, updatedTimeline.first().timerStatus)
+        assertEquals(
+            TimerTypeUi.SHORT_BREAK,
+            viewModel.container.stateFlow.value.activeSegment.type,
+        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -267,7 +269,6 @@ class PomodoroSessionViewModelTest {
             sessionRepository = sessionRepository,
             quoteRepo = quoteRepository,
             preferencesRepo = preferencesRepository,
-            initPreferencesRepository = preferencesRepository,
             timelineBuilder = BuildTimerSegmentsUseCase(),
             hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = dispatcherProvider,
@@ -277,7 +278,6 @@ class PomodoroSessionViewModelTest {
             currentTimeProvider = currentTimeProvider,
             createPomodoroSessionUseCase = createSessionUseCase,
             preferencesRepository = preferencesRepository,
-            initPreferencesRepository = preferencesRepository,
             sessionRepository = sessionRepository,
             historyRepository = FakeHistorySessionRepository(),
             pomodoroSessionNotifier = focusNotifier,
@@ -302,15 +302,10 @@ private class FakeQuoteRepository(
     override suspend fun getById(id: String): QuoteContent = quote
 }
 
-private class FakePreferencesRepository(initial: PomodoroPreferences) :
-    PreferencesRepository,
-    InitPreferencesRepository {
+private class FakePreferencesRepository(initial: PomodoroPreferences) : PreferencesRepository {
     private val state = MutableStateFlow(initial)
-    private val initState = MutableStateFlow(InitAppPreferences())
-    val currentInit: InitAppPreferences get() = initState.value
 
     override val preferences: Flow<PomodoroPreferences> = state.asStateFlow()
-    override val initPreferences: Flow<InitAppPreferences> = initState.asStateFlow()
 
     override suspend fun updateRepeatCount(value: Int) {
         state.update { it.copy(repeatCount = value) }
@@ -339,14 +334,6 @@ private class FakePreferencesRepository(initial: PomodoroPreferences) :
     override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {
         state.update { it.copy(alwaysOnDisplayEnabled = enabled) }
     }
-
-    override suspend fun updateAppTheme(theme: AppTheme) {
-        initState.update { it.copy(appTheme = theme) }
-    }
-
-    override suspend fun updateHasActiveSession(value: Boolean) {
-        initState.update { it.copy(hasActiveSession = value) }
-    }
 }
 
 private class FakeActiveSessionRepository(
@@ -355,18 +342,10 @@ private class FakeActiveSessionRepository(
     var storedSession: PomodoroSessionDomain? = initialSession
 
     override suspend fun getActiveSession(): PomodoroSessionDomain =
-        storedSession ?: error("No active session stored for test")
+        storedSession ?: PomodoroSessionDomain()
 
     override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
         storedSession = snapshot
-    }
-
-    override suspend fun updateActiveSession(snapshot: PomodoroSessionDomain) {
-        storedSession = snapshot
-    }
-
-    override suspend fun completeSession(snapshot: PomodoroSessionDomain) {
-        storedSession = null
     }
 
     override suspend fun clearActiveSession() {
@@ -383,7 +362,7 @@ private class FakeHistorySessionRepository : HistorySessionRepository {
         insertedSessions.add(session)
     }
 
-    override suspend fun getHistory(year: Int): DomainResult.Success<PomodoroHistoryDomain> =
+    override suspend fun getHistory(year: Int): DomainResult<PomodoroHistoryDomain> =
         DomainResult.Success(
             PomodoroHistoryDomain(
                 focusMinutesThisYear = 0,
