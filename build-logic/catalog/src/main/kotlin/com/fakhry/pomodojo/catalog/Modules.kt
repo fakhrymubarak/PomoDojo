@@ -21,13 +21,13 @@ object Data {
 
 object Domain {
     const val COMMON = "$DOMAIN:common"
-    const val FOCUS = "$DOMAIN:focus"
+    const val POMODORO = "$DOMAIN:pomodoro"
     const val HISTORY = "$DOMAIN:history"
     const val PREFERENCES = "$DOMAIN:preferences"
 }
 
 object Features {
     const val DASHBOARD = "$FEATURES:dashboard"
-    const val FOCUS = "$FEATURES:focus"
+    const val POMODORO = "$FEATURES:pomodoro"
     const val PREFERENCES = "$FEATURES:preferences"
 }
