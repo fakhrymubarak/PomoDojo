@@ -53,7 +53,9 @@ jobs:
           git add composeApp/build.gradle.kts
           git commit -m "chore: bump version to ${{ steps.vars.outputs.version }} for RC"
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push --set-upstream origin "${{ steps.vars.outputs.branch }}"
+          # Disambiguate from the tag with the same name by pushing the branch ref explicitly
+          git push origin HEAD:refs/heads/${{ steps.vars.outputs.branch }}
+          git branch --set-upstream-to=origin/${{ steps.vars.outputs.branch }}
 
       - name: Set up Java
         uses: actions/setup-java@v4
