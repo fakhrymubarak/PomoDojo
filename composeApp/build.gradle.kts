@@ -1,7 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.util.Properties
 
 plugins {
@@ -13,9 +10,9 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
-    id("jacoco")
     alias(libs.plugins.googleGmsGoogleServices)
     alias(libs.plugins.googleFirebaseCrashlytics)
+    id("com.fakhry.pomodojo.quality")
 }
 
 fun Project.envProps(fileName: String): Properties {
@@ -28,11 +25,7 @@ fun Project.envProps(fileName: String): Properties {
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
+    androidTarget()
 
     listOf(
         iosArm64(),
@@ -42,18 +35,6 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
             linkerOpts("-framework", "AVFAudio")
-        }
-
-        iosTarget.compilations.getByName("main") {
-            cinterops {
-                @Suppress("unused")
-                val pomodoroLiveActivityBridge by creating {
-                    definitionFile =
-                        project.file("src/nativeInterop/cinterop/PomodoroLiveActivityBridge.def")
-                    packageName = "com.fakhry.pomodojo.liveactivity.bridge"
-                    includeDirs(project.file("../iosApp/iosApp"))
-                }
-            }
         }
     }
 
@@ -67,6 +48,13 @@ kotlin {
             implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
+            implementation(project(":app:di"))
+            implementation(project(":core:designsystem"))
+            implementation(project(":feature:dashboard"))
+            implementation(project(":feature:pomodoro"))
+            implementation(project(":feature:preferences"))
+            implementation(project(":domain:preferences"))
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -74,6 +62,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.datetime)
@@ -81,25 +70,10 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
-            implementation(libs.koin.compose.viewmodel.navigation)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ui.backhandler)
-
-            // Room
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.sqlite.bundled)
-
-            // DataStore library
-            implementation(libs.androidx.datastore)
-            implementation(libs.androidx.datastore.preferences)
-
-            // OrbitMVI
-            implementation(libs.orbit.core)
-            implementation(libs.orbit.viewmodel)
-            implementation(libs.orbit.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -156,20 +130,23 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             signingConfig = signingConfigs.getByName("debug")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                file("proguard-rules.pro"),
+            )
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     buildFeatures {
         buildConfig = true
     }
 }
 
 dependencies {
-    implementation(project.dependencies.platform(libs.koin.bom))
-    implementation(libs.koin.core)
     implementation(libs.firebase.crashlytics)
 
     // Room KSP
@@ -177,6 +154,25 @@ dependencies {
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspJvm", libs.androidx.room.compiler)
+}
+
+private val environmentAttribute =
+    Attribute.of("com.android.build.api.attributes.ProductFlavor:environment", String::class.java)
+private val legacyEnvironmentAttribute = Attribute.of("environment", String::class.java)
+
+configurations.configureEach {
+    val nameLower = name.lowercase()
+    when {
+        nameLower.startsWith("androiddev") -> {
+            attributes.attribute(environmentAttribute, "dev")
+            attributes.attribute(legacyEnvironmentAttribute, "dev")
+        }
+
+        nameLower.startsWith("androidprod") -> {
+            attributes.attribute(environmentAttribute, "prod")
+            attributes.attribute(legacyEnvironmentAttribute, "prod")
+        }
+    }
 }
 
 compose.desktop {
@@ -187,119 +183,12 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "PomoDojo"
             packageVersion = "1.0.0"
+            // Include jdk.unsupported so sun.misc.Unsafe is available in the jlinked runtime.
+            modules("jdk.unsupported")
         }
     }
-}
-
-compose.resources {
-    packageOfResClass = "com.fakhry.pomodojo.generated.resources"
 }
 
 room {
     schemaDirectory("$projectDir/schemas")
-}
-
-// KTLint Excluded Linting
-configure<KtlintExtension> {
-    filter {
-        exclude("**/build/**")
-        exclude("**/build/generated/**")
-    }
-}
-
-val kotlinExt = extensions.getByType<KotlinMultiplatformExtension>()
-
-tasks.withType<Test>().configureEach {
-    extensions.configure(JacocoTaskExtension::class) {
-        isIncludeNoLocationClasses = true
-        excludes = listOf("jdk.internal.*")
-    }
-}
-
-val jacocoJvmExec = layout.buildDirectory.file("jacoco/jvmTest.exec")
-val jvmMainCompilation =
-    kotlinExt.targets
-        .getByName("jvm")
-        .compilations
-        .getByName("main")
-val jvmSourceDirs =
-    jvmMainCompilation.allKotlinSourceSets.flatMap { it.kotlin.sourceDirectories.files }
-val jacocoClassExclusions =
-    listOf(
-        "**/generated/**",
-        "**/di/**",
-        "**/core/navigation/**",
-        "**/core/ui/**",
-        "**/core/datastore/**",
-        "**/core/framework/audio/**",
-        "**/core/framework/notifications/**",
-        "**/core/framework/screen/**",
-        "**/core/database/**",
-        "**/core/utils/compose/**",
-        "**/core/utils/permissions/**",
-        "**/features/**/di/**",
-        "**/features/**/ui/components/**",
-        "**/features/**/ui/**Screen*.class",
-        "**/features/**/ui/CelebrationMessage*.class",
-        "**/features/**/ui/ConfettiPiece*.class",
-        "**/*ComposableSingletons*.class",
-        "**/AppKt*.class",
-        "**/MainKt*.class",
-    )
-
-tasks.register<JacocoReport>("jacocoJvmTestReport") {
-    dependsOn("jvmTest")
-
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-        csv.required.set(false)
-        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jvmTestResult"))
-    }
-
-    sourceDirectories.setFrom(files(jvmSourceDirs))
-    classDirectories.setFrom(
-        files(
-            jvmMainCompilation.output.classesDirs.files.map { dir ->
-                fileTree(dir) {
-                    exclude(jacocoClassExclusions)
-                }
-            },
-        ),
-    )
-    executionData.setFrom(jacocoJvmExec)
-}
-
-tasks.register<JacocoCoverageVerification>("jacocoJvmTestCoverageVerification") {
-    dependsOn("jvmTest")
-
-    sourceDirectories.setFrom(files(jvmSourceDirs))
-    classDirectories.setFrom(
-        files(
-            jvmMainCompilation.output.classesDirs.files.map { dir ->
-                fileTree(dir) {
-                    exclude(jacocoClassExclusions)
-                }
-            },
-        ),
-    )
-    executionData.setFrom(jacocoJvmExec)
-    violationRules {
-        rule {
-            element = "BUNDLE"
-            limit {
-                counter = "LINE"
-                value = "COVEREDRATIO"
-                minimum = BigDecimal("0.95")
-            }
-        }
-    }
-}
-
-tasks.named("check").configure {
-    dependsOn("jacocoJvmTestCoverageVerification")
-}
-
-tasks.named("jacocoJvmTestCoverageVerification").configure {
-    finalizedBy("jacocoJvmTestReport")
 }

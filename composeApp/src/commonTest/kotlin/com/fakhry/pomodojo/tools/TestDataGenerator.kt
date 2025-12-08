@@ -1,6 +1,4 @@
 package com.fakhry.pomodojo.tools
-
-import com.fakhry.pomodojo.core.database.entities.HistorySessionEntity
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -13,9 +11,16 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 /**
- * Test data generator for HistorySessionEntity
+ * Test data generator for history session rows used in SQL fixtures.
  */
 object TestDataGenerator {
+
+    data class HistorySessionRow(
+        val id: Long,
+        val dateStartedEpochMs: Long,
+        val totalFocusMinutes: Int,
+        val totalBreakMinutes: Int,
+    )
 
     /**
      * Generates [count] days of history session test data spanning 2024-2025
@@ -37,7 +42,7 @@ object TestDataGenerator {
         maxFocusMinutes: Int = 300,
         timezone: TimeZone = TimeZone.Companion.UTC,
         seed: Int? = null,
-    ): List<HistorySessionEntity> {
+    ): List<HistorySessionRow> {
         val random = seed?.let { Random(it) } ?: Random.Default
 
         val startDate = if (startFromToday) {
@@ -57,7 +62,7 @@ object TestDataGenerator {
             // Break is half of focus (rounded down)
             val totalBreakMinutes = totalFocusMinutes / 2
 
-            HistorySessionEntity(
+            HistorySessionRow(
                 id = (dayOffset + 1).toLong(),
                 dateStartedEpochMs = dateStartedEpochMs,
                 totalFocusMinutes = totalFocusMinutes,
@@ -77,10 +82,10 @@ object TestDataGenerator {
         maxFocusMinutes: Int = 300,
         timezone: TimeZone = TimeZone.Companion.UTC,
         seed: Int? = null,
-    ): List<HistorySessionEntity> {
+    ): List<HistorySessionRow> {
         val random = seed?.let { Random(it) } ?: Random.Default
 
-        val results = mutableListOf<HistorySessionEntity>()
+        val results = mutableListOf<HistorySessionRow>()
         var currentDate = startDate
         var id = 1L
 
@@ -90,7 +95,7 @@ object TestDataGenerator {
             val totalBreakMinutes = totalFocusMinutes / 2
 
             results.add(
-                HistorySessionEntity(
+                HistorySessionRow(
                     id = id++,
                     dateStartedEpochMs = dateStartedEpochMs,
                     totalFocusMinutes = totalFocusMinutes,
@@ -107,7 +112,7 @@ object TestDataGenerator {
     /**
      * Generates SQL INSERT statements for the generated data
      */
-    fun generateSQLInserts(data: List<HistorySessionEntity>): String {
+    fun generateSQLInserts(data: List<HistorySessionRow>): String {
         val header =
             "INSERT INTO history_sessions (id, date_started, total_focus_minutes, total_break_minutes) VALUES\n"
         val values = data.joinToString(",\n") { entity ->

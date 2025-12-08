@@ -8,7 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.fakhry.pomodojo.features.preferences.domain.model.AppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,9 +26,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun resolveAppTheme(appTheme: AppTheme): Int = when (appTheme) {
-        AppTheme.DARK -> R.style.Theme_PomoDojo_Splash_Dark
-        AppTheme.LIGHT -> R.style.Theme_PomoDojo_Splash_Light
+    private fun resolveAppTheme(appTheme: String): Int = when (appTheme) {
+        "dark" -> R.style.Theme_PomoDojo_Splash_Dark
+        else -> R.style.Theme_PomoDojo_Splash_Light
     }
 }
 

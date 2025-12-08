@@ -12,7 +12,7 @@ import com.fakhry.pomodojo.features.dashboard.ui.DashboardScreen
 import com.fakhry.pomodojo.features.focus.ui.PomodoroCompleteScreen
 import com.fakhry.pomodojo.features.focus.ui.PomodoroSessionScreen
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
-import com.fakhry.pomodojo.features.preferences.ui.PreferencesRoute
+import com.fakhry.pomodojo.features.preferences.ui.PreferencesScreen
 
 private const val ANIMATION_DURATION = 500
 
@@ -65,7 +65,7 @@ fun AppNavHost(navController: NavHostController, hasActiveSession: Boolean = fal
             )
         }
         composable<AppDestination.Preferences> {
-            PreferencesRoute(
+            PreferencesScreen(
                 onNavigateBack = { navController.popBackStack() },
             )
         }
@@ -93,8 +93,8 @@ fun AppNavHost(navController: NavHostController, hasActiveSession: Boolean = fal
                     totalBreakMinutes = args.totalBreakMinutes,
                 ),
                 onStartAnotherSession = {
-                    if (startDestination != AppDestination.PomodoroComplete) {
-                        navController.navigateUp()
+                    if (navController == AppDestination.Dashboard) {
+                        navController.popBackStack()
                     } else {
                         navController.navigate(AppDestination.Dashboard) {
                             launchSingleTop = true

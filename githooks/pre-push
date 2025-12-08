@@ -4,17 +4,21 @@ set -eu
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
-run() {
-    local task="$1"
-    echo "==> Running ./gradlew $task"
-    ./gradlew "$task"
-}
+echo "==> Running all pre-push checks in parallel..."
 
-run ktlintCheck
-run check
-run :composeApp:cleanJvmTest :composeApp:jvmTest
-run :composeApp:cleanTestProdDebugUnitTest :composeApp:testProdDebugUnitTest
-run :composeApp:cleanIosSimulatorArm64Test :composeApp:iosSimulatorArm64Test
-run :composeApp:assembleRelease
-run :composeApp:linkDebugFrameworkIosArm64
-run :composeApp:jvmJar
+# Run all tasks in a single Gradle invocation with parallel execution
+./gradlew --parallel \
+    ktlintCheck \
+    check \
+    detekt \
+    cleanJvmTest \
+    jacocoJvmTestCoverageVerification \
+    cleanTestProdDebugUnitTest \
+    testProdDebugUnitTest \
+    cleanIosSimulatorArm64Test \
+    iosSimulatorArm64Test \
+    assembleRelease \
+    linkDebugFrameworkIosArm64 \
+    jvmJar
+
+echo "==> All pre-push checks completed successfully"

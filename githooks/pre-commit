@@ -4,13 +4,14 @@ set -eu
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
-run() {
-    local task="$1"
-    echo "==> Running ./gradlew $task"
-    ./gradlew "$task"
-}
+echo "==> Running pre-commit checks in parallel..."
 
-run ktlintFormat
-run :composeApp:cleanJvmTest :composeApp:jacocoJvmTestCoverageVerification
-run :composeApp:cleanTestProdDebugUnitTest :composeApp:testProdDebugUnitTest
-run :composeApp:cleanIosSimulatorArm64Test :composeApp:iosSimulatorArm64Test
+# Run all tasks in a single Gradle invocation with parallel execution
+./gradlew --parallel \
+    ktlintCheck \
+    ktlintFormat \
+    cleanJvmTest \
+    jvmTest \
+    detekt
+
+echo "==> Pre-commit checks completed successfully"

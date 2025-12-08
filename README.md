@@ -14,13 +14,37 @@
 ```
 ./gradlew :composeApp:assembleDebug   # Android debug APK + KSP/Room schema verification
 ./gradlew :composeApp:run             # Desktop JVM app (Compose for Desktop)
-./gradlew :composeApp:jacocoJvmTestReport  # Generates coverage in composeApp/build/reports
+./gradlew jacocoJvmTestReport  # Generates coverage in composeApp/build/reports
 ./gradlew ktlintCheck                 # Repository-wide Kotlin style checks
 ./gradlew ktlintFormat                # Auto-formats Kotlin sources (apply before committing)
+./gradlew generateProjectDependencyGraph  # Writes a DOT graph of inter-module dependencies to build/reports/dependency-graph
 xed iosApp/iosApp.xcodeproj           # Open the Swift runner, then build via Xcode's iOSApp scheme
 ```
 
 Requirements: JDK 17+, Android SDK path defined in `local.properties`, Xcode 15+ for iOS builds.
+
+### Dependency Graph
+
+- Generate DOT: `./gradlew generateProjectDependencyGraph`
+- Optional PNG (requires Graphviz `dot` brew install graphviz):
+  `dot -Tpng build/reports/dependency-graph/project-dependencies.dot -o build/reports/dependency-graph/project-dependencies.png`
+
+## How to Run
+
+- Android: `./gradlew :composeApp:installDebug` with an emulator/device connected, then launch the
+  PomoDojo app.
+- iOS/iPadOS: `xed iosApp/iosApp.xcodeproj` and run the `iosApp` scheme in Xcode against your target
+  simulator (iPhone or iPad) or a connected device.
+- JVM Desktop:
+  ` ./gradlew :composeApp:createDistributable && ./composeApp/build/compose/binaries/main/app/PomoDojo.app/Contents/MacOS/PomoDojo`
+  to start the Compose for Desktop app locally.
+
+### Compose hot reload (Desktop)
+
+- Start the app with the hot-reload agent: `./gradlew :composeApp:hotRunJvm`
+- In another terminal, stream changes into the running app:
+  `./gradlew :composeApp:reload --continuous`
+  (leave both processes running while editing)
 
 ## Git Hooks
 
