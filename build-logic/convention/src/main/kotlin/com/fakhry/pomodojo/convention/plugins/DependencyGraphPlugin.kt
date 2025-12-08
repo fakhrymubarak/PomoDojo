@@ -35,7 +35,10 @@ abstract class GenerateProjectDependencyGraph : DefaultTask() {
                 sortedNodes.forEach { node -> appendLine("""  "$node";""") }
                 parsedEdges.sortedWith(compareBy({ it.first }, { it.second }))
                     .forEach { (from, to) ->
-                        appendLine("""  "$from" -> "$to";""")
+                        // Exclude dependency injection dependencies graphs
+                        if (from != ":app:di") {
+                            appendLine("""  "$from" -> "$to";""")
+                        }
                     }
                 appendLine("}")
             },
