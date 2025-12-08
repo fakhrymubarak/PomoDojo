@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.fakhry.pomodojo.core.notification.PomodoroSessionNotifier
 import com.fakhry.pomodojo.core.notification.audio.provideSoundPlayer
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
@@ -48,7 +49,7 @@ class NotificationSegmentProgressReceiver : BroadcastReceiver() {
             try {
                 // Initialize dependencies
                 val koin = GlobalContext.get()
-                val notifier: AndroidFocusSessionNotifier = koin.get()
+                val notifier: PomodoroSessionNotifier = koin.get<AndroidFocusSessionNotifier>()
                 val sessionRepository: ActiveSessionRepository = koin.get()
 
                 val session = withContext(Dispatchers.IO) {

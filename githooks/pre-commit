@@ -8,6 +8,7 @@ echo "==> Running pre-commit checks in parallel..."
 
 # Run all tasks in a single Gradle invocation with parallel execution
 ./gradlew --parallel \
+    ktlintCheck \
     ktlintFormat \
     cleanJvmTest \
     jvmTest \
