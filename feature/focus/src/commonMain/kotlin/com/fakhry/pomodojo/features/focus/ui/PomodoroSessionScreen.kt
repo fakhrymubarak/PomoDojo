@@ -46,6 +46,7 @@ import com.fakhry.pomodojo.core.designsystem.components.PomodoroTimerSection
 import com.fakhry.pomodojo.core.designsystem.components.TimelineHoursSplit
 import com.fakhry.pomodojo.core.designsystem.components.TimelineLegends
 import com.fakhry.pomodojo.core.designsystem.components.TimelinePreview
+import com.fakhry.pomodojo.core.designsystem.effects.KeepScreenOnEffect
 import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_continue
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_end_message
@@ -58,7 +59,6 @@ import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_r
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_timeline_title
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
 import com.fakhry.pomodojo.core.designsystem.model.TimerStatusUi
-import com.fakhry.pomodojo.core.notification.screen.KeepScreenOnEffect
 import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
 import com.fakhry.pomodojo.features.focus.ui.components.PomodoroSessionHeaderSection
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState

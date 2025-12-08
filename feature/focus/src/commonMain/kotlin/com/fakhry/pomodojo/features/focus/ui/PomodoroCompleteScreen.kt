@@ -57,8 +57,6 @@ fun PomodoroCompleteScreen(
     onStartAnotherSession: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    println("Trace PomodoroCompleteScreen composed")
-
     val celebration = rememberCelebrationMessage()
 
     Surface(

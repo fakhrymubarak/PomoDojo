@@ -6,6 +6,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core:notification"))
+            implementation(project(":core:utils"))
             implementation(project(":domain:focus"))
             implementation(project(":domain:history"))
             implementation(project(":domain:common"))

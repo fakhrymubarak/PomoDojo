@@ -1,6 +1,6 @@
 package com.fakhry.pomodojo.features.dashboard.ui.mapper
 
-import com.fakhry.pomodojo.core.notification.formatting.platformThousandsSeparator
+import com.fakhry.pomodojo.core.utils.formatting.platformThousandsSeparator
 import com.fakhry.pomodojo.domain.history.model.HistoryDomain
 import com.fakhry.pomodojo.domain.history.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.features.dashboard.ui.model.HistoryCell

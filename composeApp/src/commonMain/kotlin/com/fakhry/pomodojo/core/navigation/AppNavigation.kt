@@ -93,7 +93,7 @@ fun AppNavHost(navController: NavHostController, hasActiveSession: Boolean = fal
                     totalBreakMinutes = args.totalBreakMinutes,
                 ),
                 onStartAnotherSession = {
-                    if (startDestination != AppDestination.PomodoroComplete) {
+                    if (startDestination != AppDestination.Dashboard) {
                         navController.navigateUp()
                     } else {
                         navController.navigate(AppDestination.Dashboard) {
