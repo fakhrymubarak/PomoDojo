@@ -93,8 +93,8 @@ fun AppNavHost(navController: NavHostController, hasActiveSession: Boolean = fal
                     totalBreakMinutes = args.totalBreakMinutes,
                 ),
                 onStartAnotherSession = {
-                    if (startDestination != AppDestination.Dashboard) {
-                        navController.navigateUp()
+                    if (navController == AppDestination.Dashboard) {
+                        navController.popBackStack()
                     } else {
                         navController.navigate(AppDestination.Dashboard) {
                             launchSingleTop = true
