@@ -13,8 +13,8 @@ echo "==> Running all pre-push checks in parallel..."
     detekt \
     cleanJvmTest \
     jacocoJvmTestCoverageVerification \
-    cleanTestDevDebugUnitTest \
-    testDevDebugUnitTest \
+    cleanTestProdDebugUnitTest \
+    testProdDebugUnitTest \
     cleanIosSimulatorArm64Test \
     iosSimulatorArm64Test \
     assembleRelease \

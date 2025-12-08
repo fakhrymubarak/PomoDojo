@@ -42,6 +42,7 @@ internal fun Project.configureKotlinAndroid(
         getByName("release") {
             isMinifyEnabled = true
             signingConfig = signingConfigs.getByName("debug")
+            proguardFile("proguard-test-rules.pro")
         }
     }
 
