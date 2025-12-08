@@ -6,7 +6,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core:datastore"))
-            implementation(project(":domain:focus"))
+            implementation(project(":domain:pomodoro"))
             implementation(project(":domain:preferences"))
             implementation(libs.androidx.datastore.preferences)
         }

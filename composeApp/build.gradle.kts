@@ -51,7 +51,7 @@ kotlin {
             implementation(project(":app:di"))
             implementation(project(":core:designsystem"))
             implementation(project(":feature:dashboard"))
-            implementation(project(":feature:focus"))
+            implementation(project(":feature:pomodoro"))
             implementation(project(":feature:preferences"))
 
             implementation(compose.runtime)

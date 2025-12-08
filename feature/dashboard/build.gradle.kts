@@ -7,7 +7,8 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":core:notification"))
             implementation(project(":core:utils"))
-            implementation(project(":domain:focus"))
+
+            implementation(project(":domain:pomodoro"))
             implementation(project(":domain:history"))
             implementation(project(":domain:common"))
             implementation(project(":domain:preferences"))

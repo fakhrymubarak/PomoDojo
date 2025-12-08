@@ -15,11 +15,11 @@ kotlin {
             implementation(project(":data:history"))
 
             implementation(project(":domain:preferences"))
-            implementation(project(":domain:focus"))
+            implementation(project(":domain:pomodoro"))
             implementation(project(":domain:history"))
 
             implementation(project(":feature:dashboard"))
-            implementation(project(":feature:focus"))
+            implementation(project(":feature:pomodoro"))
             implementation(project(":feature:preferences"))
 
             implementation(libs.koin.core)

@@ -6,7 +6,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":domain:common"))
-            implementation(project(":domain:focus"))
+            implementation(project(":domain:pomodoro"))
         }
     }
 }

@@ -5,7 +5,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":domain:focus"))
+            implementation(project(":domain:pomodoro"))
             implementation(project(":core:utils"))
             implementation(project(":core:datastore"))
             implementation(libs.androidx.datastore.preferences)
