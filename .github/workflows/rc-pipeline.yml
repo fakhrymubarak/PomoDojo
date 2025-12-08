@@ -5,6 +5,9 @@ on:
     tags:
       - "RC_*"
 
+permissions:
+  contents: write
+
 jobs:
   release-candidate:
     runs-on: macos-latest
