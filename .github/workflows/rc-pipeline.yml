@@ -88,10 +88,18 @@ jobs:
 
       - name: Configure Firebase credentials
         run: |
+          if [ -z "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]; then
+            echo "FIREBASE_SERVICE_ACCOUNT secret is missing; cannot distribute build."
+            exit 1
+          fi
+          if [ -z "${{ secrets.FIREBASE_APP_ID_ANDROID }}" ]; then
+            echo "FIREBASE_APP_ID_ANDROID secret is missing; cannot distribute build."
+            exit 1
+          fi
           cat <<'EOF' > "$HOME/firebase-sa.json"
-          ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          EOF
-        shell: bash
+${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+EOF
+          shell: bash
 
       - name: Distribute to Firebase App Tester
         env:
