@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.features.preferences.domain.model
+package com.fakhry.pomodojo.domain.preferences.model
 
 data class InitAppPreferences(
     val appTheme: String = "dark",

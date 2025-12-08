@@ -9,15 +9,17 @@ import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.core.navigation.AppNavHost
-import com.fakhry.pomodojo.features.preferences.data.getInitPreferencesOnMainThread
-import com.fakhry.pomodojo.features.preferences.domain.repository.InitPreferencesRepository
+import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.koin.compose.koinInject
 
 @Composable
 fun App(onThemeUpdated: (String) -> Unit = {}) {
-    val initialPrefs = remember { getInitPreferencesOnMainThread() }
-
     val initPreferencesRepository = koinInject<InitPreferencesRepository>()
+    val initialPrefs = remember {
+        runBlocking { initPreferencesRepository.initPreferences.first() }
+    }
     val initPreferences by initPreferencesRepository.initPreferences.collectAsState(
         initial = initialPrefs,
     )

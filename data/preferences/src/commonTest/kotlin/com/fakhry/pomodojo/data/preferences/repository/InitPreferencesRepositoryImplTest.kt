@@ -1,4 +1,4 @@
-package com.fakhry.pomodojo.features.preferences.data.repository
+package com.fakhry.pomodojo.data.preferences.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class InitPreferencesRepositoryImplTest {
-    private val dataStore = InMemoryPreferencesDataStore()
+    private val dataStore = InitInMemoryPreferencesDataStore()
     private val repository = InitPreferencesRepositoryImpl(dataStore)
 
     @Test
@@ -32,7 +32,7 @@ class InitPreferencesRepositoryImplTest {
     }
 }
 
-private class InMemoryPreferencesDataStore(
+private class InitInMemoryPreferencesDataStore(
     initial: Preferences = emptyPreferences(),
 ) : DataStore<Preferences> {
     private val state = MutableStateFlow(initial)

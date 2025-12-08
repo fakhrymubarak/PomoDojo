@@ -4,8 +4,8 @@ import com.fakhry.pomodojo.core.designsystem.model.PreferenceOption
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
+import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesUiModel
 import kotlinx.collections.immutable.toPersistentList
 

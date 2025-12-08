@@ -1,12 +1,12 @@
-package com.fakhry.pomodojo.features.preferences.data.repository
+package com.fakhry.pomodojo.data.preferences.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.fakhry.pomodojo.core.datastore.PreferenceKeys
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
-import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
-import com.fakhry.pomodojo.features.preferences.domain.repository.InitPreferencesRepository
+import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
+import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 

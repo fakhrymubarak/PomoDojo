@@ -43,8 +43,8 @@ import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
+import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
-import com.fakhry.pomodojo.features.preferences.domain.model.InitAppPreferences
 import com.fakhry.pomodojo.features.preferences.ui.components.PomodoroConfigSection
 import com.fakhry.pomodojo.features.preferences.ui.components.PomodoroTimelinePreviewSection
 import com.fakhry.pomodojo.features.preferences.ui.components.PreferenceAppearanceSection

@@ -10,8 +10,8 @@ import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
+import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
-import com.fakhry.pomodojo.features.preferences.domain.repository.InitPreferencesRepository
 import com.fakhry.pomodojo.features.preferences.ui.mapper.DEFAULT_REPEAT_RANGE
 import com.fakhry.pomodojo.features.preferences.ui.mapper.mapToUiModel
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesAppearanceUiState
