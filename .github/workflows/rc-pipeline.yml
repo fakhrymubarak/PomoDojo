@@ -1,0 +1,77 @@
+name: RC Pipeline
+
+on:
+  push:
+    tags:
+      - "RC_*"
+
+jobs:
+  release-candidate:
+    runs-on: macos-latest
+    env:
+      BRANCH_NAME: ${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Derive version from tag
+        id: vars
+        run: |
+          tag="${GITHUB_REF_NAME}"            # e.g. RC_v0.5.0
+          payload="${tag#RC_}"                # v0.5.0
+          version="${payload#v}"              # 0.5.0
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "payload=${payload}" >> "$GITHUB_OUTPUT"
+          echo "branch=${tag}" >> "$GITHUB_OUTPUT"
+
+      - name: Create RC branch
+        run: |
+          git switch --create "${{ steps.vars.outputs.branch }}"
+
+      - name: Bump Android versionName
+        run: |
+          python - <<'PY'
+          import pathlib, re, sys
+
+          version = "${{ steps.vars.outputs.version }}"
+          path = pathlib.Path("composeApp/build.gradle.kts")
+          text = path.read_text()
+          new_text, count = re.subn(r'versionName\s*=\s*"[^\"]+"', f'versionName = "{version}"', text)
+          if count == 0:
+              sys.exit("versionName assignment not found in composeApp/build.gradle.kts")
+          path.write_text(new_text)
+          PY
+
+      - name: Commit version bump
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.email "github-actions@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add composeApp/build.gradle.kts
+          git commit -m "chore: bump version to ${{ steps.vars.outputs.version }} for RC"
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --set-upstream origin "${{ steps.vars.outputs.branch }}"
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build Android devDebug
+        run: ./gradlew :composeApp:assembleDevDebug
+
+      - name: Distribute to Firebase App Tester
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_ANDROID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          file: composeApp/build/outputs/apk/dev/debug/composeApp-dev-debug.apk
+          releaseNotes: "RC build from tag ${{ github.ref_name }}"
+          groups: testers
