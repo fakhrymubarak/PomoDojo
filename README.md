@@ -39,6 +39,13 @@ Requirements: JDK 17+, Android SDK path defined in `local.properties`, Xcode 15+
   ` ./gradlew :composeApp:createDistributable && ./composeApp/build/compose/binaries/main/app/PomoDojo.app/Contents/MacOS/PomoDojo`
   to start the Compose for Desktop app locally.
 
+### Compose hot reload (Desktop)
+
+- Start the app with the hot-reload agent: `./gradlew :composeApp:hotRunJvm`
+- In another terminal, stream changes into the running app:
+  `./gradlew :composeApp:reload --continuous`
+  (leave both processes running while editing)
+
 ## Git Hooks
 
 Local hooks mirror CI by running `ktlintCheck`, `check`, Android/Desktop/iOS builds before every
