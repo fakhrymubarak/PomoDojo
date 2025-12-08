@@ -2,8 +2,8 @@ package com.fakhry.pomodojo.app.di
 
 import com.fakhry.pomodojo.core.database.AndroidFocusDatabaseHolder
 import com.fakhry.pomodojo.core.datastore.AndroidDataStoreProvider
-import com.fakhry.pomodojo.feature.notification.audio.AndroidSoundPlayer
-import com.fakhry.pomodojo.feature.notification.notifications.AndroidFocusSessionNotifier
+import com.fakhry.pomodojo.core.notification.audio.AndroidSoundPlayer
+import com.fakhry.pomodojo.core.notification.notifications.AndroidFocusSessionNotifier
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module

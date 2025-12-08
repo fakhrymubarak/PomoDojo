@@ -1,6 +1,5 @@
 package com.fakhry.pomodojo.features.dashboard.ui.viewmodel
 
-import com.fakhry.pomodojo.core.notification.datetime.FakeCurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.domain.common.DomainResult
 import com.fakhry.pomodojo.domain.history.model.HistoryDomain
@@ -10,6 +9,7 @@ import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
+import com.fakhry.pomodojo.features.dashboard.ui.utils.FakeCurrentTimeProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

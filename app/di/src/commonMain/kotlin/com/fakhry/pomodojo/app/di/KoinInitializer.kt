@@ -2,6 +2,7 @@ package com.fakhry.pomodojo.app.di
 
 import com.fakhry.pomodojo.core.database.di.databaseModule
 import com.fakhry.pomodojo.core.datastore.di.dataStoreModule
+import com.fakhry.pomodojo.core.notification.di.notificationCoreModule
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.data.history.di.historyDataModule
 import com.fakhry.pomodojo.data.pomodoro.di.pomodoroDataModule
@@ -45,4 +46,5 @@ private val dataModule: List<Module> = listOf(
 private val coreModule: List<Module> = listOf(
     dataStoreModule,
     databaseModule,
+    notificationCoreModule,
 )

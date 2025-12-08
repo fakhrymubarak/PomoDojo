@@ -8,6 +8,7 @@ kotlin {
             implementation(project(":core:utils")) // Dispatcher Provider
             implementation(project(":core:datastore"))
             implementation(project(":core:database"))
+            implementation(project(":core:notification"))
 
             implementation(project(":data:pomodoro"))
             implementation(project(":data:preferences"))
@@ -31,7 +32,7 @@ kotlin {
         androidMain.dependencies {
             implementation(project(":core:datastore"))
             implementation(project(":core:database"))
-            implementation(project(":feature:notification"))
+            implementation(project(":core:notification"))
         }
     }
 }

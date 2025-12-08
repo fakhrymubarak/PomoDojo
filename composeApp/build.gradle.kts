@@ -50,7 +50,6 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":app:di"))
             implementation(project(":core:designsystem"))
-            implementation(project(":feature:notification"))
             implementation(project(":feature:dashboard"))
             implementation(project(":feature:focus"))
             implementation(project(":feature:preferences"))
