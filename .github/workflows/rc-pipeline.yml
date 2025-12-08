@@ -104,6 +104,7 @@ EOF
       - name: Distribute to Firebase App Tester
         env:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/firebase-sa.json
+          FIREBASE_CLI_EXPERIMENTAL_GOOGLE_APPLICATION_CREDENTIALS: "1"
         run: |
           firebase appdistribution:distribute composeApp/build/outputs/apk/dev/debug/composeApp-dev-debug.apk \
             --app "${{ secrets.FIREBASE_APP_ID_ANDROID }}" \
