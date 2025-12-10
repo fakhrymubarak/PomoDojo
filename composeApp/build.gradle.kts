@@ -1,3 +1,4 @@
+import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import java.util.Properties
 
@@ -12,7 +13,8 @@ plugins {
     alias(libs.plugins.room)
     alias(libs.plugins.googleGmsGoogleServices)
     alias(libs.plugins.googleFirebaseCrashlytics)
-    id("com.fakhry.pomodojo.quality")
+    alias(libs.plugins.pomodojoQuality)
+    alias(libs.plugins.firebaseAppDistribution)
 }
 
 fun Project.envProps(fileName: String): Properties {
@@ -191,4 +193,22 @@ compose.desktop {
 
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+firebaseAppDistribution {
+    // Prefer passing these in via -P or env vars in CI
+    serviceCredentialsFile = findProperty("firebaseServiceCredentialsFile")?.toString()
+        ?: System.getenv("FIREBASE_SERVICE_ACCOUNT_FILE") ?: "Undefined Service Account"
+
+    appId = findProperty("firebaseAppId")?.toString() ?: System.getenv("FIREBASE_APP_ID")
+        ?: System.getenv("FIREBASE_APP_ID_ANDROID") ?: "Undefined App Id"
+
+    // Use either testers, groups, or releaseNotes/releaseNotesFile
+    groups = findProperty("firebaseGroups")?.toString() ?: System.getenv("FIREBASE_GROUPS")
+        ?: "all-testers"
+
+    releaseNotes =
+        findProperty("firebaseReleaseNotes")?.toString() ?: System.getenv("FIREBASE_RELEASE_NOTES")
+            ?: "Dev Build"
+    artifactType = "APK" // AAB requires bundle task; keep APK for RC uploads
 }

@@ -14,6 +14,7 @@ plugins {
     alias(libs.plugins.googleFirebaseCrashlytics) apply false
     alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
     alias(libs.plugins.androidLint) apply false
+    alias(libs.plugins.firebaseAppDistribution) apply false
     id("com.fakhry.pomodojo.dependencygraph")
 }
 

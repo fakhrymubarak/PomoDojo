@@ -64,7 +64,29 @@ git config core.hooksPath githooks
 - `composeApp/src/commonTest` & `jvmTest` – Multiplatform/JVM test suites.
 - `iosApp/iosApp` – Swift entry point, assets, and configuration files for the iOS target.
 
-## License
+## Firebase App Distribution
 
+Use the Gradle plugin (no Firebase CLI needed):
+
+```bash
+export FIREBASE_SERVICE_ACCOUNT_FILE=/path/to/service-account.json
+export FIREBASE_APP_ID=1:YOUR:APP:ID
+export FIREBASE_GROUPS=testers
+export FIREBASE_RELEASE_NOTES="Manual upload"
+./gradlew :composeApp:appDistributionUploadDevDebug
+```
+
+Notes:
+
+- Service account must belong to the Firebase project for the app ID and have the
+  `Firebase App Distribution Admin` (or broader `Firebase Admin`) role.
+- `FIREBASE_APP_ID` is required; it must be the Android app’s Firebase App ID (not the package
+  name).
+- At least one recipient is required: set `FIREBASE_GROUPS` (comma-separated) or use Gradle
+  properties like `-PfirebaseGroups=qa`; `FIREBASE_RELEASE_NOTES` can be omitted.
+- CI (`.github/workflows/rc-pipeline.yml`) writes the service account JSON, exports these env vars,
+  and runs `:composeApp:appDistributionUploadDevDebug` after `assembleDevDebug`.
+
+## License
 License information has not been finalized. Until a LICENSE file is added, all rights are reserved
 by the repository owner.

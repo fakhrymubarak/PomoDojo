@@ -2,6 +2,8 @@ name: RC Pipeline
 
 on:
   push:
+    branches:
+      - "RC_*"
     tags:
       - "RC_*"
 
@@ -19,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Derive version from tag
+      - name: Derive version from ref
         id: vars
         run: |
           tag="${GITHUB_REF_NAME}"            # e.g. RC_v0.5.0
@@ -71,6 +73,20 @@ jobs:
           git push origin HEAD:refs/heads/${{ steps.vars.outputs.branch }}
           git branch --set-upstream-to=origin/${{ steps.vars.outputs.branch }}
 
+      - name: Ensure RC tag exists (branch-triggered)
+        if: startsWith(github.ref, 'refs/heads/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          git fetch --tags origin || true
+          if git rev-parse -q "refs/tags/$tag" >/dev/null; then
+            echo "Tag $tag already exists; skipping creation."
+          else
+            git tag "$tag"
+            git push origin "refs/tags/$tag"
+          fi
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -80,13 +96,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Build Android devDebug
-        run: ./gradlew :composeApp:assembleDevDebug
-
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
-
-      - name: Configure Firebase credentials
+      - name: Prepare Firebase credentials
         run: |
           if [ -z "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]; then
             echo "FIREBASE_SERVICE_ACCOUNT secret is missing; cannot distribute build."
@@ -96,17 +106,18 @@ jobs:
             echo "FIREBASE_APP_ID_ANDROID secret is missing; cannot distribute build."
             exit 1
           fi
+
           cat <<'EOF' > "$HOME/firebase-sa.json"
-${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-EOF
-          shell: bash
+          ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          EOF
+
+          {
+            echo "FIREBASE_SERVICE_ACCOUNT_FILE=$HOME/firebase-sa.json"
+            echo "FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID_ANDROID }}"
+            echo "FIREBASE_GROUPS=testers"
+            echo "FIREBASE_RELEASE_NOTES=RC build from ${{ github.ref_name }}"
+          } >> "$GITHUB_ENV"
+        shell: bash
 
       - name: Distribute to Firebase App Tester
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: $HOME/firebase-sa.json
-          FIREBASE_CLI_EXPERIMENTAL_GOOGLE_APPLICATION_CREDENTIALS: "1"
-        run: |
-          firebase appdistribution:distribute composeApp/build/outputs/apk/dev/debug/composeApp-dev-debug.apk \
-            --app "${{ secrets.FIREBASE_APP_ID_ANDROID }}" \
-            --groups testers \
-            --release-notes "RC build from tag ${{ github.ref_name }}"
+        run: ./gradlew :composeApp:appDistributionUploadDevDebug
