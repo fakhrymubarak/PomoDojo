@@ -121,3 +121,10 @@ jobs:
 
       - name: Distribute to Firebase App Tester
         run: ./gradlew :composeApp:appDistributionUploadDevDebug
+
+      - name: Upload Gradle problems report
+        if: ${{ always() && hashFiles('build/reports/problems/problems-report.html') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-problems-report
+          path: build/reports/problems/problems-report.html
