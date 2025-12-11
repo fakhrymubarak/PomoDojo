@@ -114,7 +114,7 @@ jobs:
           {
             echo "FIREBASE_SERVICE_ACCOUNT_FILE=$HOME/firebase-sa.json"
             echo "FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID_ANDROID }}"
-            echo "FIREBASE_GROUPS=testers"
+            echo "FIREBASE_GROUPS=all-testers"
             echo "FIREBASE_RELEASE_NOTES=RC build from ${{ github.ref_name }}"
           } >> "$GITHUB_ENV"
         shell: bash
