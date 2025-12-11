@@ -119,6 +119,9 @@ jobs:
           } >> "$GITHUB_ENV"
         shell: bash
 
+      - name: Build Android devDebug
+        run: ./gradlew :composeApp:assembleDevDebug
+
       - name: Distribute to Firebase App Tester
         run: ./gradlew :composeApp:appDistributionUploadDevDebug
 
