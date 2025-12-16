@@ -1,0 +1,5 @@
+What's new (PomoDojo 0.1.0)
+- Guided Pomodoro session screen with start/pause/end controls, timeline, quotes, and screen-on protection.
+- Customize focus/break lengths, repeats, and long breaks; see the preview update instantly.
+- Focus history heatmap shows daily focus and break minutes; switch years and tap cells for details.
+- App resumes any active session on launch so you never lose progress.
