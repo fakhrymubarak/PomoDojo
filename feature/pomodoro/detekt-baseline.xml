@@ -11,16 +11,25 @@
     <ID>FunctionNaming:PomodoroCompleteScreen.kt$@Preview @Composable private fun PomodoroCompleteScreenPreview()</ID>
     <ID>FunctionNaming:PomodoroSessionHeaderSection.kt$@Composable fun PomodoroSessionHeaderSection(timerType: TimerTypeUi, cycleNumber: Int, totalCycle: Int)</ID>
     <ID>FunctionNaming:PomodoroSessionHeaderSection.kt$@Preview @Composable private fun PomodoroSessionHeaderSectionPreview()</ID>
-    <ID>FunctionNaming:PomodoroSessionScreen.kt$@Composable fun ColumnScope.PomodoroTimelineSessionSection(modifier: Modifier, timeline: TimelineUiModel)</ID>
-    <ID>FunctionNaming:PomodoroSessionScreen.kt$@Composable private fun FocusCircularButton( onClick: () -&gt; Unit, icon: @Composable () -&gt; Unit, buttonDescription: String, containerColor: Color, contentColor: Color, )</ID>
-    <ID>FunctionNaming:PomodoroSessionScreen.kt$@Composable private fun FocusConfirmDialog(onConfirmFinish: () -&gt; Unit, onDismiss: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:PomodoroSessionScreen.kt$@Composable private fun FocusControls( isTimerRunning: Boolean, onTogglePause: () -&gt; Unit = {}, onEnd: () -&gt; Unit = {}, )</ID>
-    <ID>FunctionNaming:PomodoroSessionScreen.kt$@Composable private fun FocusQuoteBlock(modifier: Modifier, quote: QuoteContent)</ID>
+    <ID>FunctionNaming:FocusConfirmDialog.kt$@Composable internal fun FocusConfirmDialog(onConfirmFinish: () -&gt; Unit, onDismiss: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:FocusControls.kt$@Composable internal fun FocusCircularButton( onClick: () -&gt; Unit, icon: @Composable () -&gt; Unit, buttonDescription: String, containerColor: Color, contentColor: Color, )</ID>
+    <ID>FunctionNaming:FocusControls.kt$@Composable internal fun FocusControls( isTimerRunning: Boolean, onTogglePause: () -&gt; Unit = {}, onEnd: () -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:LandscapeSessionContent.kt$@Composable internal fun LandscapeSessionContent( state: PomodoroSessionUiState, isTimerRunning: Boolean, onTogglePause: () -&gt; Unit, onEnd: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:LandscapeSessionContent.kt$@Composable private fun CompactTimelineBar(modifier: Modifier, segments: ImmutableList&lt;TimelineSegmentUi&gt;)</ID>
+    <ID>FunctionNaming:LandscapeSessionContent.kt$@Composable private fun LandscapeControlsToggle( isTimerRunning: Boolean, onTogglePause: () -&gt; Unit, onEnd: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:LandscapeSessionContent.kt$@Composable private fun LandscapePhaseChip(phase: TimerTypeUi, color: Color)</ID>
+    <ID>FunctionNaming:LandscapeSessionContent.kt$@Composable private fun LandscapeTimerText( modifier: Modifier, segmentType: TimerTypeUi, formattedTime: String, )</ID>
+    <ID>FunctionNaming:PortraitSessionContent.kt$@Composable internal fun ColumnScope.PomodoroTimelineSessionSection(modifier: Modifier, timeline: TimelineUiModel)</ID>
+    <ID>FunctionNaming:PortraitSessionContent.kt$@Composable internal fun PortraitSessionContent( state: PomodoroSessionUiState, isTimerRunning: Boolean, onTogglePause: () -&gt; Unit, onEnd: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:PortraitSessionContent.kt$@Composable private fun FocusQuoteBlock(modifier: Modifier, quote: QuoteContent)</ID>
     <ID>FunctionNaming:PomodoroSessionScreen.kt$@OptIn(ExperimentalComposeUiApi::class) @Suppress("NonSkippableComposable") @Composable fun PomodoroSessionScreen( onSessionCompleted: (PomodoroCompletionUiState) -&gt; Unit, viewModel: PomodoroSessionViewModel = koinViewModel(), )</ID>
     <ID>LargeClass:StaticQuoteRepository.kt$StaticQuoteRepository : QuoteRepository</ID>
     <ID>LongMethod:PomodoroCompleteScreen.kt$@Composable fun PomodoroCompleteScreen( uiState: PomodoroCompletionUiState, onStartAnotherSession: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:PomodoroSessionViewModelTest.kt$PomodoroSessionViewModelTest$@Test fun `restoring session fast forwards overdue segments`()</ID>
     <ID>LoopWithTooManyJumpStatements:PomodoroSessionViewModel.kt$PomodoroSessionViewModel$while</ID>
+    <ID>MagicNumber:LandscapeSessionContent.kt$0.12f</ID>
+    <ID>MagicNumber:LandscapeSessionContent.kt$0.22f</ID>
+    <ID>MagicNumber:LandscapeSessionContent.kt$0.75f</ID>
     <ID>MagicNumber:PomodoroCompleteScreen.kt$0.015f</ID>
     <ID>MagicNumber:PomodoroCompleteScreen.kt$0.025f</ID>
     <ID>MagicNumber:PomodoroCompleteScreen.kt$0.05f</ID>
