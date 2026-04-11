@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:ColumnScopeExt.kt$@Composable fun ColumnScope.Expanded()</ID>
+    <ID>MagicNumber:LongExt.kt$1_000.0</ID>
+    <ID>MagicNumber:LongExt.kt$60</ID>
+  </CurrentIssues>
+</SmellBaseline>

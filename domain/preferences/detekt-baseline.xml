@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>MagicNumber:PreferenceCascadeResolver.kt$PreferenceCascadeResolver$10</ID>
+    <ID>MagicNumber:PreferenceCascadeResolver.kt$PreferenceCascadeResolver$25</ID>
+    <ID>MagicNumber:PreferenceCascadeResolver.kt$PreferenceCascadeResolver$5</ID>
+    <ID>MagicNumber:PreferenceCascadeResolver.kt$PreferenceCascadeResolver$50</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:App.kt$@Composable fun App(onThemeUpdated: (String) -&gt; Unit = {})</ID>
+    <ID>FunctionNaming:AppNavigation.kt$@Suppress("NonSkippableComposable") @Composable fun AppNavHost(navController: NavHostController, hasActiveSession: Boolean = false)</ID>
+    <ID>FunctionNaming:MainActivity.kt$@Preview @Composable fun AppAndroidPreview()</ID>
+    <ID>LongMethod:AppNavigation.kt$@Suppress("NonSkippableComposable") @Composable fun AppNavHost(navController: NavHostController, hasActiveSession: Boolean = false)</ID>
+    <ID>LongParameterList:TestDataGenerator.kt$TestDataGenerator$( count: Int = 600, startFromToday: Boolean = false, minFocusMinutes: Int = 25, maxFocusMinutes: Int = 300, timezone: TimeZone = TimeZone.Companion.UTC, seed: Int? = null, )</ID>
+    <ID>LongParameterList:TestDataGenerator.kt$TestDataGenerator$( startDate: LocalDate, endDate: LocalDate, minFocusMinutes: Int = 25, maxFocusMinutes: Int = 300, timezone: TimeZone = TimeZone.Companion.UTC, seed: Int? = null, )</ID>
+  </CurrentIssues>
+</SmellBaseline>

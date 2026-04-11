@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:WheelNumbers.kt$@Composable fun WheelNumbers( modifier: Modifier = Modifier.fillMaxWidth(), start: Int = 1, end: Int = 10, selectedValue: Int = start, onValueChange: (Int) -&gt; Unit = {}, onValueChangeDebounceMillis: Long = 120, )</ID>
+    <ID>FunctionNaming:PomodoroConfigSection.kt$@Composable fun ColumnScope.PomodoroConfigSection( repeatCount: Int, repeatRange: IntRange, focusOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, breakOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, isLongBreakEnabled: Boolean, longBreakAfterOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, longBreakOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, onRepeatCountChanged: (Int) -&gt; Unit = {}, onFocusSelected: (Int) -&gt; Unit = {}, onBreakSelected: (Int) -&gt; Unit = {}, onToggleLongBreak: (Boolean) -&gt; Unit = {}, onLongBreakAfterSelected: (Int) -&gt; Unit = {}, onLongBreakMinutesSelected: (Int) -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:PomodoroConfigSection.kt$@Composable private fun LongBreakToggle(enabled: Boolean, onToggle: (Boolean) -&gt; Unit)</ID>
+    <ID>FunctionNaming:PomodoroConfigSection.kt$@Composable private fun RepeatSection(repeatCount: Int, range: IntRange, onRepeatCountChanged: (Int) -&gt; Unit)</ID>
+    <ID>FunctionNaming:PomodoroTimelinePreviewSection.kt$@Composable fun ColumnScope.PomodoroTimelinePreviewSection(timeline: TimelineUiModel)</ID>
+    <ID>FunctionNaming:PreferenceAppearanceSection.kt$@Composable fun ColumnScope.PreferenceAppearanceSection( themeOptions: ImmutableList&lt;PreferenceOption&lt;AppTheme&gt;&gt;, onOptionSelected: (AppTheme) -&gt; Unit, isAlwaysOnDisplayEnabled: Boolean, onAlwaysOnDisplayToggled: (Boolean) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:PreferenceAppearanceSection.kt$@Composable private fun PreferenceToggleRow(label: String, checked: Boolean, onToggle: (Boolean) -&gt; Unit)</ID>
+    <ID>FunctionNaming:PreferenceOptionsSection.kt$@Composable fun &lt;T&gt; PreferenceOptionsCompose( modifier: Modifier = Modifier, title: String, options: ImmutableList&lt;PreferenceOption&lt;T&gt;&gt;, onOptionSelected: (T) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:PreferenceOptionsSection.kt$@Composable private fun &lt;T&gt; PreferenceOptionChip(option: PreferenceOption&lt;T&gt;, onClick: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:PreferencesScreen.kt$@Composable fun PreferencesContent( isLoading: Boolean, timeline: TimelineUiModel, configState: PreferencesConfigUiState, appearanceState: PreferencesAppearanceUiState, onNavigateBack: () -&gt; Unit = {}, onThemeSelected: (AppTheme) -&gt; Unit = {}, onRepeatCountChanged: (Int) -&gt; Unit = {}, onFocusSelected: (Int) -&gt; Unit = {}, onBreakSelected: (Int) -&gt; Unit = {}, onToggleLongBreak: (Boolean) -&gt; Unit = {}, onLongBreakAfterSelected: (Int) -&gt; Unit = {}, onLongBreakMinutesSelected: (Int) -&gt; Unit = {}, onAlwaysOnDisplayToggled: (Boolean) -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:PreferencesScreen.kt$@Composable private fun PreferencesContent( timeline: TimelineUiModel, configState: PreferencesConfigUiState, appearanceState: PreferencesAppearanceUiState, onThemeSelected: (AppTheme) -&gt; Unit = {}, onRepeatCountChanged: (Int) -&gt; Unit = {}, onFocusSelected: (Int) -&gt; Unit = {}, onBreakSelected: (Int) -&gt; Unit = {}, onToggleLongBreak: (Boolean) -&gt; Unit = {}, onLongBreakAfterSelected: (Int) -&gt; Unit = {}, onLongBreakMinutesSelected: (Int) -&gt; Unit = {}, onAlwaysOnDisplayToggled: (Boolean) -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:PreferencesScreen.kt$@Composable private fun PreferencesHeader(onNavigateBack: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:PreferencesScreen.kt$@Preview @Composable private fun PreferencesContentPreview()</ID>
+    <ID>FunctionNaming:PreferencesScreen.kt$@Preview @Composable private fun PreferencesHeaderPreview()</ID>
+    <ID>FunctionNaming:PreferencesScreen.kt$@Suppress("NonSkippableComposable") @Composable fun PreferencesScreen( viewModel: PreferencesViewModel = koinViewModel(), onNavigateBack: () -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:WheelNumbers.kt$@Composable fun WheelNumbers( modifier: Modifier = Modifier.fillMaxWidth(), start: Int = 1, end: Int = 10, selectedValue: Int = start, onValueChange: (Int) -&gt; Unit = {}, onValueChangeDebounceMillis: Long = 120, )</ID>
+    <ID>FunctionNaming:WheelNumbers.kt$@Composable private fun SelectionOverlay(modifier: Modifier = Modifier, width: Dp, height: Dp, shape: Shape)</ID>
+    <ID>FunctionNaming:WheelNumbers.kt$@Composable private fun WheelNumberItem(number: Int, isSelected: Boolean, width: Dp)</ID>
+    <ID>FunctionNaming:WheelNumbers.kt$@Preview(showBackground = false) @Composable fun InfiniteNumberListPreview()</ID>
+    <ID>LongMethod:PomodoroConfigSection.kt$@Composable fun ColumnScope.PomodoroConfigSection( repeatCount: Int, repeatRange: IntRange, focusOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, breakOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, isLongBreakEnabled: Boolean, longBreakAfterOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, longBreakOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, onRepeatCountChanged: (Int) -&gt; Unit = {}, onFocusSelected: (Int) -&gt; Unit = {}, onBreakSelected: (Int) -&gt; Unit = {}, onToggleLongBreak: (Boolean) -&gt; Unit = {}, onLongBreakAfterSelected: (Int) -&gt; Unit = {}, onLongBreakMinutesSelected: (Int) -&gt; Unit = {}, )</ID>
+    <ID>LongMethod:PreferencesScreen.kt$@Preview @Composable private fun PreferencesContentPreview()</ID>
+    <ID>LongMethod:WheelNumbers.kt$@Composable fun WheelNumbers( modifier: Modifier = Modifier.fillMaxWidth(), start: Int = 1, end: Int = 10, selectedValue: Int = start, onValueChange: (Int) -&gt; Unit = {}, onValueChangeDebounceMillis: Long = 120, )</ID>
+    <ID>LongParameterList:PomodoroConfigSection.kt$( repeatCount: Int, repeatRange: IntRange, focusOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, breakOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, isLongBreakEnabled: Boolean, longBreakAfterOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, longBreakOptions: ImmutableList&lt;PreferenceOption&lt;Int&gt;&gt;, onRepeatCountChanged: (Int) -&gt; Unit = {}, onFocusSelected: (Int) -&gt; Unit = {}, onBreakSelected: (Int) -&gt; Unit = {}, onToggleLongBreak: (Boolean) -&gt; Unit = {}, onLongBreakAfterSelected: (Int) -&gt; Unit = {}, onLongBreakMinutesSelected: (Int) -&gt; Unit = {}, )</ID>
+    <ID>LongParameterList:PreferencesScreen.kt$( isLoading: Boolean, timeline: TimelineUiModel, configState: PreferencesConfigUiState, appearanceState: PreferencesAppearanceUiState, onNavigateBack: () -&gt; Unit = {}, onThemeSelected: (AppTheme) -&gt; Unit = {}, onRepeatCountChanged: (Int) -&gt; Unit = {}, onFocusSelected: (Int) -&gt; Unit = {}, onBreakSelected: (Int) -&gt; Unit = {}, onToggleLongBreak: (Boolean) -&gt; Unit = {}, onLongBreakAfterSelected: (Int) -&gt; Unit = {}, onLongBreakMinutesSelected: (Int) -&gt; Unit = {}, onAlwaysOnDisplayToggled: (Boolean) -&gt; Unit = {}, )</ID>
+    <ID>LongParameterList:PreferencesScreen.kt$( timeline: TimelineUiModel, configState: PreferencesConfigUiState, appearanceState: PreferencesAppearanceUiState, onThemeSelected: (AppTheme) -&gt; Unit = {}, onRepeatCountChanged: (Int) -&gt; Unit = {}, onFocusSelected: (Int) -&gt; Unit = {}, onBreakSelected: (Int) -&gt; Unit = {}, onToggleLongBreak: (Boolean) -&gt; Unit = {}, onLongBreakAfterSelected: (Int) -&gt; Unit = {}, onLongBreakMinutesSelected: (Int) -&gt; Unit = {}, onAlwaysOnDisplayToggled: (Boolean) -&gt; Unit = {}, )</ID>
+    <ID>LongParameterList:WheelNumbers.kt$( modifier: Modifier = Modifier.fillMaxWidth(), start: Int = 1, end: Int = 10, selectedValue: Int = start, onValueChange: (Int) -&gt; Unit = {}, onValueChangeDebounceMillis: Long = 120, )</ID>
+    <ID>MagicNumber:PreferenceOptionsSection.kt$0.3f</ID>
+    <ID>MagicNumber:PreferencesScreen.kt$10</ID>
+    <ID>MagicNumber:PreferencesScreen.kt$20</ID>
+    <ID>MagicNumber:PreferencesScreen.kt$25</ID>
+    <ID>MagicNumber:PreferencesScreen.kt$4</ID>
+    <ID>MagicNumber:PreferencesScreen.kt$5</ID>
+    <ID>MagicNumber:PreferencesScreen.kt$50</ID>
+    <ID>MagicNumber:PreferencesScreen.kt$6</ID>
+    <ID>MagicNumber:PreferencesUiMapper.kt$10</ID>
+    <ID>MagicNumber:PreferencesUiMapper.kt$20</ID>
+    <ID>MagicNumber:PreferencesUiMapper.kt$25</ID>
+    <ID>MagicNumber:PreferencesUiMapper.kt$4</ID>
+    <ID>MagicNumber:PreferencesUiMapper.kt$5</ID>
+    <ID>MagicNumber:PreferencesUiMapper.kt$50</ID>
+    <ID>MagicNumber:PreferencesUiMapper.kt$6</ID>
+    <ID>MagicNumber:PreferencesUiMapper.kt$8</ID>
+    <ID>MagicNumber:PreferencesUiModel.kt$PreferencesUiModel$8</ID>
+    <ID>MagicNumber:WheelNumbers.kt$0.4f</ID>
+    <ID>MagicNumber:WheelNumbers.kt$0.85f</ID>
+    <ID>MagicNumber:WheelNumbers.kt$12f</ID>
+    <ID>UnusedPrivateMember:PreferencesScreen.kt$@Preview @Composable private fun PreferencesContentPreview()</ID>
+    <ID>UnusedPrivateMember:PreferencesScreen.kt$@Preview @Composable private fun PreferencesHeaderPreview()</ID>
+  </CurrentIssues>
+</SmellBaseline>

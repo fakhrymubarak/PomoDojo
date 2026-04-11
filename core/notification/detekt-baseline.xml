@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:IosFocusSessionNotifier.kt$IosFocusSessionNotifier$override suspend fun schedule(snapshot: PomodoroSessionDomain)</ID>
+    <ID>CyclomaticComplexMethod:NotificationSegmentProgressReceiver.kt$private fun processSessionCompletion( session: PomodoroSessionDomain, now: Long, ): PomodoroSessionDomain</ID>
+    <ID>InvalidPackageDeclaration:SystemCurrentTimeProviderTest.kt$package com.fakhry.pomodojo.feature.notification.datetime</ID>
+    <ID>LongMethod:IosFocusSessionNotifier.kt$IosFocusSessionNotifier$override suspend fun schedule(snapshot: PomodoroSessionDomain)</ID>
+    <ID>LongMethod:NotificationSegmentProgressReceiver.kt$private fun processSessionCompletion( session: PomodoroSessionDomain, now: Long, ): PomodoroSessionDomain</ID>
+    <ID>LongParameterList:LiveActivityManager.kt$LiveActivityManager$( cycleNumber: Int, totalCycles: Int, segmentType: String, remainingSeconds: Int, totalSeconds: Int, isPaused: Boolean, scheduleJson: String?, )</ID>
+    <ID>LongParameterList:LiveActivityManager.kt$LiveActivityManager$( sessionId: String, quote: String, cycleNumber: Int, totalCycles: Int, segmentType: String, remainingSeconds: Int, totalSeconds: Int, isPaused: Boolean, scheduleJson: String?, )</ID>
+    <ID>LoopWithTooManyJumpStatements:NotificationSegmentProgressReceiver.kt$while</ID>
+    <ID>MagicNumber:AndroidFocusSessionNotifier.kt$1000</ID>
+    <ID>MagicNumber:AndroidFocusSessionNotifier.kt$2000</ID>
+    <ID>MagicNumber:AndroidFocusSessionNotifier.kt$3000</ID>
+    <ID>MagicNumber:AndroidFocusSessionNotifier.kt$AndroidFocusSessionNotifier$100</ID>
+    <ID>MagicNumber:IosFocusSessionNotifier.kt$IosFocusSessionNotifier$1000</ID>
+    <ID>MagicNumber:LiveActivitySchedule.kt$1000</ID>
+    <ID>MagicNumber:NotificationSummaryMapper.ios.kt$100</ID>
+    <ID>MagicNumber:NotificationSummaryMapper.kt$100</ID>
+    <ID>PrintStackTrace:AndroidFocusSessionNotifier.kt$AndroidFocusSessionNotifier$e</ID>
+    <ID>PrintStackTrace:LiveActivityManager.kt$LiveActivityManager$e</ID>
+    <ID>ReturnCount:IosFocusSessionNotifier.kt$IosFocusSessionNotifier$override suspend fun schedule(snapshot: PomodoroSessionDomain)</ID>
+    <ID>ReturnCount:IosSoundPlayer.kt$IosSoundPlayer$@OptIn(ExperimentalForeignApi::class) private fun resolveSoundPath(): String?</ID>
+    <ID>ReturnCount:NotificationSegmentProgressReceiver.kt$private fun processSessionCompletion( session: PomodoroSessionDomain, now: Long, ): PomodoroSessionDomain</ID>
+    <ID>TooGenericExceptionCaught:AndroidFocusSessionNotifier.kt$AndroidFocusSessionNotifier$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:IosFocusSessionNotifier.kt$IosFocusSessionNotifier$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LiveActivityManager.kt$LiveActivityManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NotificationSegmentProgressReceiver.kt$NotificationSegmentProgressReceiver$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

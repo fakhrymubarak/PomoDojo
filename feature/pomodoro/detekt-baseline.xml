@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:PomodoroSessionViewModel.kt$PomodoroSessionViewModel$private fun fastForwardTimeline(now: Long): Boolean</ID>
+    <ID>FunctionNaming:PomodoroCompleteScreen.kt$@Composable fun PomodoroCompleteScreen( uiState: PomodoroCompletionUiState, onStartAnotherSession: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:PomodoroCompleteScreen.kt$@Composable private fun CompletionHeader(totalCycles: Int, modifier: Modifier = Modifier)</ID>
+    <ID>FunctionNaming:PomodoroCompleteScreen.kt$@Composable private fun CompletionStatRow(label: String, value: String)</ID>
+    <ID>FunctionNaming:PomodoroCompleteScreen.kt$@Composable private fun CompletionStatsCard(uiState: PomodoroCompletionUiState, modifier: Modifier = Modifier)</ID>
+    <ID>FunctionNaming:PomodoroCompleteScreen.kt$@Composable private fun ConfettiBurst(modifier: Modifier = Modifier)</ID>
+    <ID>FunctionNaming:PomodoroCompleteScreen.kt$@Preview @Composable private fun PomodoroCompleteScreenPreview()</ID>
+    <ID>FunctionNaming:PomodoroSessionHeaderSection.kt$@Composable fun PomodoroSessionHeaderSection(timerType: TimerTypeUi, cycleNumber: Int, totalCycle: Int)</ID>
+    <ID>FunctionNaming:PomodoroSessionHeaderSection.kt$@Preview @Composable private fun PomodoroSessionHeaderSectionPreview()</ID>
+    <ID>FunctionNaming:PomodoroSessionScreen.kt$@Composable fun ColumnScope.PomodoroTimelineSessionSection(modifier: Modifier, timeline: TimelineUiModel)</ID>
+    <ID>FunctionNaming:PomodoroSessionScreen.kt$@Composable private fun FocusCircularButton( onClick: () -&gt; Unit, icon: @Composable () -&gt; Unit, buttonDescription: String, containerColor: Color, contentColor: Color, )</ID>
+    <ID>FunctionNaming:PomodoroSessionScreen.kt$@Composable private fun FocusConfirmDialog(onConfirmFinish: () -&gt; Unit, onDismiss: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:PomodoroSessionScreen.kt$@Composable private fun FocusControls( isTimerRunning: Boolean, onTogglePause: () -&gt; Unit = {}, onEnd: () -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:PomodoroSessionScreen.kt$@Composable private fun FocusQuoteBlock(modifier: Modifier, quote: QuoteContent)</ID>
+    <ID>FunctionNaming:PomodoroSessionScreen.kt$@OptIn(ExperimentalComposeUiApi::class) @Suppress("NonSkippableComposable") @Composable fun PomodoroSessionScreen( onSessionCompleted: (PomodoroCompletionUiState) -&gt; Unit, viewModel: PomodoroSessionViewModel = koinViewModel(), )</ID>
+    <ID>LargeClass:StaticQuoteRepository.kt$StaticQuoteRepository : QuoteRepository</ID>
+    <ID>LongMethod:PomodoroCompleteScreen.kt$@Composable fun PomodoroCompleteScreen( uiState: PomodoroCompletionUiState, onStartAnotherSession: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:PomodoroSessionViewModelTest.kt$PomodoroSessionViewModelTest$@Test fun `restoring session fast forwards overdue segments`()</ID>
+    <ID>LoopWithTooManyJumpStatements:PomodoroSessionViewModel.kt$PomodoroSessionViewModel$while</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0.015f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0.025f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0.05f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0.15f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0.1f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0.3f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0.5f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0.6f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0.95f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0xFF51BFE3</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0xFFFF6F91</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$0xFFFFC857</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$1.1f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$1.2f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$150f</ID>
+    <ID>MagicNumber:PomodoroCompleteScreen.kt$1_000_000_000f</ID>
+    <ID>MagicNumber:PomodoroSessionHeaderSection.kt$4</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "A hero is not the one who never falls. He’s the one who gets up again and again, never losing sight of his dreams."</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "A lesson without pain is meaningless. That’s because you can’t gain something without sacrificing something in return."</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "Believe in yourself. Not in the me that believes in you. Believe in the you that believes in yourself!"</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "Fear is not evil. It tells you what your weakness is. And once you know your weakness, you can become stronger as well as kinder."</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "Go forward. No matter how devastated you may be by your own weakness or by the things that happen in your life."</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "I don’t want to conquer anything. I just think the guy with the most freedom in this whole ocean… is the Pirate King!"</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "If I don’t wield the sword, I can’t protect you. If I keep wielding the sword, I can’t embrace you."</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "The difference between the novice and the master is that the master has failed more times than the novice has tried."</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "The night is darkest just before dawn. But keep your eyes open, the best sunrise comes after the longest nights."</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "When people are protecting something truly special to them, they truly can become as strong as they can be."</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "When you have to save someone, they’re usually in a scary situation. You must be ready to face fear head-on!"</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "Whether you have the body, ability, or talent, none of it matters if you don’t believe in yourself."</ID>
+    <ID>MaxLineLength:StaticQuoteRepository.kt$StaticQuoteRepository$text = "You should enjoy the little detours. To the fullest. Because that’s where you’ll find the things more important than what you want."</ID>
+    <ID>NestedBlockDepth:PomodoroSessionViewModel.kt$PomodoroSessionViewModel$private fun fastForwardTimeline(now: Long): Boolean</ID>
+    <ID>ReturnCount:PomodoroSessionViewModel.kt$PomodoroSessionViewModel$private fun fastForwardTimeline(now: Long): Boolean</ID>
+    <ID>ReturnCount:PomodoroSessionViewModel.kt$PomodoroSessionViewModel$private fun startTicker()</ID>
+    <ID>ReturnCount:PomodoroTimelineMapper.kt$internal fun List&lt;TimelineSegmentUi&gt;.resolveActiveIndex(): Int</ID>
+    <ID>TooManyFunctions:PomodoroSessionViewModel.kt$PomodoroSessionViewModel : ViewModelContainerHost</ID>
+    <ID>UnusedPrivateMember:PomodoroCompleteScreen.kt$@Preview @Composable private fun PomodoroCompleteScreenPreview()</ID>
+    <ID>UnusedPrivateMember:PomodoroSessionHeaderSection.kt$@Preview @Composable private fun PomodoroSessionHeaderSectionPreview()</ID>
+  </CurrentIssues>
+</SmellBaseline>

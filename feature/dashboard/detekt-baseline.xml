@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:DashboardHeader.kt$@Composable fun DashboardHeader(onOpenSettings: () -&gt; Unit = {})</ID>
+    <ID>FunctionNaming:DashboardHeader.kt$@Preview @Composable private fun WavyHeaderPreview()</ID>
+    <ID>FunctionNaming:DashboardScreen.kt$@Suppress("NonSkippableComposable") @Composable fun DashboardScreen( onStartPomodoro: () -&gt; Unit, onOpenSettings: () -&gt; Unit, viewModel: DashboardViewModel = koinViewModel(), )</ID>
+    <ID>FunctionNaming:PomodoroHistoryGraphSection.kt$@Composable fun PomodoroHistorySection( modifier: Modifier = Modifier, historyState: HistorySectionUi, onSelectYear: (Int) -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:PomodoroHistoryGraphSection.kt$@Composable private fun FocusHistoryGraph( modifier: Modifier = Modifier, cells: ImmutableList&lt;ImmutableList&lt;HistoryCell&gt;&gt;, )</ID>
+    <ID>FunctionNaming:PomodoroHistoryGraphSection.kt$@Composable private fun StatisticsCard(totalMinutes: String, selectedYear: Int)</ID>
+    <ID>FunctionNaming:PomodoroHistoryGraphSection.kt$@Composable private fun YearFilters( years: ImmutableList&lt;Int&gt;, selectedYear: Int, onSelectYear: (Int) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:PomodoroHistoryGraphSection.kt$@OptIn(ExperimentalFoundationApi::class) @Composable private fun FocusHistoryCellItem(cell: HistoryCell, cellSize: Dp)</ID>
+    <ID>FunctionNaming:PomodoroHistoryGraphSection.kt$@Preview @Composable fun FocusHistorySectionPreview()</ID>
+    <ID>LongMethod:PomodoroHistoryGraphSection.kt$@OptIn(ExperimentalFoundationApi::class) @Composable private fun FocusHistoryCellItem(cell: HistoryCell, cellSize: Dp)</ID>
+    <ID>MagicNumber:DashboardModels.kt$10</ID>
+    <ID>MagicNumber:DashboardModels.kt$100</ID>
+    <ID>MagicNumber:DashboardModels.kt$16</ID>
+    <ID>MagicNumber:DashboardModels.kt$17</ID>
+    <ID>MagicNumber:DashboardModels.kt$20</ID>
+    <ID>MagicNumber:DashboardModels.kt$200</ID>
+    <ID>MagicNumber:DashboardModels.kt$2023</ID>
+    <ID>MagicNumber:DashboardModels.kt$2024</ID>
+    <ID>MagicNumber:DashboardModels.kt$2025</ID>
+    <ID>MagicNumber:DashboardModels.kt$3</ID>
+    <ID>MagicNumber:DashboardModels.kt$30</ID>
+    <ID>MagicNumber:DashboardModels.kt$300</ID>
+    <ID>MagicNumber:DashboardModels.kt$33</ID>
+    <ID>MagicNumber:DashboardModels.kt$34</ID>
+    <ID>MagicNumber:DashboardModels.kt$4</ID>
+    <ID>MagicNumber:DashboardModels.kt$40</ID>
+    <ID>MagicNumber:DashboardModels.kt$400</ID>
+    <ID>MagicNumber:DashboardModels.kt$5</ID>
+    <ID>MagicNumber:DashboardModels.kt$50</ID>
+    <ID>MagicNumber:DashboardModels.kt$500</ID>
+    <ID>MagicNumber:DashboardModels.kt$51</ID>
+    <ID>MagicNumber:DashboardModels.kt$6</ID>
+    <ID>MagicNumber:DashboardModels.kt$60</ID>
+    <ID>MagicNumber:DashboardModels.kt$600</ID>
+    <ID>MagicNumber:DashboardModels.kt$67</ID>
+    <ID>MagicNumber:DashboardModels.kt$68</ID>
+    <ID>MagicNumber:DashboardModels.kt$84</ID>
+    <ID>MagicNumber:HistoryGraphMapper.kt$3</ID>
+    <ID>MagicNumber:HistoryGraphMapper.kt$31</ID>
+    <ID>MagicNumber:HistoryGraphMapper.kt$4</ID>
+    <ID>MagicNumber:HistoryGraphMapper.kt$7</ID>
+    <ID>MagicNumber:PomodoroHistoryGraphSection.kt$2000</ID>
+    <ID>MagicNumber:PomodoroHistoryGraphSection.kt$8</ID>
+    <ID>MatchingDeclarationName:DashboardModels.kt$DashboardState</ID>
+    <ID>ReturnCount:HistoryGraphMapper.kt$private fun String.toLocalDateOrNull(): LocalDate?</ID>
+    <ID>TooManyFunctions:HistoryGraphMapper.kt$com.fakhry.pomodojo.features.dashboard.ui.mapper.HistoryGraphMapper.kt</ID>
+    <ID>UnusedPrivateMember:DashboardHeader.kt$@Preview @Composable private fun WavyHeaderPreview()</ID>
+  </CurrentIssues>
+</SmellBaseline>
