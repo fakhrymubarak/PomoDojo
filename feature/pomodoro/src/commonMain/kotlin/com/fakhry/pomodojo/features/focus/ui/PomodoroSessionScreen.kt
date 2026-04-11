@@ -13,11 +13,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import com.fakhry.pomodojo.core.designsystem.effects.ImmersiveModeEffect
 import com.fakhry.pomodojo.core.designsystem.effects.KeepScreenOnEffect
 import com.fakhry.pomodojo.core.designsystem.model.TimerStatusUi
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
-import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import com.fakhry.pomodojo.features.focus.ui.viewmodel.PomodoroSessionViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
@@ -34,6 +34,7 @@ fun PomodoroSessionScreen(
     val alwaysOnDisplay = viewModel.alwaysOnDisplay.collectAsState()
 
     KeepScreenOnEffect(alwaysOnDisplay.value)
+    ImmersiveModeEffect()
 
     BackHandler {
         viewModel.onEndClicked()
