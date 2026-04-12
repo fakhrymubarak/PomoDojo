@@ -52,7 +52,7 @@ Local hooks mirror CI by running `ktlintCheck`, `check`, Android/Desktop/iOS bui
 push. Enable them once per clone:
 
 ```
-git config core.hooksPath githooks
+git config core.hooksPath .githooks
 ```
 
 ## Project Structure
