@@ -23,6 +23,9 @@ kotlin {
     }
 
     sourceSets {
+        androidMain.dependencies {
+            implementation(libs.hyperisland.kit)
+        }
         commonMain.dependencies {
             implementation(project(":domain:pomodoro"))
             implementation(project(":core:utils"))

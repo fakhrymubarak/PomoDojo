@@ -1,5 +1,8 @@
 package com.fakhry.pomodojo.domain.pomodoro.model.notification
 
+/**
+* @param sessionId is the unique identifier for the pomodoro session.
+* */
 data class NotificationSummary(
     val sessionId: String = "",
     val title: String = "",

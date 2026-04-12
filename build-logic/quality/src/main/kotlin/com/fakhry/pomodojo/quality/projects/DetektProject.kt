@@ -48,6 +48,8 @@ internal fun Project.configureDetekt() {
     tasks.withType<Detekt>().configureEach {
         jvmTarget = "17"
         exclude("**/build/**")
+        exclude("**/bin/**")
+        exclude("**/test/**")
         reports {
             html.required.set(true)
             xml.required.set(true)

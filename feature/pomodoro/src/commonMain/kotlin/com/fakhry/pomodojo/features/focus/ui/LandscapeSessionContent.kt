@@ -177,7 +177,9 @@ private fun LandscapeControlsToggle(
                 FocusCircularButton(
                     onClick = onEnd,
                     icon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
-                    buttonDescription = stringResource(Res.string.focus_session_end_content_description),
+                    buttonDescription = stringResource(
+                        Res.string.focus_session_end_content_description,
+                    ),
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError,
                 )

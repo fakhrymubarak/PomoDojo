@@ -74,37 +74,39 @@ internal fun PortraitSessionContent(
 }
 
 @Composable
-internal fun ColumnScope.PomodoroTimelineSessionSection(modifier: Modifier, timeline: TimelineUiModel) =
-    this.run {
-        val colorScheme = MaterialTheme.colorScheme
+internal fun ColumnScope.PomodoroTimelineSessionSection(
+    modifier: Modifier,
+    timeline: TimelineUiModel,
+) = this.run {
+    val colorScheme = MaterialTheme.colorScheme
 
-        Text(
-            text = stringResource(Res.string.focus_session_timeline_title),
-            style = MaterialTheme.typography.titleMedium.copy(
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Bold,
-            ),
-            modifier = modifier.fillMaxWidth(),
-        )
+    Text(
+        text = stringResource(Res.string.focus_session_timeline_title),
+        style = MaterialTheme.typography.titleMedium.copy(
+            color = MaterialTheme.colorScheme.onBackground,
+            fontWeight = FontWeight.Bold,
+        ),
+        modifier = modifier.fillMaxWidth(),
+    )
 
-        Surface(
-            modifier = modifier.padding(top = 8.dp),
-            shape = RoundedCornerShape(16.dp),
-            border = BorderStroke(1.dp, colorScheme.outline),
-            color = colorScheme.surface,
+    Surface(
+        modifier = modifier.padding(top = 8.dp),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, colorScheme.outline),
+        color = colorScheme.surface,
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                TimelinePreview(timeline.segments)
-                Spacer(modifier = Modifier.height(4.dp))
-                TimelineHoursSplit(timeline.hourSplits)
-                Spacer(modifier = Modifier.height(12.dp))
-                TimelineLegends()
-            }
+            TimelinePreview(timeline.segments)
+            Spacer(modifier = Modifier.height(4.dp))
+            TimelineHoursSplit(timeline.hourSplits)
+            Spacer(modifier = Modifier.height(12.dp))
+            TimelineLegends()
         }
     }
+}
 
 @Composable
 private fun FocusQuoteBlock(modifier: Modifier, quote: QuoteContent) {

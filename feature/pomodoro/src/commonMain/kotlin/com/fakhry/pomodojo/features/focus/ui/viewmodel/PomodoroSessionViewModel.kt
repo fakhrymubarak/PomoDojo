@@ -211,7 +211,7 @@ class PomodoroSessionViewModel(
             val now = currentTimeProvider.now()
             var updatedSegment = updateRunningSegment(active, now)
             timelineSegments[activeSegmentIndex] = updatedSegment
-            updateNotification()
+//            updateNotification()
 
             var advancedSegment = false
             while (updatedSegment.timerStatus == TimerStatusUi.COMPLETED) {

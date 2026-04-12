@@ -11,8 +11,7 @@ androidx-espresso = "3.7.0"
 androidx-lifecycle = "2.9.1" # Update only after koin-bom vesion >4.2.0 to avoid this ios build error https://youtrack.jetbrains.com/projects/CMP/issues/CMP-8697/KLIB-resolver-Could-not-find-org.jetbrains.androidx.savedstatesavedstate
 androidx-room = "2.8.4"
 androidx-testExt = "1.3.0"
-composeHotReload = "1.0.0"
-compose = "1.9.3"
+compose = "1.10.3"
 firebaseAppDistribution = "5.1.0"
 datastore = "1.2.0"
 junit = "4.13.2"
@@ -22,6 +21,7 @@ kotlinx-coroutines = "1.10.2"
 kotlinxCollectionsImmutable = "0.4.0"
 kotlinDateTime = "0.7.1"
 ksp = "2.2.21-2.0.4"
+hyperIslandKit = "0.4.0"
 navigation = "2.9.1"
 kotlinx-serialization = "1.9.0"
 orbit = "11.0.0"
@@ -84,11 +84,11 @@ kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", ve
 compose-gradlePlugin = { module = "org.jetbrains.compose:org.jetbrains.compose.gradle.plugin", version.ref = "compose" }
 detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 ktlint-gradlePlugin = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlint" }
+hyperisland-kit = { module = "io.github.d4viddf:hyperisland_kit", version.ref = "hyperIslandKit" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
