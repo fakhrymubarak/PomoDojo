@@ -2,9 +2,7 @@ package com.fakhry.pomodojo.core.notification.notifications
 
 import android.Manifest
 import android.R
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
@@ -13,7 +11,8 @@ import com.fakhry.pomodojo.domain.pomodoro.model.notification.CompletionNotifica
 import com.fakhry.pomodojo.domain.pomodoro.model.notification.NotificationSummary
 import com.fakhry.pomodojo.core.notification.R as RN
 
-private const val TAG = "DefaultPomodojoNotificationManager"
+private const val MAX_PROGRESS = 100
+
 class DefaultPomodojoNotifManager(
     private val context: Context,
     private val notificationManager: NotificationManagerCompat,
@@ -28,8 +27,8 @@ class DefaultPomodojoNotifManager(
             .setOnlyAlertOnce(true)
             .setOngoing(true)
             .setSilent(true)
-            .setProgress(100, summary.segmentProgressPercent, false)
-            .setContentIntent(pendingActivityIntent())
+            .setProgress(MAX_PROGRESS, summary.segmentProgressPercent, false)
+            .setContentIntent(context.launchActivityPendingIntent())
             .setPriority(NotificationCompat.PRIORITY_MAX)
 
         // Use chronometer for self-updating timer when not paused
@@ -61,6 +60,8 @@ class DefaultPomodojoNotifManager(
         notificationManager.cancel(sessionNotificationId(sessionId))
     }
 
+    // Not wired up yet: planned completion notification (see commented call in notify())
+    @Suppress("UnusedPrivateMember")
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     private fun scheduleCompletion(summary: CompletionNotificationSummary) {
         notificationManager.cancel(sessionNotificationId(summary.sessionId))
@@ -79,7 +80,7 @@ class DefaultPomodojoNotifManager(
             .setContentText(body)
             .setAutoCancel(true)
             .setOngoing(false)
-            .setContentIntent(pendingActivityIntent())
+            .setContentIntent(context.launchActivityPendingIntent())
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setStyle(
                 NotificationCompat
@@ -87,22 +88,6 @@ class DefaultPomodojoNotifManager(
                     .bigText(body),
             )
         notificationManager.notify(completedNotificationId(summary.sessionId), builder.build())
-    }
-
-
-    private fun pendingActivityIntent(): PendingIntent {
-        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
-            ?: Intent(Intent.ACTION_MAIN).apply {
-                setClassName(context.packageName, "${context.packageName}.MainActivity")
-                addCategory(Intent.CATEGORY_LAUNCHER)
-            }
-        launchIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        return PendingIntent.getActivity(
-            context,
-            NOTIF_REQUEST_CODE_OFFSET,
-            launchIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
     }
 
     private fun ensureChannel() {
@@ -123,5 +108,5 @@ class DefaultPomodojoNotifManager(
         NOTIF_REQUEST_CODE_OFFSET + sessionId.hashCode()
 
     private fun completedNotificationId(sessionId: String) =
-        NOTIF_REQUEST_CODE_OFFSET + 3000 + sessionId.hashCode()
+        NOTIF_REQUEST_CODE_OFFSET + NOTIF_COMPLETED_ID_OFFSET + sessionId.hashCode()
 }

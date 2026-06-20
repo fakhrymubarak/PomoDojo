@@ -26,7 +26,6 @@ class AndroidPomodojoAlarmManager(
             cancelProgressUpdateAlarm(summary.sessionId)
             cancelSegmentCompletionAlarm(summary.sessionId)
         }
-
     }
 
     override fun cancel(sessionId: String) {
@@ -70,6 +69,8 @@ class AndroidPomodojoAlarmManager(
         alarmManager?.cancel(pendingIntent)
     }
 
+    // 'now' is kept for the in-progress periodic-update alarm (see commented body / TODO below)
+    @Suppress("UnusedParameter")
     private fun scheduleProgressUpdateAlarm(sessionId: String, now: Long) {
         val intent = Intent(context, NotificationSegmentProgressReceiver::class.java).apply {
             action = NotificationSegmentProgressReceiver.ACTION_PROGRESS_UPDATE
@@ -85,7 +86,6 @@ class AndroidPomodojoAlarmManager(
 
         // TODO : Fix this bug. It loops the notification update, meanwhile it should only do it once.
         // 1. Re-draw the flowchart diagram of notification and alarm triggers.
-
 
         // Schedule exact alarm to fire when segment progress updates
 //        val triggerTime = now + PROGRESS_UPDATE_INTERVAL_MS
@@ -140,9 +140,8 @@ class AndroidPomodojoAlarmManager(
     }
 
     private fun completedAlarmRequestCode(sessionId: String) =
-        NOTIF_REQUEST_CODE_OFFSET + 1000 + sessionId.hashCode()
+        NOTIF_REQUEST_CODE_OFFSET + ALARM_COMPLETED_ID_OFFSET + sessionId.hashCode()
 
     private fun progressAlarmRequestCode(sessionId: String) =
-        NOTIF_REQUEST_CODE_OFFSET + 2000 + sessionId.hashCode()
-
+        NOTIF_REQUEST_CODE_OFFSET + ALARM_PROGRESS_ID_OFFSET + sessionId.hashCode()
 }

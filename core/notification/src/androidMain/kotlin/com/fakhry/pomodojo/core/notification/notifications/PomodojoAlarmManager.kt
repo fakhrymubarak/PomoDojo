@@ -7,4 +7,3 @@ interface PomodojoAlarmManager {
 
     fun cancel(sessionId: String)
 }
-

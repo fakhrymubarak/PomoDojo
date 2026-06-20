@@ -3,7 +3,6 @@ package com.fakhry.pomodojo.core.notification.notifications
 import android.Manifest
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -32,7 +31,7 @@ class XiaomiNotifManager(
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun notify(summary: NotificationSummary) {
         notifyWithDynamicIsland(
-            intent = pendingActivityIntent(),
+            intent = context.launchActivityPendingIntent(),
             summary = summary,
             notifId = dynamicIslandNotificationId(summary.sessionId),
         )
@@ -69,7 +68,7 @@ class XiaomiNotifManager(
                 .setChatInfo(
                     title = summary.title,
                     timer = countdownTimer,
-                    pictureKey = PIC_KEY_ICON
+                    pictureKey = PIC_KEY_ICON,
                 )
                 .setBigIslandCountdown(summary.finishTimeMillis, PIC_KEY_ICON)
                 .setSmallIslandIcon(PIC_KEY_ICON)
@@ -87,21 +86,6 @@ class XiaomiNotifManager(
         notificationManager.notify(notifId, notification)
     }
 
-    private fun pendingActivityIntent(): PendingIntent {
-        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
-            ?: Intent(Intent.ACTION_MAIN).apply {
-                setClassName(context.packageName, "${context.packageName}.MainActivity")
-                addCategory(Intent.CATEGORY_LAUNCHER)
-            }
-        launchIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        return PendingIntent.getActivity(
-            context,
-            NOTIF_REQUEST_CODE_OFFSET,
-            launchIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
-    }
-
     private fun dynamicIslandNotificationId(sessionId: String) =
-        NOTIF_REQUEST_CODE_OFFSET + 4000 + sessionId.hashCode()
+        NOTIF_REQUEST_CODE_OFFSET + NOTIF_DYNAMIC_ISLAND_ID_OFFSET + sessionId.hashCode()
 }
