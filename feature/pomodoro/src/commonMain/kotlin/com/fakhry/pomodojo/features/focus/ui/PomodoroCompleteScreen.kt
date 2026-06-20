@@ -2,15 +2,18 @@ package com.fakhry.pomodojo.features.focus.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +45,6 @@ import com.fakhry.pomodojo.core.designsystem.generated.resources.pomodoro_comple
 import com.fakhry.pomodojo.core.designsystem.generated.resources.pomodoro_complete_start_another
 import com.fakhry.pomodojo.core.designsystem.generated.resources.pomodoro_complete_summary_title
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
-import com.fakhry.pomodojo.core.utils.compose.Expanded
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -65,16 +67,16 @@ fun PomodoroCompleteScreen(
     ) {
         Column(Modifier.fillMaxSize()) {
             CompletionHeader(totalCycles = uiState.totalCyclesFinished)
-            Box(modifier = Modifier.fillMaxSize()) {
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .heightIn(min = maxHeight)
                         .padding(horizontal = 24.dp, vertical = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween,
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    Expanded()
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -116,7 +118,6 @@ fun PomodoroCompleteScreen(
                             )
                         }
                     }
-                    Expanded()
                 }
                 ConfettiBurst(modifier = Modifier.matchParentSize())
             }
