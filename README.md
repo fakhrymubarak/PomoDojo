@@ -9,6 +9,42 @@
   layers.
 - Centralized preferences, theming, and localization resources in `commonMain` for consistent UX.
 
+## Setup
+
+One-time steps to get a fresh clone building. Firebase config (`google-services.json` for each
+flavor) and the environment files (`config/dev.props` / `config/prod.props`) are committed, so the
+only file you must provide locally is `local.properties`.
+
+### Prerequisites
+
+- **JDK 21** – the Gradle build pins a JDK 21 toolchain; both Java and Kotlin compile to target 21.
+- **Android SDK API 36** – `compileSdk`/`targetSdk = 36`, `minSdk = 24`.
+- **Xcode 15+** – only required to build/run the iOS target.
+- **Graphviz** (optional) – only to render the dependency-graph PNG (`brew install graphviz`).
+
+### Steps
+
+1. Clone the repo and open it in Android Studio, which generates `local.properties` automatically.
+   To create it by hand, point it at your Android SDK:
+   ```
+   sdk.dir=/Users/<you>/Library/Android/sdk
+   ```
+2. Enable the local git hooks so commits/pushes run the same checks as CI (see
+   [Git Hooks](#git-hooks)):
+   ```
+   git config core.hooksPath .githooks
+   ```
+3. Verify the toolchain and build:
+   ```
+   ./gradlew :composeApp:assembleDevDebug
+   ```
+
+### Build flavors
+
+The app declares an `environment` dimension with `dev` and `prod` flavors, producing variants such
+as `devDebug` and `prodRelease`. The `dev` flavor uses the `.dev` application-id suffix and a
+separate database (`pomodojo_dev.db`), so it installs alongside a prod build.
+
 ## How to Build
 
 ```
@@ -21,7 +57,7 @@
 xed iosApp/iosApp.xcodeproj           # Open the Swift runner, then build via Xcode's iOSApp scheme
 ```
 
-Requirements: JDK 17+, Android SDK path defined in `local.properties`, Xcode 15+ for iOS builds.
+Requirements: JDK 21, Android SDK path defined in `local.properties`, Xcode 15+ for iOS builds.
 
 ### Dependency Graph
 
