@@ -26,6 +26,9 @@ fun Project.envProps(fileName: String): Properties {
 }
 
 kotlin {
+    // Pin this project to JDK 21 so Java and Kotlin compile tasks agree on the target
+    jvmToolchain(21)
+
     androidTarget()
 
     listOf(
@@ -141,8 +144,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {

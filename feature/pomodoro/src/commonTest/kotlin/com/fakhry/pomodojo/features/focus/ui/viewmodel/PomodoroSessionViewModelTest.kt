@@ -276,9 +276,11 @@ class PomodoroSessionViewModelTest {
         return PomodoroSessionViewModel(
             currentTimeProvider = currentTimeProvider,
             createPomodoroSessionUseCase = createSessionUseCase,
-            preferencesRepository = preferencesRepository,
-            sessionRepository = sessionRepository,
-            historyRepository = FakeHistorySessionRepository(),
+            repoGroup = PomodoroSessionRepoGroup(
+                preferencesRepository = preferencesRepository,
+                sessionRepository = sessionRepository,
+                historyRepository = FakeHistorySessionRepository(),
+            ),
             pomodoroSessionNotifier = focusNotifier,
             soundPlayer = soundPlayer,
             dispatcher = dispatcherProvider,

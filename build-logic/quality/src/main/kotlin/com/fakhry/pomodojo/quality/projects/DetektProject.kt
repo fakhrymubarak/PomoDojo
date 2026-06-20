@@ -33,9 +33,14 @@ internal fun Project.configureDetekt() {
     afterEvaluate {
         val kmpExtension = extensions.findByType<KotlinMultiplatformExtension>()
         if (kmpExtension != null) {
+            val buildDirPath = layout.buildDirectory.get().asFile.canonicalPath
             val kmpSourceDirs = kmpExtension.sourceSets
                 .flatMap { it.kotlin.srcDirs }
                 .filter { it.exists() }
+                // Drop generated source roots (e.g. KSP/Room output under build/) so detekt
+                // doesn't lint generated code. The "**/build/**" exclude below can't catch
+                // these because their paths are relative to the generated srcDir root.
+                .filterNot { it.canonicalPath.startsWith(buildDirPath) }
             tasks.withType<Detekt>().configureEach {
                 setSource(kmpSourceDirs)
             }
@@ -46,7 +51,7 @@ internal fun Project.configureDetekt() {
     }
 
     tasks.withType<Detekt>().configureEach {
-        jvmTarget = "17"
+        jvmTarget = "21"
         exclude("**/build/**")
         exclude("**/bin/**")
         exclude("**/test/**")

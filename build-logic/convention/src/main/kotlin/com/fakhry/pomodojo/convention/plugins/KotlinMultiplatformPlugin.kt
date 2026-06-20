@@ -40,6 +40,9 @@ class KotlinMultiplatformPlugin : Plugin<Project> {
 
         extensions.configure<KotlinMultiplatformExtension> {
 
+            // Pin this project to JDK 21 so Java and Kotlin compile tasks agree on the target
+            jvmToolchain(21)
+
             androidTarget {
                 // Publish all environment variants so flavored modules can resolve each other
                 publishLibraryVariants("devDebug", "devRelease", "prodDebug", "prodRelease")
