@@ -18,6 +18,7 @@ class DefaultPomodojoNotifManager(
     private val notificationManager: NotificationManagerCompat,
 ) : NotifManager {
 
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun notify(summary: NotificationSummary) {
         ensureChannel()
 
