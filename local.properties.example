@@ -1,0 +1,5 @@
+sdk.dir=SDK_DIR
+signing_store_file=STORE_PATH
+signing_store_password=STORE_PASSWORD
+signing_key_alias=STORE_KEY_ALIAS
+signing_key_password=STORE_KEY_PASSWORD

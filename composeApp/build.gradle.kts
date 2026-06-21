@@ -25,6 +25,9 @@ fun Project.envProps(fileName: String): Properties {
     return props
 }
 
+fun Project.signingProperty(name: String): String? =
+    System.getenv(name) ?: envProps("local.properties").getProperty(name)
+
 kotlin {
     // Pin this project to JDK 21 so Java and Kotlin compile tasks agree on the target
     jvmToolchain(21)
@@ -127,13 +130,25 @@ android {
             buildConfigField("String", "LOCAL_DB_NAME", "\"$dbName\"")
         }
     }
+    signingConfigs {
+        val storeFilePath = signingProperty("signing_store_file")
+        if (storeFilePath != null && file(storeFilePath).exists()) {
+            create("release") {
+                storeFile = file(storeFilePath)
+                storePassword = signingProperty("signing_store_password")
+                keyAlias = signingProperty("signing_key_alias")
+                keyPassword = signingProperty("signing_key_password")
+            }
+        }
+    }
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
         }
         getByName("release") {
             isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release")
+                ?: signingConfigs.getByName("debug")
             ndk {
                 debugSymbolLevel = "FULL"
             }
