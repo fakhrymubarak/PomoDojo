@@ -55,6 +55,10 @@
     <string name="focus_session_phase_focus">Focus</string>
     <string name="focus_session_phase_break">Break</string>
     <string name="focus_session_phase_long_break">Long Break</string>
+    <string name="focus_session_gate_title_format">%1$s complete!</string>
+    <string name="focus_session_gate_message_format">Up next: %1$d min %2$s</string>
+    <string name="focus_session_gate_continue">Continue</string>
+    <string name="focus_session_gate_finish">Finish session</string>
 
     <!-- Pomodoro Complete Screen -->
     <string name="pomodoro_complete_header_title">Pomodoro Complete</string>

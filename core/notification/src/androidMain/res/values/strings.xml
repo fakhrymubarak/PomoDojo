@@ -13,4 +13,6 @@
     <string name="focus_session_notification_subtitle_format_running">%1$s remaining</string>
     <string name="focus_session_notification_subtitle_format_paused">%1$s remaining • Paused</string>
     <string name="focus_session_notification_body_format">Cycle %1$d of %2$d • %3$s</string>
+    <string name="focus_session_awaiting_title_format">%1$s complete</string>
+    <string name="focus_session_awaiting_body">Tap to continue to your next phase</string>
 </resources>

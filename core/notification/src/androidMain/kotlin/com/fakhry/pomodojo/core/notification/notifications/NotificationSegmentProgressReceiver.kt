@@ -105,9 +105,12 @@ class NotificationSegmentProgressReceiver : BroadcastReceiver() {
 }
 
 /**
- * Processes the session to check if the current segment is complete and advances to the next segment if needed.
- * Loops through all overdue segments to catch up when alarms fire late.
- * Returns the updated session if any changes were made, or the original session if no changes.
+ * Processes the session when a segment-completion alarm fires.
+ *
+ * The phase-transition gate means a finished phase must NOT auto-advance to the next
+ * one: the running segment is finalized to COMPLETED, leaving the following segment
+ * INITIAL (the parked gate). The user resumes by opening the app and tapping continue.
+ * Returns the updated session if the running segment was finalized, else the original.
  */
 private fun processSessionCompletion(
     session: PomodoroSessionDomain,
@@ -125,73 +128,20 @@ private fun processSessionCompletion(
     }
     if (activeIndex == -1) return session // All segments completed
 
-    var modified = false
-    var currentIndex = activeIndex
+    val activeSegment = segments[activeIndex]
+    if (activeSegment.timerStatus != TimerStatusDomain.RUNNING) return session
 
-    // Loop through all overdue segments until we find one that's still in the future
-    while (currentIndex <= segments.lastIndex) {
-        val currentSegment = segments[currentIndex]
+    val remaining = (activeSegment.timer.finishedInMillis - now).coerceAtLeast(0L)
+    if (remaining > 0L) return session
 
-        val shouldAdvance = when (currentSegment.timerStatus) {
-            TimerStatusDomain.RUNNING -> {
-                val remaining = (currentSegment.timer.finishedInMillis - now).coerceAtLeast(0L)
-                if (remaining == 0L) {
-                    Log.i(
-                        TAG,
-                        "processSessionCompletion: segment $currentIndex completed, advancing to next",
-                    )
-                    segments[currentIndex] = finalizeSegment(currentSegment)
-                    modified = true
-                    true
-                } else {
-                    false
-                }
-            }
-
-            TimerStatusDomain.COMPLETED -> {
-                Log.i(
-                    TAG,
-                    "processSessionCompletion: segment $currentIndex already completed, advancing to next",
-                )
-                true
-            }
-
-            else -> false
-        }
-
-        if (!shouldAdvance || currentIndex >= segments.lastIndex) break
-
-        // Try to advance to the next segment
-        val nextStartAt = currentSegment.timer.finishedInMillis.takeIf { it > 0L } ?: now
-        val nextSegment = prepareSegmentForRun(
-            segments[currentIndex + 1],
-            startedAt = nextStartAt,
-            referenceTime = now,
-        )
-        segments[currentIndex + 1] = nextSegment
-        modified = true
-        Log.i(TAG, "processSessionCompletion: started segment ${currentIndex + 1}")
-
-        // If the next segment is already completed (overdue), continue the loop
-        if (nextSegment.timerStatus == TimerStatusDomain.COMPLETED) {
-            currentIndex++
-            continue
-        } else {
-            // Found a segment that's still running, we're done
-            break
-        }
-    }
-
-    return if (modified) {
-        session.copy(
-            timeline = TimelineDomain(
-                segments = segments,
-                hourSplits = session.timeline.hourSplits,
-            ),
-        )
-    } else {
-        session
-    }
+    Log.i(TAG, "processSessionCompletion: segment $activeIndex completed, parking at gate")
+    segments[activeIndex] = finalizeSegment(activeSegment)
+    return session.copy(
+        timeline = TimelineDomain(
+            segments = segments,
+            hourSplits = session.timeline.hourSplits,
+        ),
+    )
 }
 
 /**
@@ -203,31 +153,4 @@ private fun finalizeSegment(segment: TimerSegmentsDomain): TimerSegmentsDomain {
         startedPauseTime = 0L,
     )
     return segment.copy(timer = timer, timerStatus = TimerStatusDomain.COMPLETED)
-}
-
-/**
- * Prepares a segment to start running by calculating its finish time and setting status to RUNNING
- */
-private fun prepareSegmentForRun(
-    segment: TimerSegmentsDomain,
-    startedAt: Long,
-    referenceTime: Long,
-): TimerSegmentsDomain {
-    val duration = segment.timer.durationEpochMs
-    val start = startedAt.takeIf { it > 0L } ?: referenceTime
-    val finishedAt = start + duration
-    val remaining = (finishedAt - referenceTime).coerceAtLeast(0L)
-    val progress = if (duration > 0L) {
-        (duration - remaining).toFloat() / duration
-    } else {
-        0f
-    }
-    val timer = segment.timer.copy(
-        progress = progress,
-        finishedInMillis = finishedAt,
-        startedPauseTime = 0L,
-        elapsedPauseTime = 0L,
-    )
-    val status = if (remaining == 0L) TimerStatusDomain.COMPLETED else TimerStatusDomain.RUNNING
-    return segment.copy(timer = timer, timerStatus = status)
 }

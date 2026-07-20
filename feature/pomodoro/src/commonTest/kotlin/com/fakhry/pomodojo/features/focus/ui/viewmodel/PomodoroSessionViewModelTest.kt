@@ -111,9 +111,10 @@ class PomodoroSessionViewModelTest {
     }
 
     @Test
-    fun `restoring session fast forwards overdue segments`() = runTest(dispatcher) {
-        val elapsedSinceStart = 3 * minuteMillis + 30 * 1_000L
-        advanceTimeBy(elapsedSinceStart)
+    fun `restoring a running phase that elapsed parks at the gate`() = runTest(dispatcher) {
+        // Only the running phase can elapse while away; the timeline must park at the
+        // gate (not auto-advance) so restore can replay the transition.
+        advanceTimeBy(2 * minuteMillis)
 
         val storedSession = activeSessionSnapshot(
             segments = listOf(
@@ -152,46 +153,87 @@ class PomodoroSessionViewModelTest {
 
         val state = viewModel.awaitSessionStarted()
 
-        assertEquals(
-            TimerStatusUi.RUNNING,
-            state.activeSegment.timerStatus,
-        )
-        assertEquals(
-            TimerTypeUi.SHORT_BREAK,
-            state.activeSegment.type,
-        )
-        assertEquals(
-            "00:30",
-            state.activeSegment.timer.formattedTime,
-        )
+        assertTrue(state.awaitingContinue, "state=$state")
+        assertEquals(TimerTypeUi.SHORT_BREAK, state.finishedPhaseType, "state=$state")
+        assertEquals(TimerTypeUi.FOCUS, state.nextPhaseType, "state=$state")
+        assertEquals(TimerStatusUi.COMPLETED, state.activeSegment.timerStatus, "state=$state")
         assertEquals(
             listOf(
                 TimerStatusUi.COMPLETED,
                 TimerStatusUi.COMPLETED,
-                TimerStatusUi.COMPLETED,
+                TimerStatusUi.INITIAL,
+                TimerStatusUi.INITIAL,
             ),
-            state.timeline.segments.take(3).map { it.timerStatus },
-        )
-        assertEquals(
-            TimerStatusDomain.RUNNING,
-            sessionRepository.storedSession!!.timeline.segments[3].timerStatus,
+            state.timeline.segments.map { it.timerStatus },
         )
     }
 
     @Test
-    fun `segment completion triggers timer notification sound`() = runTest(dispatcher) {
+    fun `restoring a partially elapsed running phase resumes with the correct remaining time`() =
+        runTest(dispatcher) {
+            // Process death 1 minute into a 3-minute focus phase: on reopen the timer must
+            // subtract the elapsed minute (finishedInMillis - now) and keep running, not
+            // restart from full duration nor park at the gate.
+            advanceTimeBy(minuteMillis) // wall clock sits at the 1-minute mark
+
+            val storedSession = activeSessionSnapshot(
+                segments = listOf(
+                    timerSegment(
+                        type = TimerType.FOCUS,
+                        cycle = 1,
+                        durationMs = 3 * minuteMillis,
+                        status = TimerStatusDomain.RUNNING,
+                        finishedAt = 3 * minuteMillis,
+                    ),
+                    timerSegment(
+                        type = TimerType.SHORT_BREAK,
+                        cycle = 1,
+                        durationMs = minuteMillis,
+                        status = TimerStatusDomain.INITIAL,
+                    ),
+                ),
+            )
+            val sessionRepository = FakeActiveSessionRepository(initialSession = storedSession)
+
+            val viewModel = createViewModel(sessionRepository = sessionRepository)
+            runCurrent()
+
+            val restored = viewModel.awaitSessionStarted()
+            assertEquals(
+                TimerStatusUi.RUNNING,
+                restored.activeSegment.timerStatus,
+                "state=$restored",
+            )
+            assertEquals(TimerTypeUi.FOCUS, restored.activeSegment.type, "state=$restored")
+            assertEquals("02:00", restored.activeSegment.timer.formattedTime, "state=$restored")
+            assertTrue(!restored.awaitingContinue, "state=$restored")
+            assertTrue(!restored.isComplete, "state=$restored")
+
+            // The restored ticker keeps counting down from the elapsed-adjusted remaining.
+            advanceTimeBy(minuteMillis)
+            val ticked = viewModel.container.stateFlow
+                .first { it.activeSegment.timer.formattedTime == "01:00" }
+            assertEquals(TimerStatusUi.RUNNING, ticked.activeSegment.timerStatus, "state=$ticked")
+        }
+
+    @Test
+    fun `phase completion opens the gate without auto-advancing`() = runTest(dispatcher) {
         val soundPlayer = FakeSoundPlayer()
         val viewModel = createViewModel(soundPlayer = soundPlayer)
         runCurrent()
         viewModel.awaitSessionStarted()
 
-        advanceTimeBy(minuteMillis)
-        runCurrent()
-        advanceUntilIdle()
+        advanceTimeBy(minuteMillis + 1_000L)
 
-        // With breaks after last cycle, advanceUntilIdle() completes both segments
-        // Focus completes (1 sound) + Break completes (1 sound) = 2 sounds total
-        assertEquals(2, soundPlayer.playCount)
+        // Await the gate rather than the virtual clock: Orbit runs intents off the test
+        // dispatcher, so we synchronize on the state the completion intent commits.
+        val gated = viewModel.container.stateFlow.first { it.awaitingContinue }
+
+        assertEquals(TimerTypeUi.FOCUS, gated.finishedPhaseType, "state=$gated")
+        assertEquals(TimerTypeUi.SHORT_BREAK, gated.nextPhaseType, "state=$gated")
+        // The next phase must NOT have auto-started.
+        assertEquals(TimerStatusUi.INITIAL, gated.timeline.segments[1].timerStatus, "state=$gated")
+        assertTrue(soundPlayer.playCount >= 1, "playCount=${soundPlayer.playCount}")
     }
 
     @Test
@@ -223,25 +265,25 @@ class PomodoroSessionViewModelTest {
     }
 
     @Test
-    fun `togglePauseResume completes running segment when timer elapsed`() = runTest(dispatcher) {
-        val sessionRepository = FakeActiveSessionRepository()
-        val viewModel = createViewModel(sessionRepository = sessionRepository)
-        runCurrent()
-        viewModel.awaitSessionStarted()
+    fun `elapsed running phase opens the gate and continue starts the next phase`() =
+        runTest(dispatcher) {
+            val sessionRepository = FakeActiveSessionRepository()
+            val viewModel = createViewModel(sessionRepository = sessionRepository)
+            runCurrent()
+            viewModel.awaitSessionStarted()
 
-        advanceTimeBy(minuteMillis)
-        runCurrent()
+            advanceTimeBy(minuteMillis + 1_000L)
 
-        viewModel.togglePauseResume()
-        advanceUntilIdle()
+            val gated = viewModel.container.stateFlow.first { it.awaitingContinue }
+            assertEquals(TimerStatusUi.COMPLETED, gated.timeline.segments.first().timerStatus)
+            assertEquals(TimerTypeUi.FOCUS, gated.activeSegment.type, "state=$gated")
 
-        val updatedTimeline = viewModel.container.stateFlow.value.timeline.segments
-        assertEquals(TimerStatusUi.COMPLETED, updatedTimeline.first().timerStatus)
-        assertEquals(
-            TimerTypeUi.SHORT_BREAK,
-            viewModel.container.stateFlow.value.activeSegment.type,
-        )
-    }
+            viewModel.onContinueNextPhase()
+
+            val resumed = viewModel.container.stateFlow.first { !it.awaitingContinue }
+            assertEquals(TimerTypeUi.SHORT_BREAK, resumed.activeSegment.type, "state=$resumed")
+            assertEquals(TimerStatusUi.RUNNING, resumed.activeSegment.timerStatus, "state=$resumed")
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun TestScope.createViewModel(

@@ -79,6 +79,16 @@ fun PomodoroSessionScreen(
         }
     }
 
+    if (state.awaitingContinue && state.finishedPhaseType != null) {
+        PhaseTransitionGate(
+            finishedPhase = state.finishedPhaseType,
+            nextPhase = state.nextPhaseType,
+            nextDurationMs = state.nextPhaseDurationMs,
+            onContinue = viewModel::onContinueNextPhase,
+            onFinish = viewModel::onConfirmFinish,
+        )
+    }
+
     if (showEndDialog) {
         FocusConfirmDialog(
             onConfirmFinish = viewModel::onConfirmFinish,
