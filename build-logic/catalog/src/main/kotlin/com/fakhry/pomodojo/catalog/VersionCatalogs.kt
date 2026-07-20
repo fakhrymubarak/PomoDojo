@@ -106,5 +106,5 @@ val Project.libs: VersionCatalog
 
 private fun VersionCatalog.findPluginId(string: String) = findPlugin(string).get().get().pluginId
 
-private fun VersionCatalog.findLibAlias(alias: String): Provider<MinimalExternalModuleDependency?> =
+private fun VersionCatalog.findLibAlias(alias: String): Provider<MinimalExternalModuleDependency> =
     findLibrary(alias).get()
