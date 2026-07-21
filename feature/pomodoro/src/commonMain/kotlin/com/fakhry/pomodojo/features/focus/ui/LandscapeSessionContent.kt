@@ -35,6 +35,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,12 +46,14 @@ import com.fakhry.pomodojo.core.designsystem.components.focusPhaseLabel
 import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_end_content_description
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_pause_content_description
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_quote_content_description
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_resume_content_description
 import com.fakhry.pomodojo.core.designsystem.model.TimelineSegmentUi
 import com.fakhry.pomodojo.core.designsystem.model.TimerTypeUi
 import com.fakhry.pomodojo.core.designsystem.theme.LongBreakHighlight
 import com.fakhry.pomodojo.core.designsystem.theme.Primary
 import com.fakhry.pomodojo.core.designsystem.theme.Secondary
+import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
@@ -81,6 +85,12 @@ internal fun LandscapeSessionContent(
                 formattedTime = activeSegment.timer.formattedTime,
             )
         }
+
+        // Anime quote directly above the session progress bar
+        LandscapeQuoteBlock(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+            quote = state.quote,
+        )
 
         // Bottom: compact timeline bar (bar only, no title/legends)
         CompactTimelineBar(
@@ -197,6 +207,38 @@ private fun LandscapeControlsToggle(
                 contentDescription = if (showControls) "Hide controls" else "Show controls",
                 modifier = Modifier.rotate(arrowRotation),
                 tint = MaterialTheme.colorScheme.onBackground,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LandscapeQuoteBlock(modifier: Modifier = Modifier, quote: QuoteContent) {
+    val quoteDescription = stringResource(
+        Res.string.focus_session_quote_content_description,
+        quote.text,
+    )
+    Column(
+        modifier = modifier.fillMaxWidth().semantics { contentDescription = quoteDescription },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = "\"${quote.text}\"",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center,
+            ),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        val attribution = quote.attribution()
+        if (attribution.isNotBlank()) {
+            Text(
+                text = attribution,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
             )
         }
     }
