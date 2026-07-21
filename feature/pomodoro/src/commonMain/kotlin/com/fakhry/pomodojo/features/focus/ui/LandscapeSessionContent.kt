@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.fakhry.pomodojo.core.designsystem.components.MonospacedTimerText
 import com.fakhry.pomodojo.core.designsystem.components.TimelinePreview
 import com.fakhry.pomodojo.core.designsystem.components.focusPhaseLabel
 import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
@@ -120,15 +121,13 @@ private fun LandscapeTimerText(
         // Font size scales with 22% of the 75%-width container
         val fontSize = (maxWidth.value * 0.22f).sp
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
+            MonospacedTimerText(
                 text = formattedTime,
                 style = MaterialTheme.typography.displayLarge.copy(
                     fontSize = fontSize,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
                 ),
-                textAlign = TextAlign.Center,
-                maxLines = 1,
             )
             LandscapePhaseChip(phase = segmentType, color = color)
         }

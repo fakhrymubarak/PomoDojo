@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
@@ -56,14 +55,13 @@ fun PomodoroTimerSection(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
+            MonospacedTimerText(
                 text = formattedTime,
                 style = MaterialTheme.typography.displayLarge.copy(
                     fontSize = 56.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
                 ),
-                textAlign = TextAlign.Center,
             )
             FocusPhaseChip(phase = segmentType, color = color)
         }
