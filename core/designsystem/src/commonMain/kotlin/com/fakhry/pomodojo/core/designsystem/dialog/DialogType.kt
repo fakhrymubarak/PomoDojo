@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
  * Serializable description of the currently active dialog.
  *
  * Variants carry only serializable discriminators (no lambdas, colors, or strings) so the
- * active dialog survives process death via [DialogState.Saver]. The text, action, and glow
- * color for each variant are resolved at render time in [DialogHandler].
+ * active dialog survives process death via [DialogState.Saver]. The text and action for each
+ * variant are resolved at render time in [DialogHandler].
  */
 @Serializable
 sealed interface DialogType {
@@ -16,7 +16,7 @@ sealed interface DialogType {
     @Serializable
     data object None : DialogType
 
-    /** A confirm dialog rendered as a glow-backed overlay modal. */
+    /** A confirm dialog rendered as a scrim-backed overlay modal. */
     @Serializable
     data class Confirm(val kind: ConfirmKind) : DialogType
 

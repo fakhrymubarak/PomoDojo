@@ -81,7 +81,6 @@ fun PomodoroSessionScreen(
 
         DialogHandler(
             state = dialogs,
-            glowColor = state.activeSegment.type.phaseGlowColor(),
             onConfirm = { viewModel.onConfirmFinish() },
             onDismiss = { viewModel.onDismissConfirmEnd() },
         )

@@ -21,8 +21,9 @@ private const val MILLIS_PER_MINUTE = 60_000L
  *
  * A glow tinted by the just-finished phase sweeps in from the screen edges for ~2.5s
  * (not skippable), then the continue/finish dialog is revealed. Rendered through the shared
- * [PomoModalOverlay] edge-glow backdrop so it matches the end-session confirm overlay. Covers
- * the session content and blocks interaction with it while open.
+ * [PomoModalOverlay] edge-glow backdrop — the only overlay in the app that uses this glow, since
+ * it marks a phase completing. Covers the session content and blocks interaction with it while
+ * open.
  */
 @Composable
 internal fun PhaseTransitionGate(

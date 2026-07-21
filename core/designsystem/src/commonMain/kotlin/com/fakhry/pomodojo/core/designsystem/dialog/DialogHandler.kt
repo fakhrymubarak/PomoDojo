@@ -1,7 +1,6 @@
 package com.fakhry.pomodojo.core.designsystem.dialog
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_continue
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_end_message
@@ -13,24 +12,17 @@ import org.jetbrains.compose.resources.stringResource
  * Renders the active dialog from [state]. Call it inside the screen's root `Box` (after the
  * content) so overlay modals layer on top.
  *
- * Because [DialogType] payloads are serializable discriminators, the text/action/color are
- * resolved here: [onConfirm] receives the [ConfirmKind] to run the matching action, [onDismiss]
- * handles cancellation (button or scrim tap), and [glowColor] tints the confirm overlay's glow
- * (typically the current phase color).
+ * Because [DialogType] payloads are serializable discriminators, the text/action are resolved
+ * here: [onConfirm] receives the [ConfirmKind] to run the matching action, [onDismiss] handles
+ * cancellation (button or scrim tap).
  */
 @Composable
-fun DialogHandler(
-    state: DialogState,
-    glowColor: Color,
-    onConfirm: (ConfirmKind) -> Unit,
-    onDismiss: () -> Unit,
-) {
+fun DialogHandler(state: DialogState, onConfirm: (ConfirmKind) -> Unit, onDismiss: () -> Unit) {
     when (val dialog = state.current) {
         is DialogType.None -> Unit
 
         is DialogType.Confirm -> ConfirmOverlay(
             kind = dialog.kind,
-            glowColor = glowColor,
             onConfirm = { onConfirm(dialog.kind) },
             onDismiss = onDismiss,
         )
@@ -46,12 +38,7 @@ fun DialogHandler(
 }
 
 @Composable
-private fun ConfirmOverlay(
-    kind: ConfirmKind,
-    glowColor: Color,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
+private fun ConfirmOverlay(kind: ConfirmKind, onConfirm: () -> Unit, onDismiss: () -> Unit) {
     val texts = when (kind) {
         ConfirmKind.END_FOCUS_SESSION -> ConfirmTexts(
             title = stringResource(Res.string.focus_session_confirm_end_title),
@@ -62,7 +49,7 @@ private fun ConfirmOverlay(
     }
 
     PomoModalOverlay(
-        backdrop = ModalBackdrop.EdgeGlow(color = glowColor, animateIntro = false),
+        backdrop = ModalBackdrop.Scrim(),
         dismissable = true,
         onDismiss = onDismiss,
     ) {
