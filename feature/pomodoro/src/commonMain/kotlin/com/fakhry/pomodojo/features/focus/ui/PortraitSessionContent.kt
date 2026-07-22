@@ -29,6 +29,7 @@ import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_quote_content_description
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_timeline_title
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
+import com.fakhry.pomodojo.core.designsystem.model.TimerTypeUi
 import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
 import com.fakhry.pomodojo.features.focus.ui.components.PomodoroSessionHeaderSection
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
@@ -40,6 +41,7 @@ internal fun PortraitSessionContent(
     isTimerRunning: Boolean,
     onTogglePause: () -> Unit,
     onEnd: () -> Unit,
+    onSkip: () -> Unit,
 ) {
     val activeSegment = state.activeSegment
     Column(
@@ -67,8 +69,10 @@ internal fun PortraitSessionContent(
         Spacer(modifier = Modifier.height(32.dp))
         FocusControls(
             isTimerRunning = isTimerRunning,
+            isBreak = activeSegment.type != TimerTypeUi.FOCUS,
             onTogglePause = onTogglePause,
             onEnd = onEnd,
+            onSkip = onSkip,
         )
     }
 }

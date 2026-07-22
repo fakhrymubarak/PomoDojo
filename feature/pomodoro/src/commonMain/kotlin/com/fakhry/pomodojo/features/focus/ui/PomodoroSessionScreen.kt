@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import com.fakhry.pomodojo.core.designsystem.dialog.ConfirmKind
 import com.fakhry.pomodojo.core.designsystem.dialog.DialogHandler
+import com.fakhry.pomodojo.core.designsystem.dialog.DialogState
 import com.fakhry.pomodojo.core.designsystem.dialog.DialogType
 import com.fakhry.pomodojo.core.designsystem.dialog.rememberDialogState
 import com.fakhry.pomodojo.core.designsystem.effects.ImmersiveModeEffect
@@ -43,18 +44,7 @@ fun PomodoroSessionScreen(
     }
 
     viewModel.collectSideEffect { sideEffect ->
-        when (sideEffect) {
-            is PomodoroSessionSideEffect.OnSessionComplete -> {
-                onSessionCompleted(sideEffect.completionResult)
-            }
-
-            is PomodoroSessionSideEffect.ShowEndSessionDialog ->
-                if (sideEffect.isShown) {
-                    dialogs.showDialog(DialogType.Confirm(ConfirmKind.END_FOCUS_SESSION))
-                } else {
-                    dialogs.hideDialog()
-                }
-        }
+        handleSessionSideEffect(sideEffect, dialogs, onSessionCompleted)
     }
 
     val state = viewModel.collectAsState().value
@@ -67,6 +57,7 @@ fun PomodoroSessionScreen(
             isTimerRunning = isTimerRunning,
             onTogglePause = viewModel::togglePauseResume,
             onEnd = viewModel::onEndClicked,
+            onSkip = viewModel::onSkipClicked,
         )
 
         if (state.awaitingContinue && state.finishedPhaseType != null) {
@@ -81,9 +72,45 @@ fun PomodoroSessionScreen(
 
         DialogHandler(
             state = dialogs,
-            onConfirm = { viewModel.onConfirmFinish() },
-            onDismiss = { viewModel.onDismissConfirmEnd() },
+            onConfirm = { kind -> handleDialogConfirm(kind, viewModel) },
+            onDismiss = { handleDialogDismiss(dialogs, viewModel) },
         )
+    }
+}
+
+private fun handleSessionSideEffect(
+    sideEffect: PomodoroSessionSideEffect,
+    dialogs: DialogState,
+    onSessionCompleted: (PomodoroCompletionUiState) -> Unit,
+) {
+    when (sideEffect) {
+        is PomodoroSessionSideEffect.OnSessionComplete ->
+            onSessionCompleted(sideEffect.completionResult)
+
+        is PomodoroSessionSideEffect.ShowEndSessionDialog ->
+            dialogs.toggleConfirm(ConfirmKind.END_FOCUS_SESSION, sideEffect.isShown)
+
+        is PomodoroSessionSideEffect.ShowSkipBreakDialog ->
+            dialogs.toggleConfirm(ConfirmKind.SKIP_BREAK, sideEffect.isShown)
+    }
+}
+
+private fun DialogState.toggleConfirm(kind: ConfirmKind, isShown: Boolean) {
+    if (isShown) showDialog(DialogType.Confirm(kind)) else hideDialog()
+}
+
+private fun handleDialogConfirm(kind: ConfirmKind, viewModel: PomodoroSessionViewModel) {
+    when (kind) {
+        ConfirmKind.END_FOCUS_SESSION -> viewModel.onConfirmFinish()
+        ConfirmKind.SKIP_BREAK -> viewModel.onConfirmSkip()
+    }
+}
+
+private fun handleDialogDismiss(dialogs: DialogState, viewModel: PomodoroSessionViewModel) {
+    when ((dialogs.current as? DialogType.Confirm)?.kind) {
+        ConfirmKind.END_FOCUS_SESSION -> viewModel.onDismissConfirmEnd()
+        ConfirmKind.SKIP_BREAK -> viewModel.onDismissConfirmSkip()
+        null -> dialogs.hideDialog()
     }
 }
 
@@ -93,6 +120,7 @@ private fun SessionContent(
     isTimerRunning: Boolean,
     onTogglePause: () -> Unit,
     onEnd: () -> Unit,
+    onSkip: () -> Unit,
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -105,6 +133,7 @@ private fun SessionContent(
                     isTimerRunning = isTimerRunning,
                     onTogglePause = onTogglePause,
                     onEnd = onEnd,
+                    onSkip = onSkip,
                 )
             } else {
                 PortraitSessionContent(
@@ -112,6 +141,7 @@ private fun SessionContent(
                     isTimerRunning = isTimerRunning,
                     onTogglePause = onTogglePause,
                     onEnd = onEnd,
+                    onSkip = onSkip,
                 )
             }
         }

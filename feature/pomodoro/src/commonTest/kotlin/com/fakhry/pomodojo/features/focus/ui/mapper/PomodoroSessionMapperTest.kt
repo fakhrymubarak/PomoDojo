@@ -46,6 +46,7 @@ class PomodoroSessionMapperTest {
         assertEquals(domain.quote, uiState.quote)
         assertEquals(true, uiState.isComplete)
         assertEquals(false, uiState.isShowConfirmEndDialog)
+        assertEquals(false, uiState.isShowConfirmSkipDialog)
     }
 
     @Test

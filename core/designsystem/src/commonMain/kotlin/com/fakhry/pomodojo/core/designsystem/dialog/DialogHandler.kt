@@ -6,6 +6,10 @@ import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_c
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_end_message
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_end_title
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_finish
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_skip_confirm
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_skip_dismiss
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_skip_message
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_confirm_skip_title
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -45,6 +49,13 @@ private fun ConfirmOverlay(kind: ConfirmKind, onConfirm: () -> Unit, onDismiss: 
             message = stringResource(Res.string.focus_session_confirm_end_message),
             confirmText = stringResource(Res.string.focus_session_confirm_finish),
             dismissText = stringResource(Res.string.focus_session_confirm_continue),
+        )
+
+        ConfirmKind.SKIP_BREAK -> ConfirmTexts(
+            title = stringResource(Res.string.focus_session_confirm_skip_title),
+            message = stringResource(Res.string.focus_session_confirm_skip_message),
+            confirmText = stringResource(Res.string.focus_session_confirm_skip_confirm),
+            dismissText = stringResource(Res.string.focus_session_confirm_skip_dismiss),
         )
     }
 

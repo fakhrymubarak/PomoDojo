@@ -106,6 +106,53 @@ class PomodoroSessionViewModel(
         postSideEffect(PomodoroSessionSideEffect.ShowEndSessionDialog(false))
     }
 
+    fun onSkipClicked() = intent {
+        if (state.isComplete) return@intent
+        reduce { state.copy(isShowConfirmSkipDialog = true) }
+        postSideEffect(PomodoroSessionSideEffect.ShowSkipBreakDialog(true))
+    }
+
+    fun onDismissConfirmSkip() = intent {
+        reduce { state.copy(isShowConfirmSkipDialog = false) }
+        postSideEffect(PomodoroSessionSideEffect.ShowSkipBreakDialog(false))
+    }
+
+    fun onConfirmSkip() = intent {
+        reduce { state.copy(isShowConfirmSkipDialog = false) }
+        postSideEffect(PomodoroSessionSideEffect.ShowSkipBreakDialog(false))
+
+        stopTicker()
+        val now = currentTimeProvider.now()
+        val active = timelineSegments.getOrNull(activeSegmentIndex) ?: return@intent
+        timelineSegments[activeSegmentIndex] = finalizeSegment(updateRunningSegment(active, now))
+
+        if (activeSegmentIndex >= timelineSegments.lastIndex) {
+            // Skipping the final segment ends the session, same as a normal finish.
+            reduce {
+                state.copy(
+                    isComplete = true,
+                    activeSegment = timelineSegments[activeSegmentIndex],
+                    timeline = state.timeline.copy(segments = timelineSegments.toPersistentList()),
+                )
+            }
+            completeActiveSession()
+            val completionSummary = state.toCompletionSummary()
+            postSideEffect(PomodoroSessionSideEffect.OnSessionComplete(completionSummary))
+            return@intent
+        }
+
+        activeSegmentIndex += 1
+        timelineSegments[activeSegmentIndex] = prepareSegmentForRun(
+            timelineSegments[activeSegmentIndex],
+            startedAt = now,
+            referenceTime = now,
+        )
+        reduce { state.withGateClosed().withUpdatedTimeline() }
+        persistActiveSnapshotIfNeeded()
+        startTicker()
+        updateNotification(forceUpdate = true)
+    }
+
     fun onConfirmFinish() = intent {
         stopTicker()
         finalizeCurrentSegment()

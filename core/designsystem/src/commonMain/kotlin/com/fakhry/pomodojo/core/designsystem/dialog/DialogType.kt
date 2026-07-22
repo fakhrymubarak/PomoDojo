@@ -28,6 +28,7 @@ sealed interface DialogType {
 /** Discriminator that maps a [DialogType.Confirm] to its text and confirm action. */
 enum class ConfirmKind {
     END_FOCUS_SESSION,
+    SKIP_BREAK,
 }
 
 /** Discriminator that maps a [DialogType.Modal] to its content. */

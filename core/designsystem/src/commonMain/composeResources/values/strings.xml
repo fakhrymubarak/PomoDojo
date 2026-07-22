@@ -59,6 +59,11 @@
     <string name="focus_session_gate_message_format">Up next: %1$d min %2$s</string>
     <string name="focus_session_gate_continue">Continue</string>
     <string name="focus_session_gate_finish">Finish session</string>
+    <string name="focus_session_skip_content_description">Skip break</string>
+    <string name="focus_session_confirm_skip_title">Skip Break?</string>
+    <string name="focus_session_confirm_skip_message">Are you sure you want to skip the rest of this break?</string>
+    <string name="focus_session_confirm_skip_confirm">Skip Break</string>
+    <string name="focus_session_confirm_skip_dismiss">Continue Break</string>
 
     <!-- Pomodoro Complete Screen -->
     <string name="pomodoro_complete_header_title">Pomodoro Complete</string>

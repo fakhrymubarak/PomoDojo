@@ -285,6 +285,74 @@ class PomodoroSessionViewModelTest {
             assertEquals(TimerStatusUi.RUNNING, resumed.activeSegment.timerStatus, "state=$resumed")
         }
 
+    @Test
+    fun `confirm skip emits dialog side effects`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        runCurrent()
+        viewModel.awaitSessionStarted()
+
+        val showDialog = async {
+            viewModel.container.sideEffectFlow
+                .filterIsInstance<PomodoroSessionSideEffect.ShowSkipBreakDialog>()
+                .first { it.isShown }
+        }
+        viewModel.onSkipClicked()
+        assertTrue(showDialog.await().isShown)
+
+        val hideDialog = async {
+            viewModel.container.sideEffectFlow
+                .filterIsInstance<PomodoroSessionSideEffect.ShowSkipBreakDialog>()
+                .first { !it.isShown }
+        }
+        viewModel.onDismissConfirmSkip()
+        assertTrue(!hideDialog.await().isShown)
+    }
+
+    @Test
+    fun `confirm skip advances to the next phase immediately`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        runCurrent()
+        val started = viewModel.awaitSessionStarted()
+        assertEquals(TimerTypeUi.FOCUS, started.activeSegment.type, "state=$started")
+
+        // Skip the running focus phase without waiting for it to elapse.
+        viewModel.onConfirmSkip()
+        val onBreak = viewModel.container.stateFlow
+            .first { it.activeSegment.type == TimerTypeUi.SHORT_BREAK }
+        assertEquals(TimerStatusUi.RUNNING, onBreak.activeSegment.timerStatus, "state=$onBreak")
+        assertTrue(!onBreak.awaitingContinue, "state=$onBreak")
+    }
+
+    @Test
+    fun `confirm skip on the final segment finishes the session`() = runTest(dispatcher) {
+        val preferencesRepository = FakePreferencesRepository(
+            PomodoroPreferences(
+                repeatCount = 1,
+                focusMinutes = 1,
+                breakMinutes = 1,
+                longBreakEnabled = false,
+            ),
+        )
+        val viewModel = createViewModel(preferencesRepositoryOverride = preferencesRepository)
+        runCurrent()
+        viewModel.awaitSessionStarted()
+
+        // 1 cycle with no long break yields [FOCUS, SHORT_BREAK]; skip both to reach the end.
+        viewModel.onConfirmSkip()
+        viewModel.container.stateFlow.first { it.activeSegment.type == TimerTypeUi.SHORT_BREAK }
+
+        val completeEffect = async {
+            viewModel.container.sideEffectFlow
+                .filterIsInstance<PomodoroSessionSideEffect.OnSessionComplete>()
+                .first()
+        }
+        viewModel.onConfirmSkip()
+        assertTrue(completeEffect.await() is PomodoroSessionSideEffect.OnSessionComplete)
+
+        val finished = viewModel.container.stateFlow.first { it.isComplete }
+        assertTrue(finished.isComplete, "state=$finished")
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun TestScope.createViewModel(
         preferences: PomodoroPreferences = PomodoroPreferences(

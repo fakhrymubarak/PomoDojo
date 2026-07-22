@@ -21,6 +21,7 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +50,7 @@ import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_e
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_pause_content_description
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_quote_content_description
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_resume_content_description
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_skip_content_description
 import com.fakhry.pomodojo.core.designsystem.model.TimelineSegmentUi
 import com.fakhry.pomodojo.core.designsystem.model.TimerTypeUi
 import com.fakhry.pomodojo.core.designsystem.theme.LongBreakHighlight
@@ -65,6 +67,7 @@ internal fun LandscapeSessionContent(
     isTimerRunning: Boolean,
     onTogglePause: () -> Unit,
     onEnd: () -> Unit,
+    onSkip: () -> Unit,
 ) {
     val activeSegment = state.activeSegment
     Column(modifier = Modifier.fillMaxSize()) {
@@ -77,8 +80,10 @@ internal fun LandscapeSessionContent(
         ) {
             LandscapeControlsToggle(
                 isTimerRunning = isTimerRunning,
+                isBreak = activeSegment.type != TimerTypeUi.FOCUS,
                 onTogglePause = onTogglePause,
                 onEnd = onEnd,
+                onSkip = onSkip,
             )
             LandscapeTimerText(
                 modifier = Modifier.weight(1f),
@@ -154,8 +159,10 @@ private fun LandscapePhaseChip(phase: TimerTypeUi, color: Color) {
 @Composable
 private fun LandscapeControlsToggle(
     isTimerRunning: Boolean,
+    isBreak: Boolean,
     onTogglePause: () -> Unit,
     onEnd: () -> Unit,
+    onSkip: () -> Unit,
 ) {
     var showControls by rememberSaveable { mutableStateOf(false) }
 
@@ -166,33 +173,13 @@ private fun LandscapeControlsToggle(
             enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
             exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
         ) {
-            Row(
-                modifier = Modifier.padding(start = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                val pauseIcon = if (isTimerRunning) Icons.Rounded.Pause else Icons.Rounded.PlayArrow
-                val pauseDescription = if (isTimerRunning) {
-                    stringResource(Res.string.focus_session_pause_content_description)
-                } else {
-                    stringResource(Res.string.focus_session_resume_content_description)
-                }
-                FocusCircularButton(
-                    onClick = onTogglePause,
-                    icon = { Icon(imageVector = pauseIcon, contentDescription = null) },
-                    buttonDescription = pauseDescription,
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                )
-                FocusCircularButton(
-                    onClick = onEnd,
-                    icon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
-                    buttonDescription = stringResource(
-                        Res.string.focus_session_end_content_description,
-                    ),
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError,
-                )
-            }
+            LandscapeControlsButtons(
+                isTimerRunning = isTimerRunning,
+                isBreak = isBreak,
+                onTogglePause = onTogglePause,
+                onEnd = onEnd,
+                onSkip = onSkip,
+            )
         }
 
         // Arrow toggle — rotates 180° when controls are visible
@@ -206,6 +193,52 @@ private fun LandscapeControlsToggle(
                 contentDescription = if (showControls) "Hide controls" else "Show controls",
                 modifier = Modifier.rotate(arrowRotation),
                 tint = MaterialTheme.colorScheme.onBackground,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LandscapeControlsButtons(
+    isTimerRunning: Boolean,
+    isBreak: Boolean,
+    onTogglePause: () -> Unit,
+    onEnd: () -> Unit,
+    onSkip: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.padding(start = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        val pauseIcon = if (isTimerRunning) Icons.Rounded.Pause else Icons.Rounded.PlayArrow
+        val pauseDescription = if (isTimerRunning) {
+            stringResource(Res.string.focus_session_pause_content_description)
+        } else {
+            stringResource(Res.string.focus_session_resume_content_description)
+        }
+        FocusCircularButton(
+            onClick = onTogglePause,
+            icon = { Icon(imageVector = pauseIcon, contentDescription = null) },
+            buttonDescription = pauseDescription,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+        )
+        FocusCircularButton(
+            onClick = onEnd,
+            icon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
+            buttonDescription = stringResource(Res.string.focus_session_end_content_description),
+            containerColor = MaterialTheme.colorScheme.error,
+            contentColor = MaterialTheme.colorScheme.onError,
+        )
+        if (isBreak) {
+            FocusCircularButton(
+                onClick = onSkip,
+                icon = { Icon(imageVector = Icons.Rounded.SkipNext, contentDescription = null) },
+                buttonDescription = stringResource(
+                    Res.string.focus_session_skip_content_description,
+                ),
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

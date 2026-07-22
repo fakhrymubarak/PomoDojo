@@ -27,6 +27,7 @@ fun PomodoroSessionDomain.toUiState(
         ),
         quote = quote,
         isShowConfirmEndDialog = false,
+        isShowConfirmSkipDialog = false,
         isComplete = isComplete,
     )
 }

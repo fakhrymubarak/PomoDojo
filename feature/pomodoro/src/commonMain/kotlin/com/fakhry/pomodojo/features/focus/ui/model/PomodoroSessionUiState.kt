@@ -15,6 +15,7 @@ data class PomodoroSessionUiState(
     val timeline: TimelineUiModel = TimelineUiModel(),
     val quote: QuoteContent = QuoteContent.DEFAULT_QUOTE,
     val isShowConfirmEndDialog: Boolean = false,
+    val isShowConfirmSkipDialog: Boolean = false,
     val isComplete: Boolean = false,
     val awaitingContinue: Boolean = false,
     val finishedPhaseType: TimerTypeUi? = null,
@@ -24,6 +25,7 @@ data class PomodoroSessionUiState(
 
 sealed class PomodoroSessionSideEffect {
     data class ShowEndSessionDialog(val isShown: Boolean) : PomodoroSessionSideEffect()
+    data class ShowSkipBreakDialog(val isShown: Boolean) : PomodoroSessionSideEffect()
     data class OnSessionComplete(
         val completionResult: PomodoroCompletionUiState,
     ) : PomodoroSessionSideEffect()
