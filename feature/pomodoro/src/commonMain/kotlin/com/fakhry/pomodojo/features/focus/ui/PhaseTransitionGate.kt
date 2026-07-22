@@ -19,11 +19,10 @@ private const val MILLIS_PER_MINUTE = 60_000L
 /**
  * Full-screen phase-transition gate shown between pomodoro phases.
  *
- * A glow tinted by the just-finished phase sweeps in from the screen edges for ~2.5s
- * (not skippable), then the continue/finish dialog is revealed. Rendered through the shared
- * [PomoModalOverlay] edge-glow backdrop — the only overlay in the app that uses this glow, since
- * it marks a phase completing. Covers the session content and blocks interaction with it while
- * open.
+ * A glow tinted by the just-finished phase breathes at the screen edges while the continue/finish
+ * dialog sits on top. Rendered through the shared [PomoModalOverlay] edge-glow backdrop — the only
+ * overlay in the app that uses this glow, since it marks a phase completing. Covers the session
+ * content and blocks interaction with it while open (not skippable).
  */
 @Composable
 internal fun PhaseTransitionGate(
@@ -36,7 +35,6 @@ internal fun PhaseTransitionGate(
     PomoModalOverlay(
         backdrop = ModalBackdrop.EdgeGlow(
             color = finishedPhase.phaseGlowColor(),
-            animateIntro = true,
         ),
         dismissable = false,
     ) {

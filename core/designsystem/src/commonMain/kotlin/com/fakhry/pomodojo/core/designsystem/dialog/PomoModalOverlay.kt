@@ -54,7 +54,6 @@ fun PomoModalOverlay(
 
         is ModalBackdrop.EdgeGlow -> EdgeGlowOverlay(
             glowColor = backdrop.color,
-            animateIntro = backdrop.animateIntro,
             modifier = rootModifier,
             content = content,
         )

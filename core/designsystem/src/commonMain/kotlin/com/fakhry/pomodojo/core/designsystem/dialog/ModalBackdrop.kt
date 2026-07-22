@@ -7,6 +7,6 @@ sealed interface ModalBackdrop {
     /** A flat dimming scrim. */
     data class Scrim(val alpha: Float = 0.6f) : ModalBackdrop
 
-    /** The [EdgeGlowOverlay] glow, tinted by [color], optionally with the intro sweep. */
-    data class EdgeGlow(val color: Color, val animateIntro: Boolean) : ModalBackdrop
+    /** The [EdgeGlowOverlay] glow, tinted by [color]. */
+    data class EdgeGlow(val color: Color) : ModalBackdrop
 }
