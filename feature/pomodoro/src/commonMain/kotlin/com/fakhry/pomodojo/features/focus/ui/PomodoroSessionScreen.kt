@@ -26,6 +26,8 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
+private const val LANDSCAPE_MIN_ASPECT_RATIO = 0.8f
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Suppress("NonSkippableComposable")
 @Composable
@@ -127,7 +129,8 @@ private fun SessionContent(
         color = MaterialTheme.colorScheme.background,
     ) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            if (maxWidth > maxHeight) {
+            // Near-square screens (foldables, desktop windows) also use the landscape layout
+            if (maxWidth >= maxHeight * LANDSCAPE_MIN_ASPECT_RATIO) {
                 LandscapeSessionContent(
                     state = state,
                     isTimerRunning = isTimerRunning,
