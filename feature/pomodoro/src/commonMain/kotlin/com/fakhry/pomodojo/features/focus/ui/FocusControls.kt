@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -28,13 +29,16 @@ import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_end_content_description
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_pause_content_description
 import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_resume_content_description
+import com.fakhry.pomodojo.core.designsystem.generated.resources.focus_session_skip_content_description
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FocusControls(
     isTimerRunning: Boolean,
+    isBreak: Boolean,
     onTogglePause: () -> Unit = {},
     onEnd: () -> Unit = {},
+    onSkip: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
@@ -61,6 +65,18 @@ internal fun FocusControls(
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = MaterialTheme.colorScheme.onError,
         )
+
+        if (isBreak) {
+            FocusCircularButton(
+                onClick = onSkip,
+                icon = { Icon(imageVector = Icons.Rounded.SkipNext, contentDescription = null) },
+                buttonDescription = stringResource(
+                    Res.string.focus_session_skip_content_description,
+                ),
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 

@@ -95,8 +95,7 @@ git config core.hooksPath .githooks
 
 - `composeApp/src/commonMain` – Shared UI, domain, DI, and resource definitions.
 - `composeApp/src/androidMain | iosMain | jvmMain` – Platform-specific implementations and
-  launchers.
-- `composeApp/schemas` – Room schema snapshots tracked for migration reviews.
+  launchers.- `composeApp/schemas` – Room schema snapshots tracked for migration reviews.
 - `composeApp/src/commonTest` & `jvmTest` – Multiplatform/JVM test suites.
 - `iosApp/iosApp` – Swift entry point, assets, and configuration files for the iOS target.
 

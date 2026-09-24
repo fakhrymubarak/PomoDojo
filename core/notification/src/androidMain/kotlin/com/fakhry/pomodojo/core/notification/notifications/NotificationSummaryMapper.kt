@@ -8,11 +8,20 @@ import com.fakhry.pomodojo.domain.pomodoro.model.notification.NotificationSummar
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.awaitingContinueIndex
+
+private const val AWAITING_PROGRESS_PERCENT = 100
 
 internal fun PomodoroSessionDomain.toNotificationSummary(
     context: Context,
     now: Long,
 ): NotificationSummary {
+    // Phase-transition gate: a phase finished but the next hasn't been started yet.
+    // Surface a "tap to continue" notification instead of a live countdown.
+    timeline.segments.awaitingContinueIndex()?.let { gateIndex ->
+        return awaitingContinueSummary(context, timeline.segments[gateIndex - 1])
+    }
+
     val currentSegment = timeline.segments.firstOrNull {
         it.timerStatus == TimerStatusDomain.RUNNING || it.timerStatus == TimerStatusDomain.PAUSED
     } ?: timeline.segments.firstOrNull { it.timerStatus != TimerStatusDomain.COMPLETED }
@@ -66,6 +75,26 @@ internal fun PomodoroSessionDomain.toNotificationSummary(
             it.timerStatus ==
                 TimerStatusDomain.COMPLETED
         },
+    )
+}
+
+private fun PomodoroSessionDomain.awaitingContinueSummary(
+    context: Context,
+    finished: TimerSegmentsDomain,
+): NotificationSummary {
+    val body = context.getString(R.string.focus_session_awaiting_body)
+    return NotificationSummary(
+        sessionId = sessionId(),
+        title = context.getString(
+            R.string.focus_session_awaiting_title_format,
+            finished.type.toLabel(context),
+        ),
+        timerText = body,
+        segmentProgressPercent = AWAITING_PROGRESS_PERCENT,
+        isPaused = false,
+        finishTimeMillis = 0L,
+        quote = body,
+        isAllSegmentsCompleted = false,
     )
 }
 

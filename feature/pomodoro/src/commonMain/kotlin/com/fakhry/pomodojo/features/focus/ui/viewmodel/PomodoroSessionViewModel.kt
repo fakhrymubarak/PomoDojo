@@ -106,11 +106,58 @@ class PomodoroSessionViewModel(
         postSideEffect(PomodoroSessionSideEffect.ShowEndSessionDialog(false))
     }
 
+    fun onSkipClicked() = intent {
+        if (state.isComplete) return@intent
+        reduce { state.copy(isShowConfirmSkipDialog = true) }
+        postSideEffect(PomodoroSessionSideEffect.ShowSkipBreakDialog(true))
+    }
+
+    fun onDismissConfirmSkip() = intent {
+        reduce { state.copy(isShowConfirmSkipDialog = false) }
+        postSideEffect(PomodoroSessionSideEffect.ShowSkipBreakDialog(false))
+    }
+
+    fun onConfirmSkip() = intent {
+        reduce { state.copy(isShowConfirmSkipDialog = false) }
+        postSideEffect(PomodoroSessionSideEffect.ShowSkipBreakDialog(false))
+
+        stopTicker()
+        val now = currentTimeProvider.now()
+        val active = timelineSegments.getOrNull(activeSegmentIndex) ?: return@intent
+        timelineSegments[activeSegmentIndex] = finalizeSegment(updateRunningSegment(active, now))
+
+        if (activeSegmentIndex >= timelineSegments.lastIndex) {
+            // Skipping the final segment ends the session, same as a normal finish.
+            reduce {
+                state.copy(
+                    isComplete = true,
+                    activeSegment = timelineSegments[activeSegmentIndex],
+                    timeline = state.timeline.copy(segments = timelineSegments.toPersistentList()),
+                )
+            }
+            completeActiveSession()
+            val completionSummary = state.toCompletionSummary()
+            postSideEffect(PomodoroSessionSideEffect.OnSessionComplete(completionSummary))
+            return@intent
+        }
+
+        activeSegmentIndex += 1
+        timelineSegments[activeSegmentIndex] = prepareSegmentForRun(
+            timelineSegments[activeSegmentIndex],
+            startedAt = now,
+            referenceTime = now,
+        )
+        reduce { state.withGateClosed().withUpdatedTimeline() }
+        persistActiveSnapshotIfNeeded()
+        startTicker()
+        updateNotification(forceUpdate = true)
+    }
+
     fun onConfirmFinish() = intent {
         stopTicker()
         finalizeCurrentSegment()
         reduce {
-            state.copy(
+            state.withGateClosed().copy(
                 isShowConfirmEndDialog = false,
                 isComplete = true,
                 activeSegment = timelineSegments.getOrNull(
@@ -165,6 +212,14 @@ class PomodoroSessionViewModel(
         activeSegmentIndex = timelineSegments.resolveActiveIndex()
         val mutated = fastForwardTimeline(now)
         activeSegmentIndex = timelineSegments.resolveActiveIndex()
+
+        // A phase that completed while the app was away leaves an open gate: point the
+        // active index at the finished segment so restore replays its animation + dialog.
+        val gateNextIndex = timelineSegments.awaitingGateNextIndex()
+        if (gateNextIndex != null) {
+            activeSegmentIndex = gateNextIndex - 1
+        }
+
         val refreshedSession = session.copy(
             timeline = TimelineDomain(
                 segments = timelineSegments.map { it.toDomainSegment() },
@@ -173,6 +228,15 @@ class PomodoroSessionViewModel(
         )
         val isComplete = timelineSegments.all { it.timerStatus == TimerStatusUi.COMPLETED }
         val uiState = refreshedSession.toUiState(timelineSegments, activeSegmentIndex, isComplete)
+            .let {
+                if (gateNextIndex !=
+                    null
+                ) {
+                    it.withGateOpen(timelineSegments[activeSegmentIndex])
+                } else {
+                    it
+                }
+            }
         return PreparedSession(
             uiState = uiState,
             snapshot = refreshedSession,
@@ -199,67 +263,66 @@ class PomodoroSessionViewModel(
 
     private fun handleTick() {
         intent {
-            if (state.isComplete) return@intent
+            if (state.isComplete || state.awaitingContinue) return@intent
             val active = timelineSegments.getOrNull(activeSegmentIndex) ?: return@intent
             if (active.timerStatus != TimerStatusUi.RUNNING) return@intent
 
             val now = currentTimeProvider.now()
-            var updatedSegment = updateRunningSegment(active, now)
+            val updatedSegment = updateRunningSegment(active, now)
             timelineSegments[activeSegmentIndex] = updatedSegment
-//            updateNotification()
 
-            var advancedSegment = false
-            while (updatedSegment.timerStatus == TimerStatusUi.COMPLETED) {
-                soundPlayer.playSegmentCompleted()
-                advancedSegment = true
-                if (!advanceToNextSegment(now)) {
-                    reduce {
-                        state.copy(
-                            isComplete = true,
-                            activeSegment = timelineSegments.getOrNull(activeSegmentIndex)
-                                ?: state.activeSegment,
-                            timeline = state.timeline.copy(
-                                segments = timelineSegments.toPersistentList(),
-                            ),
-                        )
-                    }
-                    stopTicker()
-                    completeActiveSession()
-                    val completionSummary = state.toCompletionSummary()
-                    postSideEffect(PomodoroSessionSideEffect.OnSessionComplete(completionSummary))
-                    return@intent
+            if (updatedSegment.timerStatus != TimerStatusUi.COMPLETED) {
+                reduce { state.withUpdatedTimeline(updatedSegment) }
+                return@intent
+            }
+
+            // Phase finished: stop the ticker and signal completion once.
+            soundPlayer.playSegmentCompleted()
+            stopTicker()
+
+            if (activeSegmentIndex >= timelineSegments.lastIndex) {
+                // Final segment of the session keeps the existing completion flow.
+                timelineSegments[activeSegmentIndex] = finalizeSegment(updatedSegment)
+                reduce {
+                    state.copy(
+                        isComplete = true,
+                        activeSegment = timelineSegments[activeSegmentIndex],
+                        timeline = state.timeline.copy(
+                            segments = timelineSegments.toPersistentList(),
+                        ),
+                    )
                 }
-
-                val newActive = timelineSegments[activeSegmentIndex]
-                updatedSegment = updateRunningSegment(newActive, now)
-                timelineSegments[activeSegmentIndex] = updatedSegment
+                completeActiveSession()
+                val completionSummary = state.toCompletionSummary()
+                postSideEffect(PomodoroSessionSideEffect.OnSessionComplete(completionSummary))
+                return@intent
             }
 
-            reduce { state.withUpdatedTimeline(updatedSegment) }
-            if (advancedSegment) {
-                persistActiveSnapshotIfNeeded()
-                updateNotification(forceUpdate = true)
-            }
+            // Mid-session transition: park at the gate (animation + continue/finish dialog).
+            // The next phase stays INITIAL until the user taps continue.
+            reduce { state.withGateOpen(updatedSegment) }
+            persistActiveSnapshotIfNeeded()
+            updateNotification(forceUpdate = true)
         }
     }
 
-    private fun advanceToNextSegment(referenceTime: Long): Boolean {
-        if (activeSegmentIndex >= timelineSegments.lastIndex) {
-            timelineSegments[activeSegmentIndex] =
-                finalizeSegment(timelineSegments[activeSegmentIndex])
-            return false
-        }
+    fun onContinueNextPhase() = intent {
+        if (!state.awaitingContinue) return@intent
+        if (activeSegmentIndex >= timelineSegments.lastIndex) return@intent
 
-        val currentSegment = timelineSegments[activeSegmentIndex]
-        val nextStartAt = currentSegment.timer.finishedInMillis.takeIf { it > 0L } ?: referenceTime
+        // Start the next phase fresh from the tap time (idle time at the gate is free).
+        val now = currentTimeProvider.now()
         timelineSegments[activeSegmentIndex] = finalizeSegment(timelineSegments[activeSegmentIndex])
         activeSegmentIndex += 1
         timelineSegments[activeSegmentIndex] = prepareSegmentForRun(
             timelineSegments[activeSegmentIndex],
-            startedAt = nextStartAt,
-            referenceTime = referenceTime,
+            startedAt = now,
+            referenceTime = now,
         )
-        return true
+        reduce { state.withGateClosed().withUpdatedTimeline() }
+        persistActiveSnapshotIfNeeded()
+        startTicker()
+        updateNotification(forceUpdate = true)
     }
 
     private fun updateRunningSegment(segment: TimelineSegmentUi, now: Long): TimelineSegmentUi {
@@ -329,46 +392,63 @@ class PomodoroSessionViewModel(
     }
 
     private fun fastForwardTimeline(now: Long): Boolean {
-        var mutated = false
-        while (timelineSegments.isNotEmpty()) {
-            val active = timelineSegments.getOrNull(activeSegmentIndex) ?: break
-            when (active.timerStatus) {
-                TimerStatusUi.RUNNING -> {
-                    val refreshed = updateRunningSegment(active, now)
-                    if (refreshed != active) {
-                        timelineSegments[activeSegmentIndex] = refreshed
-                        mutated = true
-                    }
-                    if (refreshed.timerStatus == TimerStatusUi.COMPLETED) {
-                        if (!advanceToNextSegment(now)) {
-                            return true
-                        }
-                        mutated = true
-                        continue
-                    }
-                    break
-                }
-
-                TimerStatusUi.COMPLETED -> {
-                    if (!advanceToNextSegment(now)) {
-                        return true
-                    }
-                    mutated = true
-                }
-
-                TimerStatusUi.PAUSED -> break
-
-                TimerStatusUi.INITIAL -> {
-                    if (activeSegmentIndex == 0) {
-                        timelineSegments[activeSegmentIndex] =
-                            prepareSegmentForRun(active, now, now)
-                        mutated = true
-                    }
-                    break
+        val active = timelineSegments.getOrNull(activeSegmentIndex) ?: return false
+        return when (active.timerStatus) {
+            // Refresh the running segment. If it elapsed while the app was away it
+            // becomes COMPLETED and stays parked here — the gate is honored on restore
+            // instead of auto-advancing to the next phase.
+            TimerStatusUi.RUNNING -> {
+                val refreshed = updateRunningSegment(active, now)
+                if (refreshed != active) {
+                    timelineSegments[activeSegmentIndex] = refreshed
+                    true
+                } else {
+                    false
                 }
             }
+
+            // A brand-new session auto-starts its first phase; a later INITIAL segment
+            // is a parked gate awaiting the user's continue and must be left untouched.
+            TimerStatusUi.INITIAL -> {
+                if (activeSegmentIndex == 0) {
+                    timelineSegments[activeSegmentIndex] = prepareSegmentForRun(active, now, now)
+                    true
+                } else {
+                    false
+                }
+            }
+
+            TimerStatusUi.COMPLETED, TimerStatusUi.PAUSED -> false
         }
-        return mutated
+    }
+
+    /** Opens the phase-transition gate: park on [finishedSegment], expose the next phase. */
+    private fun PomodoroSessionUiState.withGateOpen(
+        finishedSegment: TimelineSegmentUi,
+    ): PomodoroSessionUiState {
+        val next = timelineSegments.getOrNull(activeSegmentIndex + 1)
+        return copy(
+            activeSegment = finishedSegment,
+            timeline = timeline.copy(segments = timelineSegments.toPersistentList()),
+            awaitingContinue = true,
+            finishedPhaseType = finishedSegment.type,
+            nextPhaseType = next?.type,
+            nextPhaseDurationMs = next?.timer?.durationEpochMs ?: 0L,
+        )
+    }
+
+    private fun PomodoroSessionUiState.withGateClosed(): PomodoroSessionUiState = copy(
+        awaitingContinue = false,
+        finishedPhaseType = null,
+        nextPhaseType = null,
+        nextPhaseDurationMs = 0L,
+    )
+
+    /** Index of the pending phase waiting behind an open gate, or null when none. */
+    private fun List<TimelineSegmentUi>.awaitingGateNextIndex(): Int? {
+        val firstPending = indexOfFirst { it.timerStatus != TimerStatusUi.COMPLETED }
+        if (firstPending <= 0) return null
+        return firstPending.takeIf { this[it].timerStatus == TimerStatusUi.INITIAL }
     }
 
     private fun PomodoroSessionUiState.withUpdatedTimeline(

@@ -32,34 +32,31 @@ internal fun LiveActivitySchedulePayload.toJsonString(): String =
 internal fun PomodoroSessionDomain.buildLiveActivitySchedulePayload(
     nowMillis: Long,
 ): LiveActivitySchedulePayload? {
-    val segmentsToSchedule = timeline.segments
-        .dropWhile { it.timerStatus == TimerStatusDomain.COMPLETED }
-    if (segmentsToSchedule.isEmpty()) return null
-
-    val entries = mutableListOf<LiveActivitySegmentEntry>()
-    var offsetSeconds = 0
-    segmentsToSchedule.forEachIndexed { index, segment ->
-        val totalSeconds = (segment.timer.durationEpochMs / 1000).toInt().coerceAtLeast(1)
-        val elapsedSeconds = segment.elapsedSeconds(nowMillis, index == 0)
-        val startOffset = if (index == 0) -elapsedSeconds else offsetSeconds
-
-        entries += LiveActivitySegmentEntry(
-            type = segment.type.toSegmentTypeString(),
-            cycleNumber = segment.cycleNumber,
-            totalSeconds = totalSeconds,
-            startOffsetSeconds = startOffset,
-        )
-
-        offsetSeconds = if (index == 0) {
-            segment.remainingSeconds(nowMillis)
-        } else {
-            offsetSeconds + totalSeconds
+    // The phase-transition gate starts each phase fresh at continue-time, so future
+    // phases have no known schedule. Only the currently running/paused segment can be
+    // scheduled; anything else (awaiting a gate, or complete) yields no self-advancing
+    // schedule and the Live Activity simply stops at the phase boundary.
+    val current = timeline.segments
+        .firstOrNull { it.timerStatus != TimerStatusDomain.COMPLETED }
+        ?.takeIf {
+            it.timerStatus == TimerStatusDomain.RUNNING ||
+                it.timerStatus == TimerStatusDomain.PAUSED
         }
-    }
+        ?: return null
+
+    val totalSeconds = (current.timer.durationEpochMs / 1000).toInt().coerceAtLeast(1)
+    val elapsedSeconds = current.elapsedSeconds(nowMillis, isActiveSegment = true)
 
     return LiveActivitySchedulePayload(
         generatedAtEpochMillis = nowMillis,
-        segments = entries,
+        segments = listOf(
+            LiveActivitySegmentEntry(
+                type = current.type.toSegmentTypeString(),
+                cycleNumber = current.cycleNumber,
+                totalSeconds = totalSeconds,
+                startOffsetSeconds = -elapsedSeconds,
+            ),
+        ),
     )
 }
 
@@ -72,21 +69,6 @@ private fun TimerSegmentsDomain.elapsedSeconds(nowMillis: Long, isActiveSegment:
         else -> nowMillis
     }.coerceAtLeast(startedAt)
     return ((reference - startedAt).coerceAtLeast(0L) / 1000).toInt()
-}
-
-private fun TimerSegmentsDomain.remainingSeconds(nowMillis: Long): Int = when (timerStatus) {
-    TimerStatusDomain.COMPLETED -> 0
-    TimerStatusDomain.INITIAL -> (timer.durationEpochMs / 1000).toInt()
-    TimerStatusDomain.RUNNING -> (
-        (timer.finishedInMillis - nowMillis).coerceAtLeast(
-            0L,
-        ) / 1000
-        ).toInt()
-
-    TimerStatusDomain.PAUSED -> {
-        val remaining = timer.finishedInMillis - timer.startedPauseTime
-        (remaining.coerceAtLeast(0L) / 1000).toInt()
-    }
 }
 
 internal fun TimerType.toSegmentTypeString(): String = when (this) {

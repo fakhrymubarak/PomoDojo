@@ -204,17 +204,11 @@ class IosFocusSessionNotifier : PomodoroSessionNotifier {
             if (completionDelay <= 0) return@forEachIndexed
 
             val identifier = "${prefix}_$index"
-            val nextLabel = schedule
-                .segments
-                .getOrNull(index + 1)
-                ?.type
-                ?.toReadableSegmentLabel()
 
             scheduleSegmentCompletionChime(
                 identifier = identifier,
                 sessionId = sessionId,
                 fireInSeconds = completionDelay,
-                nextLabel = nextLabel,
             )
         }
     }
@@ -223,14 +217,13 @@ class IosFocusSessionNotifier : PomodoroSessionNotifier {
         identifier: String,
         sessionId: String,
         fireInSeconds: Int,
-        nextLabel: String?,
     ) {
         if (fireInSeconds <= 0) return
 
         val content = UNMutableNotificationContent().apply {
-            setTitle("Segment complete")
-            val body = nextLabel?.let { "Next: $it" } ?: "Time to switch modes."
-            setBody(body)
+            setTitle("Phase complete")
+            // Phase-transition gate: the next phase waits for the user to tap continue.
+            setBody("Tap to continue to your next phase")
             setSound(
                 UNNotificationSound.soundNamed(
                     "timer_notification.wav",
@@ -294,11 +287,4 @@ class IosFocusSessionNotifier : PomodoroSessionNotifier {
                 continuation.resume(identifiers)
             }
         }
-
-    private fun String.toReadableSegmentLabel(): String? = when (this) {
-        "focus" -> "Focus"
-        "short_break" -> "Break"
-        "long_break" -> "Long break"
-        else -> null
-    }
 }
