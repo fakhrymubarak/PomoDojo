@@ -210,9 +210,11 @@ class PomodoroSessionViewModelTest {
             assertTrue(!restored.isComplete, "state=$restored")
 
             // The restored ticker keeps counting down from the elapsed-adjusted remaining.
+            // Match "<= 01:00" rather than exactly "01:00": Orbit reduces off the test
+            // dispatcher and stateFlow conflates, so under load the exact tick can be skipped.
             advanceTimeBy(minuteMillis)
             val ticked = viewModel.container.stateFlow
-                .first { it.activeSegment.timer.formattedTime == "01:00" }
+                .first { it.activeSegment.timer.formattedTime <= "01:00" }
             assertEquals(TimerStatusUi.RUNNING, ticked.activeSegment.timerStatus, "state=$ticked")
         }
 
