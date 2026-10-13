@@ -154,6 +154,7 @@ class PomodoroSessionViewModel(
     }
 
     fun onConfirmFinish() = intent {
+        if (state.isComplete) return@intent
         stopTicker()
         finalizeCurrentSegment()
         reduce {

@@ -111,6 +111,19 @@ class PomodoroSessionViewModelTest {
     }
 
     @Test
+    fun `confirm finish twice records history once`() = runTest(dispatcher) {
+        val historyRepository = FakeHistorySessionRepository()
+        val viewModel = createViewModel(historyRepository = historyRepository)
+        runCurrent()
+        viewModel.awaitSessionStarted()
+
+        viewModel.onConfirmFinish().join()
+        viewModel.onConfirmFinish().join()
+
+        assertEquals(1, historyRepository.insertedSessions.size)
+    }
+
+    @Test
     fun `restoring a running phase that elapsed parks at the gate`() = runTest(dispatcher) {
         // Only the running phase can elapse while away; the timeline must park at the
         // gate (not auto-advance) so restore can replay the transition.
@@ -368,6 +381,7 @@ class PomodoroSessionViewModelTest {
         sessionRepository: FakeActiveSessionRepository = FakeActiveSessionRepository(),
         soundPlayer: SoundPlayer = FakeSoundPlayer(),
         preferencesRepositoryOverride: FakePreferencesRepository? = null,
+        historyRepository: FakeHistorySessionRepository = FakeHistorySessionRepository(),
     ): PomodoroSessionViewModel {
         val currentTimeProvider = TestCurrentTimeProvider(testScheduler)
         val quoteRepository = FakeQuoteRepository()
@@ -391,7 +405,7 @@ class PomodoroSessionViewModelTest {
             repoGroup = PomodoroSessionRepoGroup(
                 preferencesRepository = preferencesRepository,
                 sessionRepository = sessionRepository,
-                historyRepository = FakeHistorySessionRepository(),
+                historyRepository = historyRepository,
             ),
             pomodoroSessionNotifier = focusNotifier,
             soundPlayer = soundPlayer,
