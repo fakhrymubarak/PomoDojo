@@ -37,24 +37,19 @@ import com.fakhry.pomodojo.core.designsystem.components.BgHeaderCanvas
 import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
 import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_back_content_description
 import com.fakhry.pomodojo.core.designsystem.generated.resources.preferences_title
-import com.fakhry.pomodojo.core.designsystem.model.PreferenceOption
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
 import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.ui.components.PomodoroConfigSection
 import com.fakhry.pomodojo.features.preferences.ui.components.PomodoroTimelinePreviewSection
 import com.fakhry.pomodojo.features.preferences.ui.components.PreferenceAppearanceSection
-import com.fakhry.pomodojo.features.preferences.ui.mapper.mapToTimelineSegmentsUi
+import com.fakhry.pomodojo.features.preferences.ui.mapper.mapToUiModel
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesAppearanceUiState
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesConfigUiState
-import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesUiModel
 import com.fakhry.pomodojo.features.preferences.ui.model.toAppearanceUiState
 import com.fakhry.pomodojo.features.preferences.ui.model.toConfigUiState
-import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -247,58 +242,7 @@ private fun PreferencesContentPreview() {
         appTheme = "dark",
         hasActiveSession = false,
     )
-    val appTheme = AppTheme.fromStorage(initPreferences.appTheme)
-    val previewPreferencesState = PreferencesUiModel(
-        selectedTheme = appTheme,
-        themeOptions = AppTheme.entries.map { theme ->
-            PreferenceOption(
-                label = theme.displayName,
-                value = theme,
-                selected = theme == appTheme,
-            )
-        }.toPersistentList(),
-        isAlwaysOnDisplayEnabled = preferences.alwaysOnDisplayEnabled,
-        repeatCount = preferences.repeatCount,
-        focusOptions = listOf(10, 25, 50).map { minutes ->
-            PreferenceOption(
-                label = "$minutes mins",
-                value = minutes,
-                selected = minutes == preferences.focusMinutes,
-            )
-        }.toPersistentList(),
-        breakOptions = listOf(2, 5, 10).map { minutes ->
-            PreferenceOption(
-                label = "$minutes mins",
-                value = minutes,
-                selected = minutes == preferences.breakMinutes,
-            )
-        }.toPersistentList(),
-        isLongBreakEnabled = preferences.longBreakEnabled,
-        longBreakAfterOptions = listOf(6, 4, 2).map { count ->
-            PreferenceOption(
-                label = "$count focuses",
-                value = count,
-                selected = count == preferences.longBreakAfter,
-                enabled = preferences.longBreakEnabled,
-            )
-        }.toPersistentList(),
-        longBreakOptions = listOf(4, 10, 20).map { minutes ->
-            PreferenceOption(
-                label = "$minutes mins",
-                value = minutes,
-                selected = minutes == preferences.longBreakMinutes,
-                enabled = preferences.longBreakEnabled,
-            )
-        }.toPersistentList(),
-        timeline = TimelineUiModel(
-            segments = BuildTimerSegmentsUseCase().invoke(
-                0L,
-                preferences,
-            ).mapToTimelineSegmentsUi(),
-            hourSplits = BuildHourSplitTimelineUseCase().invoke(preferences).toPersistentList(),
-        ),
-        isLoading = false,
-    )
+    val previewPreferencesState = preferences.mapToUiModel(initPreferences)
 
     val configState = previewPreferencesState.toConfigUiState()
     val appearanceState = previewPreferencesState.toAppearanceUiState()

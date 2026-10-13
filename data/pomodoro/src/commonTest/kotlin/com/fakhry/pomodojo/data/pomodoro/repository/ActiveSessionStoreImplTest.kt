@@ -1,8 +1,6 @@
 package com.fakhry.pomodojo.data.pomodoro.repository
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.emptyPreferences
+import com.fakhry.pomodojo.core.datastore.InMemoryPreferencesDataStore
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
@@ -10,8 +8,6 @@ import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -66,22 +62,6 @@ class ActiveSessionStoreImplTest {
         assertEquals(snapshot, store.take())
         assertNull(store.take())
         assertNull(store.session.first())
-    }
-}
-
-internal class InMemoryPreferencesDataStore(
-    initial: Preferences = emptyPreferences(),
-) : DataStore<Preferences> {
-    private val state = MutableStateFlow(initial)
-
-    override val data: Flow<Preferences> = state
-
-    override suspend fun updateData(
-        transform: suspend (t: Preferences) -> Preferences,
-    ): Preferences {
-        val updated = transform(state.value)
-        state.value = updated
-        return updated
     }
 }
 

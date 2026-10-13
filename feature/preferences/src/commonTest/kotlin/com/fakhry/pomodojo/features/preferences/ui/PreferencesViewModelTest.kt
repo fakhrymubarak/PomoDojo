@@ -2,8 +2,6 @@ package com.fakhry.pomodojo.features.preferences.ui
 
 import com.fakhry.pomodojo.core.designsystem.model.TimerTypeUi
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
 import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
@@ -275,8 +273,6 @@ private fun createFixture(
         PreferencesViewModel(
             repository = prefRepo,
             initPreferencesRepository = initRepo,
-            timelineBuilder = BuildTimerSegmentsUseCase(),
-            hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = dispatcher,
         )
     return PreferencesFixture(viewModel, prefRepo, initRepo)

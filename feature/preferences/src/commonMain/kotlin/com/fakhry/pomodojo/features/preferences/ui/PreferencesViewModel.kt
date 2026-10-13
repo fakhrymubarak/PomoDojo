@@ -4,15 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
-import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
-import com.fakhry.pomodojo.features.preferences.ui.mapper.DEFAULT_REPEAT_RANGE
 import com.fakhry.pomodojo.features.preferences.ui.mapper.mapToUiModel
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesAppearanceUiState
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesConfigUiState
@@ -35,8 +30,6 @@ import kotlinx.coroutines.launch
 class PreferencesViewModel(
     private val repository: PreferencesRepository,
     private val initPreferencesRepository: InitPreferencesRepository,
-    private val timelineBuilder: BuildTimerSegmentsUseCase,
-    private val hourSplitter: BuildHourSplitTimelineUseCase,
     private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
     private val _state = MutableStateFlow(PreferencesUiModel())
@@ -51,7 +44,7 @@ class PreferencesViewModel(
             SharingStarted.Eagerly,
             PreferencesConfigUiState(
                 repeatCount = PomodoroPreferences.DEFAULT_REPEAT_COUNT,
-                repeatRange = DEFAULT_REPEAT_RANGE,
+                repeatRange = PomodoroPreferences.REPEAT_COUNT_OPTIONS,
                 focusOptions = persistentListOf(),
                 breakOptions = persistentListOf(),
                 isLongBreakEnabled = false,
@@ -75,13 +68,7 @@ class PreferencesViewModel(
                 .combine(initPreferencesRepository.initPreferences) { pomodoro, init ->
                     pomodoro to init
                 }.collect { (preferences, initPreferences) ->
-                    val mapped = preferences.mapToUiModel(
-                        initPreferences = initPreferences,
-                        timelineBuilder = {
-                            timelineBuilder(0L, it).toCompletedTimeline()
-                        },
-                        hourSplitter = hourSplitter::invoke,
-                    )
+                    val mapped = preferences.mapToUiModel(initPreferences)
                     _state.update { current ->
                         if (current.isLoading) {
                             mapped
@@ -142,10 +129,6 @@ class PreferencesViewModel(
         viewModelScope.launch(dispatcher.io) {
             repository.updateAlwaysOnDisplayEnabled(enabled)
         }
-    }
-
-    private fun List<TimerSegmentsDomain>.toCompletedTimeline() = map { segment ->
-        segment.copy(timerStatus = TimerStatusDomain.COMPLETED)
     }
 }
 

@@ -2,9 +2,7 @@ package com.fakhry.pomodojo.features.focus.domain.usecase
 
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.planTimeline
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
 import kotlinx.coroutines.async
@@ -14,8 +12,6 @@ import kotlinx.coroutines.withContext
 class CreatePomodoroSessionUseCase(
     private val quoteRepo: QuoteRepository,
     private val preferencesRepo: PreferencesRepository,
-    private val timelineBuilder: BuildTimerSegmentsUseCase,
-    private val hourSplitter: BuildHourSplitTimelineUseCase,
     private val dispatcher: DispatcherProvider,
 ) {
     suspend operator fun invoke(now: Long) = withContext(dispatcher.io) {
@@ -29,10 +25,7 @@ class CreatePomodoroSessionUseCase(
             totalCycle = preferences.repeatCount,
             startedAtEpochMs = now,
             elapsedPauseEpochMs = 0L,
-            timeline = TimelineDomain(
-                segments = timelineBuilder(now, preferences),
-                hourSplits = hourSplitter(preferences),
-            ),
+            timeline = planTimeline(preferences),
             quote = quote,
         )
     }

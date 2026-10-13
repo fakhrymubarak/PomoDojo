@@ -2,8 +2,7 @@ package com.fakhry.pomodojo.features.focus.domain.usecase
 
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.planTimeline
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
@@ -42,8 +41,6 @@ class CreatePomodoroSessionUseCaseTest {
         val useCase = CreatePomodoroSessionUseCase(
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
-            timelineBuilder = BuildTimerSegmentsUseCase(),
-            hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
         )
 
@@ -73,8 +70,6 @@ class CreatePomodoroSessionUseCaseTest {
         val useCase = CreatePomodoroSessionUseCase(
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
-            timelineBuilder = BuildTimerSegmentsUseCase(),
-            hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
         )
 
@@ -87,7 +82,7 @@ class CreatePomodoroSessionUseCaseTest {
     }
 
     @Test
-    fun `timeline builder receives correct parameters`() = runTest {
+    fun `timeline is the unstarted plan for the preferences`() = runTest {
         val now = 4_000_000L
         val preferences = PomodoroPreferences(
             focusMinutes = 30,
@@ -100,17 +95,13 @@ class CreatePomodoroSessionUseCaseTest {
         val useCase = CreatePomodoroSessionUseCase(
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
-            timelineBuilder = BuildTimerSegmentsUseCase(),
-            hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
         )
 
         val session = useCase(now)
 
-        // Verify first segment has correct timing
-        val firstSegment = session.timeline.segments.first()
-        val expectedFinishTime = now + (30 * 60_000L)
-        assertEquals(expectedFinishTime, firstSegment.timer.finishedInMillis)
+        // The Session starts running when the screen starts it, not when it is created.
+        assertEquals(planTimeline(preferences), session.timeline)
     }
 
     @Test
@@ -130,8 +121,6 @@ class CreatePomodoroSessionUseCaseTest {
         val useCase = CreatePomodoroSessionUseCase(
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
-            timelineBuilder = BuildTimerSegmentsUseCase(),
-            hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = DispatcherProvider(Dispatchers.Unconfined),
         )
 

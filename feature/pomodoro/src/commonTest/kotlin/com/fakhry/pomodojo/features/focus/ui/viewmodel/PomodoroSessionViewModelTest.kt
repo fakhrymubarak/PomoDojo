@@ -17,8 +17,6 @@ import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import com.fakhry.pomodojo.domain.pomodoro.repository.InMemoryActiveSessionStore
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
-import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
 import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
@@ -478,8 +476,6 @@ class PomodoroSessionViewModelTest {
         val createSessionUseCase = CreatePomodoroSessionUseCase(
             quoteRepo = quoteRepository,
             preferencesRepo = preferencesRepository,
-            timelineBuilder = BuildTimerSegmentsUseCase(),
-            hourSplitter = BuildHourSplitTimelineUseCase(),
             dispatcher = dispatcherProvider,
         )
 

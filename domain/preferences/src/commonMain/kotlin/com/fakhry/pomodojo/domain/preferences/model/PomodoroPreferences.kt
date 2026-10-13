@@ -15,5 +15,12 @@ data class PomodoroPreferences(
         const val DEFAULT_BREAK_MINUTES = 5
         const val DEFAULT_LONG_BREAK_AFTER = 4
         const val DEFAULT_LONG_BREAK_MINUTES = 10
+
+        // The values the settings screen offers; the cascade moves between them.
+        val REPEAT_COUNT_OPTIONS = 2..8
+        val FOCUS_MINUTES_OPTIONS = listOf(10, 25, 50)
+        val BREAK_MINUTES_OPTIONS = listOf(2, 5, 10)
+        val LONG_BREAK_AFTER_OPTIONS = listOf(6, 4, 2)
+        val LONG_BREAK_MINUTES_OPTIONS = listOf(4, 10, 20)
     }
 }

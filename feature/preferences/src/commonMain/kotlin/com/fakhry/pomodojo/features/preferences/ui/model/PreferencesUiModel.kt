@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.fakhry.pomodojo.core.designsystem.model.PreferenceOption
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
+import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences.Companion.DEFAULT_REPEAT_COUNT
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -14,7 +15,7 @@ data class PreferencesUiModel(
     val themeOptions: ImmutableList<PreferenceOption<AppTheme>> = persistentListOf(),
     val isAlwaysOnDisplayEnabled: Boolean = false,
     val repeatCount: Int = DEFAULT_REPEAT_COUNT,
-    val repeatRange: IntRange = 2..8,
+    val repeatRange: IntRange = PomodoroPreferences.REPEAT_COUNT_OPTIONS,
     val focusOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),
     val breakOptions: ImmutableList<PreferenceOption<Int>> = persistentListOf(),
     val isLongBreakEnabled: Boolean = true,

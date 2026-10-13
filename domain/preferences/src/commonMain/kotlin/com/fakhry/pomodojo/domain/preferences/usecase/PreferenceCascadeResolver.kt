@@ -6,11 +6,6 @@ import com.fakhry.pomodojo.domain.preferences.model.FocusCascade
 class PreferenceCascadeResolver {
     @Throws(IllegalArgumentException::class)
     fun resolveForFocus(minutes: Int): FocusCascade = when (minutes) {
-        1 -> FocusCascade(
-            breakMinutes = 1,
-            longBreakAfterCount = 2,
-            longBreakMinutes = 2,
-        )
         10 -> FocusCascade(
             breakMinutes = 2,
             longBreakAfterCount = 6,

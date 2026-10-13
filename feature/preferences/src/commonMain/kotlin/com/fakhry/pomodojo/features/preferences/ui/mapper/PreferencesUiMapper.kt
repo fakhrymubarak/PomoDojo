@@ -2,24 +2,15 @@ package com.fakhry.pomodojo.features.preferences.ui.mapper
 
 import com.fakhry.pomodojo.core.designsystem.model.PreferenceOption
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
-import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.planTimeline
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
 import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesUiModel
 import kotlinx.collections.immutable.toPersistentList
 
-private val FOCUS_OPTIONS = listOf(10, 25, 50)
-private val BREAK_OPTIONS = listOf(2, 5, 10)
-private val LONG_BREAK_AFTER = listOf(6, 4, 2)
-private val LONG_BREAK_MINUTES = listOf(4, 10, 20)
-val DEFAULT_REPEAT_RANGE = 2..8
-
-fun PomodoroPreferences.mapToUiModel(
-    initPreferences: InitAppPreferences,
-    timelineBuilder: (PomodoroPreferences) -> List<TimerSegmentsDomain>,
-    hourSplitter: (PomodoroPreferences) -> List<Int>,
-): PreferencesUiModel {
+fun PomodoroPreferences.mapToUiModel(initPreferences: InitAppPreferences): PreferencesUiModel {
     val longBreakEnabled = longBreakEnabled
     val themeOptions = AppTheme.entries.map { theme ->
         PreferenceOption(
@@ -34,14 +25,14 @@ fun PomodoroPreferences.mapToUiModel(
         themeOptions = themeOptions,
         isAlwaysOnDisplayEnabled = alwaysOnDisplayEnabled,
         repeatCount = repeatCount,
-        focusOptions = FOCUS_OPTIONS.map { minutes ->
+        focusOptions = PomodoroPreferences.FOCUS_MINUTES_OPTIONS.map { minutes ->
             PreferenceOption(
                 label = "$minutes mins",
                 value = minutes,
                 selected = focusMinutes == minutes,
             )
         }.toPersistentList(),
-        breakOptions = BREAK_OPTIONS.map { minutes ->
+        breakOptions = PomodoroPreferences.BREAK_MINUTES_OPTIONS.map { minutes ->
             PreferenceOption(
                 label = "$minutes mins",
                 value = minutes,
@@ -49,7 +40,7 @@ fun PomodoroPreferences.mapToUiModel(
             )
         }.toPersistentList(),
         isLongBreakEnabled = longBreakEnabled,
-        longBreakAfterOptions = LONG_BREAK_AFTER.map { count ->
+        longBreakAfterOptions = PomodoroPreferences.LONG_BREAK_AFTER_OPTIONS.map { count ->
             PreferenceOption(
                 label = "$count focuses",
                 value = count,
@@ -57,7 +48,7 @@ fun PomodoroPreferences.mapToUiModel(
                 enabled = longBreakEnabled,
             )
         }.toPersistentList(),
-        longBreakOptions = LONG_BREAK_MINUTES.map { minutes ->
+        longBreakOptions = PomodoroPreferences.LONG_BREAK_MINUTES_OPTIONS.map { minutes ->
             PreferenceOption(
                 label = "$minutes mins",
                 value = minutes,
@@ -65,10 +56,18 @@ fun PomodoroPreferences.mapToUiModel(
                 enabled = longBreakEnabled,
             )
         }.toPersistentList(),
-        timeline = TimelineUiModel(
-            segments = timelineBuilder(this).mapToTimelineSegmentsUi(),
-            hourSplits = hourSplitter(this).toPersistentList(),
-        ),
+        timeline = previewTimeline(),
         isLoading = false,
+    )
+}
+
+/** The Timeline plan for these preferences, drawn as if every Segment were done. */
+private fun PomodoroPreferences.previewTimeline(): TimelineUiModel {
+    val plan = planTimeline(this)
+    return TimelineUiModel(
+        segments = plan.segments
+            .map { it.copy(timerStatus = TimerStatusDomain.COMPLETED) }
+            .mapToTimelineSegmentsUi(),
+        hourSplits = plan.hourSplits.toPersistentList(),
     )
 }

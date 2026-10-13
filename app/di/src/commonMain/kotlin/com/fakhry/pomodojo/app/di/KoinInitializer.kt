@@ -7,7 +7,6 @@ import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.data.history.di.historyDataModule
 import com.fakhry.pomodojo.data.pomodoro.di.pomodoroDataModule
 import com.fakhry.pomodojo.data.preferences.di.preferencesDataModule
-import com.fakhry.pomodojo.domain.pomodoro.di.focusDomainModule
 import com.fakhry.pomodojo.domain.preferences.di.preferencesDomainModule
 import com.fakhry.pomodojo.features.dashboard.di.dashboardFeatureModule
 import com.fakhry.pomodojo.features.focus.di.pomodoroFeatureModule
@@ -33,7 +32,6 @@ private val featuresModule = listOf(
 )
 
 private val domainModule: List<Module> = listOf(
-    focusDomainModule,
     preferencesDomainModule,
 )
 
