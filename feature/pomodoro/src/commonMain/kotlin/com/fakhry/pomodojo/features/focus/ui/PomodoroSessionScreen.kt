@@ -10,17 +10,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
-import com.fakhry.pomodojo.core.designsystem.dialog.ConfirmKind
-import com.fakhry.pomodojo.core.designsystem.dialog.DialogHandler
-import com.fakhry.pomodojo.core.designsystem.dialog.DialogState
-import com.fakhry.pomodojo.core.designsystem.dialog.DialogType
-import com.fakhry.pomodojo.core.designsystem.dialog.rememberDialogState
 import com.fakhry.pomodojo.core.designsystem.effects.ImmersiveModeEffect
 import com.fakhry.pomodojo.core.designsystem.effects.KeepScreenOnEffect
 import com.fakhry.pomodojo.core.designsystem.model.TimerStatusUi
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
+import com.fakhry.pomodojo.features.focus.ui.model.SessionConfirm
 import com.fakhry.pomodojo.features.focus.ui.viewmodel.PomodoroSessionViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
@@ -35,18 +31,17 @@ fun PomodoroSessionScreen(
     onSessionCompleted: (PomodoroCompletionUiState) -> Unit,
     viewModel: PomodoroSessionViewModel = koinViewModel(),
 ) {
-    val dialogs = rememberDialogState()
     val alwaysOnDisplay = viewModel.alwaysOnDisplay.collectAsState()
 
     KeepScreenOnEffect(alwaysOnDisplay.value)
     ImmersiveModeEffect()
 
     BackHandler {
-        viewModel.onEndClicked()
+        viewModel.onBackPressed()
     }
 
     viewModel.collectSideEffect { sideEffect ->
-        handleSessionSideEffect(sideEffect, dialogs, onSessionCompleted)
+        handleSessionSideEffect(sideEffect, onSessionCompleted)
     }
 
     val state = viewModel.collectAsState().value
@@ -72,47 +67,28 @@ fun PomodoroSessionScreen(
             )
         }
 
-        DialogHandler(
-            state = dialogs,
-            onConfirm = { kind -> handleDialogConfirm(kind, viewModel) },
-            onDismiss = { handleDialogDismiss(dialogs, viewModel) },
-        )
+        state.pendingConfirm?.let { confirm ->
+            SessionConfirmOverlay(
+                confirm = confirm,
+                onConfirm = {
+                    when (confirm) {
+                        SessionConfirm.END_SESSION -> viewModel.onConfirmFinish()
+                        SessionConfirm.SKIP_BREAK -> viewModel.onConfirmSkip()
+                    }
+                },
+                onDismiss = viewModel::onDismissConfirm,
+            )
+        }
     }
 }
 
 private fun handleSessionSideEffect(
     sideEffect: PomodoroSessionSideEffect,
-    dialogs: DialogState,
     onSessionCompleted: (PomodoroCompletionUiState) -> Unit,
 ) {
     when (sideEffect) {
         is PomodoroSessionSideEffect.OnSessionComplete ->
             onSessionCompleted(sideEffect.completionResult)
-
-        is PomodoroSessionSideEffect.ShowEndSessionDialog ->
-            dialogs.toggleConfirm(ConfirmKind.END_FOCUS_SESSION, sideEffect.isShown)
-
-        is PomodoroSessionSideEffect.ShowSkipBreakDialog ->
-            dialogs.toggleConfirm(ConfirmKind.SKIP_BREAK, sideEffect.isShown)
-    }
-}
-
-private fun DialogState.toggleConfirm(kind: ConfirmKind, isShown: Boolean) {
-    if (isShown) showDialog(DialogType.Confirm(kind)) else hideDialog()
-}
-
-private fun handleDialogConfirm(kind: ConfirmKind, viewModel: PomodoroSessionViewModel) {
-    when (kind) {
-        ConfirmKind.END_FOCUS_SESSION -> viewModel.onConfirmFinish()
-        ConfirmKind.SKIP_BREAK -> viewModel.onConfirmSkip()
-    }
-}
-
-private fun handleDialogDismiss(dialogs: DialogState, viewModel: PomodoroSessionViewModel) {
-    when ((dialogs.current as? DialogType.Confirm)?.kind) {
-        ConfirmKind.END_FOCUS_SESSION -> viewModel.onDismissConfirmEnd()
-        ConfirmKind.SKIP_BREAK -> viewModel.onDismissConfirmSkip()
-        null -> dialogs.hideDialog()
     }
 }
 

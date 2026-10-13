@@ -24,6 +24,7 @@ import com.fakhry.pomodojo.features.focus.domain.repository.QuoteRepository
 import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUseCase
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
+import com.fakhry.pomodojo.features.focus.ui.model.SessionConfirm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -47,6 +48,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -80,34 +82,68 @@ class PomodoroSessionViewModelTest {
     }
 
     @Test
-    fun `confirm finish emits dialog and completion side effects`() = runTest(dispatcher) {
+    fun `confirm finish asks first and then completes the session`() = runTest(dispatcher) {
         val viewModel = createViewModel()
         runCurrent()
         viewModel.awaitSessionStarted()
 
-        val showDialog = async {
-            viewModel.container.sideEffectFlow
-                .filterIsInstance<PomodoroSessionSideEffect.ShowEndSessionDialog>()
-                .first { it.isShown }
-        }
-        viewModel.onEndClicked()
-        assertTrue(showDialog.await().isShown)
+        viewModel.onEndClicked().join()
+        assertEquals(SessionConfirm.END_SESSION, viewModel.container.stateFlow.value.pendingConfirm)
 
-        val hideDialog = async {
-            viewModel.container.sideEffectFlow
-                .filterIsInstance<PomodoroSessionSideEffect.ShowEndSessionDialog>()
-                .first { !it.isShown }
-        }
-        viewModel.onDismissConfirmEnd()
-        assertTrue(!hideDialog.await().isShown)
+        viewModel.onDismissConfirm().join()
+        assertNull(viewModel.container.stateFlow.value.pendingConfirm)
 
         val completeEffect = async {
             viewModel.container.sideEffectFlow
                 .filterIsInstance<PomodoroSessionSideEffect.OnSessionComplete>()
                 .first()
         }
-        viewModel.onConfirmFinish()
+        viewModel.onEndClicked().join()
+        viewModel.onConfirmFinish().join()
         assertTrue(completeEffect.await() is PomodoroSessionSideEffect.OnSessionComplete)
+        assertNull(viewModel.container.stateFlow.value.pendingConfirm)
+    }
+
+    @Test
+    fun `back asks to end the session and back again closes the question`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        runCurrent()
+        viewModel.awaitSessionStarted()
+
+        viewModel.onBackPressed().join()
+        assertEquals(
+            SessionConfirm.END_SESSION,
+            viewModel.container.stateFlow.value.pendingConfirm,
+        )
+
+        viewModel.onBackPressed().join()
+        assertNull(viewModel.container.stateFlow.value.pendingConfirm)
+    }
+
+    @Test
+    fun `opening the gate drops a pending skip`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        runCurrent()
+        viewModel.awaitSessionStarted()
+        viewModel.onSkipClicked().join()
+
+        advanceTimeBy(minuteMillis + 1_000L)
+
+        val gated = viewModel.container.stateFlow.first { it.awaitingContinue }
+        assertNull(gated.pendingConfirm, "state=$gated")
+    }
+
+    @Test
+    fun `opening the gate keeps a pending end`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        runCurrent()
+        viewModel.awaitSessionStarted()
+        viewModel.onEndClicked().join()
+
+        advanceTimeBy(minuteMillis + 1_000L)
+
+        val gated = viewModel.container.stateFlow.first { it.awaitingContinue }
+        assertEquals(SessionConfirm.END_SESSION, gated.pendingConfirm, "state=$gated")
     }
 
     @Test
@@ -301,26 +337,16 @@ class PomodoroSessionViewModelTest {
         }
 
     @Test
-    fun `confirm skip emits dialog side effects`() = runTest(dispatcher) {
+    fun `confirm skip asks first and dismiss closes the question`() = runTest(dispatcher) {
         val viewModel = createViewModel()
         runCurrent()
         viewModel.awaitSessionStarted()
 
-        val showDialog = async {
-            viewModel.container.sideEffectFlow
-                .filterIsInstance<PomodoroSessionSideEffect.ShowSkipBreakDialog>()
-                .first { it.isShown }
-        }
-        viewModel.onSkipClicked()
-        assertTrue(showDialog.await().isShown)
+        viewModel.onSkipClicked().join()
+        assertEquals(SessionConfirm.SKIP_BREAK, viewModel.container.stateFlow.value.pendingConfirm)
 
-        val hideDialog = async {
-            viewModel.container.sideEffectFlow
-                .filterIsInstance<PomodoroSessionSideEffect.ShowSkipBreakDialog>()
-                .first { !it.isShown }
-        }
-        viewModel.onDismissConfirmSkip()
-        assertTrue(!hideDialog.await().isShown)
+        viewModel.onDismissConfirm().join()
+        assertNull(viewModel.container.stateFlow.value.pendingConfirm)
     }
 
     @Test

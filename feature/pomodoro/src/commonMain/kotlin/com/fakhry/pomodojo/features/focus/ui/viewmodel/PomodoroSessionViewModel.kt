@@ -23,6 +23,7 @@ import com.fakhry.pomodojo.features.focus.domain.usecase.CreatePomodoroSessionUs
 import com.fakhry.pomodojo.features.focus.ui.mapper.toUiState
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionSideEffect
 import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
+import com.fakhry.pomodojo.features.focus.ui.model.SessionConfirm
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,8 +70,24 @@ class PomodoroSessionViewModel(
 
     fun onEndClicked() = intent {
         if (state.isComplete) return@intent
-        reduce { state.copy(isShowConfirmEndDialog = true) }
-        postSideEffect(PomodoroSessionSideEffect.ShowEndSessionDialog(true))
+        reduce { state.copy(pendingConfirm = SessionConfirm.END_SESSION) }
+    }
+
+    fun onSkipClicked() = intent {
+        if (state.isComplete) return@intent
+        reduce { state.copy(pendingConfirm = SessionConfirm.SKIP_BREAK) }
+    }
+
+    fun onDismissConfirm() = intent {
+        reduce { state.copy(pendingConfirm = null) }
+    }
+
+    /** Back answers an open confirmation with "no"; otherwise it asks to end the Session. */
+    fun onBackPressed() = intent {
+        when {
+            state.pendingConfirm != null -> reduce { state.copy(pendingConfirm = null) }
+            !state.isComplete -> reduce { state.copy(pendingConfirm = SessionConfirm.END_SESSION) }
+        }
     }
 
     fun togglePauseResume() = intent {
@@ -83,32 +100,14 @@ class PomodoroSessionViewModel(
         }
     }
 
-    fun onDismissConfirmEnd() = intent {
-        reduce { state.copy(isShowConfirmEndDialog = false) }
-        postSideEffect(PomodoroSessionSideEffect.ShowEndSessionDialog(false))
-    }
-
-    fun onSkipClicked() = intent {
-        if (state.isComplete) return@intent
-        reduce { state.copy(isShowConfirmSkipDialog = true) }
-        postSideEffect(PomodoroSessionSideEffect.ShowSkipBreakDialog(true))
-    }
-
-    fun onDismissConfirmSkip() = intent {
-        reduce { state.copy(isShowConfirmSkipDialog = false) }
-        postSideEffect(PomodoroSessionSideEffect.ShowSkipBreakDialog(false))
-    }
-
     fun onConfirmSkip() = intent {
-        reduce { state.copy(isShowConfirmSkipDialog = false) }
-        postSideEffect(PomodoroSessionSideEffect.ShowSkipBreakDialog(false))
+        reduce { state.copy(pendingConfirm = null) }
         transition { skippedAt(it) }
     }
 
     fun onConfirmFinish() = intent {
         if (state.isComplete) return@intent
-        reduce { state.copy(isShowConfirmEndDialog = false) }
-        postSideEffect(PomodoroSessionSideEffect.ShowEndSessionDialog(false))
+        reduce { state.copy(pendingConfirm = null) }
         transition(finish = true) { finishedAt(it) }
     }
 
@@ -177,15 +176,20 @@ class PomodoroSessionViewModel(
         postSideEffect(PomodoroSessionSideEffect.OnSessionComplete(summary))
     }
 
-    /** Keeps the dialogs, which are not part of the Session. */
+    /**
+     * Keeps the pending confirmation, which is not part of the Session. The Gate replaces a
+     * pending Skip (there is nothing left to skip); a pending End still applies there.
+     */
     private fun PomodoroSessionUiState.rendered(
         session: PomodoroSessionDomain,
         now: Long,
         isComplete: Boolean = this.isComplete,
-    ) = session.toUiState(now, isComplete).copy(
-        isShowConfirmEndDialog = isShowConfirmEndDialog,
-        isShowConfirmSkipDialog = isShowConfirmSkipDialog,
-    )
+    ): PomodoroSessionUiState {
+        val next = session.toUiState(now, isComplete)
+        val stale = next.isComplete ||
+            (next.awaitingContinue && pendingConfirm == SessionConfirm.SKIP_BREAK)
+        return next.copy(pendingConfirm = pendingConfirm.takeUnless { stale })
+    }
 
     private fun syncTicker(session: PomodoroSessionDomain, now: Long) {
         if (session.timeline.phaseAt(now) is TimelinePhase.Running) startTicker() else stopTicker()

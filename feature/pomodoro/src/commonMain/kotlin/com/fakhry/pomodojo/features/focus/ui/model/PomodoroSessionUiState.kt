@@ -14,8 +14,7 @@ data class PomodoroSessionUiState(
     val activeSegment: TimelineSegmentUi = TimelineSegmentUi(),
     val timeline: TimelineUiModel = TimelineUiModel(),
     val quote: QuoteContent = QuoteContent.DEFAULT_QUOTE,
-    val isShowConfirmEndDialog: Boolean = false,
-    val isShowConfirmSkipDialog: Boolean = false,
+    val pendingConfirm: SessionConfirm? = null,
     val isComplete: Boolean = false,
     val awaitingContinue: Boolean = false,
     val finishedPhaseType: TimerTypeUi? = null,
@@ -23,9 +22,13 @@ data class PomodoroSessionUiState(
     val nextPhaseDurationMs: Long = 0L,
 )
 
+/** A confirmation the user has been asked for and not yet answered. */
+enum class SessionConfirm {
+    END_SESSION,
+    SKIP_BREAK,
+}
+
 sealed class PomodoroSessionSideEffect {
-    data class ShowEndSessionDialog(val isShown: Boolean) : PomodoroSessionSideEffect()
-    data class ShowSkipBreakDialog(val isShown: Boolean) : PomodoroSessionSideEffect()
     data class OnSessionComplete(
         val completionResult: PomodoroCompletionUiState,
     ) : PomodoroSessionSideEffect()

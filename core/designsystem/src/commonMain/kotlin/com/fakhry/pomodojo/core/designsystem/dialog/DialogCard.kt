@@ -16,11 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
- * The shared visual card for both the window dialog ([PomoDialog]) and overlay modals
- * ([PomoModalOverlay]). No window and no scrim of its own — just the titled card with an
- * optional [message] and [confirm] / [dismiss] actions.
+ * The shared visual card for overlay modals ([PomoModalOverlay]). No window and no scrim of its
+ * own — just the titled card with an optional [message] and [confirm] / [dismiss] actions.
  *
  * The card consumes tap gestures so a dismiss-on-scrim overlay ignores taps that land on it.
  */
@@ -72,5 +73,18 @@ fun DialogCard(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun PomoDialogCardPreview() {
+    PomoDojoTheme {
+        DialogCard(
+            title = "End Focus?",
+            message = "Are you sure you want to end this pomodoro?",
+            confirm = DialogAction(text = "Finish Pomodoro", onClick = {}),
+            dismiss = DialogAction(text = "Continue Focus", onClick = {}),
+        )
     }
 }
