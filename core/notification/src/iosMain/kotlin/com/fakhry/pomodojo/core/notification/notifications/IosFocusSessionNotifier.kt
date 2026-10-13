@@ -7,6 +7,7 @@ import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.notification.CompletionNotificationSummary
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.awaitingContinueIndex
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.UserNotifications.UNMutableNotificationContent
@@ -55,11 +56,15 @@ class IosFocusSessionNotifier : PomodoroSessionNotifier {
             return
         }
 
-        // Get current segment details
-        val currentSegment = snapshot.timeline.segments.firstOrNull {
+        // At the Gate the finished Segment stays current, shown static at 00:00; the next
+        // Segment has not started, so it must not count down.
+        val segments = snapshot.timeline.segments
+        val gateIndex = segments.awaitingContinueIndex()
+        val isAtGate = gateIndex != null
+        val currentSegment = gateIndex?.let { segments[it - 1] } ?: segments.firstOrNull {
             it.timerStatus == TimerStatusDomain.RUNNING ||
                 it.timerStatus == TimerStatusDomain.PAUSED
-        } ?: snapshot.timeline.segments.firstOrNull {
+        } ?: segments.firstOrNull {
             it.timerStatus != TimerStatusDomain.COMPLETED
         }
 
@@ -71,14 +76,16 @@ class IosFocusSessionNotifier : PomodoroSessionNotifier {
         val remaining = calculateRemainingSeconds(currentSegment, now)
         val totalSeconds = (currentSegment.timer.durationEpochMs / 1000).toInt()
         val segmentType = currentSegment.type.toSegmentTypeString()
-        val isPaused = currentSegment.timerStatus == TimerStatusDomain.PAUSED
+        val isPaused = isAtGate || currentSegment.timerStatus == TimerStatusDomain.PAUSED
         val schedulePayload = snapshot.buildLiveActivitySchedulePayload(now)
         val scheduleJson = schedulePayload?.toJsonString()
         val sessionId = summary.sessionId
-        if (!isPaused && schedulePayload != null) {
-            scheduleSegmentCompletionChimes(sessionId, schedulePayload)
-        } else {
-            cancelSegmentCompletionChime(sessionId)
+        when {
+            // Keep the just-delivered "Phase complete" chime; nothing is pending at the Gate.
+            isAtGate -> Unit
+            !isPaused && schedulePayload != null ->
+                scheduleSegmentCompletionChimes(sessionId, schedulePayload)
+            else -> cancelSegmentCompletionChime(sessionId)
         }
 
         // Start or update Live Activity
