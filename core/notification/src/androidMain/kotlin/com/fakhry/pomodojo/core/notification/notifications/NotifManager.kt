@@ -3,7 +3,7 @@ package com.fakhry.pomodojo.core.notification.notifications
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.fakhry.pomodojo.domain.pomodoro.model.notification.NotificationSummary
+import com.fakhry.pomodojo.domain.pomodoro.model.notification.SessionNotice
 
 internal const val NOTIF_REQUEST_CODE_OFFSET = 42_000
 internal const val NOTIF_CHANNEL_ID = "focus_session_channel"
@@ -14,11 +14,10 @@ internal const val MAIN_ACTIVITY_CLASS_NAME = "com.fakhry.pomodojo.MainActivity"
 // Distinct id offsets so notification and alarm ids derived from the same session never collide
 internal const val ALARM_COMPLETED_ID_OFFSET = 1_000
 internal const val ALARM_PROGRESS_ID_OFFSET = 2_000
-internal const val NOTIF_COMPLETED_ID_OFFSET = 3_000
 internal const val NOTIF_DYNAMIC_ISLAND_ID_OFFSET = 4_000
 
 interface NotifManager {
-    fun notify(summary: NotificationSummary)
+    fun notify(notice: SessionNotice.Showing)
 
     fun cancel(sessionId: String)
 }

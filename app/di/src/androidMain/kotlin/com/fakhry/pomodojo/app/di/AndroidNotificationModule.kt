@@ -19,7 +19,7 @@ fun androidNotificationModule(): Module = module {
     single<PomodojoAlarmManager> { AndroidPomodojoAlarmManager(get(), get()) }
 
     single { NotificationManagerCompat.from(androidContext()) }
-    single { AndroidFocusSessionNotifier(androidContext(), get(), get()) }
+    single { AndroidFocusSessionNotifier(get(), get()) }
     single<NotifManager> {
         // Separate Notification Implementation based on Manufacturer
         when (Build.MANUFACTURER.uppercase()) {

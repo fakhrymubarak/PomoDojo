@@ -8,6 +8,8 @@ import com.fakhry.pomodojo.core.utils.date.CurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.date.SystemCurrentTimeProvider
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.notification.SessionNotice
+import com.fakhry.pomodojo.domain.pomodoro.model.notification.toNotice
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelinePhase
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.completionSummary
@@ -121,13 +123,8 @@ class PomodoroSessionViewModel(
             stopTicker()
             val now = currentTimeProvider.now()
             val store = repoGroup.sessionStore
-            val created = if (store.session.first() ==
-                null
-            ) {
-                createPomodoroSessionUseCase(now)
-            } else {
-                null
-            }
+            val hasStored = store.session.first() != null
+            val created = if (hasStored) null else createPomodoroSessionUseCase(now)
             // A Timeline plan starts now; a Segment that ran out while away parks at the Gate,
             // so restore replays the transition.
             val restored = store.update { stored ->
@@ -141,7 +138,7 @@ class PomodoroSessionViewModel(
                 return@launch
             }
             reduce { state.rendered(restored, now) }
-            scheduleNotification(restored)
+            showNotice(restored.toNotice(now))
             syncTicker(restored, now)
         }
     }
@@ -178,7 +175,7 @@ class PomodoroSessionViewModel(
             else -> {
                 reduce { state.rendered(updated, now) }
                 syncTicker(updated, now)
-                scheduleNotification(updated)
+                showNotice(updated.toNotice(now))
             }
         }
     }
@@ -188,7 +185,7 @@ class PomodoroSessionViewModel(
         stopTicker()
         reduce { state.rendered(completed, now, isComplete = true) }
         repoGroup.historyRepository.insertHistory(completed)
-        pomodoroSessionNotifier.cancel(completed.sessionId())
+        pomodoroSessionNotifier.show(SessionNotice.Cleared(completed.sessionId()))
         val summary = completed.timeline.completionSummary().toUiState()
         postSideEffect(PomodoroSessionSideEffect.OnSessionComplete(summary))
     }
@@ -231,10 +228,9 @@ class PomodoroSessionViewModel(
         intent { transition { this } }
     }
 
-    private fun scheduleNotification(session: PomodoroSessionDomain) =
-        viewModelScope.launch(dispatcher.main) {
-            pomodoroSessionNotifier.schedule(session)
-        }
+    private fun showNotice(notice: SessionNotice) = viewModelScope.launch(dispatcher.main) {
+        pomodoroSessionNotifier.show(notice)
+    }
 
     override fun onCleared() {
         stopTicker()

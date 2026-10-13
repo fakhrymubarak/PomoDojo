@@ -10,14 +10,8 @@ import Foundation
     private let sessionKey = "PomodoroLiveActivity.sessionId"
     private let quoteKey = "PomodoroLiveActivity.quote"
     private let activityIdKey = "PomodoroLiveActivity.activityId"
-    private let decoder = JSONDecoder()
 
     @objc public static let shared = PomodoroLiveActivityManager()
-
-    private struct SegmentSchedulePayload: Codable {
-        let generatedAtEpochMillis: Double
-        let segments: [PomodoroActivityAttributes.SegmentScheduleItem]
-    }
 
     private override init() {
         super.init()
@@ -37,8 +31,9 @@ import Foundation
         segmentType: String,
         remainingSeconds: Int,
         totalSeconds: Int,
+        endsAtEpochMs: Int64,
         isPaused: Bool,
-        scheduleJSON: String?
+        nextSegmentType: String?
     ) {
         DispatchQueue.main.async { [weak self] in
             self?.performStartLiveActivity(
@@ -49,8 +44,9 @@ import Foundation
                 segmentType: segmentType,
                 remainingSeconds: remainingSeconds,
                 totalSeconds: totalSeconds,
+                endsAtEpochMs: endsAtEpochMs,
                 isPaused: isPaused,
-                scheduleJSON: scheduleJSON
+                nextSegmentType: nextSegmentType
             )
         }
     }
@@ -63,8 +59,9 @@ import Foundation
         segmentType: String,
         remainingSeconds: Int,
         totalSeconds: Int,
+        endsAtEpochMs: Int64,
         isPaused: Bool,
-        scheduleJSON: String?
+        nextSegmentType: String?
     ) {
         print("🚀 PomodoroLiveActivityManager: startLiveActivity called")
         print("   Session: \(sessionId)")
@@ -73,6 +70,21 @@ import Foundation
         print("   Segment: \(segmentType)")
         print("   Remaining: \(remainingSeconds)s")
         print("   Paused: \(isPaused)")
+
+        // Already showing this Session (e.g. the app was relaunched): keep it and update it.
+        if let activity = resolveActiveActivity(), activity.attributes.sessionId == sessionId {
+            performUpdateLiveActivity(
+                cycleNumber: cycleNumber,
+                totalCycles: totalCycles,
+                segmentType: segmentType,
+                remainingSeconds: remainingSeconds,
+                totalSeconds: totalSeconds,
+                endsAtEpochMs: endsAtEpochMs,
+                isPaused: isPaused,
+                nextSegmentType: nextSegmentType
+            )
+            return
+        }
 
         // End any existing activity first
         performEndLiveActivity(clearStoredData: true)
@@ -86,14 +98,13 @@ import Foundation
             quote: quote
         )
 
-        let targetEndTime = isPaused ? Date() : Date().addingTimeInterval(TimeInterval(remainingSeconds))
+        let targetEndTime = isPaused ? Date() : Date(timeIntervalSince1970: TimeInterval(endsAtEpochMs) / 1000)
 
-        let scheduleState = normalizedSchedule(
-            scheduleJSON: scheduleJSON,
-            fallbackType: segmentType,
+        let scheduleState = singleSegmentSchedule(
+            type: segmentType,
             cycleNumber: cycleNumber,
             totalSeconds: totalSeconds,
-            remainingSeconds: remainingSeconds
+            targetEndTime: targetEndTime
         )
 
         let contentState = PomodoroActivityAttributes.ContentState(
@@ -105,7 +116,8 @@ import Foundation
             isPaused: isPaused,
             targetEndTime: targetEndTime,
             scheduleGeneratedAt: scheduleState.generatedAt,
-            segmentSchedule: scheduleState.segments
+            segmentSchedule: scheduleState.segments,
+            nextSegmentType: nextSegmentType
         )
 
         do {
@@ -131,8 +143,9 @@ import Foundation
         segmentType: String,
         remainingSeconds: Int,
         totalSeconds: Int,
+        endsAtEpochMs: Int64,
         isPaused: Bool,
-        scheduleJSON: String?
+        nextSegmentType: String?
     ) {
         DispatchQueue.main.async { [weak self] in
             self?.performUpdateLiveActivity(
@@ -141,8 +154,9 @@ import Foundation
                 segmentType: segmentType,
                 remainingSeconds: remainingSeconds,
                 totalSeconds: totalSeconds,
+                endsAtEpochMs: endsAtEpochMs,
                 isPaused: isPaused,
-                scheduleJSON: scheduleJSON
+                nextSegmentType: nextSegmentType
             )
         }
     }
@@ -153,8 +167,9 @@ import Foundation
         segmentType: String,
         remainingSeconds: Int,
         totalSeconds: Int,
+        endsAtEpochMs: Int64,
         isPaused: Bool,
-        scheduleJSON: String?
+        nextSegmentType: String?
     ) {
         // If no active activity, try to restart it using stored session info
         guard let activity = resolveActiveActivity() else {
@@ -171,8 +186,9 @@ import Foundation
                     segmentType: segmentType,
                     remainingSeconds: remainingSeconds,
                     totalSeconds: totalSeconds,
+                    endsAtEpochMs: endsAtEpochMs,
                     isPaused: isPaused,
-                    scheduleJSON: scheduleJSON
+                    nextSegmentType: nextSegmentType
                 )
             } else {
                 print("   ❌ Cannot restart: no session info stored")
@@ -180,14 +196,13 @@ import Foundation
             return
         }
 
-        let targetEndTime = isPaused ? Date() : Date().addingTimeInterval(TimeInterval(remainingSeconds))
+        let targetEndTime = isPaused ? Date() : Date(timeIntervalSince1970: TimeInterval(endsAtEpochMs) / 1000)
 
-        let scheduleState = normalizedSchedule(
-            scheduleJSON: scheduleJSON,
-            fallbackType: segmentType,
+        let scheduleState = singleSegmentSchedule(
+            type: segmentType,
             cycleNumber: cycleNumber,
             totalSeconds: totalSeconds,
-            remainingSeconds: remainingSeconds
+            targetEndTime: targetEndTime
         )
 
         let updatedState = PomodoroActivityAttributes.ContentState(
@@ -199,7 +214,8 @@ import Foundation
             isPaused: isPaused,
             targetEndTime: targetEndTime,
             scheduleGeneratedAt: scheduleState.generatedAt,
-            segmentSchedule: scheduleState.segments
+            segmentSchedule: scheduleState.segments,
+            nextSegmentType: nextSegmentType
         )
 
         Task {
@@ -233,56 +249,6 @@ import Foundation
                 clearStoredSession()
             }
             print("PomodoroLiveActivityManager: Live Activity ended")
-        }
-    }
-
-    // End with final state (e.g., completion message)
-    @objc public func endLiveActivityWithCompletion(
-        completedCycles: Int,
-        totalFocusMinutes: Int,
-        totalBreakMinutes: Int
-    ) {
-        DispatchQueue.main.async { [weak self] in
-            self?.performEndLiveActivityWithCompletion(
-                completedCycles: completedCycles,
-                totalFocusMinutes: totalFocusMinutes,
-                totalBreakMinutes: totalBreakMinutes
-            )
-        }
-    }
-
-    private func performEndLiveActivityWithCompletion(
-        completedCycles: Int,
-        totalFocusMinutes: Int,
-        totalBreakMinutes: Int
-    ) {
-        guard let activity = resolveActiveActivity() else {
-            clearStoredSession()
-            return
-        }
-
-        let finalState = PomodoroActivityAttributes.ContentState(
-            cycleNumber: completedCycles,
-            totalCycles: completedCycles,
-            segmentType: "completed",
-            remainingSeconds: 0,
-            totalSeconds: 1,
-            isPaused: false,
-            targetEndTime: Date(),
-            scheduleGeneratedAt: Date(),
-            segmentSchedule: []
-        )
-
-        Task {
-            await activity.end(
-                .init(state: finalState, staleDate: nil),
-                dismissalPolicy: .default
-            )
-            currentActivity = nil
-            currentSessionId = nil
-            currentQuote = nil
-            clearStoredSession()
-            print("PomodoroLiveActivityManager: Live Activity ended with completion")
         }
     }
 
@@ -355,41 +321,19 @@ import Foundation
         persistSession(sessionId: nil, quote: nil, activityId: nil)
     }
 
-    private func normalizedSchedule(
-        scheduleJSON: String?,
-        fallbackType: String,
+    // The running Segment is the whole schedule: it started totalSeconds before it ends.
+    private func singleSegmentSchedule(
+        type: String,
         cycleNumber: Int,
         totalSeconds: Int,
-        remainingSeconds: Int
+        targetEndTime: Date
     ) -> (generatedAt: Date, segments: [PomodoroActivityAttributes.SegmentScheduleItem]) {
-        if let decoded = decodeSchedule(scheduleJSON: scheduleJSON) {
-            return decoded
-        }
-        let generatedAt = Date()
-        let safeRemaining = max(remainingSeconds, 0)
-        let elapsed = max(0, totalSeconds - safeRemaining)
         let item = PomodoroActivityAttributes.SegmentScheduleItem(
-            type: fallbackType,
+            type: type,
             cycleNumber: cycleNumber,
             totalSeconds: totalSeconds,
-            startOffsetSeconds: -elapsed
+            startOffsetSeconds: 0
         )
-        return (generatedAt, [item])
-    }
-
-    private func decodeSchedule(
-        scheduleJSON: String?
-    ) -> (generatedAt: Date, segments: [PomodoroActivityAttributes.SegmentScheduleItem])? {
-        guard
-            let scheduleJSON,
-            !scheduleJSON.isEmpty,
-            let data = scheduleJSON.data(using: .utf8),
-            let payload = try? decoder.decode(SegmentSchedulePayload.self, from: data)
-        else {
-            return nil
-        }
-
-        let generatedAt = Date(timeIntervalSince1970: payload.generatedAtEpochMillis / 1000.0)
-        return (generatedAt, payload.segments)
+        return (targetEndTime.addingTimeInterval(-TimeInterval(totalSeconds)), [item])
     }
 }

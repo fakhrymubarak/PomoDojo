@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.fakhry.pomodojo.core.notification.PomodoroSessionNotifier
 import com.fakhry.pomodojo.core.notification.audio.provideSoundPlayer
+import com.fakhry.pomodojo.domain.pomodoro.model.notification.toNotice
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.elapsedAt
 import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionStore
 import kotlinx.coroutines.CoroutineScope
@@ -66,7 +67,7 @@ class NotificationSegmentProgressReceiver : BroadcastReceiver() {
                     return@launch
                 }
 
-                notifier.schedule(session)
+                notifier.show(session.toNotice(now))
                 if (action == ACTION_SEGMENT_COMPLETE) provideSoundPlayer().playSegmentCompleted()
             } catch (e: Exception) {
                 Log.e(TAG, e.message ?: "Failed to schedule segment completion alarm")

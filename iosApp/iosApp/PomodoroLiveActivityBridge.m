@@ -26,8 +26,9 @@
                            segmentType:(NSString *)segmentType
                       remainingSeconds:(NSInteger)remainingSeconds
                           totalSeconds:(NSInteger)totalSeconds
-        isPaused:(BOOL)isPaused
-    scheduleJSON:(NSString *_Nullable)scheduleJSON {
+                         endsAtEpochMs:(int64_t)endsAtEpochMs
+                              isPaused:(BOOL)isPaused
+                       nextSegmentType:(NSString *_Nullable)nextSegmentType {
     if (@available(iOS 16.2, *)) {
         [[PomodoroLiveActivityManager shared] startLiveActivityWithSessionId:sessionId
                                                                        quote:quote
@@ -36,8 +37,9 @@
                                                                  segmentType:segmentType
                                                             remainingSeconds:remainingSeconds
                                                                 totalSeconds:totalSeconds
-                isPaused:isPaused
-            scheduleJSON:scheduleJSON];
+                                                               endsAtEpochMs:endsAtEpochMs
+                                                                    isPaused:isPaused
+                                                             nextSegmentType:nextSegmentType];
     } else {
         NSLog(@"PomodoroLiveActivityBridge: Live Activities not supported on this iOS version");
     }
@@ -48,32 +50,24 @@
                               segmentType:(NSString *)segmentType
                          remainingSeconds:(NSInteger)remainingSeconds
                              totalSeconds:(NSInteger)totalSeconds
+                            endsAtEpochMs:(int64_t)endsAtEpochMs
                                  isPaused:(BOOL)isPaused
-                             scheduleJSON:(NSString *_Nullable)scheduleJSON {
+                          nextSegmentType:(NSString *_Nullable)nextSegmentType {
     if (@available(iOS 16.2, *)) {
         [[PomodoroLiveActivityManager shared] updateLiveActivityWithCycleNumber:cycleNumber
                                                                     totalCycles:totalCycles
                                                                     segmentType:segmentType
                                                                remainingSeconds:remainingSeconds
                                                                    totalSeconds:totalSeconds
-                isPaused:isPaused
-            scheduleJSON:scheduleJSON];
+                                                                  endsAtEpochMs:endsAtEpochMs
+                                                                       isPaused:isPaused
+                                                                nextSegmentType:nextSegmentType];
     }
 }
 
 - (void)endLiveActivity {
     if (@available(iOS 16.2, *)) {
         [[PomodoroLiveActivityManager shared] endLiveActivity];
-    }
-}
-
-- (void)endLiveActivityWithCompletionCycles:(NSInteger)completedCycles
-                          totalFocusMinutes:(NSInteger)totalFocusMinutes
-                          totalBreakMinutes:(NSInteger)totalBreakMinutes {
-    if (@available(iOS 16.2, *)) {
-        [[PomodoroLiveActivityManager shared] endLiveActivityWithCompletionWithCompletedCycles:completedCycles
-                                                                             totalFocusMinutes:totalFocusMinutes
-                                                                             totalBreakMinutes:totalBreakMinutes];
     }
 }
 

@@ -1,15 +1,11 @@
 package com.fakhry.pomodojo.core.notification
 
-import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.notification.SessionNotice
 
 interface PomodoroSessionNotifier {
-    suspend fun schedule(snapshot: PomodoroSessionDomain)
-
-    suspend fun cancel(sessionId: String)
+    suspend fun show(notice: SessionNotice)
 }
 
 object NoOpPomodoroSessionNotifier : PomodoroSessionNotifier {
-    override suspend fun schedule(snapshot: PomodoroSessionDomain) = Unit
-
-    override suspend fun cancel(sessionId: String) = Unit
+    override suspend fun show(notice: SessionNotice) = Unit
 }

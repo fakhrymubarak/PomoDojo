@@ -9,6 +9,7 @@ import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.domain.history.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.domain.history.repository.HistorySessionRepository
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.notification.SessionNotice
 import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
@@ -566,8 +567,7 @@ private class FakeHistorySessionRepository : HistorySessionRepository {
 }
 
 private class FakeFocusSessionNotifier : PomodoroSessionNotifier {
-    override suspend fun schedule(snapshot: PomodoroSessionDomain) = Unit
-    override suspend fun cancel(sessionId: String) = Unit
+    override suspend fun show(notice: SessionNotice) = Unit
 }
 
 private class FakeSoundPlayer : SoundPlayer {

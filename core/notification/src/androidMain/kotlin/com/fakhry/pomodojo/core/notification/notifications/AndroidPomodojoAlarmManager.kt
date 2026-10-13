@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import com.fakhry.pomodojo.domain.pomodoro.model.notification.NotificationSummary
 
 private const val TAG = "AndroidAlarmManager"
 
@@ -15,20 +14,14 @@ class AndroidPomodojoAlarmManager(
     private val alarmManager: AlarmManager?,
 ) : PomodojoAlarmManager {
 
-    override fun schedule(summary: NotificationSummary) {
-        val now = System.currentTimeMillis()
-
+    override fun schedule(sessionId: String, endsAtMs: Long) {
         // Schedule alarms for segment completion and periodic progress updates
-        if (!summary.isPaused && summary.finishTimeMillis > 0) {
-            scheduleProgressUpdateAlarm(summary.sessionId, now)
-            scheduleSegmentCompletionAlarm(summary.sessionId, summary.finishTimeMillis)
-        } else {
-            cancelProgressUpdateAlarm(summary.sessionId)
-            cancelSegmentCompletionAlarm(summary.sessionId)
-        }
+        scheduleProgressUpdateAlarm(sessionId, System.currentTimeMillis())
+        scheduleSegmentCompletionAlarm(sessionId, endsAtMs)
     }
 
     override fun cancel(sessionId: String) {
+        cancelProgressUpdateAlarm(sessionId)
         cancelSegmentCompletionAlarm(sessionId)
     }
 

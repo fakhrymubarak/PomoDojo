@@ -22,6 +22,8 @@ struct PomodoroActivityAttributes: ActivityAttributes {
         var targetEndTime: Date
         var scheduleGeneratedAt: Date
         var segmentSchedule: [SegmentScheduleItem]
+        /// Set only at the Gate: the Segment waiting for the user to continue.
+        var nextSegmentType: String? = nil
     }
 
     var sessionId: String
@@ -60,7 +62,7 @@ struct PomodoroLiveActivityWidget: Widget {
                                     .monospacedDigit()
                                     .frame(maxWidth: .infinity, alignment: .center)
                                     .multilineTextAlignment(.center)
-                                Text("Paused")
+                                Text(gateCaption(for: context.state) ?? "Paused")
                                     .font(.caption)
                                     .foregroundColor(.orange)
                                     .frame(maxWidth: .infinity, alignment: .center)
@@ -187,6 +189,10 @@ struct PomodoroLiveActivityWidget: Widget {
         case "long_break": return Color(red: 0xFF / 255.0, green: 0xC8 / 255.0, blue: 0x57 / 255.0) // Long break highlight - yellow
         default: return .gray
         }
+    }
+
+    private func gateCaption(for state: PomodoroActivityAttributes.ContentState) -> String? {
+        state.nextSegmentType.map { "\(segmentLabel(for: $0)) next — tap to continue" }
     }
 
     private func formatTime(seconds: Int) -> String {

@@ -6,7 +6,7 @@ import android.content.Context
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.fakhry.pomodojo.domain.pomodoro.model.notification.NotificationSummary
+import com.fakhry.pomodojo.domain.pomodoro.model.notification.SessionNotice
 import io.github.d4viddf.hyperisland_kit.HyperIslandNotification
 import io.github.d4viddf.hyperisland_kit.HyperPicture
 import io.github.d4viddf.hyperisland_kit.models.TimerInfo
@@ -29,11 +29,11 @@ class XiaomiNotifManager(
 ) : NotifManager {
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    override fun notify(summary: NotificationSummary) {
+    override fun notify(notice: SessionNotice.Showing) {
         notifyWithDynamicIsland(
             intent = context.launchActivityPendingIntent(),
-            summary = summary,
-            notifId = dynamicIslandNotificationId(summary.sessionId),
+            notice = notice,
+            notifId = dynamicIslandNotificationId(notice.sessionId),
         )
     }
 
@@ -50,34 +50,42 @@ class XiaomiNotifManager(
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     private fun notifyWithDynamicIsland(
         intent: PendingIntent,
-        summary: NotificationSummary,
+        notice: SessionNotice.Showing,
         notifId: Int,
     ) {
-        val countdownTimer = TimerInfo(
-            -1,
-            summary.finishTimeMillis,
-            System.currentTimeMillis(),
-            System.currentTimeMillis(),
-        )
-
-        // Show Timer on Dynamic Island
+        val title = notice.title(context)
         val picture = HyperPicture(PIC_KEY_ICON, context, RP.drawable.ic_timer)
         val hyperIslandBuilder =
             HyperIslandNotification.Builder(context, ISLAND_CHANNEL_ID, ISLAND_CHANNEL_NAME)
                 .setSmallWindowTarget("${context.packageName}.MainActivity")
-                .setChatInfo(
-                    title = summary.title,
-                    timer = countdownTimer,
-                    pictureKey = PIC_KEY_ICON,
-                )
-                .setBigIslandCountdown(summary.finishTimeMillis, PIC_KEY_ICON)
                 .setSmallIslandIcon(PIC_KEY_ICON)
                 .addPicture(picture)
+
+        if (notice is SessionNotice.Running) {
+            // Show Timer on Dynamic Island
+            val countdownTimer = TimerInfo(
+                -1,
+                notice.endsAtMs,
+                System.currentTimeMillis(),
+                System.currentTimeMillis(),
+            )
+            hyperIslandBuilder
+                .setChatInfo(title = title, timer = countdownTimer, pictureKey = PIC_KEY_ICON)
+                .setBigIslandCountdown(notice.endsAtMs, PIC_KEY_ICON)
+        } else {
+            // Paused or at the Gate nothing counts down, so the island shows static text.
+            hyperIslandBuilder
+                .setChatInfo(
+                    title = title,
+                    content = notice.status(context),
+                    pictureKey = PIC_KEY_ICON,
+                )
+        }
 
         // Show Timer on Notification
         val notification = NotificationCompat.Builder(context, NOTIF_CHANNEL_ID)
             .setSmallIcon(RP.drawable.ic_timer)
-            .setContentTitle(summary.title)
+            .setContentTitle(title)
             .addExtras(hyperIslandBuilder.buildResourceBundle())
             .setContentIntent(intent)
             .setGroup(NOTIF_GROUP_DYNAMIC_ISLAND).build()

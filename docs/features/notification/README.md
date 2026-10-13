@@ -36,8 +36,7 @@ flowchart TB
         NOOP["NoOpPomodoroSessionNotifier"]
     end
 
-    VM -- " schedule(snapshot) " --> NI
-    VM -- " cancel(sessionId) " --> NI
+    VM -- " show(notice) " --> NI
     VM -- " playSegmentCompleted() " --> SP
     NI -.-> AN
     NI -.-> IN
@@ -48,7 +47,7 @@ flowchart TB
     NM -.-> XN
     AM -.-> AAM
     AAM -- " fires alarm " --> BR
-    BR -- " schedule(snapshot) " --> AN
+    BR -- " show(notice) " --> AN
     IN --> LA
     IN --> UNC
 ```
@@ -57,58 +56,30 @@ flowchart TB
 
 ## ViewModel → Notifier Flow
 
-The `PomodoroSessionViewModel` triggers notifications and alarms through two methods on
-`PomodoroSessionNotifier`:
+`PomodoroSessionNotifier` has one method, **`show(notice: SessionNotice)`**. A `SessionNotice` is
+the Session projected at one moment by `PomodoroSessionDomain.toNotice(now)` in `domain/pomodoro`:
 
-- **`schedule(snapshot)`** — Creates/updates the notification with current session state.
-- **`cancel(sessionId)`** — Dismisses the notification and cancels any pending alarms.
+| Notice    | When                                         | Carries                                    |
+|-----------|----------------------------------------------|--------------------------------------------|
+| `Running` | A Segment is counting down                   | Segment, remaining time, **`endsAtMs`**    |
+| `Paused`  | A Segment is paused                          | Segment, remaining time                    |
+| `AtGate`  | A Segment ran out; the next waits (the Gate) | Finished Segment, next Segment             |
+| `Cleared` | Not started, complete, or finished          | Session id only                            |
+
+Adapters only render the notice. They arm their alarm or chime from `Running.endsAtMs` and
+cancel it for every other notice; no status rules or clock reads live in the adapters.
 
 ```mermaid
 flowchart TD
-    subgraph ViewModel["PomodoroSessionViewModel"]
-        RESTORE["restoreOrStartSession()"]
-        TICK["handleTick()"]
-        TOGGLE["togglePauseResume()"]
-        COMPLETE["completeActiveSession()"]
-        NOTIF["updateNotification()"]
-    end
-
-    subgraph Throttle["Notification Throttle"]
-        FORCE{"forceUpdate?"}
-        THROTTLE{"now - lastUpdated\n≤ 5000ms?"}
-    end
-
-    subgraph Notifier["PomodoroSessionNotifier"]
-        SCHEDULE["schedule(snapshot)"]
-        CANCEL["cancel(sessionId)"]
-    end
-
-    RESTORE -- " after preparing session " --> NOTIF
-    TICK -- " segment advanced " --> NOTIF
-    TOGGLE -- " pause/resume " --> NOTIF
-    NOTIF -- " session complete? " --> |Yes|CANCEL
-NOTIF -- " session active " --> FORCE
-FORCE -->|Yes|SCHEDULE
-FORCE -->|No|THROTTLE
-THROTTLE -->|Yes, skip|SKIP["Return (throttled)"]
-THROTTLE -->|No|SCHEDULE
-
-COMPLETE --> CANCEL
-COMPLETE -- " resetNotificationThrottle() " --> RESET["lastUpdated = 0"]
+    RESTORE["restoreOrStartSession()"] --> NOTICE["showNotice(session.toNotice(now))"]
+    TRANSITION["transition() — pause, resume,\nskip, continue, segment ran out"] --> NOTICE
+    COMPLETE["completeSession()"] --> CLEARED["show(SessionNotice.Cleared(sessionId))"]
+    NOTICE --> SHOW["PomodoroSessionNotifier.show()"]
+    CLEARED --> SHOW
 ```
 
-### When `updateNotification()` Is Called
-
-| Trigger                           | `forceUpdate` | Notes                                   |
-|-----------------------------------|---------------|-----------------------------------------|
-| `restoreOrStartSession()`         | `false`       | Initial session load/restore            |
-| `togglePauseResume()`             | `true`        | Immediate update on pause/resume        |
-| `handleTick()` (segment advanced) | `true`        | Immediate update when segment completes |
-
-### Throttle Logic
-
-To avoid flooding the notification system, `updateNotification()` throttles non-forced updates to
-**at most once per 5 seconds** (`TICK_UPDATE_NOTIF_INTERVAL_MILLIS = 5_000L`).
+A plain tick (only the clock moved) shows nothing new: the platform countdowns run on their own
+from `endsAtMs`.
 
 ---
 
@@ -118,31 +89,14 @@ To avoid flooding the notification system, `updateNotification()` throttles non-
 
 ```mermaid
 flowchart TD
-    subgraph AndroidNotifier["AndroidFocusSessionNotifier"]
-        SCHED["schedule(snapshot)"]
-        CANC["cancel(sessionId)"]
-    end
-
-    subgraph Mapping["Snapshot → NotificationSummary"]
-        MAP["PomodoroSessionDomain\n.toNotificationSummary(context, now)"]
-    end
-
-    subgraph NotifMgr["NotifManager (interface)"]
-        NOTIFY["notify(summary)"]
-        NCANCEL["cancel(sessionId)"]
-    end
-
-    subgraph AlarmMgr["PomodojoAlarmManager (interface)"]
-        ASCHEDULE["schedule(summary)"]
-        ACANCEL["cancel(sessionId)"]
-    end
-
-    SCHED --> MAP
-    MAP --> NOTIFY
-    MAP --> ASCHEDULE
-    CANC --> NCANCEL
-    CANC --> ACANCEL
+    SHOW["AndroidFocusSessionNotifier\n.show(notice)"]
+    SHOW -->|" Running / Paused / AtGate "| NOTIFY["NotifManager.notify(notice)"]
+    SHOW -->|" Cleared "| NCANCEL["NotifManager.cancel(sessionId)"]
+    SHOW -->|" Running "| ASCHEDULE["PomodojoAlarmManager\n.schedule(sessionId, endsAtMs)"]
+    SHOW -->|" otherwise "| ACANCEL["PomodojoAlarmManager.cancel(sessionId)"]
 ```
+
+Titles and status lines come from `SessionNoticeText.kt` (Android string resources).
 
 ### NotifManager Implementations
 
@@ -161,15 +115,16 @@ flowchart LR
 
 - Creates a notification channel (`focus_session_channel`).
 - Displays an **ongoing, silent notification** with:
-    - Progress bar (`segmentProgressPercent`).
-    - Chronometer countdown (when running, using `setWhen(finishTimeMillis)`).
-    - BigTextStyle with the motivational quote.
+    - Progress bar (`progressPercent()`; full at the Gate).
+    - Chronometer countdown while running, using `setWhen(endsAtMs)`.
+    - BigTextStyle with the motivational quote, or "Tap to continue" at the Gate.
 - Uses `PRIORITY_MAX` for persistent visibility.
 
 #### XiaomiNotifManager
 
 - Uses `HyperIslandNotification.Builder` for **Xiaomi Dynamic Island** integration.
-- Sends countdown timer via `TimerInfo` and `setBigIslandCountdown(finishTimeMillis)`.
+- While running, sends a countdown via `TimerInfo` and `setBigIslandCountdown(endsAtMs)`.
+- Paused or at the Gate, shows static text instead (e.g. "12:00 remaining • Paused").
 - Wraps notification extras with `miui.focus.param` JSON payload.
 
 ### Alarm Manager (Android)
@@ -177,8 +132,9 @@ flowchart LR
 ```mermaid
 flowchart TD
     subgraph AlarmScheduler["AndroidPomodojoAlarmManager"]
-        CHECK{"isPaused OR\nfinishTime ≤ 0?"}
-        SEG_ALARM["scheduleSegmentCompletionAlarm\n(exact alarm at finishTimeMillis)"]
+        SCHEDULE["schedule(sessionId, endsAtMs)"]
+        CANCEL["cancel(sessionId)"]
+        SEG_ALARM["scheduleSegmentCompletionAlarm\n(exact alarm at endsAtMs)"]
         PROG_ALARM["scheduleProgressUpdateAlarm\n(⚠️ currently disabled)"]
         CANCEL_SEG["cancelSegmentCompletionAlarm"]
         CANCEL_PROG["cancelProgressUpdateAlarm"]
@@ -189,10 +145,10 @@ flowchart TD
         INEXACT["setAndAllowWhileIdle\n(fallback, API 31+)"]
     end
 
-    CHECK -->|" paused / no finish time "| CANCEL_SEG
-    CHECK -->|" paused / no finish time "| CANCEL_PROG
-    CHECK -->|" running & finishTime > 0 "| SEG_ALARM
-    CHECK -->|" running & finishTime > 0 "| PROG_ALARM
+    SCHEDULE --> SEG_ALARM
+    SCHEDULE --> PROG_ALARM
+    CANCEL --> CANCEL_SEG
+    CANCEL --> CANCEL_PROG
     SEG_ALARM --> EXACT
     SEG_ALARM -.->|" API 31+,\nno exact alarm permission "| INEXACT
     PROG_ALARM -.->|" ⚠️ DISABLED\n(bug: loop issue) "| EXACT
@@ -218,14 +174,15 @@ flowchart TD
     PARK --> HAS_SESSION{"Session exists?"}
     READ --> HAS_SESSION
     HAS_SESSION -->|No| FINISH["pendingResult.finish()"]
-    HAS_SESSION -->|Yes| RESCHEDULE["notifier.schedule(session)"]
+    HAS_SESSION -->|Yes| RESCHEDULE["notifier.show(session.toNotice(now))"]
     RESCHEDULE --> PLAY_SOUND["SoundPlayer.playSegmentCompleted()\n(segment complete only)"]
     PLAY_SOUND --> FINISH
 ```
 
 The receiver never starts the next Segment or finishes the Session: it only parks the Session at
-the Gate, and the foreground finishes it (see `docs/adr/0001-background-alarm-only-parks-session.md`). The update is atomic, so it cannot
-overwrite a change the app made at the same moment.
+the Gate, and the foreground finishes it (see `docs/adr/0001-background-alarm-only-parks-session.md`).
+The update is atomic, so it cannot overwrite a change the app made at the same moment. When the
+last Segment runs out the notice is `Cleared`, so no stale "00:00" notification is left behind.
 
 ### Android Request Code Scheme
 
@@ -234,96 +191,40 @@ overwrite a change the app made at the same moment.
 | Session notification ID    | `42_000 + sessionId.hashCode()`        |
 | Segment completion alarm   | `42_000 + 1000 + sessionId.hashCode()` |
 | Progress update alarm      | `42_000 + 2000 + sessionId.hashCode()` |
-| Completion notification ID | `42_000 + 3000 + sessionId.hashCode()` |
 | Xiaomi Dynamic Island ID   | `42_000 + 4000 + sessionId.hashCode()` |
 
 ---
 
 ## iOS Platform
 
-### Architecture
+### Show Flow
 
 ```mermaid
 flowchart TD
-    subgraph IOS_Notifier["IosFocusSessionNotifier"]
-        SCHED["schedule(snapshot)"]
-        CANC["cancel(sessionId)"]
-    end
-
-    subgraph LiveAct["LiveActivityManager"]
-        LA_START["startLiveActivity()"]
-        LA_UPDATE["updateLiveActivity()"]
-        LA_END["endLiveActivity()"]
-        LA_END_C["endLiveActivityWithCompletion()"]
-    end
-
-    subgraph LocalNotif["UNUserNotificationCenter"]
-        COMP_NOTIF["Completion Notification\n(fires after 1 sec)"]
-        SEG_CHIME["Segment Completion Chimes\n(time-interval triggers)"]
-    end
-
-    subgraph Bridge["Native Bridge"]
-        OBJ_C["PomodoroLiveActivityBridge\n(Objective-C)"]
-        SWIFT["Swift Live Activity"]
-    end
-
-    SCHED --> LIVE_CHECK{"LiveActivity\nsupported?"}
-    LIVE_CHECK -->|Yes| FIRST_SEG{"First segment\n& no completed?"}
-    FIRST_SEG -->|Yes| LA_START
-    FIRST_SEG -->|No| LA_UPDATE
-    LIVE_CHECK -->|No| SKIP_LA["Skip Live Activity"]
-    SCHED --> ALL_DONE{"All segments\ncompleted?"}
-    ALL_DONE -->|Yes| LA_END_C
-    ALL_DONE -->|Yes| COMP_NOTIF
-    ALL_DONE -->|No| CHIME_CHECK{"isPaused?"}
-    CHIME_CHECK -->|No| SEG_CHIME
-    CHIME_CHECK -->|Yes| CANCEL_CHIME["Cancel segment chimes"]
-    CANC --> LA_END
-    CANC --> CANCEL_ALL["Cancel pending &\ndelivered notifications"]
-    LA_START --> OBJ_C --> SWIFT
-    LA_UPDATE --> OBJ_C
-    LA_END --> OBJ_C
-    LA_END_C --> OBJ_C
+    SHOW["IosFocusSessionNotifier.show(notice)"]
+    SHOW -->|" Running "| CHIME["Replace the segment chime:\nUNTimeIntervalNotificationTrigger\n(fires when the Segment ends)"]
+    SHOW -->|" Paused "| CANCEL_CHIME["Cancel segment chimes"]
+    SHOW -->|" AtGate "| KEEP["Keep the delivered\n'Phase complete' chime"]
+    SHOW -->|" Cleared "| END["Cancel chimes +\nLiveActivityManager.endLiveActivity()"]
+    CHIME --> LA{"Live Activities\nsupported?"}
+    CANCEL_CHIME --> LA
+    KEEP --> LA
+    LA -->|" first notice for\nthis Session "| START["LiveActivityManager\n.startLiveActivity(notice)"]
+    LA -->|" otherwise "| UPDATE["LiveActivityManager\n.updateLiveActivity(notice)"]
+    START --> BRIDGE["PomodoroLiveActivityBridge (Obj-C)\n→ PomodoroLiveActivityManager (Swift)"]
+    UPDATE --> BRIDGE
 ```
 
-### iOS Schedule Flow (Detailed)
+The bridge passes `endsAtEpochMs` (0 unless running) and `nextSegmentType` (set only at the
+Gate). The widget counts down to `endsAtEpochMs`; at the Gate it shows the finished Segment at
+00:00 with "Break next — tap to continue". If a Live Activity for the same Session already exists
+(e.g. after the app was relaunched), the Swift side updates it instead of starting a second one.
 
-```mermaid
-flowchart TD
-    START["schedule(snapshot)"]
-    MAP["toIosNotificationSummary(now)"]
-    START --> MAP
-    MAP --> ALL_COMPLETE{"All segments\ncompleted?"}
-    ALL_COMPLETE -->|Yes| END_LA["LiveActivityManager\n.endLiveActivityWithCompletion()"]
-    END_LA --> COMP_NOTIF["Schedule completion\nUNNotification (1-sec delay)"]
-    COMP_NOTIF --> CANCEL_CHIMES_1["cancelSegmentCompletionChime()"]
-    ALL_COMPLETE -->|No| FIND_SEG["Find active segment\n(RUNNING or PAUSED)"]
-    FIND_SEG --> CALC["Calculate remaining seconds\n& build schedule payload"]
-    CALC --> PAUSED{"isPaused?"}
-    PAUSED -->|No| SCHEDULE_CHIMES["scheduleSegmentCompletionChimes()\nfor each remaining segment"]
-    PAUSED -->|Yes| CANCEL_CHIMES_2["cancelSegmentCompletionChime()"]
-    CALC --> LA_SUPPORTED{"LiveActivity\nsupported?"}
-    LA_SUPPORTED -->|No| DONE["Return"]
-    LA_SUPPORTED -->|Yes| ALREADY_STARTED{"hasStartedForSession?"}
-    ALREADY_STARTED -->|" No (first time) "| LA_START["LiveActivityManager\n.startLiveActivity(\n sessionId, quote,\n cycleNumber, segmentType,\n remainingSeconds,\n scheduleJson\n)"]
-    ALREADY_STARTED -->|Yes| LA_UPDATE["LiveActivityManager\n.updateLiveActivity(\n cycleNumber, segmentType,\n remainingSeconds,\n scheduleJson\n)"]
-```
+### iOS Segment Completion Chime
 
-### iOS Segment Completion Chimes
-
-Unlike Android's `AlarmManager`, iOS schedules **local notifications** via
-`UNTimeIntervalNotificationTrigger` for each remaining segment in the session. These serve as audio
-chimes to alert the user when a segment ends.
-
-```mermaid
-flowchart TD
-    BUILD["buildLiveActivitySchedulePayload(now)"]
-    BUILD --> ENTRIES["For each non-completed segment:\n - type, cycleNumber\n - totalSeconds\n - startOffsetSeconds"]
-    ENTRIES --> FOREACH["For each entry:\ncalculate fireInSeconds =\nstartOffset + totalSeconds"]
-    FOREACH --> TRIGGER["UNTimeIntervalNotificationTrigger\n(fireInSeconds, repeats: false)"]
-    TRIGGER --> REQUEST["UNNotificationRequest\nwith sound: timer_notification.wav"]
-    REQUEST --> ADD["notificationCenter\n.addNotificationRequest()"]
-```
+Unlike Android's `AlarmManager`, iOS schedules a **local notification** that fires when the
+running Segment ends (`UNTimeIntervalNotificationTrigger` with the notice's remaining time). It
+plays `timer_notification.wav` and says "Phase complete — tap to continue".
 
 ---
 
@@ -334,7 +235,7 @@ The JVM (Desktop) platform uses `NoOpPomodoroSessionNotifier`, which does nothin
 ```mermaid
 flowchart LR
     VM["PomodoroSessionViewModel"] --> NOOP["NoOpPomodoroSessionNotifier"]
-    NOOP --> NOTHING["schedule() → Unit\ncancel() → Unit"]
+    NOOP --> NOTHING["show() → Unit"]
 ```
 
 ---
@@ -374,9 +275,9 @@ flowchart TD
 
 | Layer   | File                                     | Purpose                                  |
 |---------|------------------------------------------|------------------------------------------|
-| Common  | `PomodoroSessionNotifier.kt`             | Interface: `schedule()` / `cancel()`     |
+| Domain  | `SessionNotice.kt`                       | `SessionNotice` + `toNotice(now)`        |
+| Common  | `PomodoroSessionNotifier.kt`             | Interface: `show(notice)`                |
 | Common  | `SoundPlayer.kt`                         | Interface for segment completion audio   |
-| Common  | `CompletionSummaryMapper.kt`             | Maps session → completion summary        |
 | Common  | `NotificationFeatureModules.kt`          | Koin DI wiring                           |
 | Common  | `PomodoroSessionNotificationProvider.kt` | `expect fun` provider                    |
 | Android | `AndroidFocusSessionNotifier.kt`         | Orchestrates notification + alarm        |
@@ -386,13 +287,11 @@ flowchart TD
 | Android | `PomodojoAlarmManager.kt`                | Alarm scheduling interface               |
 | Android | `AndroidPomodojoAlarmManager.kt`         | Exact alarm scheduling                   |
 | Android | `NotificationSegmentProgressReceiver.kt` | BroadcastReceiver for alarm intents      |
-| Android | `NotificationSummaryMapper.kt`           | Maps session → Android notification data |
+| Android | `SessionNoticeText.kt`                   | Notice → Android title / status text     |
 | iOS     | `IosFocusSessionNotifier.kt`             | Live Activity + local notifications      |
 | iOS     | `LiveActivityManager.kt`                 | Kotlin wrapper for Swift bridge          |
-| iOS     | `LiveActivitySchedule.kt`                | Schedule payload builder                 |
-| iOS     | `NotificationSummaryMapper.ios.kt`       | Maps session → iOS notification data     |
 | JVM     | `PomodoroSessionNotifier.jvm.kt`         | No-op implementation                     |
-| Feature | `PomodoroSessionViewModel.kt`            | Triggers `schedule()` / `cancel()`       |
+| Feature | `PomodoroSessionViewModel.kt`            | Calls `show()`                           |
 
 ---
 
@@ -403,7 +302,7 @@ flowchart TD
 > The `scheduleProgressUpdateAlarm()` in `AndroidPomodojoAlarmManager` is **currently disabled**
 > (commented out). When enabled, it creates an infinite loop where each alarm trigger re-schedules
 > itself, causing continuous notification updates. The alarm fires → receiver calls
-> `notifier.schedule()` → which calls `alarmManager.schedule()` → which schedules another alarm →
+> `notifier.show()` → which calls `alarmManager.schedule()` → which schedules another alarm →
 > repeat.
 >
 > **TODO:** Re-draw the flowchart diagram of notification and alarm triggers to identify the

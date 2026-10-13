@@ -1,7 +1,11 @@
 package com.fakhry.pomodojo.core.notification.notifications
 
+import com.fakhry.pomodojo.domain.pomodoro.model.notification.SessionNotice
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import com.fakhry.pomodojo.liveactivity.bridge.PomodoroLiveActivityBridge
 import kotlinx.cinterop.ExperimentalForeignApi
+
+private const val MILLIS_PER_SECOND = 1000L
 
 /**
  * LiveActivityManager - Kotlin wrapper for PomodoroLiveActivityBridge
@@ -21,69 +25,39 @@ object LiveActivityManager {
         false
     }
 
-    fun startLiveActivity(
-        sessionId: String,
-        quote: String,
-        cycleNumber: Int,
-        totalCycles: Int,
-        segmentType: String,
-        remainingSeconds: Int,
-        totalSeconds: Int,
-        isPaused: Boolean,
-        scheduleJson: String?,
-    ) {
+    fun startLiveActivity(notice: SessionNotice.Showing) {
         try {
-            println("LiveActivityManager: Starting Live Activity")
-            println("  Session: $sessionId")
-            println("  Cycle: $cycleNumber/$totalCycles")
-            println("  Segment: $segmentType")
-            println("  Remaining: $remainingSeconds seconds")
-
-            val bridge = PomodoroLiveActivityBridge.shared()
-
-            bridge.startLiveActivityWithSessionId(
-                sessionId = sessionId,
-                quote = quote,
-                cycleNumber = cycleNumber.toLong(),
-                totalCycles = totalCycles.toLong(),
-                segmentType = segmentType,
-                remainingSeconds = remainingSeconds.toLong(),
-                totalSeconds = totalSeconds.toLong(),
-                isPaused = isPaused,
-                scheduleJSON = scheduleJson,
+            println("LiveActivityManager: Starting Live Activity for ${notice.sessionId}")
+            PomodoroLiveActivityBridge.shared().startLiveActivityWithSessionId(
+                sessionId = notice.sessionId,
+                quote = notice.quote.withAttribution(),
+                cycleNumber = notice.segment.cycleNumber.toLong(),
+                totalCycles = notice.totalCycle.toLong(),
+                segmentType = notice.segment.type.toSegmentTypeString(),
+                remainingSeconds = notice.remainingMs / MILLIS_PER_SECOND,
+                totalSeconds = notice.segment.durationMs / MILLIS_PER_SECOND,
+                endsAtEpochMs = notice.endsAtEpochMs(),
+                isPaused = notice !is SessionNotice.Running,
+                nextSegmentType = notice.nextSegmentType(),
             )
-
-            println("LiveActivityManager: Live Activity started successfully")
         } catch (e: Exception) {
             println("LiveActivityManager: Failed to start: ${e.message}")
             e.printStackTrace()
         }
     }
 
-    fun updateLiveActivity(
-        cycleNumber: Int,
-        totalCycles: Int,
-        segmentType: String,
-        remainingSeconds: Int,
-        totalSeconds: Int,
-        isPaused: Boolean,
-        scheduleJson: String?,
-    ) {
+    fun updateLiveActivity(notice: SessionNotice.Showing) {
         try {
-            println("LiveActivityManager: Updating Live Activity")
-            println("  Cycle: $cycleNumber/$totalCycles")
-            println("  Segment: $segmentType")
-
-            val bridge = PomodoroLiveActivityBridge.shared()
-
-            bridge.updateLiveActivityWithCycleNumber(
-                cycleNumber = cycleNumber.toLong(),
-                totalCycles = totalCycles.toLong(),
-                segmentType = segmentType,
-                remainingSeconds = remainingSeconds.toLong(),
-                totalSeconds = totalSeconds.toLong(),
-                isPaused = isPaused,
-                scheduleJSON = scheduleJson,
+            println("LiveActivityManager: Updating Live Activity for ${notice.sessionId}")
+            PomodoroLiveActivityBridge.shared().updateLiveActivityWithCycleNumber(
+                cycleNumber = notice.segment.cycleNumber.toLong(),
+                totalCycles = notice.totalCycle.toLong(),
+                segmentType = notice.segment.type.toSegmentTypeString(),
+                remainingSeconds = notice.remainingMs / MILLIS_PER_SECOND,
+                totalSeconds = notice.segment.durationMs / MILLIS_PER_SECOND,
+                endsAtEpochMs = notice.endsAtEpochMs(),
+                isPaused = notice !is SessionNotice.Running,
+                nextSegmentType = notice.nextSegmentType(),
             )
         } catch (e: Exception) {
             println("LiveActivityManager: Failed to update: ${e.message}")
@@ -100,27 +74,18 @@ object LiveActivityManager {
             println("LiveActivityManager: Failed to end: ${e.message}")
         }
     }
+}
 
-    fun endLiveActivityWithCompletion(
-        completedCycles: Int,
-        totalFocusMinutes: Int,
-        totalBreakMinutes: Int,
-    ) {
-        try {
-            println("LiveActivityManager: Ending with completion")
-            println("  Cycles: $completedCycles")
-            println("  Focus: $totalFocusMinutes min")
-            println("  Break: $totalBreakMinutes min")
+/** 0 when nothing counts down. */
+private fun SessionNotice.Showing.endsAtEpochMs(): Long =
+    (this as? SessionNotice.Running)?.endsAtMs ?: 0L
 
-            val bridge = PomodoroLiveActivityBridge.shared()
+/** The Segment waiting at the Gate, or null when not at the Gate. */
+private fun SessionNotice.Showing.nextSegmentType(): String? =
+    (this as? SessionNotice.AtGate)?.next?.type?.toSegmentTypeString()
 
-            bridge.endLiveActivityWithCompletionCycles(
-                completedCycles = completedCycles.toLong(),
-                totalFocusMinutes = totalFocusMinutes.toLong(),
-                totalBreakMinutes = totalBreakMinutes.toLong(),
-            )
-        } catch (e: Exception) {
-            println("LiveActivityManager: Failed to end with completion: ${e.message}")
-        }
-    }
+private fun TimerType.toSegmentTypeString(): String = when (this) {
+    TimerType.FOCUS -> "focus"
+    TimerType.SHORT_BREAK -> "short_break"
+    TimerType.LONG_BREAK -> "long_break"
 }
