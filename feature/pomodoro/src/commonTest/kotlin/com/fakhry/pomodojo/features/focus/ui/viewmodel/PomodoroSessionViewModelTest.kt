@@ -15,7 +15,7 @@ import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
-import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.repository.InMemoryActiveSessionStore
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
@@ -160,6 +160,35 @@ class PomodoroSessionViewModelTest {
     }
 
     @Test
+    fun `finishing clears the stored session`() = runTest(dispatcher) {
+        val sessionStore = InMemoryActiveSessionStore()
+        val viewModel = createViewModel(sessionStore = sessionStore)
+        runCurrent()
+        viewModel.awaitSessionStarted()
+
+        viewModel.onConfirmFinish().join()
+
+        assertNull(sessionStore.session.first())
+    }
+
+    @Test
+    fun `a session already taken elsewhere is not recorded again`() = runTest(dispatcher) {
+        val sessionStore = InMemoryActiveSessionStore()
+        val historyRepository = FakeHistorySessionRepository()
+        val viewModel = createViewModel(
+            sessionStore = sessionStore,
+            historyRepository = historyRepository,
+        )
+        runCurrent()
+        viewModel.awaitSessionStarted()
+
+        sessionStore.take()
+        viewModel.onConfirmFinish().join()
+
+        assertTrue(historyRepository.insertedSessions.isEmpty())
+    }
+
+    @Test
     fun `restoring a running phase that elapsed parks at the gate`() = runTest(dispatcher) {
         // Only the running phase can elapse while away; the timeline must park at the
         // gate (not auto-advance) so restore can replay the transition.
@@ -195,9 +224,9 @@ class PomodoroSessionViewModelTest {
                 ),
             ),
         )
-        val sessionRepository = FakeActiveSessionRepository(initialSession = storedSession)
+        val sessionStore = InMemoryActiveSessionStore(storedSession)
 
-        val viewModel = createViewModel(sessionRepository = sessionRepository)
+        val viewModel = createViewModel(sessionStore = sessionStore)
         runCurrent()
 
         val state = viewModel.awaitSessionStarted()
@@ -242,9 +271,9 @@ class PomodoroSessionViewModelTest {
                     ),
                 ),
             )
-            val sessionRepository = FakeActiveSessionRepository(initialSession = storedSession)
+            val sessionStore = InMemoryActiveSessionStore(storedSession)
 
-            val viewModel = createViewModel(sessionRepository = sessionRepository)
+            val viewModel = createViewModel(sessionStore = sessionStore)
             runCurrent()
 
             val restored = viewModel.awaitSessionStarted()
@@ -297,29 +326,29 @@ class PomodoroSessionViewModelTest {
                 longBreakEnabled = false,
             ),
         )
-        val sessionRepository = FakeActiveSessionRepository()
+        val sessionStore = InMemoryActiveSessionStore()
         val viewModel =
             createViewModel(
                 preferencesRepositoryOverride = preferencesRepository,
-                sessionRepository = sessionRepository,
+                sessionStore = sessionStore,
             )
         runCurrent()
         viewModel.awaitSessionStarted()
 
         viewModel.togglePauseResume()
         advanceUntilIdle()
-        assertTrue(sessionRepository.storedSession != null)
+        assertTrue(sessionStore.session.first() != null)
 
         viewModel.togglePauseResume()
         runCurrent()
-        assertTrue(sessionRepository.storedSession != null)
+        assertTrue(sessionStore.session.first() != null)
     }
 
     @Test
     fun `elapsed running phase opens the gate and continue starts the next phase`() =
         runTest(dispatcher) {
-            val sessionRepository = FakeActiveSessionRepository()
-            val viewModel = createViewModel(sessionRepository = sessionRepository)
+            val sessionStore = InMemoryActiveSessionStore()
+            val viewModel = createViewModel(sessionStore = sessionStore)
             runCurrent()
             viewModel.awaitSessionStarted()
 
@@ -414,9 +443,9 @@ class PomodoroSessionViewModelTest {
                 ),
             ),
         )
-        val sessionRepository = FakeActiveSessionRepository(initialSession = storedSession)
+        val sessionStore = InMemoryActiveSessionStore(storedSession)
 
-        val viewModel = createViewModel(sessionRepository = sessionRepository)
+        val viewModel = createViewModel(sessionStore = sessionStore)
         runCurrent()
 
         val restored = viewModel.awaitSessionStarted()
@@ -433,7 +462,7 @@ class PomodoroSessionViewModelTest {
             longBreakAfter = PomodoroPreferences.DEFAULT_LONG_BREAK_AFTER,
             longBreakMinutes = 1,
         ),
-        sessionRepository: FakeActiveSessionRepository = FakeActiveSessionRepository(),
+        sessionStore: InMemoryActiveSessionStore = InMemoryActiveSessionStore(),
         soundPlayer: SoundPlayer = FakeSoundPlayer(),
         preferencesRepositoryOverride: FakePreferencesRepository? = null,
         historyRepository: FakeHistorySessionRepository = FakeHistorySessionRepository(),
@@ -446,7 +475,6 @@ class PomodoroSessionViewModelTest {
 
         val focusNotifier = FakeFocusSessionNotifier()
         val createSessionUseCase = CreatePomodoroSessionUseCase(
-            sessionRepository = sessionRepository,
             quoteRepo = quoteRepository,
             preferencesRepo = preferencesRepository,
             timelineBuilder = BuildTimerSegmentsUseCase(),
@@ -459,7 +487,7 @@ class PomodoroSessionViewModelTest {
             createPomodoroSessionUseCase = createSessionUseCase,
             repoGroup = PomodoroSessionRepoGroup(
                 preferencesRepository = preferencesRepository,
-                sessionRepository = sessionRepository,
+                sessionStore = sessionStore,
                 historyRepository = historyRepository,
             ),
             pomodoroSessionNotifier = focusNotifier,
@@ -516,25 +544,6 @@ private class FakePreferencesRepository(initial: PomodoroPreferences) : Preferen
     override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {
         state.update { it.copy(alwaysOnDisplayEnabled = enabled) }
     }
-}
-
-private class FakeActiveSessionRepository(
-    initialSession: PomodoroSessionDomain? = null,
-) : ActiveSessionRepository {
-    var storedSession: PomodoroSessionDomain? = initialSession
-
-    override suspend fun getActiveSession(): PomodoroSessionDomain =
-        storedSession ?: PomodoroSessionDomain()
-
-    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
-        storedSession = snapshot
-    }
-
-    override suspend fun clearActiveSession() {
-        storedSession = null
-    }
-
-    override suspend fun hasActiveSession(): Boolean = storedSession != null
 }
 
 private class FakeHistorySessionRepository : HistorySessionRepository {

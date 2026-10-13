@@ -19,14 +19,14 @@ import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
-fun Preferences.toPomodoroSession(json: Json): PomodoroSessionDomain {
-    val snapshot = this[PreferenceKeys.ACTIVE_SESSION_KEY] ?: return PomodoroSessionDomain()
+fun Preferences.toPomodoroSession(json: Json): PomodoroSessionDomain? {
+    val snapshot = this[PreferenceKeys.ACTIVE_SESSION_KEY] ?: return null
     // An undecodable Session (e.g. written by an incompatible version) reads as no Session
-    // instead of crashing every launch.
+    // instead of crashing every launch; the next write replaces it.
     return try {
         json.decodeFromString<PomodoroSessionDataStore>(snapshot).toDomain()
     } catch (_: SerializationException) {
-        PomodoroSessionDomain()
+        null
     }
 }
 

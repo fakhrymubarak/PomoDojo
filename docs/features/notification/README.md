@@ -212,46 +212,20 @@ flowchart TD
     RECEIVER --> PERM_CHECK{"POST_NOTIFICATIONS\npermission granted?"}
     PERM_CHECK -->|No| RETURN_EARLY["Return (no action)"]
     PERM_CHECK -->|Yes| ASYNC["goAsync() — acquire wake lock"]
-    ASYNC --> LOAD["Load active session\nfrom ActiveSessionRepository"]
-    LOAD --> HAS_SESSION{"Session exists?"}
-    HAS_SESSION -->|No| FINISH_1["pendingResult.finish()"]
-    HAS_SESSION -->|Yes| ACTION{"intent.action?"}
-    ACTION -->|" ACTION_SEGMENT_COMPLETE "| PROCESS["processSessionCompletion(session, now)"]
-    PROCESS --> ADVANCE_LOOP["Loop: advance through\noverdue segments"]
-    ADVANCE_LOOP --> SAVE{"Session modified?"}
-    SAVE -->|Yes| PERSIST["Save updated session\nto ActiveSessionRepository"]
-    SAVE -->|No| SKIP_SAVE["Skip save"]
-    PERSIST --> RESCHEDULE["notifier.schedule(updatedSession)"]
-    SKIP_SAVE --> RESCHEDULE
-    RESCHEDULE --> PLAY_SOUND["SoundPlayer\n.playSegmentCompleted()"]
-    ACTION -->|" ACTION_PROGRESS_UPDATE "| REFRESH["notifier.schedule(session)\n(refresh notification)"]
-    PLAY_SOUND --> FINISH_2["pendingResult.finish()"]
-    REFRESH --> FINISH_2
+    ASYNC --> ACTION{"intent.action?"}
+    ACTION -->|" ACTION_SEGMENT_COMPLETE "| PARK["ActiveSessionStore.update:\ntimeline.elapsedAt(now)\n(parks the Session at the Gate)"]
+    ACTION -->|" ACTION_PROGRESS_UPDATE "| READ["ActiveSessionStore.session.first()"]
+    PARK --> HAS_SESSION{"Session exists?"}
+    READ --> HAS_SESSION
+    HAS_SESSION -->|No| FINISH["pendingResult.finish()"]
+    HAS_SESSION -->|Yes| RESCHEDULE["notifier.schedule(session)"]
+    RESCHEDULE --> PLAY_SOUND["SoundPlayer.playSegmentCompleted()\n(segment complete only)"]
+    PLAY_SOUND --> FINISH
 ```
 
-#### Segment Completion Processing
-
-`processSessionCompletion()` handles the case where the alarm fires and the current segment's
-remaining time has reached zero. It **loops through all overdue segments** to catch up if multiple
-alarms were missed:
-
-```mermaid
-flowchart TD
-    START["processSessionCompletion(session, now)"]
-    FIND["Find active segment index\n(first RUNNING or PAUSED)"]
-    LOOP{"Current segment\ncompleted?"}
-    LOOP -->|" RUNNING & remaining = 0 "| FINALIZE["finalizeSegment()\n→ status = COMPLETED"]
-    LOOP -->|" COMPLETED "| ALREADY["Already completed"]
-    LOOP -->|" PAUSED / INITIAL / remaining > 0 "| DONE["Stop loop"]
-    FINALIZE --> HAS_NEXT{"Has next segment?"}
-    ALREADY --> HAS_NEXT
-    HAS_NEXT -->|Yes| PREPARE["prepareSegmentForRun()\n→ status = RUNNING\n→ calculate finishedInMillis"]
-    HAS_NEXT -->|No| DONE
-    PREPARE --> NEXT_DONE{"Next segment\nalso overdue?"}
-    NEXT_DONE -->|Yes| LOOP
-    NEXT_DONE -->|No| DONE
-    DONE --> RETURN["Return updated session"]
-```
+The receiver never starts the next Segment or finishes the Session: it only parks the Session at
+the Gate, and the foreground finishes it (see `docs/adr/0001-background-alarm-only-parks-session.md`). The update is atomic, so it cannot
+overwrite a change the app made at the same moment.
 
 ### Android Request Code Scheme
 

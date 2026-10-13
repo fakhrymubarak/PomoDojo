@@ -1,9 +1,7 @@
 package com.fakhry.pomodojo.features.focus.domain.usecase
 
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
-import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
-import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildHourSplitTimelineUseCase
 import com.fakhry.pomodojo.domain.pomodoro.usecase.BuildTimerSegmentsUseCase
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
@@ -41,9 +39,7 @@ class CreatePomodoroSessionUseCaseTest {
 
         val quoteRepo = FakeQuoteRepository(expectedQuote)
         val preferencesRepo = FakePreferencesRepository(preferences)
-        val sessionRepo = FakeActiveSessionRepository()
         val useCase = CreatePomodoroSessionUseCase(
-            sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
@@ -63,27 +59,6 @@ class CreatePomodoroSessionUseCaseTest {
     }
 
     @Test
-    fun `saves session to repository`() = runTest {
-        val now = 2_000_000L
-        val quoteRepo = FakeQuoteRepository(QuoteContent.DEFAULT_QUOTE)
-        val preferencesRepo = FakePreferencesRepository(PomodoroPreferences())
-        val sessionRepo = FakeActiveSessionRepository()
-        val useCase = CreatePomodoroSessionUseCase(
-            sessionRepository = sessionRepo,
-            quoteRepo = quoteRepo,
-            preferencesRepo = preferencesRepo,
-            timelineBuilder = BuildTimerSegmentsUseCase(),
-            hourSplitter = BuildHourSplitTimelineUseCase(),
-            dispatcher = DispatcherProvider(Dispatchers.Unconfined),
-        )
-
-        val session = useCase(now)
-
-        assertTrue(sessionRepo.saveSessionCalled)
-        assertEquals(session, sessionRepo.lastSavedSession)
-    }
-
-    @Test
     fun `creates session with custom preferences`() = runTest {
         val now = 3_000_000L
         val customPreferences = PomodoroPreferences(
@@ -95,9 +70,7 @@ class CreatePomodoroSessionUseCaseTest {
 
         val quoteRepo = FakeQuoteRepository(QuoteContent.DEFAULT_QUOTE)
         val preferencesRepo = FakePreferencesRepository(customPreferences)
-        val sessionRepo = FakeActiveSessionRepository()
         val useCase = CreatePomodoroSessionUseCase(
-            sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
@@ -124,9 +97,7 @@ class CreatePomodoroSessionUseCaseTest {
 
         val quoteRepo = FakeQuoteRepository(QuoteContent.DEFAULT_QUOTE)
         val preferencesRepo = FakePreferencesRepository(preferences)
-        val sessionRepo = FakeActiveSessionRepository()
         val useCase = CreatePomodoroSessionUseCase(
-            sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
@@ -156,9 +127,7 @@ class CreatePomodoroSessionUseCaseTest {
 
         val quoteRepo = FakeQuoteRepository(QuoteContent.DEFAULT_QUOTE)
         val preferencesRepo = FakePreferencesRepository(preferences)
-        val sessionRepo = FakeActiveSessionRepository()
         val useCase = CreatePomodoroSessionUseCase(
-            sessionRepository = sessionRepo,
             quoteRepo = quoteRepo,
             preferencesRepo = preferencesRepo,
             timelineBuilder = BuildTimerSegmentsUseCase(),
@@ -211,24 +180,5 @@ private class FakePreferencesRepository(initial: PomodoroPreferences) : Preferen
 
     override suspend fun updateAlwaysOnDisplayEnabled(enabled: Boolean) {
         state.value = state.value.copy(alwaysOnDisplayEnabled = enabled)
-    }
-}
-
-private class FakeActiveSessionRepository : ActiveSessionRepository {
-    var saveSessionCalled = false
-    var lastSavedSession: PomodoroSessionDomain? = null
-
-    override suspend fun hasActiveSession(): Boolean = lastSavedSession != null
-
-    override suspend fun getActiveSession(): PomodoroSessionDomain =
-        lastSavedSession ?: PomodoroSessionDomain()
-
-    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
-        saveSessionCalled = true
-        lastSavedSession = snapshot
-    }
-
-    override suspend fun clearActiveSession() {
-        lastSavedSession = null
     }
 }

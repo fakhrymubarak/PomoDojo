@@ -6,7 +6,7 @@ import com.fakhry.pomodojo.domain.history.model.HistoryDomain
 import com.fakhry.pomodojo.domain.history.model.PomodoroHistoryDomain
 import com.fakhry.pomodojo.domain.history.repository.HistorySessionRepository
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
-import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.repository.InMemoryActiveSessionStore
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
 import com.fakhry.pomodojo.features.dashboard.ui.utils.FakeCurrentTimeProvider
@@ -48,7 +48,7 @@ class DashboardViewModelTest {
         ),
     )
     private val repository = FakePreferencesRepository(PomodoroPreferences(focusMinutes = 30))
-    private val focusRepository = FakeFocusRepository(hasActive = false)
+    private val sessionStore = InMemoryActiveSessionStore()
     private val historyRepository = FakeHistoryRepository(
         data2024 = history2024,
         data2023 = history2023,
@@ -59,7 +59,7 @@ class DashboardViewModelTest {
     private val viewModel = DashboardViewModel(
         historyRepo = historyRepository,
         repository = repository,
-        focusRepository = focusRepository,
+        sessionStore = sessionStore,
         dispatcher = dispatcherProvider,
         currentTimeProvider = currentTimeProvider,
     )
@@ -101,7 +101,7 @@ class DashboardViewModelTest {
         val viewModel = DashboardViewModel(
             historyRepo = historyRepository,
             repository = repository,
-            focusRepository = focusRepository,
+            sessionStore = sessionStore,
             dispatcher = dispatcherProvider,
             currentTimeProvider = currentTimeProvider,
         )
@@ -120,7 +120,7 @@ class DashboardViewModelTest {
         val viewModel = DashboardViewModel(
             historyRepo = errorRepository,
             repository = repository,
-            focusRepository = focusRepository,
+            sessionStore = sessionStore,
             dispatcher = dispatcherProvider,
             currentTimeProvider = currentTimeProvider,
         )
@@ -137,7 +137,7 @@ class DashboardViewModelTest {
         val viewModel = DashboardViewModel(
             historyRepo = historyRepository,
             repository = repository,
-            focusRepository = focusRepository,
+            sessionStore = sessionStore,
             dispatcher = dispatcherProvider,
             currentTimeProvider = currentTimeProvider,
         )
@@ -185,35 +185,11 @@ class DashboardViewModelTest {
 
         assertFalse(viewModel.hasActiveSession.value)
 
-        focusRepository.setHasActive(true)
+        sessionStore.update { PomodoroSessionDomain() }
         viewModel.checkHasActiveSession()
         advanceUntilIdle()
 
         assertTrue(viewModel.hasActiveSession.value)
-    }
-}
-
-private class FakeFocusRepository(private var hasActive: Boolean) : ActiveSessionRepository {
-    private var session: PomodoroSessionDomain? = if (hasActive) PomodoroSessionDomain() else null
-
-    override suspend fun hasActiveSession(): Boolean = hasActive
-
-    override suspend fun getActiveSession(): PomodoroSessionDomain =
-        session ?: PomodoroSessionDomain()
-
-    override suspend fun saveActiveSession(snapshot: PomodoroSessionDomain) {
-        session = snapshot
-        hasActive = true
-    }
-
-    override suspend fun clearActiveSession() {
-        session = null
-        hasActive = false
-    }
-
-    fun setHasActive(value: Boolean) {
-        hasActive = value
-        session = if (value) PomodoroSessionDomain() else null
     }
 }
 

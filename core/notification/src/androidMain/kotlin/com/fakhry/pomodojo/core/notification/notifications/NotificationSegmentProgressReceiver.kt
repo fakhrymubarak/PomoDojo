@@ -9,12 +9,12 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.fakhry.pomodojo.core.notification.PomodoroSessionNotifier
 import com.fakhry.pomodojo.core.notification.audio.provideSoundPlayer
-import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.elapsedAt
-import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.context.GlobalContext
@@ -48,45 +48,26 @@ class NotificationSegmentProgressReceiver : BroadcastReceiver() {
                 // Initialize dependencies
                 val koin = GlobalContext.get()
                 val notifier: PomodoroSessionNotifier = koin.get<AndroidFocusSessionNotifier>()
-                val sessionRepository: ActiveSessionRepository = koin.get()
-
-                val session = withContext(Dispatchers.IO) {
-                    sessionRepository.getActiveSession()
-                }
-
-                if (session == PomodoroSessionDomain()) {
-                    Log.i(TAG, "onReceive: no active session")
-                    pendingResult.finish()
-                    return@launch
-                }
+                val sessionStore: ActiveSessionStore = koin.get()
                 val now = System.currentTimeMillis()
 
-                when (action) {
-                    ACTION_SEGMENT_COMPLETE -> {
+                val session = withContext(Dispatchers.IO) {
+                    when (action) {
                         // A finished Segment parks at the Gate; the user continues in the app.
-                        val updatedSession = session.copy(
-                            timeline = session.timeline.elapsedAt(now),
-                        )
-
-                        // Update the session in repository if it was modified
-                        if (updatedSession != session) {
-                            Log.i(TAG, "onReceive: session updated")
-                            withContext(Dispatchers.IO) {
-                                sessionRepository.saveActiveSession(updatedSession)
-                            }
+                        ACTION_SEGMENT_COMPLETE -> sessionStore.update { stored ->
+                            stored?.copy(timeline = stored.timeline.elapsedAt(now))
                         }
 
-                        // Schedule notification with the updated session
-                        notifier.schedule(updatedSession)
-                        provideSoundPlayer().playSegmentCompleted()
-                    }
-
-                    ACTION_PROGRESS_UPDATE -> {
-                        // Just refresh the notification to update progress bar
-                        Log.i(TAG, "onReceive: progress updated")
-                        notifier.schedule(session)
+                        else -> sessionStore.session.first()
                     }
                 }
+                if (session == null) {
+                    Log.i(TAG, "onReceive: no active session")
+                    return@launch
+                }
+
+                notifier.schedule(session)
+                if (action == ACTION_SEGMENT_COMPLETE) provideSoundPlayer().playSegmentCompleted()
             } catch (e: Exception) {
                 Log.e(TAG, e.message ?: "Failed to schedule segment completion alarm")
                 e.printStackTrace()

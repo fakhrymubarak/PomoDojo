@@ -12,47 +12,60 @@ import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertNull
 
-class ActiveSessionRepositoryImplTest {
+class ActiveSessionStoreImplTest {
     @Test
-    fun `saveActiveSession persists and restores snapshot`() = runTest {
-        val dataStore = InMemoryPreferencesDataStore()
-        val repository = ActiveSessionRepositoryImpl(dataStore)
+    fun `update stores the session and session reads it back`() = runTest {
+        val store = ActiveSessionStoreImpl(InMemoryPreferencesDataStore())
         val snapshot = sampleSession()
 
-        repository.saveActiveSession(snapshot)
+        assertEquals(snapshot, store.update { snapshot })
 
-        val restored = repository.getActiveSession()
-        assertEquals(snapshot, restored)
-        assertTrue(repository.hasActiveSession())
+        assertEquals(snapshot, store.session.first())
     }
 
     @Test
-    fun `getActiveSession returns default when nothing stored`() = runTest {
-        val repository = ActiveSessionRepositoryImpl(InMemoryPreferencesDataStore())
+    fun `nothing stored reads as no session`() = runTest {
+        val store = ActiveSessionStoreImpl(InMemoryPreferencesDataStore())
 
-        val restored = repository.getActiveSession()
-
-        assertEquals(PomodoroSessionDomain(), restored)
-        assertFalse(repository.hasActiveSession())
+        assertNull(store.session.first())
     }
 
     @Test
-    fun `clearActiveSession removes persisted snapshot`() = runTest {
-        val dataStore = InMemoryPreferencesDataStore()
-        val repository = ActiveSessionRepositoryImpl(dataStore)
+    fun `update transforms what is stored`() = runTest {
+        val store = ActiveSessionStoreImpl(InMemoryPreferencesDataStore())
+        store.update { sampleSession(totalCycle = 2) }
+
+        val updated = store.update { it?.copy(totalCycle = it.totalCycle + 1) }
+
+        assertEquals(3, updated?.totalCycle)
+        assertEquals(3, store.session.first()?.totalCycle)
+    }
+
+    @Test
+    fun `update to null clears the session`() = runTest {
+        val store = ActiveSessionStoreImpl(InMemoryPreferencesDataStore())
+        store.update { sampleSession() }
+
+        store.update { null }
+
+        assertNull(store.session.first())
+    }
+
+    @Test
+    fun `take hands the session out once`() = runTest {
+        val store = ActiveSessionStoreImpl(InMemoryPreferencesDataStore())
         val snapshot = sampleSession()
-        repository.saveActiveSession(snapshot)
+        store.update { snapshot }
 
-        repository.clearActiveSession()
-
-        assertFalse(repository.hasActiveSession())
-        assertEquals(PomodoroSessionDomain(), repository.getActiveSession())
+        assertEquals(snapshot, store.take())
+        assertNull(store.take())
+        assertNull(store.session.first())
     }
 }
 

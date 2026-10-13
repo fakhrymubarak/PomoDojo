@@ -28,6 +28,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -119,57 +120,73 @@ class PomodoroSessionViewModel(
         viewModelScope.launch(dispatcher.io) {
             stopTicker()
             val now = currentTimeProvider.now()
-            val stored = if (repoGroup.sessionRepository.hasActiveSession()) {
-                repoGroup.sessionRepository.getActiveSession()
-            } else {
+            val store = repoGroup.sessionStore
+            val created = if (store.session.first() ==
+                null
+            ) {
                 createPomodoroSessionUseCase(now)
+            } else {
+                null
             }
             // A Timeline plan starts now; a Segment that ran out while away parks at the Gate,
             // so restore replays the transition.
-            val restored = stored.copy(timeline = stored.timeline.started(now).elapsedAt(now))
+            val restored = store.update { stored ->
+                (stored ?: created)?.let {
+                    it.copy(timeline = it.timeline.started(now).elapsedAt(now))
+                }
+            } ?: return@launch
             session = restored
             if (restored.timeline.phaseAt(now) == TimelinePhase.Complete) {
-                completeSession(restored, now)
+                store.take()?.let { completeSession(it, now) }
                 return@launch
             }
             reduce { state.rendered(restored, now) }
-            persist(restored)
             scheduleNotification(restored)
             syncTicker(restored, now)
         }
     }
 
     /**
-     * Applies [change] to the Session at the current time. A Segment that ran out is completed
-     * first (with the chime). Reaching the end of the Timeline, or [finish], completes the Session.
+     * Applies [change] at the current time to the stored Session, which the segment alarm may have
+     * moved on in the meantime. A Segment that ran out is completed first (with the chime).
+     * Reaching the end of the Timeline, or [finish], completes the Session.
      */
     private suspend fun SessionSyntax.transition(
         finish: Boolean = false,
         change: TimelineDomain.(now: Long) -> TimelineDomain,
     ) {
-        val current = session?.takeUnless { state.isComplete } ?: return
+        val local = session?.takeUnless { state.isComplete } ?: return
         val now = currentTimeProvider.now()
-        val elapsed = current.timeline.elapsedAt(now)
-        if (elapsed != current.timeline) soundPlayer.playSegmentCompleted()
-        val updated = current.copy(timeline = elapsed.change(now))
-        session = updated
+        val applied = { stored: PomodoroSessionDomain ->
+            stored.copy(timeline = stored.timeline.elapsedAt(now).change(now))
+        }
+        if (!finish && applied(local) == local) {
+            // A plain tick: only the clock moved, so there is nothing to store.
+            reduce { state.rendered(local, now) }
+            return
+        }
+        if (local.timeline.elapsedAt(now) != local.timeline) soundPlayer.playSegmentCompleted()
 
-        if (finish || updated.timeline.phaseAt(now) == TimelinePhase.Complete) {
-            completeSession(updated, now)
-        } else {
-            reduce { state.rendered(updated, now) }
-            syncTicker(updated, now)
-            if (updated != current) {
-                persist(updated)
+        val updated = repoGroup.sessionStore.update { it?.let(applied) }
+        session = updated
+        when {
+            updated == null -> stopTicker()
+
+            finish || updated.timeline.phaseAt(now) == TimelinePhase.Complete ->
+                repoGroup.sessionStore.take()?.let { completeSession(it, now) }
+
+            else -> {
+                reduce { state.rendered(updated, now) }
+                syncTicker(updated, now)
                 scheduleNotification(updated)
             }
         }
     }
 
+    /** Only the caller that took the Session gets here, so History is written at most once. */
     private suspend fun SessionSyntax.completeSession(completed: PomodoroSessionDomain, now: Long) {
         stopTicker()
         reduce { state.rendered(completed, now, isComplete = true) }
-        repoGroup.sessionRepository.clearActiveSession()
         repoGroup.historyRepository.insertHistory(completed)
         pomodoroSessionNotifier.cancel(completed.sessionId())
         val summary = completed.timeline.completionSummary().toUiState()
@@ -214,17 +231,12 @@ class PomodoroSessionViewModel(
         intent { transition { this } }
     }
 
-    private fun persist(session: PomodoroSessionDomain) = viewModelScope.launch(dispatcher.io) {
-        repoGroup.sessionRepository.saveActiveSession(session)
-    }
-
     private fun scheduleNotification(session: PomodoroSessionDomain) =
         viewModelScope.launch(dispatcher.main) {
             pomodoroSessionNotifier.schedule(session)
         }
 
     override fun onCleared() {
-        if (!container.stateFlow.value.isComplete) session?.let(::persist)
         stopTicker()
         super.onCleared()
     }

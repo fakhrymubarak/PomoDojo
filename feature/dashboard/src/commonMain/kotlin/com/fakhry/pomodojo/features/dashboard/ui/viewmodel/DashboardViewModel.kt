@@ -7,13 +7,14 @@ import com.fakhry.pomodojo.core.utils.date.formatTimerMinutes
 import com.fakhry.pomodojo.core.utils.kotlin.DispatcherProvider
 import com.fakhry.pomodojo.domain.common.DomainResult
 import com.fakhry.pomodojo.domain.history.repository.HistorySessionRepository
-import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionRepository
+import com.fakhry.pomodojo.domain.pomodoro.repository.ActiveSessionStore
 import com.fakhry.pomodojo.domain.preferences.repository.PreferencesRepository
 import com.fakhry.pomodojo.features.dashboard.ui.mapper.mapToHistorySectionUi
 import com.fakhry.pomodojo.features.dashboard.ui.model.HistorySectionUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
@@ -23,7 +24,7 @@ import kotlin.time.ExperimentalTime
 class DashboardViewModel(
     private val historyRepo: HistorySessionRepository,
     private val repository: PreferencesRepository,
-    private val focusRepository: ActiveSessionRepository,
+    private val sessionStore: ActiveSessionStore,
     private val dispatcher: DispatcherProvider,
     private val currentTimeProvider: CurrentTimeProvider,
 ) : ViewModel() {
@@ -43,7 +44,7 @@ class DashboardViewModel(
     }
 
     fun checkHasActiveSession() = viewModelScope.launch(dispatcher.io) {
-        val hasActiveSession = focusRepository.hasActiveSession()
+        val hasActiveSession = sessionStore.session.first() != null
         _hasActiveSession.update { hasActiveSession }
     }
 

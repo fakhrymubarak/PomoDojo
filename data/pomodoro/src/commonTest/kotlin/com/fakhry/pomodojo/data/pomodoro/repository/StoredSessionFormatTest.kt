@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.assertNull
 
 /**
  * Pins the JSON shape of the stored active Session. Installed apps may hold a Session in this
@@ -25,7 +25,7 @@ class StoredSessionFormatTest {
         val dataStore = InMemoryPreferencesDataStore()
         dataStore.edit { it[PreferenceKeys.ACTIVE_SESSION_KEY] = STORED_JSON }
 
-        val restored = ActiveSessionRepositoryImpl(dataStore).getActiveSession()
+        val restored = ActiveSessionStoreImpl(dataStore).session.first()
 
         assertEquals(storedSession, restored)
     }
@@ -34,7 +34,7 @@ class StoredSessionFormatTest {
     fun `saving a session writes the released format`() = runTest {
         val dataStore = InMemoryPreferencesDataStore()
 
-        ActiveSessionRepositoryImpl(dataStore).saveActiveSession(storedSession)
+        ActiveSessionStoreImpl(dataStore).update { storedSession }
 
         assertEquals(STORED_JSON, dataStore.data.first()[PreferenceKeys.ACTIVE_SESSION_KEY])
     }
@@ -46,10 +46,7 @@ class StoredSessionFormatTest {
             it[PreferenceKeys.ACTIVE_SESSION_KEY] =
                 """{"timeline":{"segments":[{"type":"NAP"}]}}"""
         }
-        val repository = ActiveSessionRepositoryImpl(dataStore)
-
-        assertEquals(PomodoroSessionDomain(), repository.getActiveSession())
-        assertFalse(repository.hasActiveSession())
+        assertNull(ActiveSessionStoreImpl(dataStore).session.first())
     }
 }
 
