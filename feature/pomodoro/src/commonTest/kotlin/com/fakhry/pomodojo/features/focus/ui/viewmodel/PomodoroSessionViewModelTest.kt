@@ -368,6 +368,35 @@ class PomodoroSessionViewModelTest {
         assertTrue(finished.isComplete, "state=$finished")
     }
 
+    @Test
+    fun `restoring keeps the partial credit of a skipped phase`() = runTest(dispatcher) {
+        advanceTimeBy(minuteMillis)
+        val storedSession = activeSessionSnapshot(
+            segments = listOf(
+                timerSegment(
+                    type = TimerType.FOCUS,
+                    cycle = 1,
+                    durationMs = minuteMillis,
+                    status = TimerStatusDomain.COMPLETED,
+                ).let { it.copy(timer = it.timer.copy(progress = 0.4f)) },
+                timerSegment(
+                    type = TimerType.SHORT_BREAK,
+                    cycle = 1,
+                    durationMs = minuteMillis,
+                    status = TimerStatusDomain.RUNNING,
+                    finishedAt = 2 * minuteMillis,
+                ),
+            ),
+        )
+        val sessionRepository = FakeActiveSessionRepository(initialSession = storedSession)
+
+        val viewModel = createViewModel(sessionRepository = sessionRepository)
+        runCurrent()
+
+        val restored = viewModel.awaitSessionStarted()
+        assertEquals(0.4f, restored.timeline.segments[0].timer.progress, "state=$restored")
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun TestScope.createViewModel(
         preferences: PomodoroPreferences = PomodoroPreferences(

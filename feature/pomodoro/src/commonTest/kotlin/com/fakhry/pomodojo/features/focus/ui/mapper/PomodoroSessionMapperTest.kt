@@ -1,97 +1,131 @@
 package com.fakhry.pomodojo.features.focus.ui.mapper
 
 import com.fakhry.pomodojo.core.designsystem.model.TimelineSegmentUi
-import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
 import com.fakhry.pomodojo.core.designsystem.model.TimerStatusUi
 import com.fakhry.pomodojo.core.designsystem.model.TimerTypeUi
-import com.fakhry.pomodojo.core.designsystem.model.TimerUi
 import com.fakhry.pomodojo.domain.pomodoro.model.PomodoroSessionDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.CompletionSummary
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimelineDomain
-import com.fakhry.pomodojo.features.focus.ui.model.PomodoroSessionUiState
-import kotlinx.collections.immutable.persistentListOf
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
+import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
+import com.fakhry.pomodojo.features.focus.ui.model.PomodoroCompletionUiState
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 private const val MINUTE_MS = 60_000L
 
 class PomodoroSessionMapperTest {
 
     @Test
-    fun `domain session maps to ui state with timeline metadata`() {
-        val segments = listOf(
-            TimelineSegmentUi(type = TimerTypeUi.FOCUS, cycleNumber = 1),
-            TimelineSegmentUi(type = TimerTypeUi.SHORT_BREAK, cycleNumber = 1),
-        )
+    fun `running session maps to ui state with the running segment active`() {
         val domain = PomodoroSessionDomain(
             totalCycle = 3,
             startedAtEpochMs = 1234L,
-            elapsedPauseEpochMs = 200L,
-            timeline = TimelineDomain(hourSplits = listOf(0, 25, 30)),
+            timeline = TimelineDomain(
+                segments = listOf(
+                    segment(
+                        TimerType.FOCUS,
+                        TimerStatusDomain.RUNNING,
+                        finishedAt = 25 * MINUTE_MS,
+                    ),
+                    segment(TimerType.SHORT_BREAK, TimerStatusDomain.INITIAL),
+                ),
+                hourSplits = listOf(0, 25, 30),
+            ),
             quote = QuoteContent(id = "quote", text = "Keep going"),
         )
 
-        val uiState = domain.toUiState(
-            segments = segments,
-            activeIndex = 1,
-            isComplete = true,
-        )
+        val uiState = domain.toUiState(now = 10 * MINUTE_MS)
 
         assertEquals(domain.totalCycle, uiState.totalCycle)
         assertEquals(domain.startedAtEpochMs, uiState.startedAtEpochMs)
-        assertEquals(domain.elapsedPauseEpochMs, uiState.elapsedPauseEpochMs)
-        assertEquals(segments[1], uiState.activeSegment)
-        assertEquals(segments, uiState.timeline.segments.toList())
+        assertEquals(TimerTypeUi.FOCUS, uiState.activeSegment.type)
+        assertEquals("15:00", uiState.activeSegment.timer.formattedTime)
+        assertEquals(0.4f, uiState.activeSegment.timer.progress)
         assertEquals(domain.timeline.hourSplits, uiState.timeline.hourSplits.toList())
         assertEquals(domain.quote, uiState.quote)
-        assertEquals(true, uiState.isComplete)
-        assertEquals(false, uiState.isShowConfirmEndDialog)
-        assertEquals(false, uiState.isShowConfirmSkipDialog)
+        assertFalse(uiState.awaitingContinue)
+        assertFalse(uiState.isComplete)
     }
 
     @Test
-    fun `domain session uses default active segment when index is invalid`() {
-        val uiState = PomodoroSessionDomain().toUiState(
-            segments = emptyList(),
-            activeIndex = 5,
-            isComplete = false,
+    fun `session at the gate shows the finished segment and the next one`() {
+        val domain = PomodoroSessionDomain(
+            timeline = TimelineDomain(
+                segments = listOf(
+                    segment(TimerType.FOCUS, TimerStatusDomain.COMPLETED, progress = 1f),
+                    segment(TimerType.SHORT_BREAK, TimerStatusDomain.INITIAL),
+                ),
+            ),
         )
+
+        val uiState = domain.toUiState(now = 0L)
+
+        assertTrue(uiState.awaitingContinue)
+        assertEquals(TimerStatusUi.COMPLETED, uiState.activeSegment.timerStatus)
+        assertEquals(TimerTypeUi.FOCUS, uiState.finishedPhaseType)
+        assertEquals(TimerTypeUi.SHORT_BREAK, uiState.nextPhaseType)
+        assertEquals(25 * MINUTE_MS, uiState.nextPhaseDurationMs)
+    }
+
+    @Test
+    fun `completed segment keeps the credit it was given`() {
+        val domain = PomodoroSessionDomain(
+            timeline = TimelineDomain(
+                segments = listOf(
+                    segment(TimerType.FOCUS, TimerStatusDomain.COMPLETED, progress = 0.4f),
+                    segment(
+                        TimerType.SHORT_BREAK,
+                        TimerStatusDomain.RUNNING,
+                        finishedAt = MINUTE_MS,
+                    ),
+                ),
+            ),
+        )
+
+        val uiState = domain.toUiState(now = 0L)
+
+        assertEquals(0.4f, uiState.timeline.segments[0].timer.progress)
+    }
+
+    @Test
+    fun `empty session uses the default active segment`() {
+        val uiState = PomodoroSessionDomain().toUiState(now = 0L)
 
         assertEquals(TimelineSegmentUi(), uiState.activeSegment)
     }
 
     @Test
-    fun `ui state completion summary uses elapsed progress`() {
-        val timeline = TimelineUiModel(
-            segments = persistentListOf(
-                uiSegment(TimerTypeUi.FOCUS, TimerStatusUi.COMPLETED, 25, 1f),
-                uiSegment(TimerTypeUi.SHORT_BREAK, TimerStatusUi.COMPLETED, 10, 1f),
-                uiSegment(TimerTypeUi.FOCUS, TimerStatusUi.RUNNING, 25, 0.5f),
-                uiSegment(TimerTypeUi.SHORT_BREAK, TimerStatusUi.INITIAL, 15, 0f),
-                uiSegment(TimerTypeUi.LONG_BREAK, TimerStatusUi.INITIAL, 5, 0f),
-                uiSegment(TimerTypeUi.FOCUS, TimerStatusUi.INITIAL, 25, 0f),
+    fun `completion summary maps to the completion ui state`() {
+        val summary = CompletionSummary(focusMinutes = 37, breakMinutes = 10, cyclesFinished = 1)
+
+        assertEquals(
+            PomodoroCompletionUiState(
+                totalCyclesFinished = 1,
+                totalFocusMinutes = 37,
+                totalBreakMinutes = 10,
             ),
-            hourSplits = persistentListOf(0, 25),
+            summary.toUiState(),
         )
-        val uiState = PomodoroSessionUiState(
-            totalCycle = 4,
-            timeline = timeline,
-        )
-
-        val summary = uiState.toCompletionSummary()
-
-        assertEquals(1, summary.totalCyclesFinished)
-        assertEquals(37, summary.totalFocusMinutes)
-        assertEquals(10, summary.totalBreakMinutes)
     }
 }
 
-private fun uiSegment(type: TimerTypeUi, status: TimerStatusUi, minutes: Int, progress: Float) =
-    TimelineSegmentUi(
-        type = type,
-        timerStatus = status,
-        timer = TimerUi(
-            durationEpochMs = minutes.toLong() * MINUTE_MS,
-            progress = progress,
-        ),
-    )
+private fun segment(
+    type: TimerType,
+    status: TimerStatusDomain,
+    finishedAt: Long = 0L,
+    progress: Float = 0f,
+) = TimerSegmentsDomain(
+    type = type,
+    timer = TimerDomain(
+        progress = progress,
+        durationEpochMs = 25 * MINUTE_MS,
+        finishedInMillis = finishedAt,
+    ),
+    timerStatus = status,
+)
