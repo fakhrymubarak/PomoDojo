@@ -1,0 +1,60 @@
+# Runs a whole Session on 1-minute Segments (a debug-build-only option): 4 cycles, each
+# Focus runs out to the Gate, the break is skipped, and the last skip completes the Session.
+# Takes about 5 minutes.
+#
+# Android (dev debug): maestro test -e APP_ID=com.fakhry.pomodojo.dev .maestro/full_session.yaml
+# iOS (Debug):         maestro test -e APP_ID=com.fakhry.pomodojo.PomoDojo .maestro/full_session.yaml
+appId: ${APP_ID}
+name: Full Session on 1-minute Segments
+---
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+
+# 1-minute Focus; the cascade makes the breaks 1 minute too.
+- tapOn:
+    id: dashboard_settings_button
+- tapOn:
+    id: focus_option_1
+- tapOn:
+    id: preferences_back_button
+
+- tapOn:
+    id: dashboard_start_button
+- assertVisible:
+    id: session_pause_button
+
+- tapOn:
+    id: session_pause_button
+- assertVisible:
+    id: session_resume_button
+- tapOn:
+    id: session_resume_button
+- assertVisible:
+    id: session_pause_button
+
+- repeat:
+    times: 4
+    commands:
+      - extendedWaitUntil:
+          visible:
+            id: session_gate
+          timeout: 90000
+      - tapOn:
+          id: dialog_confirm
+      - tapOn:
+          id: session_skip_button
+      - assertVisible:
+          id: session_confirm
+      - tapOn:
+          id: dialog_confirm
+
+- extendedWaitUntil:
+    visible:
+      id: complete_start_another_button
+    timeout: 10000
+- tapOn:
+    id: complete_start_another_button
+- assertVisible:
+    id: dashboard_start_button

@@ -87,6 +87,7 @@ fun ColumnScope.PomodoroConfigSection(
             PreferenceOptionsCompose(
                 title = stringResource(Res.string.preferences_focus_timer_title),
                 options = focusOptions,
+                testTag = "focus_option",
                 onOptionSelected = {
                     onFocusSelected(it)
                 },
@@ -97,6 +98,7 @@ fun ColumnScope.PomodoroConfigSection(
             PreferenceOptionsCompose(
                 title = stringResource(Res.string.preferences_break_timer_title),
                 options = breakOptions,
+                testTag = "break_option",
                 onOptionSelected = {
                     onBreakSelected(it)
                 },
@@ -127,6 +129,7 @@ fun ColumnScope.PomodoroConfigSection(
                     PreferenceOptionsCompose(
                         title = stringResource(Res.string.preferences_long_break_after_title),
                         options = longBreakAfterOptions,
+                        testTag = "long_break_after_option",
                         onOptionSelected = onLongBreakAfterSelected,
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -134,6 +137,7 @@ fun ColumnScope.PomodoroConfigSection(
                     PreferenceOptionsCompose(
                         title = stringResource(Res.string.preferences_long_break_timer_title),
                         options = longBreakOptions,
+                        testTag = "long_break_option",
                         onOptionSelected = onLongBreakMinutesSelected,
                     )
                 }

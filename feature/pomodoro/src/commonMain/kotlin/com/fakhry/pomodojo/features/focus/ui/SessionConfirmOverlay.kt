@@ -1,6 +1,8 @@
 package com.fakhry.pomodojo.features.focus.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.fakhry.pomodojo.core.designsystem.dialog.DialogAction
 import com.fakhry.pomodojo.core.designsystem.dialog.DialogCard
 import com.fakhry.pomodojo.core.designsystem.dialog.ModalBackdrop
@@ -47,6 +49,7 @@ internal fun SessionConfirmOverlay(
         onDismiss = onDismiss,
     ) {
         DialogCard(
+            modifier = Modifier.testTag("session_confirm"),
             title = stringResource(texts.title),
             message = stringResource(texts.message),
             confirm = DialogAction(text = stringResource(texts.confirm), onClick = onConfirm),

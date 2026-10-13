@@ -22,6 +22,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -52,6 +53,7 @@ internal fun FocusControls(
         }
         FocusCircularButton(
             onClick = onTogglePause,
+            testTag = if (isTimerRunning) "session_pause_button" else "session_resume_button",
             icon = { Icon(imageVector = icon, contentDescription = null) },
             buttonDescription = description,
             containerColor = MaterialTheme.colorScheme.primary,
@@ -60,6 +62,7 @@ internal fun FocusControls(
 
         FocusCircularButton(
             onClick = onEnd,
+            testTag = "session_end_button",
             icon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
             buttonDescription = stringResource(Res.string.focus_session_end_content_description),
             containerColor = MaterialTheme.colorScheme.error,
@@ -69,6 +72,7 @@ internal fun FocusControls(
         if (isBreak) {
             FocusCircularButton(
                 onClick = onSkip,
+                testTag = "session_skip_button",
                 icon = { Icon(imageVector = Icons.Rounded.SkipNext, contentDescription = null) },
                 buttonDescription = stringResource(
                     Res.string.focus_session_skip_content_description,
@@ -80,16 +84,21 @@ internal fun FocusControls(
     }
 }
 
+@Suppress("LongParameterList")
 @Composable
 internal fun FocusCircularButton(
     onClick: () -> Unit,
+    testTag: String,
     icon: @Composable () -> Unit,
     buttonDescription: String,
     containerColor: Color,
     contentColor: Color,
 ) {
     Surface(
-        modifier = Modifier.size(64.dp).semantics { this.contentDescription = buttonDescription },
+        modifier = Modifier
+            .size(64.dp)
+            .testTag(testTag)
+            .semantics { this.contentDescription = buttonDescription },
         shape = CircleShape,
         color = containerColor,
         onClick = onClick,

@@ -246,6 +246,7 @@ private fun LandscapeControlsButtons(
         }
         FocusCircularButton(
             onClick = onTogglePause,
+            testTag = if (isTimerRunning) "session_pause_button" else "session_resume_button",
             icon = { Icon(imageVector = pauseIcon, contentDescription = null) },
             buttonDescription = pauseDescription,
             containerColor = MaterialTheme.colorScheme.primary,
@@ -253,6 +254,7 @@ private fun LandscapeControlsButtons(
         )
         FocusCircularButton(
             onClick = onEnd,
+            testTag = "session_end_button",
             icon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
             buttonDescription = stringResource(Res.string.focus_session_end_content_description),
             containerColor = MaterialTheme.colorScheme.error,
@@ -261,6 +263,7 @@ private fun LandscapeControlsButtons(
         if (isBreak) {
             FocusCircularButton(
                 onClick = onSkip,
+                testTag = "session_skip_button",
                 icon = { Icon(imageVector = Icons.Rounded.SkipNext, contentDescription = null) },
                 buttonDescription = stringResource(
                     Res.string.focus_session_skip_content_description,

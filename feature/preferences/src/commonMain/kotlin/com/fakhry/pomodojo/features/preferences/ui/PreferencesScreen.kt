@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.core.designsystem.components.BgHeaderCanvas
@@ -141,7 +142,7 @@ private fun PreferencesHeader(onNavigateBack: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             IconButton(
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(24.dp).testTag("preferences_back_button"),
                 onClick = {
                     if (!isNavigatingBack) {
                         onNavigateBack()

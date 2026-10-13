@@ -1,6 +1,8 @@
 package com.fakhry.pomodojo.features.focus.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.fakhry.pomodojo.core.designsystem.components.focusPhaseLabel
 import com.fakhry.pomodojo.core.designsystem.dialog.DialogAction
 import com.fakhry.pomodojo.core.designsystem.dialog.DialogCard
@@ -61,6 +63,7 @@ private fun GatePhaseDialog(
     val nextMinutes = (nextDurationMs / MILLIS_PER_MINUTE).toInt().coerceAtLeast(1)
 
     DialogCard(
+        modifier = Modifier.testTag("session_gate"),
         title = stringResource(Res.string.focus_session_gate_title_format, finishedLabel),
         message = stringResource(
             Res.string.focus_session_gate_message_format,

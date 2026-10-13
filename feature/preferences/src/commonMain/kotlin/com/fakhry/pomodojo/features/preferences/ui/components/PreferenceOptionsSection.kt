@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.core.designsystem.model.PreferenceOption
@@ -27,6 +28,8 @@ fun <T> PreferenceOptionsCompose(
     modifier: Modifier = Modifier,
     title: String,
     options: ImmutableList<PreferenceOption<T>>,
+    /** Each chip is tagged `<testTag>_<value>`, e.g. `focus_option_25`. */
+    testTag: String,
     onOptionSelected: (T) -> Unit,
 ) {
     val hapticFeedback = LocalHapticFeedback.current
@@ -48,6 +51,7 @@ fun <T> PreferenceOptionsCompose(
             options.forEach { option ->
                 PreferenceOptionChip(
                     option = option,
+                    testTag = "${testTag}_${option.value}",
                     onClick = {
                         onOptionSelected(option.value)
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
@@ -59,7 +63,11 @@ fun <T> PreferenceOptionsCompose(
 }
 
 @Composable
-private fun <T> PreferenceOptionChip(option: PreferenceOption<T>, onClick: () -> Unit) {
+private fun <T> PreferenceOptionChip(
+    option: PreferenceOption<T>,
+    testTag: String,
+    onClick: () -> Unit,
+) {
     val isSelected = option.selected
     val colorScheme = MaterialTheme.colorScheme
     val backgroundColor = if (isSelected) {
@@ -84,7 +92,7 @@ private fun <T> PreferenceOptionChip(option: PreferenceOption<T>, onClick: () ->
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, borderColor),
         color = backgroundColor,
-        modifier = Modifier.alpha(alpha),
+        modifier = Modifier.alpha(alpha).testTag(testTag),
     ) {
         Text(
             text = option.label,

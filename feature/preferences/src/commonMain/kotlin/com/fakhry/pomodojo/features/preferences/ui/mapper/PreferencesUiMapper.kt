@@ -2,6 +2,7 @@ package com.fakhry.pomodojo.features.preferences.ui.mapper
 
 import com.fakhry.pomodojo.core.designsystem.model.PreferenceOption
 import com.fakhry.pomodojo.core.designsystem.model.TimelineUiModel
+import com.fakhry.pomodojo.core.utils.flags.isDebugBuild
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.planTimeline
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
@@ -9,6 +10,11 @@ import com.fakhry.pomodojo.domain.preferences.model.InitAppPreferences
 import com.fakhry.pomodojo.domain.preferences.model.PomodoroPreferences
 import com.fakhry.pomodojo.features.preferences.ui.model.PreferencesUiModel
 import kotlinx.collections.immutable.toPersistentList
+
+// Debug builds also offer 1-minute Segments, so the Maestro flows finish in minutes.
+private val DEBUG_MINUTES_OPTIONS = if (isDebugBuild) listOf(1) else emptyList()
+private val FOCUS_OPTIONS = DEBUG_MINUTES_OPTIONS + PomodoroPreferences.FOCUS_MINUTES_OPTIONS
+private val BREAK_OPTIONS = DEBUG_MINUTES_OPTIONS + PomodoroPreferences.BREAK_MINUTES_OPTIONS
 
 fun PomodoroPreferences.mapToUiModel(initPreferences: InitAppPreferences): PreferencesUiModel {
     val longBreakEnabled = longBreakEnabled
@@ -25,14 +31,14 @@ fun PomodoroPreferences.mapToUiModel(initPreferences: InitAppPreferences): Prefe
         themeOptions = themeOptions,
         isAlwaysOnDisplayEnabled = alwaysOnDisplayEnabled,
         repeatCount = repeatCount,
-        focusOptions = PomodoroPreferences.FOCUS_MINUTES_OPTIONS.map { minutes ->
+        focusOptions = FOCUS_OPTIONS.map { minutes ->
             PreferenceOption(
                 label = "$minutes mins",
                 value = minutes,
                 selected = focusMinutes == minutes,
             )
         }.toPersistentList(),
-        breakOptions = PomodoroPreferences.BREAK_MINUTES_OPTIONS.map { minutes ->
+        breakOptions = BREAK_OPTIONS.map { minutes ->
             PreferenceOption(
                 label = "$minutes mins",
                 value = minutes,

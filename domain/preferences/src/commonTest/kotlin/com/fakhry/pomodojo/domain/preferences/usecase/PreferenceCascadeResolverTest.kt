@@ -42,6 +42,16 @@ class PreferenceCascadeResolverTest {
     }
 
     @Test
+    fun `debug one-minute options cascade to one-minute breaks`() {
+        val focus = cascadeResolver.resolveForFocus(minutes = 1)
+        val breakCascade = cascadeResolver.resolveForBreak(minutes = 1)
+
+        assertEquals(1, focus.breakMinutes)
+        assertEquals(4, focus.longBreakAfterCount)
+        assertEquals(4, breakCascade.longBreakAfterCount)
+    }
+
+    @Test
     fun `break cascade handles standard options`() {
         val medium = cascadeResolver.resolveForBreak(minutes = 5)
         val long = cascadeResolver.resolveForBreak(minutes = 10)

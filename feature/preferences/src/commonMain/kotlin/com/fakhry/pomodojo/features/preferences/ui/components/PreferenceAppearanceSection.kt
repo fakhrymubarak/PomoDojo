@@ -58,6 +58,7 @@ fun ColumnScope.PreferenceAppearanceSection(
             PreferenceOptionsCompose(
                 title = stringResource(Res.string.preferences_theme_title),
                 options = themeOptions,
+                testTag = "theme_option",
                 onOptionSelected = onOptionSelected,
             )
 

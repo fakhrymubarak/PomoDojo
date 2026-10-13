@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.core.designsystem.components.BgHeaderCanvas
 import com.fakhry.pomodojo.core.designsystem.generated.resources.Res
@@ -41,7 +42,7 @@ fun DashboardHeader(onOpenSettings: () -> Unit = {}) {
                 ),
             )
             IconButton(
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(24.dp).testTag("dashboard_settings_button"),
                 onClick = onOpenSettings,
             ) {
                 Icon(

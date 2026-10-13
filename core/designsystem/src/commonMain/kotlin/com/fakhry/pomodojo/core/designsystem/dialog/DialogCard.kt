@@ -15,6 +15,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -31,9 +32,10 @@ fun DialogCard(
     confirm: DialogAction,
     message: String? = null,
     dismiss: DialogAction? = null,
+    modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .widthIn(max = 360.dp)
             .padding(24.dp)
             .pointerInput(Unit) { detectTapGestures {} },
@@ -64,11 +66,17 @@ fun DialogCard(
                 horizontalArrangement = Arrangement.End,
             ) {
                 if (dismiss != null) {
-                    TextButton(onClick = dismiss.onClick) {
+                    TextButton(
+                        onClick = dismiss.onClick,
+                        modifier = Modifier.testTag("dialog_dismiss"),
+                    ) {
                         Text(text = dismiss.text, style = MaterialTheme.typography.labelLarge)
                     }
                 }
-                TextButton(onClick = confirm.onClick) {
+                TextButton(
+                    onClick = confirm.onClick,
+                    modifier = Modifier.testTag("dialog_confirm"),
+                ) {
                     Text(text = confirm.text, style = MaterialTheme.typography.labelLarge)
                 }
             }

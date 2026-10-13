@@ -31,6 +31,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -102,7 +103,10 @@ fun PomodoroCompleteScreen(
 
                         Button(
                             onClick = onStartAnotherSession,
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp, top = 24.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 32.dp, top = 24.dp)
+                                .testTag("complete_start_another_button"),
                             shape = RoundedCornerShape(24.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
