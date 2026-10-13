@@ -8,6 +8,4 @@ interface InitPreferencesRepository {
     val initPreferences: Flow<InitAppPreferences>
 
     suspend fun updateAppTheme(theme: AppTheme)
-
-    suspend fun updateHasActiveSession(value: Boolean)
 }

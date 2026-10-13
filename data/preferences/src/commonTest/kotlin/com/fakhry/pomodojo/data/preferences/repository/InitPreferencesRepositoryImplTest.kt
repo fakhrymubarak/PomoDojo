@@ -2,7 +2,9 @@ package com.fakhry.pomodojo.data.preferences.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import com.fakhry.pomodojo.core.datastore.PreferenceKeys
 import com.fakhry.pomodojo.domain.preferences.model.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class InitPreferencesRepositoryImplTest {
@@ -25,10 +28,14 @@ class InitPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `updateHasActiveSession toggles state`() = runTest {
-        repository.updateHasActiveSession(true)
+    fun `hasActiveSession follows the stored session`() = runTest {
+        assertFalse(repository.initPreferences.first().hasActiveSession)
 
+        dataStore.edit { it[PreferenceKeys.ACTIVE_SESSION_KEY] = "{}" }
         assertTrue(repository.initPreferences.first().hasActiveSession)
+
+        dataStore.edit { it.remove(PreferenceKeys.ACTIVE_SESSION_KEY) }
+        assertFalse(repository.initPreferences.first().hasActiveSession)
     }
 }
 

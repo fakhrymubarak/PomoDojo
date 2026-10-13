@@ -23,14 +23,8 @@ class InitPreferencesRepositoryImpl(
         }
     }
 
-    override suspend fun updateHasActiveSession(value: Boolean) {
-        dataStore.edit { prefs ->
-            prefs[PreferenceKeys.HAS_ACTIVE_SESSION] = value
-        }
-    }
-
     private fun Preferences.toInitPreferences(): InitAppPreferences = InitAppPreferences(
         appTheme = this[PreferenceKeys.APP_THEME] ?: "dark",
-        hasActiveSession = this[PreferenceKeys.HAS_ACTIVE_SESSION] ?: false,
+        hasActiveSession = PreferenceKeys.ACTIVE_SESSION_KEY in this,
     )
 }

@@ -342,8 +342,4 @@ private class InMemoryInitPreferencesRepository(
     override suspend fun updateAppTheme(theme: AppTheme) {
         state.update { it.copy(appTheme = theme.storageValue) }
     }
-
-    override suspend fun updateHasActiveSession(value: Boolean) {
-        state.update { it.copy(hasActiveSession = value) }
-    }
 }

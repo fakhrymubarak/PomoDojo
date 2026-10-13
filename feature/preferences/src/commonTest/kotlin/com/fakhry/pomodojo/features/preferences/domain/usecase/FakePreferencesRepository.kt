@@ -53,10 +53,6 @@ class FakePreferencesRepository(
         pomodoroState.update { it.copy(alwaysOnDisplayEnabled = enabled) }
     }
 
-    override suspend fun updateHasActiveSession(value: Boolean) {
-        initState.update { it.copy(hasActiveSession = value) }
-    }
-
     fun emit(preferences: PomodoroPreferences) {
         pomodoroState.value = preferences
     }

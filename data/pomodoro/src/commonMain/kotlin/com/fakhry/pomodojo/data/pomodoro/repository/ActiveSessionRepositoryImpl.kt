@@ -29,14 +29,12 @@ class ActiveSessionRepositoryImpl(
         val encoded = json.encodeToString(snapshot.toDataStore())
         dataStore.edit { prefs ->
             prefs[PreferenceKeys.ACTIVE_SESSION_KEY] = encoded
-            prefs[PreferenceKeys.HAS_ACTIVE_SESSION] = true
         }
     }
 
     override suspend fun clearActiveSession() {
         dataStore.edit { prefs ->
             prefs.remove(PreferenceKeys.ACTIVE_SESSION_KEY)
-            prefs[PreferenceKeys.HAS_ACTIVE_SESSION] = false
         }
     }
 

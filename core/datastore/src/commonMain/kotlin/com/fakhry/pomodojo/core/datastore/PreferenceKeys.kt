@@ -14,7 +14,6 @@ object PreferenceKeys {
     val ACTIVE_SESSION_KEY = stringPreferencesKey("active_session_snapshot")
 
     val APP_THEME = stringPreferencesKey("app_theme")
-    val HAS_ACTIVE_SESSION = booleanPreferencesKey("has_active_session")
 
     val ALWAYS_ON_DISPLAY_ENABLED = booleanPreferencesKey("always_on_display_enabled")
 }
