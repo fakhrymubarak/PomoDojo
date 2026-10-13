@@ -56,7 +56,7 @@ class ActiveSessionRepositoryImplTest {
     }
 }
 
-private class InMemoryPreferencesDataStore(
+internal class InMemoryPreferencesDataStore(
     initial: Preferences = emptyPreferences(),
 ) : DataStore<Preferences> {
     private val state = MutableStateFlow(initial)

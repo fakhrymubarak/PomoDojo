@@ -16,11 +16,18 @@ import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerSegmentsDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerStatusDomain
 import com.fakhry.pomodojo.domain.pomodoro.model.timeline.TimerType
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
 fun Preferences.toPomodoroSession(json: Json): PomodoroSessionDomain {
     val snapshot = this[PreferenceKeys.ACTIVE_SESSION_KEY] ?: return PomodoroSessionDomain()
-    return json.decodeFromString<PomodoroSessionDataStore>(snapshot).toDomain()
+    // An undecodable Session (e.g. written by an incompatible version) reads as no Session
+    // instead of crashing every launch.
+    return try {
+        json.decodeFromString<PomodoroSessionDataStore>(snapshot).toDomain()
+    } catch (_: SerializationException) {
+        PomodoroSessionDomain()
+    }
 }
 
 fun PomodoroSessionDomain.toDataStore(): PomodoroSessionDataStore = PomodoroSessionDataStore(
