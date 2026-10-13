@@ -33,7 +33,6 @@ fun Preferences.toPomodoroSession(json: Json): PomodoroSessionDomain? {
 fun PomodoroSessionDomain.toDataStore(): PomodoroSessionDataStore = PomodoroSessionDataStore(
     totalCycle = totalCycle,
     startedAtEpochMs = startedAtEpochMs,
-    elapsedPauseEpochMs = elapsedPauseEpochMs,
     timeline = timeline.toData(),
     quote = quote.toData(),
 )
@@ -41,7 +40,6 @@ fun PomodoroSessionDomain.toDataStore(): PomodoroSessionDataStore = PomodoroSess
 private fun PomodoroSessionDataStore.toDomain(): PomodoroSessionDomain = PomodoroSessionDomain(
     totalCycle = totalCycle,
     startedAtEpochMs = startedAtEpochMs,
-    elapsedPauseEpochMs = elapsedPauseEpochMs,
     timeline = timeline.toDomain(),
     quote = quote.toDomain(),
 )
@@ -77,7 +75,6 @@ private fun TimerData.toDomain(): TimerDomain = TimerDomain(
     durationEpochMs = durationEpochMs,
     finishedInMillis = finishedInMillis,
     startedPauseTime = startedPauseTime,
-    elapsedPauseTime = elapsedPauseTime,
 )
 
 private fun TimerStatusData.toDomain(): TimerStatusDomain = when (this) {
@@ -104,7 +101,6 @@ private fun TimerDomain.toData(): TimerData = TimerData(
     durationEpochMs = durationEpochMs,
     finishedInMillis = finishedInMillis,
     startedPauseTime = startedPauseTime,
-    elapsedPauseTime = elapsedPauseTime,
 )
 
 private fun QuoteContent.toData(): QuoteContentData = QuoteContentData(

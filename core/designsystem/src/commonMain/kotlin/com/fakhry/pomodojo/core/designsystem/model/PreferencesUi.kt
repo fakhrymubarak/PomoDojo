@@ -37,5 +37,4 @@ data class TimerUi(
     val finishedInMillis: Long = 0L,
     val formattedTime: String = "00:00",
     val startedPauseTime: Long = 0L,
-    val elapsedPauseTime: Long = 0L,
 )

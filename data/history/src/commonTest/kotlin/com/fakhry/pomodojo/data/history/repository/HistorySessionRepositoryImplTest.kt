@@ -238,7 +238,6 @@ class HistorySessionRepositoryImplTest {
         return PomodoroSessionDomain(
             totalCycle = segments.size,
             startedAtEpochMs = startedAtMs,
-            elapsedPauseEpochMs = 0L,
             timeline = TimelineDomain(
                 segments = segments,
                 hourSplits = emptyList(),

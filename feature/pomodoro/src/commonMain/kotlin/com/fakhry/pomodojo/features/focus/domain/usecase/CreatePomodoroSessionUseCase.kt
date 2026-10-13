@@ -24,7 +24,6 @@ class CreatePomodoroSessionUseCase(
         PomodoroSessionDomain(
             totalCycle = preferences.repeatCount,
             startedAtEpochMs = now,
-            elapsedPauseEpochMs = 0L,
             timeline = planTimeline(preferences),
             quote = quote,
         )

@@ -24,7 +24,7 @@ class StoredSessionFormatTest {
     @Test
     fun `stored session in the released format restores`() = runTest {
         val dataStore = InMemoryPreferencesDataStore()
-        dataStore.edit { it[PreferenceKeys.ACTIVE_SESSION_KEY] = STORED_JSON }
+        dataStore.edit { it[PreferenceKeys.ACTIVE_SESSION_KEY] = RELEASED_JSON }
 
         val restored = ActiveSessionStoreImpl(dataStore).session.first()
 
@@ -32,12 +32,12 @@ class StoredSessionFormatTest {
     }
 
     @Test
-    fun `saving a session writes the released format`() = runTest {
+    fun `saving a session writes the current format`() = runTest {
         val dataStore = InMemoryPreferencesDataStore()
 
         ActiveSessionStoreImpl(dataStore).update { storedSession }
 
-        assertEquals(STORED_JSON, dataStore.data.first()[PreferenceKeys.ACTIVE_SESSION_KEY])
+        assertEquals(CURRENT_JSON, dataStore.data.first()[PreferenceKeys.ACTIVE_SESSION_KEY])
     }
 
     @Test
@@ -51,7 +51,8 @@ class StoredSessionFormatTest {
     }
 }
 
-private const val STORED_JSON =
+/** Written by released builds, which also stored the (unused) elapsed pause fields. */
+private const val RELEASED_JSON =
     """{"totalCycle":1,"startedAtEpochMs":1000,"elapsedPauseEpochMs":0,""" +
         """"timeline":{"segments":[""" +
         """{"type":"FOCUS","cycleNumber":1,""" +
@@ -65,10 +66,23 @@ private const val STORED_JSON =
         """],"hourSplits":[2]},""" +
         """"quote":{"id":"q","text":"Focus","character":"Sensei","sourceTitle":null,"metadata":null}}"""
 
+private const val CURRENT_JSON =
+    """{"totalCycle":1,"startedAtEpochMs":1000,""" +
+        """"timeline":{"segments":[""" +
+        """{"type":"FOCUS","cycleNumber":1,""" +
+        """"timer":{"progress":0.5,"durationEpochMs":60000,""" +
+        """"finishedInMillis":61000,"startedPauseTime":31000},""" +
+        """"timerStatus":"PAUSED"},""" +
+        """{"type":"SHORT_BREAK","cycleNumber":1,""" +
+        """"timer":{"progress":0.0,"durationEpochMs":60000,""" +
+        """"finishedInMillis":0,"startedPauseTime":0},""" +
+        """"timerStatus":"INITIAL"}""" +
+        """],"hourSplits":[2]},""" +
+        """"quote":{"id":"q","text":"Focus","character":"Sensei","sourceTitle":null,"metadata":null}}"""
+
 private val storedSession = PomodoroSessionDomain(
     totalCycle = 1,
     startedAtEpochMs = 1_000L,
-    elapsedPauseEpochMs = 0L,
     timeline = TimelineDomain(
         segments = listOf(
             TimerSegmentsDomain(

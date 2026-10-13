@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 data class PomodoroSessionDataStore(
     val totalCycle: Int = 0,
     val startedAtEpochMs: Long = 0L,
-    val elapsedPauseEpochMs: Long = 0L,
     val timeline: TimelineData = TimelineData(),
     val quote: QuoteContentData = QuoteContentData(),
 )
@@ -31,7 +30,6 @@ data class TimerData(
     val durationEpochMs: Long = 0L,
     val finishedInMillis: Long = 0L,
     val startedPauseTime: Long = 0L,
-    val elapsedPauseTime: Long = 0L,
 )
 
 @Serializable

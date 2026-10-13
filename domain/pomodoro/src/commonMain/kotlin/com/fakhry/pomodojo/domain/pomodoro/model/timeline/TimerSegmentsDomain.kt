@@ -25,7 +25,6 @@ data class TimerDomain(
     val durationEpochMs: Long = 0L,
     val finishedInMillis: Long = 0L,
     val startedPauseTime: Long = 0L,
-    val elapsedPauseTime: Long = 0L,
 )
 
 data class TimelineDomain(

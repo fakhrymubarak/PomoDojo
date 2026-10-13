@@ -21,7 +21,6 @@ internal fun TimerSegmentsDomain.toTimelineSegmentUi(now: Long): TimelineSegment
             finishedInMillis = timer.finishedInMillis,
             formattedTime = remainingAt(now).formatDurationMillis(),
             startedPauseTime = timer.startedPauseTime,
-            elapsedPauseTime = timer.elapsedPauseTime,
         ),
         timerStatus = timerStatus.toStatusUi(),
     )

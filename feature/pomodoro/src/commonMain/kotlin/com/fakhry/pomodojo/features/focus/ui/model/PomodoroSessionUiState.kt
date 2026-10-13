@@ -10,7 +10,6 @@ import com.fakhry.pomodojo.domain.pomodoro.model.quote.QuoteContent
 data class PomodoroSessionUiState(
     val totalCycle: Int = 0,
     val startedAtEpochMs: Long = 0L,
-    val elapsedPauseEpochMs: Long = 0L,
     val activeSegment: TimelineSegmentUi = TimelineSegmentUi(),
     val timeline: TimelineUiModel = TimelineUiModel(),
     val quote: QuoteContent = QuoteContent.DEFAULT_QUOTE,

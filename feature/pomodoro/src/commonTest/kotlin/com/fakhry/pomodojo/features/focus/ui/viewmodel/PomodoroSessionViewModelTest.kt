@@ -590,7 +590,6 @@ private fun activeSessionSnapshot(
 ): PomodoroSessionDomain = PomodoroSessionDomain(
     totalCycle = totalCycle,
     startedAtEpochMs = 0L,
-    elapsedPauseEpochMs = 0L,
     timeline = TimelineDomain(
         segments = segments,
         hourSplits = emptyList(),

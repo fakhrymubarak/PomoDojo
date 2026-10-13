@@ -49,7 +49,6 @@ class CreatePomodoroSessionUseCaseTest {
         assertNotNull(session)
         assertEquals(preferences.repeatCount, session.totalCycle)
         assertEquals(now, session.startedAtEpochMs)
-        assertEquals(0L, session.elapsedPauseEpochMs)
         assertEquals(expectedQuote, session.quote)
         assertTrue(session.timeline.segments.isNotEmpty())
         assertTrue(session.timeline.hourSplits.isNotEmpty())

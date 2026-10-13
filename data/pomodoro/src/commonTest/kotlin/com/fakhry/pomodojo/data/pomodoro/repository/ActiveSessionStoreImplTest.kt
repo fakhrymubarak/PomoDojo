@@ -96,7 +96,6 @@ private fun sampleSession(
     return PomodoroSessionDomain(
         totalCycle = totalCycle,
         startedAtEpochMs = startedAt,
-        elapsedPauseEpochMs = 0L,
         timeline = TimelineDomain(
             segments = segments,
             hourSplits = listOf(focusMinutes + breakMinutes),

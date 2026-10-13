@@ -31,7 +31,6 @@ fun PomodoroSessionDomain.toUiState(
     return PomodoroSessionUiState(
         totalCycle = totalCycle,
         startedAtEpochMs = startedAtEpochMs,
-        elapsedPauseEpochMs = elapsedPauseEpochMs,
         activeSegment = segments.getOrNull(activeIndex) ?: TimelineSegmentUi(),
         timeline = TimelineUiModel(
             segments = segments.toPersistentList(),
