@@ -32,3 +32,21 @@ data class TimelineDomain(
     val segments: List<TimerSegmentsDomain> = emptyList(),
     val hourSplits: List<Int> = emptyList(),
 )
+
+fun TimerSegmentsDomain.remainingAt(now: Long): Long {
+    val remaining = when (timerStatus) {
+        TimerStatusDomain.INITIAL -> timer.durationEpochMs
+        TimerStatusDomain.RUNNING -> timer.finishedInMillis - now
+        TimerStatusDomain.PAUSED -> timer.finishedInMillis - timer.startedPauseTime
+        TimerStatusDomain.COMPLETED -> 0L
+    }
+    return remaining.coerceIn(0L, timer.durationEpochMs.coerceAtLeast(0L))
+}
+
+/** Fraction of the Segment that has run; a completed Segment reports the credit it was given. */
+fun TimerSegmentsDomain.progressAt(now: Long): Float = when {
+    timerStatus == TimerStatusDomain.COMPLETED -> timer.progress
+    timerStatus == TimerStatusDomain.INITIAL -> 0f
+    timer.durationEpochMs <= 0L -> 1f
+    else -> (timer.durationEpochMs - remainingAt(now)).toFloat() / timer.durationEpochMs
+}
