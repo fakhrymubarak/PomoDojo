@@ -16,4 +16,6 @@ object PreferenceKeys {
     val APP_THEME = stringPreferencesKey("app_theme")
 
     val ALWAYS_ON_DISPLAY_ENABLED = booleanPreferencesKey("always_on_display_enabled")
+
+    val DISMISSED_UPDATE_VERSION_CODE = intPreferencesKey("dismissed_update_version_code")
 }

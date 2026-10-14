@@ -76,4 +76,15 @@
     <string name="pomodoro_complete_focus_label">Focus minutes</string>
     <string name="pomodoro_complete_break_label">Break minutes</string>
     <string name="pomodoro_complete_start_another">Start another focus session</string>
+
+    <!-- App Update -->
+    <string name="app_update_force_title">Update required</string>
+    <string name="app_update_force_message">This version of PomoDojo is no longer supported. Please update to keep using the app.</string>
+    <string name="app_update_soft_title">Update available</string>
+    <string name="app_update_soft_message">A new version of PomoDojo is available.</string>
+    <string name="app_update_update">Update</string>
+    <string name="app_update_later">Later</string>
+    <string name="app_update_ready_title">Update ready</string>
+    <string name="app_update_ready_message">The update has been downloaded. Restart PomoDojo to install it.</string>
+    <string name="app_update_restart">Restart</string>
 </resources>

@@ -61,6 +61,7 @@ kotlin {
             implementation(project(":feature:dashboard"))
             implementation(project(":feature:pomodoro"))
             implementation(project(":feature:preferences"))
+            implementation(project(":feature:update"))
             implementation(project(":domain:preferences"))
 
             implementation(compose.runtime)

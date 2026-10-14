@@ -1,5 +1,6 @@
 package com.fakhry.pomodojo
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -10,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.fakhry.pomodojo.core.designsystem.theme.PomoDojoTheme
 import com.fakhry.pomodojo.core.navigation.AppNavHost
 import com.fakhry.pomodojo.domain.preferences.repository.InitPreferencesRepository
+import com.fakhry.pomodojo.features.update.AppUpdateHost
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.koin.compose.koinInject
@@ -31,10 +33,13 @@ fun App(onThemeUpdated: (String) -> Unit = {}) {
     }
 
     PomoDojoTheme(appTheme) {
-        val navController = rememberNavController()
-        AppNavHost(
-            hasActiveSession = initialPrefs.hasActiveSession,
-            navController = navController,
-        )
+        Box {
+            val navController = rememberNavController()
+            AppNavHost(
+                hasActiveSession = initialPrefs.hasActiveSession,
+                navController = navController,
+            )
+            AppUpdateHost()
+        }
     }
 }
