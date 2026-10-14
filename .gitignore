@@ -25,3 +25,6 @@ node_modules/
 # Signing
 *.jks
 *.keystore
+
+# Play Console publisher service account
+play-publish-account.json

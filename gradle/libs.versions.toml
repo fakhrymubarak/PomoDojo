@@ -13,6 +13,7 @@ androidx-room = "2.8.4"
 androidx-testExt = "1.3.0"
 compose = "1.10.3"
 firebaseAppDistribution = "5.1.0"
+playPublisher = "3.13.0"
 datastore = "1.2.0"
 junit = "4.13.2"
 kotlin = "2.2.21"
@@ -99,6 +100,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 googleGmsGoogleServices = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 firebaseAppDistribution = { id = "com.google.firebase.appdistribution", version.ref = "firebaseAppDistribution" }
+playPublisher = { id = "com.github.triplet.play", version.ref = "playPublisher" }
 jacoco = { id = "jacoco" }
 googleFirebaseCrashlytics = { id = "com.google.firebase.crashlytics", version.ref = "googleFirebaseCrashlytics" }
 androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }

@@ -14,6 +14,7 @@ plugins {
     alias(libs.plugins.googleFirebaseCrashlytics)
     alias(libs.plugins.pomodojoQuality)
     alias(libs.plugins.firebaseAppDistribution)
+    alias(libs.plugins.playPublisher)
 }
 
 fun Project.envProps(fileName: String): Properties {
@@ -231,4 +232,11 @@ firebaseAppDistribution {
         findProperty("firebaseReleaseNotes")?.toString() ?: System.getenv("FIREBASE_RELEASE_NOTES")
             ?: "Dev Build"
     artifactType = "APK" // AAB requires bundle task; keep APK for RC uploads
+}
+
+// Used by scripts/upload-play-internal.sh via publishProdReleaseBundle.
+play {
+    serviceAccountCredentials = rootProject.file("play-publish-account.json")
+    track = "internal"
+    defaultToAppBundles = true
 }
